@@ -7,12 +7,12 @@
 
 using namespace std;
 
-template<typename T, size_t size>
-class QSort : public SortingAlgorithm<T, size>
+template<typename T, size_t count>
+class QSort : public SortingAlgorithm<T, count>
 {
     public:
         QSort()
-            : SortingAlgorithm<T, size>("C stdlib qsort")
+            : SortingAlgorithm<T, count>("C stdlib qsort")
         {
         }
 
@@ -28,7 +28,7 @@ class QSort : public SortingAlgorithm<T, size>
 
         void sort()
         {
-            qsort(SortingAlgorithm<T, size>::data, size, sizeof(T), [](const void* a, const void* b) { return *(int*)a - *(int*)b; });
+            qsort(SortingAlgorithm<T, count>::data, count, sizeof(T), [](const void* a, const void* b) { return *(int*)a - *(int*)b; });
         }
 
         void cleanup()

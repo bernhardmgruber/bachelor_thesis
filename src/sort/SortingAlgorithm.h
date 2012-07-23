@@ -13,7 +13,7 @@ using namespace std;
 /**
  * Abstract class to test sorting algorithms.
  */
-template<typename T, size_t size>
+template<typename T, size_t count>
 class SortingAlgorithm
 {
     public:
@@ -35,11 +35,11 @@ class SortingAlgorithm
         {
             cout << "###############################################################################" << endl;
             cout << "# " << name << endl;
-            cout << "#  Sorting " << size << " elements of type " << typeid(T).name() << " (" << ((sizeof(T) * size) >> 20) << " MiB)" << endl;
+            cout << "#  Sorting " << count << " elements of type " << typeid(T).name() << " (" << ((sizeof(T) * count) >> 20) << " MiB)" << endl;
 
             // generate random array
-            data = new T[size];
-            for(size_t i = 0; i < size; i++)
+            data = new T[count];
+            for(size_t i = 0; i < count; i++)
                 data[i] = rand();
 
             // run custom initialization
@@ -63,7 +63,7 @@ class SortingAlgorithm
 
                 // verify
                 bool sorted = true;
-                for(size_t i = 0; i < size - 1; i++)
+                for(size_t i = 0; i < count - 1; i++)
                     if(data[i] > data[i + 1])
                     {
                         sorted = false;
@@ -97,5 +97,13 @@ class SortingAlgorithm
         Timer timer;
         string name;
 };
+
+template <typename T>
+inline void swap(T& a, T& b)
+{
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
 
 #endif // SORTINGALGORITHM_H

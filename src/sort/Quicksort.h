@@ -3,12 +3,12 @@
 
 #include "SortingAlgorithm.h"
 
-template<typename T, size_t size>
-class Quicksort : public SortingAlgorithm<T, size>
+template<typename T, size_t count>
+class Quicksort : public SortingAlgorithm<T, count>
 {
     public:
         Quicksort()
-            : SortingAlgorithm<T, size>("Quicksort")
+            : SortingAlgorithm<T, count>("Quicksort")
         {
         }
 
@@ -24,7 +24,7 @@ class Quicksort : public SortingAlgorithm<T, size>
 
         void sort()
         {
-            sort_r(0, size - 1);
+            sort_r(0, count - 1);
         }
 
         void cleanup()
@@ -50,22 +50,20 @@ class Quicksort : public SortingAlgorithm<T, size>
             int right = end;
 
             // select pivot
-            int pivot = SortingAlgorithm<T, size>::data[(left + right) / 2];
+            int pivot = SortingAlgorithm<T, count>::data[(left + right) / 2];
 
             // partition array
             while (left <= right)
             {
-                while (SortingAlgorithm<T, size>::data[left] < pivot)
+                while (SortingAlgorithm<T, count>::data[left] < pivot)
                     left++;
-                while (pivot < SortingAlgorithm<T, size>::data[right])
+                while (pivot < SortingAlgorithm<T, count>::data[right])
                     right--;
 
                 // swap
                 if (left <= right)
                 {
-                    int temp = SortingAlgorithm<T, size>::data[right];
-                    SortingAlgorithm<T, size>::data[right] = SortingAlgorithm<T, size>::data[left];
-                    SortingAlgorithm<T, size>::data[left] = temp;
+                    ::swap(SortingAlgorithm<T, count>::data[right], SortingAlgorithm<T, count>::data[left]);
 
                     left++;
                     right--;

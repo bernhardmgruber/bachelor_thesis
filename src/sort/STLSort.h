@@ -7,12 +7,12 @@
 
 using namespace std;
 
-template<typename T, size_t size>
-class STLSort : public SortingAlgorithm<T, size>
+template<typename T, size_t count>
+class STLSort : public SortingAlgorithm<T, count>
 {
     public:
         STLSort()
-            : SortingAlgorithm<T, size>("C++ STL algorithm sort")
+            : SortingAlgorithm<T, count>("C++ STL algorithm sort")
         {
         }
 
@@ -28,7 +28,7 @@ class STLSort : public SortingAlgorithm<T, size>
 
         void sort()
         {
-            std::sort(SortingAlgorithm<T, size>::data, SortingAlgorithm<T, size>::data + size);
+            std::sort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count);
         }
 
         void cleanup()

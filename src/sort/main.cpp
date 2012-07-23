@@ -2,10 +2,10 @@
 #include <iostream>
 #include <fstream>
 
-#include "SortingAlgorithm.h"
 #include "Quicksort.h"
 #include "QSort.h"
 #include "STLSort.h"
+#include "TimSort.h"
 
 using namespace std;
 
@@ -47,6 +47,7 @@ int main()
     RUN(Quicksort);
     RUN(QSort);
     RUN(STLSort);
+    RUN(TimSort);
 
 
     /*cl_int error;
