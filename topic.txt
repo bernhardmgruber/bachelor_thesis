@@ -1,0 +1,11 @@
+Ein relativ junges Gebiet in der Informatik ist die Verwendung von leistungsfähigen Grafikkarten
+(graphics processing units, GPU) für allgemeine Aufgaben (general purpose, GP) der
+Programmierung. NVIDIA war mit seinen Grafikkarten (z. B. GeForce und Quadra) und der
+Technologie Compute Unified Device Architecture (CUDA) hier Vorreiter. Allerdings ist man
+mit CUDA auf GPUs fixiert.
+Die Open Computing Language (OpenCL) ist eine Programmiersprache und -schnittstelle zur
+Verwendung von uneinheitlichen Parallelrechnern (z. B. Mehrkern-Prozesoren und GPUs).
+Analog zu HD-1 ist im Zuge dieser Arbeit eine Einarbeitung in OpenCL notwendig, sodass
+dann nach einer Literatursuche und -studie einige Standardaufgaben aus dem Bereich der Algorithmen
+und Datenstrukturen mittels OpenCL implementiert und mit herkömmlichen Implementierungen
+verglichen werden können.
