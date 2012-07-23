@@ -12,21 +12,15 @@ class Quicksort : public SortingAlgorithm<T, size>
         Quicksort()
             : SortingAlgorithm<T, size>("Quicksort")
         {
-
         }
 
         virtual ~Quicksort()
         {
-
         }
 
     protected:
         bool init()
         {
-            data = new T[size];
-            for(size_t i = 0; i < size; i++)
-                data[i] = rand();
-
             return true;
         }
 
@@ -37,12 +31,10 @@ class Quicksort : public SortingAlgorithm<T, size>
 
         void cleanup()
         {
-            delete[] data;
+
         }
 
     private:
-        int* data;
-
         /**
          * Recursive quicksort implementation.
          *
@@ -60,22 +52,22 @@ class Quicksort : public SortingAlgorithm<T, size>
             int right = end;
 
             // select pivot
-            int pivot = data[(left + right) / 2];
+            int pivot = SortingAlgorithm<T, size>::data[(left + right) / 2];
 
             // partition array
             while (left <= right)
             {
-                while (data[left] < pivot)
+                while (SortingAlgorithm<T, size>::data[left] < pivot)
                     left++;
-                while (pivot < data[right])
+                while (pivot < SortingAlgorithm<T, size>::data[right])
                     right--;
 
                 // swap
                 if (left <= right)
                 {
-                    int temp = data[right];
-                    data[right] = data[left];
-                    data[left] = temp;
+                    int temp = SortingAlgorithm<T, size>::data[right];
+                    SortingAlgorithm<T, size>::data[right] = SortingAlgorithm<T, size>::data[left];
+                    SortingAlgorithm<T, size>::data[left] = temp;
 
                     left++;
                     right--;
