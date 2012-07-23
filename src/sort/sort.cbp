@@ -38,6 +38,7 @@
 		</Linker>
 		<Unit filename="QSort.h" />
 		<Unit filename="Quicksort.h" />
+		<Unit filename="STLSort.h" />
 		<Unit filename="SortingAlgorithm.h" />
 		<Unit filename="Timer.cpp" />
 		<Unit filename="Timer.h" />

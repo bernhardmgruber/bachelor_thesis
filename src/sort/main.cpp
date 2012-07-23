@@ -5,6 +5,7 @@
 #include "SortingAlgorithm.h"
 #include "Quicksort.h"
 #include "QSort.h"
+#include "STLSort.h"
 
 using namespace std;
 
@@ -45,6 +46,7 @@ int main()
 
     RUN(Quicksort);
     RUN(QSort);
+    RUN(STLSort);
 
 
     /*cl_int error;

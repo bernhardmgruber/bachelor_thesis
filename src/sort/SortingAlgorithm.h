@@ -35,7 +35,7 @@ class SortingAlgorithm
         {
             cout << "###############################################################################" << endl;
             cout << "# " << name << endl;
-            cout << "# Sorting " << size << " elements of type " << typeid(T).name() << " (" << ((sizeof(T) * size) >> 20) << " MiB)" << endl;
+            cout << "#  Sorting " << size << " elements of type " << typeid(T).name() << " (" << ((sizeof(T) * size) >> 20) << " MiB)" << endl;
 
             // generate random array
             data = new T[size];
@@ -70,14 +70,14 @@ class SortingAlgorithm
                         break;
                     }
 
-                cout << "# Init    " << fixed << initTime << "s" << endl;
-                cout << "# Sort    " << fixed << sortTime << "s" << endl;
-                cout << "# Cleanup " << fixed << cleanupTime << "s" << endl;
-                cout << "# " << (sorted ? "SUCCESS" : "FAILED") << endl;
+                cout << "#  Init    " << fixed << initTime << "s" << endl;
+                cout << "#  Sort    " << fixed << sortTime << "s" << endl;
+                cout << "#  Cleanup " << fixed << cleanupTime << "s" << endl;
+                cout << "#  " << (sorted ? "SUCCESS" : "FAILED") << " " << fixed << (initTime + sortTime + cleanupTime) << "s" << endl;
             }
             else
             {
-                cout << "# Initialization FAILED" << endl;
+                cout << "#  Initialization FAILED" << endl;
             }
 
             cout << "###############################################################################" << endl;
