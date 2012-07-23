@@ -36,6 +36,7 @@
 		<Linker>
 			<Add library="opencl" />
 		</Linker>
+		<Unit filename="QSort.h" />
 		<Unit filename="Quicksort.h" />
 		<Unit filename="SortingAlgorithm.h" />
 		<Unit filename="Timer.cpp" />

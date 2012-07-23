@@ -1,8 +1,6 @@
 #ifndef QUICKSORT_H
 #define QUICKSORT_H
 
-
-
 #include "SortingAlgorithm.h"
 
 template<typename T, size_t size>

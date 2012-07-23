@@ -4,6 +4,7 @@
 
 #include "SortingAlgorithm.h"
 #include "Quicksort.h"
+#include "QSort.h"
 
 using namespace std;
 
@@ -32,11 +33,18 @@ bool ReadFile(const char* fileName, string& buffer)
 
 #define CHECK(error) if(error != CL_SUCCESS) { cout << "Error at line " << __LINE__ << ": " << error << endl; }*/
 
+#define RUN(Cls)                \
+    alg = new Cls<int, size>(); \
+    alg->runTest();             \
+    delete alg;
+
 int main()
 {
-    SortingAlgorithm<int, 10000000>* alg = new Quicksort<int, 10000000>();
-    alg->runTest();
-    delete alg;
+    const size_t size = 10000000;
+    SortingAlgorithm<int, size>* alg;
+
+    RUN(Quicksort);
+    RUN(QSort);
 
 
     /*cl_int error;

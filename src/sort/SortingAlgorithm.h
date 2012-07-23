@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <typeinfo>
+#include <iostream>
 
 #include "Timer.h"
 
