@@ -30,10 +30,8 @@ class SortingAlgorithm
 
         /**
          * This method runs the sorting algorithm on test data and prints results.
-         *
-         * @return Returns true on success.
          */
-        bool runTest()
+        void runTest()
         {
             cout << "###############################################################################" << endl;
             cout << "# " << name << endl;
@@ -44,68 +42,34 @@ class SortingAlgorithm
             for(size_t i = 0; i < count; i++)
                 data[i] = rand();
 
-            // run custom initialization
-            bool initSuccessful = true;
-            timer.start();
-            if(!init())
-                initSuccessful = false;
-            double initTime = timer.stop();
+            runStages();
 
-            if(initSuccessful)
-            {
-                // run sorting algorithm
-                timer.start();
-                sort();
-                double sortTime = timer.stop();
-
-                // cleanup
-                timer.start();
-                cleanup();
-                double cleanupTime = timer.stop();
-
-                // verify
-                bool sorted = true;
-                for(size_t i = 0; i < count - 1; i++)
-                    if(data[i] > data[i + 1])
-                    {
-                        sorted = false;
-                        break;
-                    }
-
-                cout << "#  Init    " << fixed << initTime << "s" << endl;
-                cout << "#  Sort    " << fixed << sortTime << "s" << endl;
-                cout << "#  Cleanup " << fixed << cleanupTime << "s" << endl;
-                cout << "#  " << (sorted ? "SUCCESS" : "FAILED") << " " << fixed << (initTime + sortTime + cleanupTime) << "s" << endl;
-            }
-            else
-            {
-                cout << "#  Initialization FAILED" << endl;
-            }
+            delete[] data;
 
             cout << "###############################################################################" << endl;
             cout << endl;
+        }
 
-            return true;
+        bool isSorted()
+        {
+            bool sorted = true;
+            for(size_t i = 0; i < count - 1; i++)
+                if(data[i] > data[i + 1])
+                {
+                    sorted = false;
+                    break;
+                }
+
+            return sorted;
         }
 
     protected:
+        virtual void runStages() = 0;
+
         T* data;
-
-        virtual bool init() = 0;
-        virtual void sort() = 0;
-        virtual void cleanup() = 0;
-
-    private:
         Timer timer;
+    private:
         string name;
 };
-
-template <typename T>
-inline void swap(T& a, T& b)
-{
-    T tmp = a;
-    a = b;
-    b = tmp;
-}
 
 #endif // SORTINGALGORITHM_H

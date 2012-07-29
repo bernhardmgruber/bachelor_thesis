@@ -1,35 +1,21 @@
 #ifndef QUICKSORT_H
 #define QUICKSORT_H
 
-#include "../SortingAlgorithm.h"
+#include "../CPUSortingAlgorithm.h"
 
 template<typename T, size_t count>
-class Quicksort : public SortingAlgorithm<T, count>
+class Quicksort : public CPUSortingAlgorithm<T, count>
 {
     public:
         Quicksort()
-            : SortingAlgorithm<T, count>("Quicksort")
-        {
-        }
-
-        virtual ~Quicksort()
+            : CPUSortingAlgorithm<T, count>("Quicksort")
         {
         }
 
     protected:
-        bool init()
-        {
-            return true;
-        }
-
         void sort()
         {
             sort_r(0, count - 1);
-        }
-
-        void cleanup()
-        {
-
         }
 
     private:

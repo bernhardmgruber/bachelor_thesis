@@ -36,9 +36,10 @@
 		<Linker>
 			<Add library="opencl" />
 		</Linker>
+		<Unit filename="CPUSortingAlgorithm.h" />
+		<Unit filename="GPUSortingAlgorithm.h" />
 		<Unit filename="OpenCL.cpp" />
 		<Unit filename="OpenCL.h" />
-		<Unit filename="OpenCLSortingAlgorithm.h" />
 		<Unit filename="SortingAlgorithm.h" />
 		<Unit filename="Timer.cpp" />
 		<Unit filename="Timer.h" />
@@ -47,6 +48,7 @@
 		<Unit filename="cpu\STLSort.h" />
 		<Unit filename="cpu\TimSort.h" />
 		<Unit filename="cpu\timsort.hpp" />
+		<Unit filename="gpu\bealto\ParallelSelectionSort.cl" />
 		<Unit filename="gpu\bealto\ParallelSelectionSort.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>

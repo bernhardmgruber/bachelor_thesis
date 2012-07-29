@@ -3,37 +3,25 @@
 
 #include <cstdlib>
 
-#include "../SortingAlgorithm.h"
+#include "../CPUSortingAlgorithm.h"
 
 using namespace std;
 
 template<typename T, size_t count>
-class QSort : public SortingAlgorithm<T, count>
+class QSort : public CPUSortingAlgorithm<T, count>
 {
+    using Base = SortingAlgorithm<T, count>;
+
     public:
         QSort()
-            : SortingAlgorithm<T, count>("C stdlib qsort")
-        {
-        }
-
-        virtual ~QSort()
+            : CPUSortingAlgorithm<T, count>("C stdlib qsort")
         {
         }
 
     protected:
-        bool init()
-        {
-            return true;
-        }
-
         void sort()
         {
-            qsort(SortingAlgorithm<T, count>::data, count, sizeof(T), [](const void* a, const void* b) { return *(T*)a - *(T*)b; });
-        }
-
-        void cleanup()
-        {
-
+            qsort(Base::data, count, sizeof(T), [](const void* a, const void* b) { return *(T*)a - *(T*)b; });
         }
 };
 

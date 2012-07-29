@@ -3,37 +3,23 @@
 
 #include <algorithm>
 
-#include "../SortingAlgorithm.h"
+#include "../CPUSortingAlgorithm.h"
 
 using namespace std;
 
 template<typename T, size_t count>
-class STLSort : public SortingAlgorithm<T, count>
+class STLSort : public CPUSortingAlgorithm<T, count>
 {
     public:
         STLSort()
-            : SortingAlgorithm<T, count>("C++ STL algorithm sort")
-        {
-        }
-
-        virtual ~STLSort()
+            : CPUSortingAlgorithm<T, count>("C++ STL algorithm sort")
         {
         }
 
     protected:
-        bool init()
-        {
-            return true;
-        }
-
         void sort()
         {
-            sort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count);
-        }
-
-        void cleanup()
-        {
-
+            sort(CPUSortingAlgorithm<T, count>::data, CPUSortingAlgorithm<T, count>::data + count);
         }
 };
 

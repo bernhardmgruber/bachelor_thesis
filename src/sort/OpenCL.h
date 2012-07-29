@@ -4,6 +4,7 @@
 #include <CL/CL.h>
 #include <string>
 #include <vector>
+#include <exception>
 
 using namespace std;
 
@@ -12,6 +13,17 @@ class CommandQueue;
 class Program;
 class Kernel;
 class Buffer;
+
+class OpenCLException : public exception
+{
+    public:
+        OpenCLException(string msg);
+
+        virtual const char* what() throw();
+
+    private:
+        string msg;
+};
 
 /**
  * Singleton.
@@ -30,7 +42,7 @@ class OpenCL
 
         static cl_platform_id platform;
 
-        static vector<Context*> contexts;
+        //static vector<Context*> contexts;
 };
 
 class Context
@@ -49,9 +61,9 @@ class Context
         cl_device_id device;
         cl_context context;
 
-        vector<Program*> programs;
-        vector<CommandQueue*> queues;
-        vector<Buffer*> buffers;
+        //vector<Program*> programs;
+        //vector<CommandQueue*> queues;
+        //vector<Buffer*> buffers;
 };
 
 class Program
@@ -65,14 +77,16 @@ class Program
     private:
         cl_program program;
 
-        vector<Kernel*> kernels;
+        //vector<Kernel*> kernels;
 };
 
 class Kernel
 {
     public:
         Kernel(cl_kernel kernel);
+        ~Kernel();
 
+        void setArg(cl_uint index, Buffer* buffer);
         void setArg(cl_uint index, size_t size, const void* value);
 
     private:
@@ -85,10 +99,14 @@ class CommandQueue
 {
     public:
         CommandQueue(cl_command_queue queue);
+        virtual ~CommandQueue();
 
-        void enqueueKernel(Kernel kernel, cl_uint dimension);
-        void enqueueRead(Buffer& buffer, void* destination, size_t offset, size_t size, bool blocking = true);
-        void enqueueRead(Buffer& buffer, void* destination, bool blocking = true);
+        void enqueueKernel(Kernel* kernel, cl_uint dimension);
+        void enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking = true);
+        void enqueueRead(Buffer* buffer, void* destination, bool blocking = true);
+        void enqueueWrite(Buffer* buffer, const void* source, bool blocking = true);
+
+        void finish();
 
     private:
         cl_command_queue queue;
@@ -98,6 +116,7 @@ class Buffer
 {
     public:
         Buffer(cl_mem buffer, size_t size);
+        virtual ~Buffer();
 
     private:
         cl_mem buffer;

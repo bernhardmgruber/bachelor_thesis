@@ -9,7 +9,7 @@ using namespace std;
 
 // static variables
 cl_platform_id OpenCL::platform;
-vector<Context*> OpenCL::contexts;
+//vector<Context*> OpenCL::contexts;
 
 static cl_int error;
 
@@ -19,11 +19,24 @@ static void checkError()
     {
         stringstream ss;
         ss << "Error at line " << __LINE__ << ": " << error;
-        throw runtime_error(ss.str());
+        throw OpenCLException(ss.str());
     }
 
 }
 
+//
+// class OpenCLException
+//
+OpenCLException::OpenCLException(string msg)
+    : msg(msg)
+{
+
+}
+
+const char* OpenCLException::what() throw()
+{
+    return msg.c_str();
+}
 
 //
 // class OpenCL
@@ -38,9 +51,9 @@ void OpenCL::init()
 
 void OpenCL::cleanup()
 {
-    for(Context* c : contexts)
-        delete c;
-    contexts.clear();
+    //for(Context* c : contexts)
+    //    delete c;
+    //contexts.clear();
 }
 
 Context* OpenCL::getGPUContext()
@@ -56,7 +69,7 @@ Context* OpenCL::getGPUContext()
 
     // create Context object
     Context* contextObj = new Context(context, device);
-    contexts.push_back(contextObj);
+    //contexts.push_back(contextObj);
 
     return contextObj;
 }
@@ -74,7 +87,7 @@ Context* OpenCL::getCPUContext()
 
     // create Context object
     Context* contextObj = new Context(context, device);
-    contexts.push_back(contextObj);
+    //contexts.push_back(contextObj);
 
     return contextObj;
 }
@@ -90,15 +103,15 @@ Context::Context(cl_context context, cl_device_id device)
 
 Context::~Context()
 {
-    for(Program* p : programs)
-        delete p;
-    programs.clear();
-    for(CommandQueue* q : queues)
-        delete q;
-    queues.clear();
-    for(Buffer* b : buffers)
-        delete b;
-    buffers.clear();
+    //for(Program* p : programs)
+    //    delete p;
+    //programs.clear();
+    //for(CommandQueue* q : queues)
+    //    delete q;
+    //queues.clear();
+    //for(Buffer* b : buffers)
+    //    delete b;
+    //buffers.clear();
 
     clReleaseContext(context);
     clReleaseDevice(device);
@@ -127,12 +140,12 @@ Program* Context::createProgram(string sourceFile)
         cout << log << endl;
         delete[] log;
 
-        throw runtime_error(log);
+        throw OpenCLException(log);
     }
 
     // create Program object
     Program* programObj = new Program(program);
-    programs.push_back(programObj);
+    //programs.push_back(programObj);
 
     return programObj;
 }
@@ -145,7 +158,7 @@ CommandQueue* Context::createCommandQueue()
 
     // create CommandQueue object
     CommandQueue* queueObj = new CommandQueue(cmdqueue);
-    queues.push_back(queueObj);
+    //queues.push_back(queueObj);
 
     return queueObj;
 }
@@ -158,7 +171,7 @@ Buffer* Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
 
     // create CommandQueue object
     Buffer* bufferObj = new Buffer(buffer, size);
-    buffers.push_back(bufferObj);
+    //buffers.push_back(bufferObj);
 
     return bufferObj;
 }
@@ -170,7 +183,7 @@ string Context::readFile(string fileName)
     if(!file)
     {
         cerr << "Error opening file " << fileName << endl;
-        throw runtime_error("LOL");
+        throw OpenCLException("LOL");
     }
 
     string buffer = string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
@@ -191,9 +204,11 @@ Program::Program(cl_program program)
 
 Program::~Program()
 {
-    for(Kernel* k : kernels)
-        delete k;
-    kernels.clear();
+    //for(Kernel* k : kernels)
+    //    delete k;
+    //kernels.clear();
+
+    clReleaseProgram(program);
 }
 
 Kernel* Program::createKernel(string entry)
@@ -203,7 +218,7 @@ Kernel* Program::createKernel(string entry)
 
     // create Kernel object
     Kernel* kernelObj = new Kernel(kernel);
-    kernels.push_back(kernelObj);
+//    kernels.push_back(kernelObj);
 
     return kernelObj;
 }
@@ -215,9 +230,16 @@ Kernel* Program::createKernel(string entry)
 Kernel::Kernel(cl_kernel kernel)
     : kernel(kernel)
 {
+}
 
+Kernel::~Kernel()
+{
+    clReleaseKernel(kernel);
+}
 
-
+void Kernel::setArg(cl_uint index, Buffer* buffer)
+{
+    clSetKernelArg(kernel, index, sizeof(cl_mem), (const void*)buffer);
 }
 
 void Kernel::setArg(cl_uint index, size_t size, const void* value)
@@ -234,21 +256,38 @@ CommandQueue::CommandQueue(cl_command_queue queue)
 {
 }
 
-void CommandQueue::enqueueKernel(Kernel kernel, cl_uint dimension)
+CommandQueue::~CommandQueue()
 {
-    error = clEnqueueNDRangeKernel(queue, kernel.kernel, dimension, nullptr, nullptr, nullptr, 0, nullptr, nullptr);
+    clReleaseCommandQueue(queue);
+}
+
+void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension)
+{
+    error = clEnqueueNDRangeKernel(queue, kernel->kernel, dimension, nullptr, nullptr, nullptr, 0, nullptr, nullptr);
     checkError();
 }
 
-void CommandQueue::enqueueRead(Buffer& buffer, void* destination, size_t offset, size_t size, bool blocking)
+void CommandQueue::enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking)
 {
-    error = clEnqueueReadBuffer(queue, buffer.buffer, blocking, offset, size, destination, 0, nullptr, nullptr);
+    error = clEnqueueReadBuffer(queue, buffer->buffer, blocking, offset, size, destination, 0, nullptr, nullptr);
     checkError();
 }
 
-void CommandQueue::enqueueRead(Buffer& buffer, void* destination, bool blocking)
+void CommandQueue::enqueueRead(Buffer* buffer, void* destination, bool blocking)
 {
-    error = clEnqueueReadBuffer(queue, buffer.buffer, blocking, 0, buffer.size, destination, 0, nullptr, nullptr);
+    error = clEnqueueReadBuffer(queue, buffer->buffer, blocking, 0, buffer->size, destination, 0, nullptr, nullptr);
+    checkError();
+}
+
+void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, bool blocking)
+{
+    error = clEnqueueWriteBuffer(queue, buffer->buffer, blocking, 0, buffer->size, source, 0, nullptr, nullptr);
+    checkError();
+}
+
+void CommandQueue::finish()
+{
+    error = clFinish(queue);
     checkError();
 }
 
@@ -260,4 +299,9 @@ Buffer::Buffer(cl_mem buffer, size_t size)
     : buffer(buffer), size(size)
 {
 
+}
+
+Buffer::~Buffer()
+{
+    clReleaseMemObject(buffer);
 }
