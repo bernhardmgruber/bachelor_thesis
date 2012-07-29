@@ -101,7 +101,7 @@ class CommandQueue
         CommandQueue(cl_command_queue queue);
         virtual ~CommandQueue();
 
-        void enqueueKernel(Kernel* kernel, cl_uint dimension);
+        void enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes);
         void enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking = true);
         void enqueueRead(Buffer* buffer, void* destination, bool blocking = true);
         void enqueueWrite(Buffer* buffer, const void* source, bool blocking = true);
@@ -122,6 +122,7 @@ class Buffer
         cl_mem buffer;
         size_t size;
 
+    friend Kernel;
     friend CommandQueue;
 };
 

@@ -27,8 +27,8 @@ class ParallelSelectionSort : public GPUSortingAlgorithm<T, count>
     protected:
         bool init()
         {
-            program = Base::context->createProgram("gpu/bealto/ParallelSelection.cl");
-            kernel = program->createKernel("ParallelSelection");
+            program = Base::context->createProgram("gpu/bealto/ParallelSelectionSort.cl");
+            kernel = program->createKernel("ParallelSelectionSort");
 
             return true;
         }
@@ -38,9 +38,8 @@ class ParallelSelectionSort : public GPUSortingAlgorithm<T, count>
             in = Base::context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count);
             out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
 
-            queue->enqueueWrite(in, SortingAlgorithm<T, count>::data);
-
-            queue->finish();
+            Base::queue->enqueueWrite(in, SortingAlgorithm<T, count>::data);
+            Base::queue->finish();
         }
 
         void sort()
@@ -48,16 +47,16 @@ class ParallelSelectionSort : public GPUSortingAlgorithm<T, count>
             //int wg = min(n,256);
             kernel->setArg(0, in);
             kernel->setArg(1, out);
-            queue->enqueueKernel(kernel, 1);
+            size_t globalWorkSizes[1] = { count };
+            Base::queue->enqueueKernel(kernel, 1, globalWorkSizes);
             //c->enqueueKernel(targetDevice,kid,n,1,wg,1,EventVector());
-
-            queue->finish();
+            Base::queue->finish();
         }
 
         void download()
         {
-            queue->enqueueRead(out, SortingAlgorithm<T, count>::data);
-            queue->finish();
+            Base::queue->enqueueRead(out, SortingAlgorithm<T, count>::data);
+            Base::queue->finish();
         }
 
         void cleanup()
@@ -66,10 +65,8 @@ class ParallelSelectionSort : public GPUSortingAlgorithm<T, count>
             delete in;
             delete out;
             delete kernel;
-            OpenCL::cleanup();
         }
 
-        CommandQueue* queue;
         Program* program;
         Kernel* kernel;
         Buffer* in;

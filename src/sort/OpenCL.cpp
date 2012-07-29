@@ -13,12 +13,12 @@ cl_platform_id OpenCL::platform;
 
 static cl_int error;
 
-static void checkError()
+static void checkError(int line)
 {
     if(error != CL_SUCCESS)
     {
         stringstream ss;
-        ss << "Error at line " << __LINE__ << ": " << error;
+        ss << "Error at line " << line << ": " << error;
         throw OpenCLException(ss.str());
     }
 
@@ -46,7 +46,7 @@ void OpenCL::init()
 {
     // get the first available platform
     error = clGetPlatformIDs(1, &platform, nullptr);
-    checkError();
+    checkError(__LINE__);
 }
 
 void OpenCL::cleanup()
@@ -61,11 +61,11 @@ Context* OpenCL::getGPUContext()
     // get a GPU from this platform
     cl_device_id device;
     error = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, nullptr);
-    checkError();
+    checkError(__LINE__);
 
     // create a context to work with OpenCL
     cl_context context = clCreateContext(nullptr, 1, &device, nullptr, nullptr, &error);
-    checkError();
+    checkError(__LINE__);
 
     // create Context object
     Context* contextObj = new Context(context, device);
@@ -79,11 +79,11 @@ Context* OpenCL::getCPUContext()
     // get a GPU from this platform
     cl_device_id device;
     error = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &device, nullptr);
-    checkError();
+    checkError(__LINE__);
 
     // create a context to work with OpenCL
     cl_context context = clCreateContext(nullptr, 1, &device, nullptr, nullptr, &error);
-    checkError();
+    checkError(__LINE__);
 
     // create Context object
     Context* contextObj = new Context(context, device);
@@ -119,9 +119,10 @@ Context::~Context()
 
 Program* Context::createProgram(string sourceFile)
 {
-    const char* source = readFile(sourceFile).c_str();
+    string sourceString = readFile(sourceFile);
+    const char* source = sourceString.c_str();
     cl_program program = clCreateProgramWithSource(context, 1, &source, nullptr, &error);
-    checkError();
+    checkError(__LINE__);
 
     // build the program
     error = clBuildProgram(program, 1, &device, "-w", nullptr, nullptr);
@@ -154,7 +155,7 @@ CommandQueue* Context::createCommandQueue()
 {
     // create a new command queue, where kernels can be executed
     cl_command_queue cmdqueue = clCreateCommandQueue(context, device, 0, &error);
-    checkError();
+    checkError(__LINE__);
 
     // create CommandQueue object
     CommandQueue* queueObj = new CommandQueue(cmdqueue);
@@ -166,7 +167,7 @@ CommandQueue* Context::createCommandQueue()
 Buffer* Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
 {
     cl_mem buffer = clCreateBuffer(context, flags, size, ptr, &error);
-    checkError();
+    checkError(__LINE__);
 
 
     // create CommandQueue object
@@ -181,10 +182,7 @@ string Context::readFile(string fileName)
 {
     ifstream file(fileName, ios::in);
     if(!file)
-    {
-        cerr << "Error opening file " << fileName << endl;
-        throw OpenCLException("LOL");
-    }
+        throw OpenCLException("Error opening file " + fileName);
 
     string buffer = string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 
@@ -214,7 +212,7 @@ Program::~Program()
 Kernel* Program::createKernel(string entry)
 {
     cl_kernel kernel = clCreateKernel(program, entry.c_str(), &error);
-    checkError();
+    checkError(__LINE__);
 
     // create Kernel object
     Kernel* kernelObj = new Kernel(kernel);
@@ -239,7 +237,7 @@ Kernel::~Kernel()
 
 void Kernel::setArg(cl_uint index, Buffer* buffer)
 {
-    clSetKernelArg(kernel, index, sizeof(cl_mem), (const void*)buffer);
+    clSetKernelArg(kernel, index, sizeof(cl_mem), (const void*)&buffer->buffer);
 }
 
 void Kernel::setArg(cl_uint index, size_t size, const void* value)
@@ -261,34 +259,34 @@ CommandQueue::~CommandQueue()
     clReleaseCommandQueue(queue);
 }
 
-void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension)
+void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes)
 {
-    error = clEnqueueNDRangeKernel(queue, kernel->kernel, dimension, nullptr, nullptr, nullptr, 0, nullptr, nullptr);
-    checkError();
+    error = clEnqueueNDRangeKernel(queue, kernel->kernel, dimension, nullptr, globalWorkSizes, nullptr, 0, nullptr, nullptr);
+    checkError(__LINE__);
 }
 
 void CommandQueue::enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking)
 {
     error = clEnqueueReadBuffer(queue, buffer->buffer, blocking, offset, size, destination, 0, nullptr, nullptr);
-    checkError();
+    checkError(__LINE__);
 }
 
 void CommandQueue::enqueueRead(Buffer* buffer, void* destination, bool blocking)
 {
     error = clEnqueueReadBuffer(queue, buffer->buffer, blocking, 0, buffer->size, destination, 0, nullptr, nullptr);
-    checkError();
+    checkError(__LINE__);
 }
 
 void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, bool blocking)
 {
     error = clEnqueueWriteBuffer(queue, buffer->buffer, blocking, 0, buffer->size, source, 0, nullptr, nullptr);
-    checkError();
+    checkError(__LINE__);
 }
 
 void CommandQueue::finish()
 {
     error = clFinish(queue);
-    checkError();
+    checkError(__LINE__);
 }
 
 //

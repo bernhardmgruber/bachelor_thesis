@@ -25,23 +25,31 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 10000000;
+
+    const size_t size = 200000;
     SortingAlgorithm<int, size>* alg;
 
-    //RUN(Quicksort);
+    RUN(Quicksort);
     //RUN(QSort);
     //RUN(STLSort);
     //RUN(TimSort);
 
-    OpenCL::init();
-    Context* context = OpenCL::getGPUContext();
-    CommandQueue* queue = context->createCommandQueue();
+    try
+    {
+        OpenCL::init();
+        Context* context = OpenCL::getGPUContext();
+        CommandQueue* queue = context->createCommandQueue();
 
-    RUN_GPU(ParallelSelectionSort);
+        RUN_GPU(ParallelSelectionSort);
 
-    delete context;
-    delete queue;
-    OpenCL::cleanup();
+        delete context;
+        delete queue;
+        OpenCL::cleanup();
+    }
+    catch(OpenCLException& e)
+    {
+        cerr << e.what() << endl;
+    }
 
     return 0;
 }
