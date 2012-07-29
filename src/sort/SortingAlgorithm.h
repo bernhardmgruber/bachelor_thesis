@@ -26,6 +26,8 @@ class SortingAlgorithm
         {
         }
 
+        typedef T value_type;
+
         /**
          * This method runs the sorting algorithm on test data and prints results.
          *

@@ -45,8 +45,8 @@ int main()
     SortingAlgorithm<int, size>* alg;
 
     RUN(Quicksort);
-    RUN(QSort);
-    RUN(STLSort);
+    //RUN(QSort);
+    //RUN(STLSort);
     RUN(TimSort);
 
 

@@ -28,7 +28,7 @@ class QSort : public SortingAlgorithm<T, count>
 
         void sort()
         {
-            qsort(SortingAlgorithm<T, count>::data, count, sizeof(T), [](const void* a, const void* b) { return *(int*)a - *(int*)b; });
+            qsort(SortingAlgorithm<T, count>::data, count, sizeof(T), [](const void* a, const void* b) { return *(T*)a - *(T*)b; });
         }
 
         void cleanup()
