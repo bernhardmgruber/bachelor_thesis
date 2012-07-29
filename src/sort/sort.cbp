@@ -36,15 +36,19 @@
 		<Linker>
 			<Add library="opencl" />
 		</Linker>
-		<Unit filename="QSort.h" />
-		<Unit filename="Quicksort.h" />
-		<Unit filename="STLSort.h" />
+		<Unit filename="OpenCL.cpp" />
+		<Unit filename="OpenCL.h" />
+		<Unit filename="OpenCLSortingAlgorithm.h" />
 		<Unit filename="SortingAlgorithm.h" />
-		<Unit filename="TimSort.h" />
 		<Unit filename="Timer.cpp" />
 		<Unit filename="Timer.h" />
+		<Unit filename="cpu\QSort.h" />
+		<Unit filename="cpu\Quicksort.h" />
+		<Unit filename="cpu\STLSort.h" />
+		<Unit filename="cpu\TimSort.h" />
+		<Unit filename="cpu\timsort.hpp" />
+		<Unit filename="gpu\bealto\ParallelSelectionSort.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="timsort.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
