@@ -9,6 +9,7 @@ using namespace std;
 
 // static variables
 cl_platform_id OpenCL::platform;
+vector<Context*> OpenCL::contexts;
 
 static cl_int error;
 
@@ -35,7 +36,14 @@ void OpenCL::init()
     checkError();
 }
 
-Context OpenCL::getGPUContext()
+void OpenCL::cleanup()
+{
+    for(Context* c : contexts)
+        delete c;
+    contexts.clear();
+}
+
+Context* OpenCL::getGPUContext()
 {
     // get a GPU from this platform
     cl_device_id device;
@@ -46,10 +54,14 @@ Context OpenCL::getGPUContext()
     cl_context context = clCreateContext(nullptr, 1, &device, nullptr, nullptr, &error);
     checkError();
 
-    return Context(context, device);
+    // create Context object
+    Context* contextObj = new Context(context, device);
+    contexts.push_back(contextObj);
+
+    return contextObj;
 }
 
-Context OpenCL::getCPUContext()
+Context* OpenCL::getCPUContext()
 {
     // get a GPU from this platform
     cl_device_id device;
@@ -60,15 +72,11 @@ Context OpenCL::getCPUContext()
     cl_context context = clCreateContext(nullptr, 1, &device, nullptr, nullptr, &error);
     checkError();
 
-    return Context(context, device);
-}
+    // create Context object
+    Context* contextObj = new Context(context, device);
+    contexts.push_back(contextObj);
 
-OpenCL::OpenCL()
-{
-}
-
-OpenCL::~OpenCL()
-{
+    return contextObj;
 }
 
 //
@@ -82,11 +90,22 @@ Context::Context(cl_context context, cl_device_id device)
 
 Context::~Context()
 {
+    for(Program* p : programs)
+        delete p;
+    programs.clear();
+    for(CommandQueue* q : queues)
+        delete q;
+    queues.clear();
+    for(Buffer* b : buffers)
+        delete b;
+    buffers.clear();
+
+    clReleaseContext(context);
+    clReleaseDevice(device);
 }
 
-Program Context::createProgram(string sourceFile)
+Program* Context::createProgram(string sourceFile)
 {
-
     const char* source = readFile(sourceFile).c_str();
     cl_program program = clCreateProgramWithSource(context, 1, &source, nullptr, &error);
     checkError();
@@ -111,24 +130,37 @@ Program Context::createProgram(string sourceFile)
         throw runtime_error(log);
     }
 
-    return Program(program);
+    // create Program object
+    Program* programObj = new Program(program);
+    programs.push_back(programObj);
+
+    return programObj;
 }
 
-CommandQueue Context::createCommandQueue()
+CommandQueue* Context::createCommandQueue()
 {
     // create a new command queue, where kernels can be executed
     cl_command_queue cmdqueue = clCreateCommandQueue(context, device, 0, &error);
     checkError();
 
-    return CommandQueue(cmdqueue);
+    // create CommandQueue object
+    CommandQueue* queueObj = new CommandQueue(cmdqueue);
+    queues.push_back(queueObj);
+
+    return queueObj;
 }
 
-Buffer Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
+Buffer* Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
 {
     cl_mem buffer = clCreateBuffer(context, flags, size, ptr, &error);
     checkError();
 
-    return Buffer(buffer, size);
+
+    // create CommandQueue object
+    Buffer* bufferObj = new Buffer(buffer, size);
+    buffers.push_back(bufferObj);
+
+    return bufferObj;
 }
 
 
@@ -157,12 +189,23 @@ Program::Program(cl_program program)
 {
 }
 
-Kernel Program::createKernel(string entry)
+Program::~Program()
+{
+    for(Kernel* k : kernels)
+        delete k;
+    kernels.clear();
+}
+
+Kernel* Program::createKernel(string entry)
 {
     cl_kernel kernel = clCreateKernel(program, entry.c_str(), &error);
     checkError();
 
-    return Kernel(kernel);
+    // create Kernel object
+    Kernel* kernelObj = new Kernel(kernel);
+    kernels.push_back(kernelObj);
+
+    return kernelObj;
 }
 
 //

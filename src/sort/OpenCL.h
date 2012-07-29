@@ -3,6 +3,7 @@
 
 #include <CL/CL.h>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -19,14 +20,17 @@ class OpenCL
 {
     public:
         static void init();
-        static Context getGPUContext();
-        static Context getCPUContext();
+        static void cleanup();
+        static Context* getGPUContext();
+        static Context* getCPUContext();
 
     private:
         OpenCL();
         virtual ~OpenCL();
 
         static cl_platform_id platform;
+
+        static vector<Context*> contexts;
 };
 
 class Context
@@ -35,26 +39,33 @@ class Context
         Context(cl_context context, cl_device_id device);
         virtual ~Context();
 
-        Program createProgram(string source);
-        CommandQueue createCommandQueue();
-        Buffer createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
+        Program* createProgram(string source);
+        CommandQueue* createCommandQueue();
+        Buffer* createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
 
     private:
         string readFile(string fileName);
 
         cl_device_id device;
         cl_context context;
+
+        vector<Program*> programs;
+        vector<CommandQueue*> queues;
+        vector<Buffer*> buffers;
 };
 
 class Program
 {
     public:
         Program(cl_program program);
+        virtual ~Program();
 
-        Kernel createKernel(string entry);
+        Kernel* createKernel(string entry);
 
     private:
         cl_program program;
+
+        vector<Kernel*> kernels;
 };
 
 class Kernel
