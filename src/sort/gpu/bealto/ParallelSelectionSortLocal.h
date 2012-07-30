@@ -10,25 +10,25 @@ using namespace std;
  * From: http://www.bealto.com/gpu-sorting_intro.html
  */
 template<typename T, size_t count>
-class ParallelSelectionSort : public GPUSortingAlgorithm<T, count>
+class ParallelSelectionSortLocal : public GPUSortingAlgorithm<T, count>
 {
     using Base = GPUSortingAlgorithm<T, count>;
 
     public:
-        ParallelSelectionSort(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel selection (Bealto)", context, queue)
+        ParallelSelectionSortLocal(Context* context, CommandQueue* queue)
+            : GPUSortingAlgorithm<T, count>("Parallel selection local (Bealto)", context, queue)
         {
         }
 
-        virtual ~ParallelSelectionSort()
+        virtual ~ParallelSelectionSortLocal()
         {
         }
 
     protected:
         bool init()
         {
-            program = Base::context->createProgram("gpu/bealto/ParallelSelectionSort.cl");
-            kernel = program->createKernel("ParallelSelectionSort");
+            program = Base::context->createProgram("gpu/bealto/ParallelSelectionSortLocal.cl");
+            kernel = program->createKernel("ParallelSelectionSortLocal");
 
             return true;
         }

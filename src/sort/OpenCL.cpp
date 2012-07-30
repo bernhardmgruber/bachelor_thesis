@@ -114,7 +114,7 @@ Context::~Context()
     //buffers.clear();
 
     clReleaseContext(context);
-    clReleaseDevice(device);
+    //clReleaseDevice(device);
 }
 
 Program* Context::createProgram(string sourceFile)
@@ -177,6 +177,13 @@ Buffer* Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
     return bufferObj;
 }
 
+size_t Context::getInfoSize(cl_device_info info)
+{
+    size_t value;
+    clGetDeviceInfo(device, info, sizeof(value), (void*) &value, nullptr);
+
+    return value;
+}
 
 string Context::readFile(string fileName)
 {
@@ -259,9 +266,9 @@ CommandQueue::~CommandQueue()
     clReleaseCommandQueue(queue);
 }
 
-void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes)
+void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes, const size_t* localWorkSizes)
 {
-    error = clEnqueueNDRangeKernel(queue, kernel->kernel, dimension, nullptr, globalWorkSizes, nullptr, 0, nullptr, nullptr);
+    error = clEnqueueNDRangeKernel(queue, kernel->kernel, dimension, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
     checkError(__LINE__);
 }
 

@@ -45,6 +45,9 @@ class OpenCL
         //static vector<Context*> contexts;
 };
 
+/**
+ * Represents a device and a context opened at this device.
+ */
 class Context
 {
     public:
@@ -54,6 +57,8 @@ class Context
         Program* createProgram(string source);
         CommandQueue* createCommandQueue();
         Buffer* createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
+
+        size_t getInfoSize(cl_device_info info);
 
     private:
         string readFile(string fileName);
@@ -101,7 +106,7 @@ class CommandQueue
         CommandQueue(cl_command_queue queue);
         virtual ~CommandQueue();
 
-        void enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes);
+        void enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes, const size_t* localWorkSizes = nullptr);
         void enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking = true);
         void enqueueRead(Buffer* buffer, void* destination, bool blocking = true);
         void enqueueWrite(Buffer* buffer, const void* source, bool blocking = true);

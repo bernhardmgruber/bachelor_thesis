@@ -10,6 +10,7 @@
 #include "cpu/TimSort.h"
 
 #include "gpu/bealto/ParallelSelectionSort.h"
+#include "gpu/bealto/ParallelSelectionSortLocal.h"
 
 using namespace std;
 
@@ -40,7 +41,8 @@ int main()
         Context* context = OpenCL::getGPUContext();
         CommandQueue* queue = context->createCommandQueue();
 
-        RUN_GPU(ParallelSelectionSort);
+        //RUN_GPU(ParallelSelectionSort);
+        RUN_GPU(ParallelSelectionSortLocal);
 
         delete context;
         delete queue;

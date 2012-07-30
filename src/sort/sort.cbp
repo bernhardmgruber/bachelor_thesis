@@ -50,6 +50,8 @@
 		<Unit filename="cpu\timsort.hpp" />
 		<Unit filename="gpu\bealto\ParallelSelectionSort.cl" />
 		<Unit filename="gpu\bealto\ParallelSelectionSort.h" />
+		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.cl" />
+		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
