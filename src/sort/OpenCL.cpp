@@ -174,7 +174,7 @@ Context::~Context()
     //clReleaseDevice(device);
 }
 
-Program* Context::createProgram(string sourceFile)
+Program* Context::createProgram(string sourceFile, string options)
 {
     string sourceString = readFile(sourceFile);
     const char* source = sourceString.c_str();
@@ -182,7 +182,7 @@ Program* Context::createProgram(string sourceFile)
     checkError(__LINE__);
 
     // build the program
-    error = clBuildProgram(program, 1, &device, "-w", nullptr, nullptr);
+    error = clBuildProgram(program, 1, &device, ("-w " + options).c_str(), nullptr, nullptr);
     if(error != CL_SUCCESS)
     {
         // get the error log size

@@ -54,7 +54,7 @@ class Context
         Context(cl_context context, cl_device_id device);
         virtual ~Context();
 
-        Program* createProgram(string source);
+        Program* createProgram(string source, string options = "");
         CommandQueue* createCommandQueue();
         Buffer* createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
 
