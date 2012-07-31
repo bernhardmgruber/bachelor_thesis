@@ -27,7 +27,7 @@ class CPUSortingAlgorithm : public SortingAlgorithm<T, count>
 
 
                 cout << "#  Sort      " << fixed << sortTime << "s" << endl;
-                cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED") << "   " << fixed << sortTime << "s" << endl;
+                cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << sortTime << "s" << endl;
 
         }
 

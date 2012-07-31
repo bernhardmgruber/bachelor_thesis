@@ -27,7 +27,7 @@ using namespace std;
 int main()
 {
 
-    const size_t size = 200000;
+    const size_t size = 256000;
     SortingAlgorithm<int, size>* alg;
 
     RUN(Quicksort);

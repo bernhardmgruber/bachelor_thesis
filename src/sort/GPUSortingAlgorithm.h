@@ -52,7 +52,7 @@ class GPUSortingAlgorithm : public SortingAlgorithm<T, count>
             cout << "#  Sort      " << fixed << sortTime << "s" << endl;
             cout << "#  Download  " << fixed << downloadTime << "s" << endl;
             cout << "#  Cleanup   " << fixed << cleanupTime << "s" << endl;
-            cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED") << "   " << fixed << (initTime + uploadTime + sortTime + downloadTime + cleanupTime) << "s" << endl;
+            cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << (initTime + uploadTime + sortTime + downloadTime + cleanupTime) << "s" << endl;
         }
 
     protected:

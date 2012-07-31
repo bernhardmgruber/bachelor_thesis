@@ -35,7 +35,7 @@ class SortingAlgorithm
         {
             cout << "###############################################################################" << endl;
             cout << "# " << name << endl;
-            cout << "#  Sorting " << count << " elements of type " << typeid(T).name() << " (" << ((sizeof(T) * count) >> 20) << " MiB)" << endl;
+            cout << "#  Sorting " << count << " elements of type " << typeid(T).name() << " (" << ((sizeof(T) * count) >> 10) << " KiB)" << endl;
 
             // generate random array
             data = new T[count];

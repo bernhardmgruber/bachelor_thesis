@@ -1,5 +1,5 @@
-#ifndef PARALLELSELECTIONSORT_H
-#define PARALLELSELECTIONSORT_H
+#ifndef PARALLELSELECTIONSORTLOCAL_H
+#define PARALLELSELECTIONSORTLOCAL_H
 
 #include "../../GPUSortingAlgorithm.h"
 #include "../../OpenCL.h"
@@ -44,10 +44,12 @@ class ParallelSelectionSortLocal : public GPUSortingAlgorithm<T, count>
 
         void sort()
         {
-            kernel->setArg(0, in);
-            kernel->setArg(1, out);
             size_t globalWorkSizes[1] = { count };
             size_t localWorkSizes[1] = { min(Base::context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count) };
+
+            kernel->setArg(0, in);
+            kernel->setArg(1, out);
+            kernel->setArg(2, sizeof(cl_uint) * localWorkSizes[0], nullptr); // local memory
             Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
             Base::queue->finish();
         }
@@ -72,4 +74,4 @@ class ParallelSelectionSortLocal : public GPUSortingAlgorithm<T, count>
         Buffer* out;
 };
 
-#endif // PARALLELSELECTIONSORT_H
+#endif // PARALLELSELECTIONSORTLOCAL_H
