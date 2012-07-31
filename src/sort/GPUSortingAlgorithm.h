@@ -2,6 +2,7 @@
 #define OPENCLSORTINGALGORITHM_H
 
 #include <CL/CL.h>
+#include <map>
 
 #include "SortingAlgorithm.h"
 
@@ -11,8 +12,8 @@ class GPUSortingAlgorithm : public SortingAlgorithm<T, count>
     using Base = SortingAlgorithm<T, count>;
 
  public:
-        GPUSortingAlgorithm(string name, Context* context, CommandQueue* queue)
-            : SortingAlgorithm<T, count>(name), context(context), queue(queue)
+        GPUSortingAlgorithm(string name, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes = false)
+            : SortingAlgorithm<T, count>(name), context(context), queue(queue), useMultipleWorkGroupSizes(useMultipleWorkGroupSizes)
         {
         }
 
@@ -33,9 +34,27 @@ class GPUSortingAlgorithm : public SortingAlgorithm<T, count>
             double uploadTime = Base::timer.stop();
 
             // run sorting algorithm
-            Base::timer.start();
-            sort();
-            double sortTime = Base::timer.stop();
+            size_t maxWorkGroupSize = min(context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
+            map<int, double> sortTimes;
+            if(useMultipleWorkGroupSizes)
+            {
+                Base::timer.start();
+                sort(maxWorkGroupSize);
+                sortTimes[maxWorkGroupSize] = Base::timer.stop();
+            }
+            else
+            {
+                for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
+                {
+                    // check if work group size divides the input
+                    if(count % i == 0)
+                    {
+                        Base::timer.start();
+                        sort(i);
+                        sortTimes[i] = Base::timer.stop();
+                    }
+                }
+            }
 
             // download data
             Base::timer.start();
@@ -49,21 +68,29 @@ class GPUSortingAlgorithm : public SortingAlgorithm<T, count>
 
             cout << "#  Init      " << fixed << initTime << "s" << endl;
             cout << "#  Upload    " << fixed << uploadTime << "s" << endl;
-            cout << "#  Sort      " << fixed << sortTime << "s" << endl;
+
+            for(auto entry : sortTimes)
+                cout << "#  Sort      " << fixed << entry.second << "s " << "( WG size: " << entry.first << ")" << endl;
+
             cout << "#  Download  " << fixed << downloadTime << "s" << endl;
             cout << "#  Cleanup   " << fixed << cleanupTime << "s" << endl;
-            cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << (initTime + uploadTime + sortTime + downloadTime + cleanupTime) << "s" << endl;
+            cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << (initTime + uploadTime + min_element(sortTimes.begin(), sortTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s" << endl;
         }
 
     protected:
+        void sort()
+        {
+        }
+
         virtual bool init() = 0;
         virtual void upload() = 0;
-        virtual void sort() = 0;
+        virtual void sort(size_t workGroupSize) = 0;
         virtual void download() = 0;
         virtual void cleanup() = 0;
 
         Context* context;
         CommandQueue* queue;
+        bool useMultipleWorkGroupSizes;
 };
 
 #endif // OPENCLSORTINGALGORITHM_H

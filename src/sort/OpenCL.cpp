@@ -187,18 +187,22 @@ Program* Context::createProgram(string sourceFile, string options)
     {
         // get the error log size
         size_t logSize;
-        clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, 0, nullptr, &logSize);
+        error = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, 0, nullptr, &logSize);
+        checkError(__LINE__);
 
         // allocate enough space and get the log
         char* log = new char[logSize + 1];
-        clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, logSize, log, nullptr);
+        error = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, logSize, log, nullptr);
+        checkError(__LINE__);
         log[logSize] = '\0';
 
-        // print the build log and delete it
-        cout << log << endl;
+        string logStr = string(log);
         delete[] log;
 
-        throw OpenCLException(log);
+        // print the build log and delete it
+        cerr << logStr << endl;
+
+        throw OpenCLException(logStr);
     }
 
     // create Program object

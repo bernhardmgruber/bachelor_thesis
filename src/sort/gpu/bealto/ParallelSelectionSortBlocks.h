@@ -1,6 +1,8 @@
 #ifndef PARALLELSELECTIONSORTBLOCKS_H
 #define PARALLELSELECTIONSORTBLOCKS_H
 
+#include <sstream>
+
 #include "../../GPUSortingAlgorithm.h"
 #include "../../OpenCL.h"
 
@@ -16,8 +18,9 @@ class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
 
     public:
         ParallelSelectionSortBlocks(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel selection (Bealto)", context, queue)
+            : GPUSortingAlgorithm<T, count>("Parallel selection blocks (Bealto)", context, queue)
         {
+            blockFactor = 1;
         }
 
         virtual ~ParallelSelectionSortBlocks()
@@ -27,7 +30,9 @@ class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
     protected:
         bool init()
         {
-            program = Base::context->createProgram("gpu/bealto/ParallelSelectionSortBlocks.cl");
+            stringstream options;
+            options << "-D BLOCK_FACTOR=" << blockFactor;
+            program = Base::context->createProgram("gpu/bealto/ParallelSelectionSortBlocks.cl", options.str());
             kernel = program->createKernel("ParallelSelectionSortBlocks");
 
             return true;
@@ -42,12 +47,13 @@ class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
             Base::queue->finish();
         }
 
-        void sort()
+        void sort(size_t workGroupSize)
         {
             kernel->setArg(0, in);
             kernel->setArg(1, out);
+            kernel->setArg(2, sizeof(cl_uint) * workGroupSize * blockFactor, nullptr);
             size_t globalWorkSizes[1] = { count };
-            size_t localWorkSizes[1] = { min(Base::context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count) };
+            size_t localWorkSizes[1] = { workGroupSize };
             Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
             Base::queue->finish();
         }
@@ -66,6 +72,7 @@ class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
             delete kernel;
         }
 
+        size_t blockFactor;
         Program* program;
         Kernel* kernel;
         Buffer* in;

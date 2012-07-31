@@ -42,10 +42,10 @@ class ParallelSelectionSortLocal : public GPUSortingAlgorithm<T, count>
             Base::queue->finish();
         }
 
-        void sort()
+        void sort(size_t workGroupSize)
         {
             size_t globalWorkSizes[1] = { count };
-            size_t localWorkSizes[1] = { min(Base::context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count) };
+            size_t localWorkSizes[1] = { workGroupSize };
 
             kernel->setArg(0, in);
             kernel->setArg(1, out);
