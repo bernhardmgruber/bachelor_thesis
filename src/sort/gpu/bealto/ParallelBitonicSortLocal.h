@@ -1,5 +1,5 @@
-#ifndef PARALLELSELECTIONSORTLOCAL_H
-#define PARALLELSELECTIONSORTLOCAL_H
+#ifndef PARALLELBITONICSORT_H
+#define PARALLELBITONICSORT_H
 
 #include "../../GPUSortingAlgorithm.h"
 #include "../../OpenCL.h"
@@ -10,25 +10,25 @@ using namespace std;
  * From: http://www.bealto.com/gpu-sorting_intro.html
  */
 template<typename T, size_t count>
-class ParallelSelectionSortLocal : public GPUSortingAlgorithm<T, count>
+class ParallelBitonicSortLocal : public GPUSortingAlgorithm<T, count>
 {
     using Base = GPUSortingAlgorithm<T, count>;
 
     public:
-        ParallelSelectionSortLocal(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel selection local (Bealto)", context, queue, true)
+        ParallelBitonicSortLocal(Context* context, CommandQueue* queue)
+            : GPUSortingAlgorithm<T, count>("Parallel bitonic local (Bealto)", context, queue, true)
         {
         }
 
-        virtual ~ParallelSelectionSortLocal()
+        virtual ~ParallelBitonicSortLocal()
         {
         }
 
     protected:
         bool init()
         {
-            program = Base::context->createProgram("gpu/bealto/ParallelSelectionSortLocal.cl");
-            kernel = program->createKernel("ParallelSelectionSortLocal");
+            program = Base::context->createProgram("gpu/bealto/ParallelBitonicSortLocal.cl");
+            kernel = program->createKernel("ParallelBitonicSortLocal");
 
             return true;
         }
@@ -44,12 +44,11 @@ class ParallelSelectionSortLocal : public GPUSortingAlgorithm<T, count>
 
         void sort(size_t workGroupSize)
         {
-            size_t globalWorkSizes[1] = { count };
-            size_t localWorkSizes[1] = { workGroupSize };
-
             kernel->setArg(0, in);
             kernel->setArg(1, out);
-            kernel->setArg(2, sizeof(cl_uint) * localWorkSizes[0], nullptr); // local memory
+            kernel->setArg(2, sizeof(cl_int) * workGroupSize, nullptr);
+            size_t globalWorkSizes[1] = { count };
+            size_t localWorkSizes[1] = { workGroupSize };
             Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
             Base::queue->finish();
         }
@@ -74,4 +73,4 @@ class ParallelSelectionSortLocal : public GPUSortingAlgorithm<T, count>
         Buffer* out;
 };
 
-#endif // PARALLELSELECTIONSORTLOCAL_H
+#endif // PARALLELBITONICSORT_H

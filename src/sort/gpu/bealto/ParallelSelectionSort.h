@@ -16,7 +16,7 @@ class ParallelSelectionSort : public GPUSortingAlgorithm<T, count>
 
     public:
         ParallelSelectionSort(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel selection (Bealto)", context, queue)
+            : GPUSortingAlgorithm<T, count>("Parallel selection (Bealto)", context, queue, true)
         {
         }
 
@@ -42,12 +42,12 @@ class ParallelSelectionSort : public GPUSortingAlgorithm<T, count>
             Base::queue->finish();
         }
 
-        void sort()
+        void sort(size_t workGroupSize)
         {
             kernel->setArg(0, in);
             kernel->setArg(1, out);
             size_t globalWorkSizes[1] = { count };
-            size_t localWorkSizes[1] = { min(Base::context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count) };
+            size_t localWorkSizes[1] = { workGroupSize };
             Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
             Base::queue->finish();
         }

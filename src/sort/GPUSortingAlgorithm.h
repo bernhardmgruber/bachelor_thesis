@@ -36,7 +36,7 @@ class GPUSortingAlgorithm : public SortingAlgorithm<T, count>
             // run sorting algorithm
             size_t maxWorkGroupSize = min(context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
             map<int, double> sortTimes;
-            if(useMultipleWorkGroupSizes)
+            if(!useMultipleWorkGroupSizes)
             {
                 Base::timer.start();
                 sort(maxWorkGroupSize);

@@ -18,7 +18,7 @@ class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
 
     public:
         ParallelSelectionSortBlocks(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel selection blocks (Bealto)", context, queue)
+            : GPUSortingAlgorithm<T, count>("Parallel selection blocks (Bealto)", context, queue, true)
         {
             blockFactor = 1;
         }
