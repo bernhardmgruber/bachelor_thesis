@@ -351,6 +351,12 @@ void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, bool blockin
     checkError(__LINE__);
 }
 
+void CommandQueue::enqueueBarrier()
+{
+    error = clEnqueueBarrier(queue);
+    checkError(__LINE__);
+}
+
 void CommandQueue::finish()
 {
     error = clFinish(queue);

@@ -13,6 +13,7 @@
 #include "gpu/bealto/ParallelSelectionSortLocal.h"
 #include "gpu/bealto/ParallelSelectionSortBlocks.h"
 #include "gpu/bealto/ParallelBitonicSortLocal.h"
+#include "gpu/bealto/ParallelBitonicSortA.h"
 
 using namespace std;
 
@@ -47,6 +48,7 @@ int main()
         RUN_GPU(ParallelSelectionSortLocal);
         //RUN_GPU(ParallelSelectionSortBlocks);
         RUN_GPU(ParallelBitonicSortLocal);
+        RUN_GPU(ParallelBitonicSortA);
 
         delete context;
         delete queue;

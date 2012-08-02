@@ -48,6 +48,8 @@
 		<Unit filename="cpu\STLSort.h" />
 		<Unit filename="cpu\TimSort.h" />
 		<Unit filename="cpu\timsort.hpp" />
+		<Unit filename="gpu\bealto\ParallelBitonicSortA.cl" />
+		<Unit filename="gpu\bealto\ParallelBitonicSortA.h" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortLocal.cl" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortLocal.h" />
 		<Unit filename="gpu\bealto\ParallelSelectionSort.cl" />

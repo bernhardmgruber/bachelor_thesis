@@ -94,6 +94,12 @@ class Kernel
         void setArg(cl_uint index, Buffer* buffer);
         void setArg(cl_uint index, size_t size, const void* value);
 
+        template <typename T>
+        void setArg(cl_uint index, T value)
+        {
+            clSetKernelArg(kernel, index, sizeof(T), &value);
+        }
+
     private:
         cl_kernel kernel;
 
@@ -110,6 +116,7 @@ class CommandQueue
         void enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking = true);
         void enqueueRead(Buffer* buffer, void* destination, bool blocking = true);
         void enqueueWrite(Buffer* buffer, const void* source, bool blocking = true);
+        void enqueueBarrier();
 
         void finish();
 
