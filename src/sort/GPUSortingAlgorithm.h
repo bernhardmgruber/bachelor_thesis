@@ -66,15 +66,15 @@ class GPUSortingAlgorithm : public SortingAlgorithm<T, count>
             cleanup();
             double cleanupTime = Base::timer.stop();
 
-            cout << "#  Init      " << fixed << initTime << "s" << endl;
-            cout << "#  Upload    " << fixed << uploadTime << "s" << endl;
+            cout << "#  Init      " << fixed << initTime << "s" << flush << endl;
+            cout << "#  Upload    " << fixed << uploadTime << "s" << flush << endl;
 
             for(auto entry : sortTimes)
-                cout << "#  Sort      " << fixed << entry.second << "s " << "( WG size: " << entry.first << ")" << endl;
+                cout << "#  Sort      " << fixed << entry.second << "s " << "( WG size: " << entry.first << ")" << flush << endl;
 
-            cout << "#  Download  " << fixed << downloadTime << "s" << endl;
-            cout << "#  Cleanup   " << fixed << cleanupTime << "s" << endl;
-            cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << (initTime + uploadTime + min_element(sortTimes.begin(), sortTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << endl;
+            cout << "#  Download  " << fixed << downloadTime << "s" << flush << endl;
+            cout << "#  Cleanup   " << fixed << cleanupTime << "s" << flush << endl;
+            cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << (initTime + uploadTime + min_element(sortTimes.begin(), sortTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
         }
 
     protected:

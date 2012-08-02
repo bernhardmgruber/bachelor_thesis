@@ -50,8 +50,14 @@
 		<Unit filename="cpu\timsort.hpp" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortA.cl" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortA.h" />
+		<Unit filename="gpu\bealto\ParallelBitonicSortB2.cl" />
+		<Unit filename="gpu\bealto\ParallelBitonicSortB2.h" />
+		<Unit filename="gpu\bealto\ParallelBitonicSortB4.cl" />
+		<Unit filename="gpu\bealto\ParallelBitonicSortB4.h" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortLocal.cl" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortLocal.h" />
+		<Unit filename="gpu\bealto\ParallelBitonicSortLocalOptim.cl" />
+		<Unit filename="gpu\bealto\ParallelBitonicSortLocalOptim.h" />
 		<Unit filename="gpu\bealto\ParallelSelectionSort.cl" />
 		<Unit filename="gpu\bealto\ParallelSelectionSort.h" />
 		<Unit filename="gpu\bealto\ParallelSelectionSortBlocks.cl" />
