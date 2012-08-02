@@ -1,5 +1,5 @@
-#ifndef PARALLELBITONICSORTLOCAL_H
-#define PARALLELBITONICSORTLOCAL_H
+#ifndef PARALLELBITONICSORTLOCALOPTIM_H
+#define PARALLELBITONICSORTLOCALOPTIM_H
 
 #include "../../GPUSortingAlgorithm.h"
 #include "../../OpenCL.h"
@@ -10,25 +10,25 @@ using namespace std;
  * From: http://www.bealto.com/gpu-sorting_intro.html
  */
 template<typename T, size_t count>
-class ParallelBitonicSortLocal : public GPUSortingAlgorithm<T, count>
+class ParallelBitonicSortLocalOptim : public GPUSortingAlgorithm<T, count>
 {
     using Base = GPUSortingAlgorithm<T, count>;
 
     public:
-        ParallelBitonicSortLocal(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel bitonic local (Bealto)", context, queue, true)
+        ParallelBitonicSortLocalOptim(Context* context, CommandQueue* queue)
+            : GPUSortingAlgorithm<T, count>("Parallel bitonic local optim (Bealto)", context, queue, true)
         {
         }
 
-        virtual ~ParallelBitonicSortLocal()
+        virtual ~ParallelBitonicSortLocalOptim()
         {
         }
 
     protected:
         bool init()
         {
-            program = Base::context->createProgram("gpu/bealto/ParallelBitonicSortLocal.cl");
-            kernel = program->createKernel("ParallelBitonicSortLocal");
+            program = Base::context->createProgram("gpu/bealto/ParallelBitonicSortLocalOptim.cl");
+            kernel = program->createKernel("ParallelBitonicSortLocalOptim");
 
             return true;
         }
@@ -73,4 +73,4 @@ class ParallelBitonicSortLocal : public GPUSortingAlgorithm<T, count>
         Buffer* out;
 };
 
-#endif // PARALLELBITONICSORTLOCAL_H
+#endif // PARALLELBITONICSORTLOCALOPTIM_H

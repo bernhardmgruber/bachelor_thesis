@@ -13,7 +13,9 @@
 #include "gpu/bealto/ParallelSelectionSortLocal.h"
 #include "gpu/bealto/ParallelSelectionSortBlocks.h"
 #include "gpu/bealto/ParallelBitonicSortLocal.h"
+#include "gpu/bealto/ParallelBitonicSortLocalOptim.h"
 #include "gpu/bealto/ParallelBitonicSortA.h"
+#include "gpu/bealto/ParallelBitonicSortB2.h"
 
 using namespace std;
 
@@ -29,8 +31,7 @@ using namespace std;
 
 int main()
 {
-
-    const size_t size = 256 * 256;
+    const size_t size = 256 * 256 * 64;
     SortingAlgorithm<int, size>* alg;
 
     RUN(Quicksort);
@@ -45,10 +46,12 @@ int main()
         CommandQueue* queue = context->createCommandQueue();
 
         //RUN_GPU(ParallelSelectionSort);
-        RUN_GPU(ParallelSelectionSortLocal);
+        //RUN_GPU(ParallelSelectionSortLocal);
         //RUN_GPU(ParallelSelectionSortBlocks);
-        RUN_GPU(ParallelBitonicSortLocal);
-        RUN_GPU(ParallelBitonicSortA);
+        //RUN_GPU(ParallelBitonicSortLocal);
+        //RUN_GPU(ParallelBitonicSortLocalOptim);
+        //RUN_GPU(ParallelBitonicSortA);
+        RUN_GPU(ParallelBitonicSortB2);
 
         delete context;
         delete queue;
