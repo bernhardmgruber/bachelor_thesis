@@ -206,7 +206,7 @@ Program* Context::createProgram(string sourceFile, string options)
     }
 
     // create Program object
-    Program* programObj = new Program(program);
+    Program* programObj = new Program(program, this);
     //programs.push_back(programObj);
 
     return programObj;
@@ -263,8 +263,8 @@ string Context::readFile(string fileName)
 // class Program
 //
 
-Program::Program(cl_program program)
-    : program(program)
+Program::Program(cl_program program, Context* context)
+    : program(program), context(context)
 {
 }
 
@@ -283,7 +283,7 @@ Kernel* Program::createKernel(string entry)
     checkError(__LINE__);
 
     // create Kernel object
-    Kernel* kernelObj = new Kernel(kernel);
+    Kernel* kernelObj = new Kernel(kernel, context);
 //    kernels.push_back(kernelObj);
 
     return kernelObj;
@@ -293,24 +293,35 @@ Kernel* Program::createKernel(string entry)
 // class Kernel
 //
 
-Kernel::Kernel(cl_kernel kernel)
-    : kernel(kernel)
+Kernel::Kernel(cl_kernel kernel, Context* context)
+    : kernel(kernel), context(context)
 {
 }
 
 Kernel::~Kernel()
 {
-    clReleaseKernel(kernel);
+    error = clReleaseKernel(kernel);
+    checkError(__LINE__);
 }
 
 void Kernel::setArg(cl_uint index, Buffer* buffer)
 {
-    clSetKernelArg(kernel, index, sizeof(cl_mem), (const void*)&buffer->buffer);
+    error = clSetKernelArg(kernel, index, sizeof(cl_mem), (const void*)&buffer->buffer);
+    checkError(__LINE__);
 }
 
 void Kernel::setArg(cl_uint index, size_t size, const void* value)
 {
-    clSetKernelArg(kernel, index, size, value);
+    error = clSetKernelArg(kernel, index, size, value);
+    checkError(__LINE__);
+}
+
+size_t Kernel::getWorkGroupSize()
+{
+    size_t size;
+    error = clGetKernelWorkGroupInfo (kernel, context->device, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &size, nullptr);
+    checkError(__LINE__);
+    return size;
 }
 
 //

@@ -69,12 +69,13 @@ class Context
         //vector<Program*> programs;
         //vector<CommandQueue*> queues;
         //vector<Buffer*> buffers;
+        friend Kernel;
 };
 
 class Program
 {
     public:
-        Program(cl_program program);
+        Program(cl_program program, Context* context);
         virtual ~Program();
 
         Kernel* createKernel(string entry);
@@ -82,13 +83,14 @@ class Program
     private:
         cl_program program;
 
-        //vector<Kernel*> kernels;
+        /// The context and device this program has been created for.
+        Context* context;
 };
 
 class Kernel
 {
     public:
-        Kernel(cl_kernel kernel);
+        Kernel(cl_kernel kernel, Context* context);
         ~Kernel();
 
         void setArg(cl_uint index, Buffer* buffer);
@@ -100,8 +102,13 @@ class Kernel
             clSetKernelArg(kernel, index, sizeof(T), &value);
         }
 
+        size_t getWorkGroupSize();
+
     private:
         cl_kernel kernel;
+
+        /// The context and device this kernel has been created for.
+        Context* context;
 
     friend CommandQueue;
 };
