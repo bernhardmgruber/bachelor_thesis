@@ -66,7 +66,7 @@ static const char* errorCodes[errorCodesCount] = {
 
 static cl_int error;
 
-static void checkError(int line)
+void checkError(int line)
 {
     if(error != CL_SUCCESS)
     {

@@ -1,12 +1,15 @@
 #ifndef OPENCL_H
 #define OPENCL_H
 
+#define CL_USE_DEPRECATED_OPENCL_1_1_APIS
 #include <CL/CL.h>
 #include <string>
 #include <vector>
 #include <exception>
 
 using namespace std;
+
+void checkError(int line);
 
 class Context;
 class CommandQueue;
@@ -100,6 +103,7 @@ class Kernel
         void setArg(cl_uint index, T value)
         {
             clSetKernelArg(kernel, index, sizeof(T), &value);
+            checkError(__LINE__);
         }
 
         size_t getWorkGroupSize();
