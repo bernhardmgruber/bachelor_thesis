@@ -20,7 +20,7 @@ class ParallelBitonicSortC : public GPUSortingAlgorithm<T, count>
 
     public:
         ParallelBitonicSortC(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel bitonic A (Bealto)", context, queue, true)
+            : GPUSortingAlgorithm<T, count>("Parallel bitonic C (Bealto)", context, queue, true)
         {
         }
 

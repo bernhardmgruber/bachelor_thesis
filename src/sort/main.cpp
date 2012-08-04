@@ -20,6 +20,7 @@
 #include "gpu/bealto/ParallelBitonicSortB8.h"
 #include "gpu/bealto/ParallelBitonicSortB16.h"
 #include "gpu/bealto/ParallelBitonicSortC.h"
+#include "gpu/bealto/ParallelMergeSort.h"
 
 using namespace std;
 
@@ -35,7 +36,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 256 * 256 * 64;
+    const size_t size = 256 * 256 ;
     SortingAlgorithm<int, size>* alg;
 
     RUN(Quicksort);
@@ -58,8 +59,9 @@ int main()
         //RUN_GPU(ParallelBitonicSortB2);
         //RUN_GPU(ParallelBitonicSortB4);
         //RUN_GPU(ParallelBitonicSortB8);
-        RUN_GPU(ParallelBitonicSortB16);
+        //RUN_GPU(ParallelBitonicSortB16);
         RUN_GPU(ParallelBitonicSortC);
+        //RUN_GPU(ParallelMergeSort);
 
         delete context;
         delete queue;
