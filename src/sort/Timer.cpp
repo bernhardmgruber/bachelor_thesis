@@ -12,6 +12,7 @@ Timer::Timer()
         exit(0);
     }
 
+    overhead = 0;
     start();
     overhead = stop();
 }

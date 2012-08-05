@@ -388,3 +388,8 @@ Buffer::~Buffer()
 {
     clReleaseMemObject(buffer);
 }
+
+size_t Buffer::getSize()
+{
+    return size;
+}

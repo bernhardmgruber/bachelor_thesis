@@ -25,10 +25,8 @@ class CPUSortingAlgorithm : public SortingAlgorithm<T, count>
                 sort();
                 double sortTime = Base::timer.stop();
 
-
                 cout << "#  Sort      " << fixed << sortTime << "s" << flush << endl;
                 cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << sortTime << "s" << flush << endl;
-
         }
 
     protected:
@@ -43,5 +41,17 @@ inline void swap(T& a, T& b)
     a = b;
     b = tmp;
 }
+
+
+template <template <typename, size_t> class T, size_t count, typename V>
+void runCPU()
+{
+    SortingAlgorithm<V, count>* alg;
+    alg = new T<V, count>();
+    alg->runTest();
+    delete alg;
+}
+
+#define RUN(algorithmTestClass, count, valueType) runCPU<algorithmTestClass, count, valueType>();
 
 #endif // CPUSORTINGALGORITHM_H

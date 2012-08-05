@@ -141,6 +141,8 @@ class Buffer
         Buffer(cl_mem buffer, size_t size);
         virtual ~Buffer();
 
+        size_t getSize();
+
     private:
         cl_mem buffer;
         size_t size;

@@ -93,4 +93,15 @@ class GPUSortingAlgorithm : public SortingAlgorithm<T, count>
         bool useMultipleWorkGroupSizes;
 };
 
+template <template <typename, size_t> class T, size_t count, typename V>
+void runGPU(Context* context, CommandQueue* queue)
+{
+    SortingAlgorithm<V, count>* alg;
+    alg = new T<V, count>(context, queue);
+    alg->runTest();
+    delete alg;
+}
+
+#define RUN_CL(algorithmTestClass, count, valueType) runGPU<algorithmTestClass, count, valueType>(context, queue);
+
 #endif // OPENCLSORTINGALGORITHM_H

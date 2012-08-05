@@ -112,7 +112,7 @@
                         <!-- Secondary keywords and identifiers -->
                         <Set index="1"
                             value="__global __local __private __constant __kernel
-								   get_global_id get_global_size get_local_size get_local_id"/>
+								   get_global_id get_global_size get_local_size get_local_id get_num_groups get_group_id"/>
                         <!-- Documentation comment keywords -->
                         <Set index="2"
                             value="a addindex addtogroup anchor arg attention

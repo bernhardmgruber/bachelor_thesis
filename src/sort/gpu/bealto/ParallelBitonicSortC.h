@@ -92,7 +92,7 @@ class ParallelBitonicSortC : public GPUSortingAlgorithm<T, count>
                     int d = strategy.front();
                     strategy.pop_front();
 
-                    Kernel* kernel;
+                    Kernel* kernel = nullptr;
 
                     switch (d)
                     {

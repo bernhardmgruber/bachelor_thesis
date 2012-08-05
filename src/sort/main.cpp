@@ -21,25 +21,15 @@
 #include "gpu/bealto/ParallelBitonicSortB16.h"
 #include "gpu/bealto/ParallelBitonicSortC.h"
 #include "gpu/bealto/ParallelMergeSort.h"
+#include "gpu/libCL/RadixSort.h"
 
 using namespace std;
 
-#define RUN(Cls)                \
-    alg = new Cls<int, size>(); \
-    alg->runTest();             \
-    delete alg;
-
-#define RUN_GPU(Cls)                          \
-    alg = new Cls<int, size>(context, queue); \
-    alg->runTest();                           \
-    delete alg;
-
 int main()
 {
-    const size_t size = 256 * 256 ;
-    SortingAlgorithm<int, size>* alg;
+    const size_t size = 256 * 256 * 32;
 
-    RUN(Quicksort);
+    RUN(Quicksort, size, int);
     //RUN(QSort);
     //RUN(STLSort);
     //RUN(TimSort);
@@ -50,18 +40,20 @@ int main()
         Context* context = OpenCL::getGPUContext();
         CommandQueue* queue = context->createCommandQueue();
 
-        //RUN_GPU(ParallelSelectionSort);
-        //RUN_GPU(ParallelSelectionSortLocal);
-        //RUN_GPU(ParallelSelectionSortBlocks);
-        //RUN_GPU(ParallelBitonicSortLocal);
-        //RUN_GPU(ParallelBitonicSortLocalOptim);
-        //RUN_GPU(ParallelBitonicSortA);
-        //RUN_GPU(ParallelBitonicSortB2);
-        //RUN_GPU(ParallelBitonicSortB4);
-        //RUN_GPU(ParallelBitonicSortB8);
-        //RUN_GPU(ParallelBitonicSortB16);
-        RUN_GPU(ParallelBitonicSortC);
-        //RUN_GPU(ParallelMergeSort);
+        //RUN_CL(ParallelSelectionSort);
+        //RUN_CL(ParallelSelectionSortLocal);
+        //RUN_CL(ParallelSelectionSortBlocks);
+        //RUN_CL(ParallelBitonicSortLocal);
+        //RUN_CL(ParallelBitonicSortLocalOptim);
+        //RUN_CL(ParallelBitonicSortA);
+        //RUN_CL(ParallelBitonicSortB2);
+        //RUN_CL(ParallelBitonicSortB4);
+        //RUN_CL(ParallelBitonicSortB8);
+        //RUN_CL(ParallelBitonicSortB16);
+        //RUN_CL(ParallelBitonicSortC, size, int);
+        //RUN_CL(ParallelMergeSort);
+
+        RUN_CL(libcl::RadixSort, size, int);
 
         delete context;
         delete queue;
