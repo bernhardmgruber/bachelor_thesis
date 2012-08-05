@@ -27,7 +27,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 256 * 256 * 32;
+    const size_t size = 256 * 256 * 256;
 
     RUN(Quicksort, size, int);
     //RUN(QSort);

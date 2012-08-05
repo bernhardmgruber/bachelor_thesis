@@ -14,23 +14,22 @@
 
 #define BITS 4
 #define RADIX (1 << BITS)
-#define BLOCKSIZE 256
 
 __kernel void clBlockSort(__global uint* keyIn,
                           __global uint* keyOut,
                           __global uint* valIn,
                           __global uint* valOut,
-                          uint startbit, __global uint* blockScan, __global uint* blockOffset, uint size)
+                          uint startbit, __global uint* blockScan, __global uint* blockOffset, uint size, __local uint* key, __local uint* prefixSum)
 {
     int globalId = get_global_id(0);
     int threadid = get_local_id(0);
     int totalBlocks = get_num_groups(0);
     int blockid = get_group_id(0);
 
-    //size_t BLOCKSIZE = get_local_size(0);
+    size_t blockSize = get_local_size(0);
 
-    __local uint key[BLOCKSIZE];
-    //__local uint val[BLOCKSIZE];
+    //__local uint key[blockSize];
+    //__local uint val[blockSize];
 
     key[threadid] = 0xFFFFFFFF;
     //val[threadid] = 0xFFFFFFFF;
@@ -42,7 +41,7 @@ __kernel void clBlockSort(__global uint* keyIn,
     barrier(CLK_LOCAL_MEM_FENCE);
 
     // reorder block
-    __local uint prefixSum[BLOCKSIZE];
+    //__local uint prefixSum[blockSize];
     for(uint bit = startbit; bit < (startbit+BITS); bit++)
     {
         uint curKey = key[threadid];
@@ -50,15 +49,15 @@ __kernel void clBlockSort(__global uint* keyIn,
         uint lsb = !((curKey >> bit) & 0x1);
         prefixSum[threadid] = lsb;
         barrier(CLK_LOCAL_MEM_FENCE);
-        if (threadid == BLOCKSIZE - 1)
+        if (threadid == blockSize - 1)
         {
-            for (int i=1; i<BLOCKSIZE; i++)
+            for (int i=1; i<blockSize; i++)
             {
                 prefixSum[i] += prefixSum[i-1];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        uint address = lsb ? prefixSum[threadid]-1: prefixSum[BLOCKSIZE-1] - prefixSum[threadid] + threadid;
+        uint address = lsb ? prefixSum[threadid]-1: prefixSum[blockSize-1] - prefixSum[threadid] + threadid;
         key[address] = curKey;
         //val[address] = curVal;
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -99,9 +98,9 @@ __kernel void clBlockSort(__global uint* keyIn,
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    if(threadid == BLOCKSIZE - 1)
+    if(threadid == blockSize - 1)
     {
-        offset[key[BLOCKSIZE - 1]] = BLOCKSIZE - offset[key[BLOCKSIZE - 1]];
+        offset[key[blockSize - 1]] = blockSize - offset[key[blockSize - 1]];
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
@@ -112,11 +111,13 @@ __kernel void clBlockSort(__global uint* keyIn,
 
 }
 
-__kernel void clBlockScan(__global uint4* blockScan, __global uint* scanSum, uint size)
+__kernel void clBlockScan(__global uint4* blockScan, __global uint* scanSum, uint size, __local uint* prefixSum)
 {
     int globalId = get_global_id(0);
     int threadid = get_local_id(0);
     int blockid = get_group_id(0);
+
+    size_t blockSize = get_local_size(0);
 
     uint4 value4 = 0;
     if (globalId < size)
@@ -124,7 +125,7 @@ __kernel void clBlockScan(__global uint4* blockScan, __global uint* scanSum, uin
         value4 = blockScan[globalId];
     }
 
-    __local uint prefixSum[BLOCKSIZE];
+    //__local uint prefixSum[blockSize];
 
     uint4 sum;
     sum.x = value4.x;
@@ -134,9 +135,9 @@ __kernel void clBlockScan(__global uint4* blockScan, __global uint* scanSum, uin
     prefixSum[threadid] = sum.w;
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    if (threadid == BLOCKSIZE - 1)
+    if (threadid == blockSize - 1)
     {
-        for (int i=1; i<BLOCKSIZE; i++)
+        for (int i=1; i<blockSize; i++)
         {
             prefixSum[i] += prefixSum[i-1];
         }
@@ -155,26 +156,28 @@ __kernel void clBlockScan(__global uint4* blockScan, __global uint* scanSum, uin
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    if (threadid == BLOCKSIZE-1)
+    if (threadid == blockSize-1)
     {
         scanSum[blockid] = count + sum.w; // exclusive -> inclusive
     }
 }
 
-__kernel void clBlockPrefix(__global uint4* blockScan, __global uint* blockSum, uint size)
+__kernel void clBlockPrefix(__global uint4* blockScan, __global uint* blockSum, uint size, __local uint* prefixSum)
 {
     int globalId = get_global_id(0);
     int threadid = get_local_id(0);
     int blockid = get_group_id(0);
 
-    __local uint prefixSum[BLOCKSIZE];
+    size_t blockSize = get_local_size(0);
+
+    //__local uint prefixSum[blockSize];
 
     prefixSum[threadid] = blockSum[threadid];
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    if (threadid == BLOCKSIZE - 1)
+    if (threadid == blockSize - 1)
     {
-        for (int i=1; i<BLOCKSIZE; i++)
+        for (int i=1; i<blockSize; i++)
         {
             prefixSum[i] += prefixSum[i-1];
         }
@@ -183,7 +186,7 @@ __kernel void clBlockPrefix(__global uint4* blockScan, __global uint* blockSum, 
 
     if (blockid > 0 && globalId < size)
     {
-        blockScan[globalId] = blockScan[globalId] + prefixSum[blockid-1];
+        blockScan[globalId] += prefixSum[blockid-1];
     }
 }
 
