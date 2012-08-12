@@ -13,7 +13,6 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="-std=c99" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -30,6 +29,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
 			<Add directory="D:\SDKs\openssl 1.0.1c\include" />
 		</Compiler>
@@ -39,17 +39,14 @@
 			<Add library="gdi32" />
 			<Add directory="D:\SDKs\openssl 1.0.1c" />
 		</Linker>
-		<Unit filename="benchmark.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="eng_opencl.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="eng_opencl.h" />
-		<Unit filename="eng_opencl_aes.cl" />
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="..\common\OpenCL.cpp" />
+		<Unit filename="..\common\OpenCL.h" />
+		<Unit filename="CPUCryptAlgorithm.h" />
+		<Unit filename="CryptAlgorithm.h" />
+		<Unit filename="GPUCryptAlgorithm.h" />
+		<Unit filename="cpu\OpenSSL\aes.cl" />
+		<Unit filename="cpu\OpenSSL\aes.h" />
+		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

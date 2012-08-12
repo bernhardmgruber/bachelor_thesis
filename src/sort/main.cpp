@@ -2,12 +2,13 @@
 #include <iostream>
 #include <fstream>
 
-#include "OpenCL.h"
+#include "../common/OpenCL.h"
 
 #include "cpu/Quicksort.h"
 #include "cpu/QSort.h"
 #include "cpu/STLSort.h"
 #include "cpu/TimSort.h"
+#include "cpu/amd/RadixSort.h"
 
 #include "gpu/bealto/ParallelSelectionSort.h"
 #include "gpu/bealto/ParallelSelectionSortLocal.h"
@@ -26,16 +27,16 @@
 #include "gpu/amd/RadixSort.h"
 
 using namespace std;
-using namespace amd;
 
 int main()
 {
-    const size_t size = 256 * 256 * 64;
+    const size_t size = 256 * 256 * 32;
 
     RUN(Quicksort, size, int);
-    //RUN(QSort);
-    //RUN(STLSort);
-    //RUN(TimSort);
+    //RUN(QSort, size, int);
+    //RUN(STLSort, size, int);
+    //RUN(TimSort, size, int);
+    RUN(cpu::amd::RadixSort, size, int);
 
     try
     {
@@ -62,10 +63,10 @@ int main()
         //RUN_CL(ParallelBitonicSortC, size, int);
         //RUN_CL(ParallelMergeSort);
 
-        RUN_CL(libcl::RadixSort, size, int);
+        //RUN_CL(libcl::RadixSort, size, int);
 
-        RUN_CL(amd::BitonicSort, size, int);
-        RUN_CL(amd::RadixSort, size, int);
+        //RUN_CL(amd::BitonicSort, size, int);
+        //RUN_CL(amd::RadixSort, size, int);
 
         delete context;
         delete queue;

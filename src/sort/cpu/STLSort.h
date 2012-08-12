@@ -19,7 +19,7 @@ class STLSort : public CPUSortingAlgorithm<T, count>
     protected:
         void sort()
         {
-            sort(CPUSortingAlgorithm<T, count>::data, CPUSortingAlgorithm<T, count>::data + count);
+            std::sort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count);
         }
 };
 

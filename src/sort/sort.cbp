@@ -21,7 +21,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -36,18 +36,23 @@
 		<Linker>
 			<Add library="opencl" />
 		</Linker>
+		<Unit filename="..\common\OpenCL.cpp" />
+		<Unit filename="..\common\OpenCL.h" />
+		<Unit filename="..\common\Timer.cpp" />
+		<Unit filename="..\common\Timer.h" />
 		<Unit filename="CPUSortingAlgorithm.h" />
 		<Unit filename="GPUSortingAlgorithm.h" />
-		<Unit filename="OpenCL.cpp" />
-		<Unit filename="OpenCL.h" />
 		<Unit filename="SortingAlgorithm.h" />
-		<Unit filename="Timer.cpp" />
-		<Unit filename="Timer.h" />
 		<Unit filename="cpu\QSort.h" />
 		<Unit filename="cpu\Quicksort.h" />
 		<Unit filename="cpu\STLSort.h" />
 		<Unit filename="cpu\TimSort.h" />
+		<Unit filename="cpu\amd\RadixSort.h" />
 		<Unit filename="cpu\timsort.hpp" />
+		<Unit filename="gpu\amd\BitonicSort.cl" />
+		<Unit filename="gpu\amd\BitonicSort.h" />
+		<Unit filename="gpu\amd\RadixSort.cl" />
+		<Unit filename="gpu\amd\RadixSort.h" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortA.cl" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortA.h" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortB16.cl" />
@@ -73,7 +78,6 @@
 		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.cl" />
 		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.h" />
 		<Unit filename="gpu\clpp\RadixSort.cl" />
-		<Unit filename="gpu\clpp\RadixSort.cpp" />
 		<Unit filename="gpu\clpp\RadixSort.h" />
 		<Unit filename="gpu\libCL\RadixSort.cl" />
 		<Unit filename="gpu\libCL\RadixSort.h" />

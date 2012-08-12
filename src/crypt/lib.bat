@@ -1,1 +1,0 @@
-cc -shared -o libOpenCL.1.dll obj\Debug\eng_opencl.o -lcrypto -lgdi32 -lOpenCL -L"D:\SDKs\openssl 1.0.1c" -L"C:\Program Files (x86)\AMD APP\lib\x86"

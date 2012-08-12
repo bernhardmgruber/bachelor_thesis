@@ -3,7 +3,7 @@
 
 #include "timsort.hpp"
 
-#include "../SortingAlgorithm.h"
+#include "../CPUSortingAlgorithm.h"
 
 using namespace std;
 
@@ -11,11 +11,11 @@ using namespace std;
  * Timsort implementation from https://github.com/swenson/sort
  */
 template<typename T, size_t count>
-class TimSort : public SortingAlgorithm<T, count>
+class TimSort : public CPUSortingAlgorithm<T, count>
 {
     public:
         TimSort()
-            : SortingAlgorithm<T, count>("Timsort")
+            : CPUSortingAlgorithm<T, count>("Timsort")
         {
         }
 

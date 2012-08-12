@@ -2,7 +2,7 @@
 #define PARALLELSELECTIONSORTLOCAL_H
 
 #include "../../GPUSortingAlgorithm.h"
-#include "../../OpenCL.h"
+//#include "../../OpenCL.h"
 
 using namespace std;
 

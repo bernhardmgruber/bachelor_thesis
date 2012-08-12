@@ -96,7 +96,7 @@ jurisdiction and venue of these courts.
 #define RADICES (1 << RADIX)
 
 #include "../../GPUSortingAlgorithm.h"
-#include "../../OpenCL.h"
+//#include "../../OpenCL.h"
 
 using namespace std;
 

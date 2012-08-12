@@ -4,7 +4,7 @@
 #include <list>
 
 #include "../../GPUSortingAlgorithm.h"
-#include "../../OpenCL.h"
+//#include "../../OpenCL.h"
 
 #define ALLOWB (16 + 8 + 4 + 2)
 
