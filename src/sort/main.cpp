@@ -23,6 +23,7 @@
 #include "gpu/bealto/ParallelMergeSort.h"
 #include "gpu/libCL/RadixSort.h"
 #include "gpu/amd/BitonicSort.h"
+#include "gpu/amd/RadixSort.h"
 
 using namespace std;
 using namespace amd;
@@ -42,6 +43,12 @@ int main()
         Context* context = OpenCL::getGPUContext();
         CommandQueue* queue = context->createCommandQueue();
 
+        //cout << endl;
+        //cout << "Running on " << context->getInfoString(CL_DEVICE_NAME) << endl;
+        //cout << "   " << context->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE) << "B global mem" << endl;
+        //cout << "   " << context->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE) << "B local mem" << endl;
+        //cout << endl;
+
         //RUN_CL(ParallelSelectionSort);
         //RUN_CL(ParallelSelectionSortLocal);
         //RUN_CL(ParallelSelectionSortBlocks);
@@ -50,14 +57,15 @@ int main()
         //RUN_CL(ParallelBitonicSortA);
         //RUN_CL(ParallelBitonicSortB2);
         //RUN_CL(ParallelBitonicSortB4);
-        RUN_CL(ParallelBitonicSortB8, size, int);
+        //RUN_CL(ParallelBitonicSortB8, size, int);
         RUN_CL(ParallelBitonicSortB16, size, int);
         //RUN_CL(ParallelBitonicSortC, size, int);
         //RUN_CL(ParallelMergeSort);
 
-        //RUN_CL(libcl::RadixSort, size, int);
+        RUN_CL(libcl::RadixSort, size, int);
 
         RUN_CL(amd::BitonicSort, size, int);
+        RUN_CL(amd::RadixSort, size, int);
 
         delete context;
         delete queue;

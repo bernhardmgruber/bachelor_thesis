@@ -246,6 +246,18 @@ size_t Context::getInfoSize(cl_device_info info)
     return value;
 }
 
+string Context::getInfoString(cl_device_info info)
+{
+    size_t size = 0;
+    clGetDeviceInfo(device, info, 0, nullptr, &size);
+
+    char* buffer = new char[size + 1];
+    clGetDeviceInfo(device, info, size + 1, buffer, nullptr);
+    buffer[size + 1] = 0;
+
+    return string(buffer);
+}
+
 string Context::readFile(string fileName)
 {
     ifstream file(fileName, ios::in);

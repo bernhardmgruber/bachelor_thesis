@@ -62,6 +62,7 @@ class Context
         Buffer* createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
 
         size_t getInfoSize(cl_device_info info);
+        string getInfoString(cl_device_info info);
 
     private:
         string readFile(string fileName);
