@@ -22,12 +22,14 @@
 #include "gpu/bealto/ParallelBitonicSortC.h"
 #include "gpu/bealto/ParallelMergeSort.h"
 #include "gpu/libCL/RadixSort.h"
+#include "gpu/amd/BitonicSort.h"
 
 using namespace std;
+using namespace amd;
 
 int main()
 {
-    const size_t size = 256 * 256 * 256;
+    const size_t size = 256 * 256 * 64;
 
     RUN(Quicksort, size, int);
     //RUN(QSort);
@@ -48,12 +50,14 @@ int main()
         //RUN_CL(ParallelBitonicSortA);
         //RUN_CL(ParallelBitonicSortB2);
         //RUN_CL(ParallelBitonicSortB4);
-        //RUN_CL(ParallelBitonicSortB8);
-        //RUN_CL(ParallelBitonicSortB16);
+        RUN_CL(ParallelBitonicSortB8, size, int);
+        RUN_CL(ParallelBitonicSortB16, size, int);
         //RUN_CL(ParallelBitonicSortC, size, int);
         //RUN_CL(ParallelMergeSort);
 
-        RUN_CL(libcl::RadixSort, size, int);
+        //RUN_CL(libcl::RadixSort, size, int);
+
+        RUN_CL(amd::BitonicSort, size, int);
 
         delete context;
         delete queue;
