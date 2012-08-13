@@ -8,75 +8,81 @@
 
 using namespace std;
 
-/**
- * From: http://www.bealto.com/gpu-sorting_intro.html
- */
-template<typename T, size_t count>
-class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
+namespace gpu
 {
-    using Base = GPUSortingAlgorithm<T, count>;
-
-    public:
-        ParallelSelectionSortBlocks(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel selection blocks (Bealto)", context, queue, true)
+    namespace bealto
+    {
+        /**
+         * From: http://www.bealto.com/gpu-sorting_intro.html
+         */
+        template<typename T, size_t count>
+        class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
         {
-            blockFactor = 1;
-        }
+                using Base = GPUSortingAlgorithm<T, count>;
 
-        virtual ~ParallelSelectionSortBlocks()
-        {
-        }
+            public:
+                ParallelSelectionSortBlocks(Context* context, CommandQueue* queue)
+                    : GPUSortingAlgorithm<T, count>("Parallel selection blocks (Bealto)", context, queue, true)
+                {
+                    blockFactor = 1;
+                }
 
-    protected:
-        bool init()
-        {
-            stringstream options;
-            options << "-D BLOCK_FACTOR=" << blockFactor;
-            program = Base::context->createProgram("gpu/bealto/ParallelSelectionSortBlocks.cl", options.str());
-            kernel = program->createKernel("ParallelSelectionSortBlocks");
+                virtual ~ParallelSelectionSortBlocks()
+                {
+                }
 
-            return true;
-        }
+            protected:
+                bool init()
+                {
+                    stringstream options;
+                    options << "-D BLOCK_FACTOR=" << blockFactor;
+                    program = Base::context->createProgram("gpu/bealto/ParallelSelectionSortBlocks.cl", options.str());
+                    kernel = program->createKernel("ParallelSelectionSortBlocks");
 
-        void upload()
-        {
-            in = Base::context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count);
-            out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    return true;
+                }
 
-            Base::queue->enqueueWrite(in, SortingAlgorithm<T, count>::data);
-            Base::queue->finish();
-        }
+                void upload()
+                {
+                    in = Base::context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count);
+                    out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
 
-        void sort(size_t workGroupSize)
-        {
-            kernel->setArg(0, in);
-            kernel->setArg(1, out);
-            kernel->setArg(2, sizeof(cl_uint) * workGroupSize * blockFactor, nullptr);
-            size_t globalWorkSizes[1] = { count };
-            size_t localWorkSizes[1] = { workGroupSize };
-            Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-            Base::queue->finish();
-        }
+                    Base::queue->enqueueWrite(in, SortingAlgorithm<T, count>::data);
+                    Base::queue->finish();
+                }
 
-        void download()
-        {
-            Base::queue->enqueueRead(out, SortingAlgorithm<T, count>::data);
-            Base::queue->finish();
-        }
+                void sort(size_t workGroupSize)
+                {
+                    kernel->setArg(0, in);
+                    kernel->setArg(1, out);
+                    kernel->setArg(2, sizeof(cl_uint) * workGroupSize * blockFactor, nullptr);
+                    size_t globalWorkSizes[1] = { count };
+                    size_t localWorkSizes[1] = { workGroupSize };
+                    Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
+                    Base::queue->finish();
+                }
 
-        void cleanup()
-        {
-            delete program;
-            delete in;
-            delete out;
-            delete kernel;
-        }
+                void download()
+                {
+                    Base::queue->enqueueRead(out, SortingAlgorithm<T, count>::data);
+                    Base::queue->finish();
+                }
 
-        size_t blockFactor;
-        Program* program;
-        Kernel* kernel;
-        Buffer* in;
-        Buffer* out;
-};
+                void cleanup()
+                {
+                    delete program;
+                    delete in;
+                    delete out;
+                    delete kernel;
+                }
+
+                size_t blockFactor;
+                Program* program;
+                Kernel* kernel;
+                Buffer* in;
+                Buffer* out;
+        };
+    }
+}
 
 #endif // PARALLELSELECTIONSORTBLOCKS_H

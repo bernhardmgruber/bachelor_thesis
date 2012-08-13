@@ -7,36 +7,40 @@
 
 using namespace std;
 
-/**
- * Timsort implementation from https://github.com/swenson/sort
- */
-template<typename T, size_t count>
-class TimSort : public CPUSortingAlgorithm<T, count>
+namespace cpu
 {
-    public:
-        TimSort()
-            : CPUSortingAlgorithm<T, count>("Timsort")
-        {
-        }
+    /**
+     * Timsort implementation from https://github.com/swenson/sort
+     */
+    template<typename T, size_t count>
+    class TimSort : public CPUSortingAlgorithm<T, count>
+    {
+        public:
+            TimSort()
+                : CPUSortingAlgorithm<T, count>("Timsort")
+            {
+            }
 
-        virtual ~TimSort()
-        {
-        }
+            virtual ~TimSort()
+            {
+            }
 
-    protected:
-        bool init()
-        {
-            return true;
-        }
+        protected:
+            bool init()
+            {
+                return true;
+            }
 
-        void sort()
-        {
-            timsort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count, [](const T& a, const T& b) { return a < b; });
-        }
+            void sort()
+            {
+                timsort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count, [](const T& a, const T& b) { return a < b; });
+            }
 
-        void cleanup()
-        {
-        }
-};
+            void cleanup()
+            {
+            }
+    };
+}
+
 
 #endif // TIMSORT_H

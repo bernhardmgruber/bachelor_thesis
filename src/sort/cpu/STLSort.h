@@ -7,20 +7,23 @@
 
 using namespace std;
 
-template<typename T, size_t count>
-class STLSort : public CPUSortingAlgorithm<T, count>
+namespace cpu
 {
-    public:
-        STLSort()
-            : CPUSortingAlgorithm<T, count>("C++ STL algorithm sort")
-        {
-        }
+    template<typename T, size_t count>
+    class STLSort : public CPUSortingAlgorithm<T, count>
+    {
+        public:
+            STLSort()
+                : CPUSortingAlgorithm<T, count>("C++ STL algorithm sort")
+            {
+            }
 
-    protected:
-        void sort()
-        {
-            std::sort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count);
-        }
-};
+        protected:
+            void sort()
+            {
+                std::sort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count);
+            }
+    };
+}
 
 #endif // STLSORT_H

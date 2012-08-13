@@ -32,10 +32,10 @@ int main()
 {
     const size_t size = 256 * 256 * 32;
 
-    RUN(Quicksort, size, int);
-    //RUN(QSort, size, int);
-    //RUN(STLSort, size, int);
-    //RUN(TimSort, size, int);
+    RUN(cpu::Quicksort, size, int);
+    //RUN(cpu::QSort, size, int);
+    //RUN(cpu::STLSort, size, int);
+    //RUN(cpu::TimSort, size, int);
     RUN(cpu::amd::RadixSort, size, int);
 
     try
@@ -50,23 +50,23 @@ int main()
         //cout << "   " << context->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE) << "B local mem" << endl;
         //cout << endl;
 
-        //RUN_CL(ParallelSelectionSort);
-        //RUN_CL(ParallelSelectionSortLocal);
-        //RUN_CL(ParallelSelectionSortBlocks);
-        //RUN_CL(ParallelBitonicSortLocal);
-        //RUN_CL(ParallelBitonicSortLocalOptim);
-        //RUN_CL(ParallelBitonicSortA);
-        //RUN_CL(ParallelBitonicSortB2);
-        //RUN_CL(ParallelBitonicSortB4);
-        //RUN_CL(ParallelBitonicSortB8, size, int);
-        RUN_CL(ParallelBitonicSortB16, size, int);
-        //RUN_CL(ParallelBitonicSortC, size, int);
-        //RUN_CL(ParallelMergeSort);
+        //RUN_CL(gpu::bealto::ParallelSelectionSort, size, int);
+        //RUN_CL(gpu::bealto::ParallelSelectionSortLocal, size, int);
+        //RUN_CL(gpu::bealto::ParallelSelectionSortBlocks, size, int);
+        //RUN_CL(gpu::bealto::ParallelBitonicSortLocal, size, int);
+        //RUN_CL(gpu::bealto::ParallelBitonicSortLocalOptim, size, int);
+        //RUN_CL(gpu::bealto::ParallelBitonicSortA, size, int);
+        //RUN_CL(gpu::bealto::ParallelBitonicSortB2, size, int);
+        //RUN_CL(gpu::bealto::ParallelBitonicSortB4, size, int);
+        //RUN_CL(gpu::bealto::ParallelBitonicSortB8, size, int);
+        RUN_CL(gpu::bealto::ParallelBitonicSortB16, size, int);
+        //RUN_CL(gpu::bealto::ParallelBitonicSortC, size, int);
+        //RUN_CL(gpu::bealto::ParallelMergeSort);
 
-        //RUN_CL(libcl::RadixSort, size, int);
+        //RUN_CL(gpu::libcl::RadixSort, size, int);
 
-        //RUN_CL(amd::BitonicSort, size, int);
-        //RUN_CL(amd::RadixSort, size, int);
+        //RUN_CL(gpu::amd::BitonicSort, size, int);
+        //RUN_CL(gpu::amd::RadixSort, size, int);
 
         delete context;
         delete queue;
