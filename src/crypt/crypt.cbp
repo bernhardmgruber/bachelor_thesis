@@ -46,6 +46,7 @@
 		<Unit filename="GPUCryptAlgorithm.h" />
 		<Unit filename="cpu\OpenSSL\aes.cl" />
 		<Unit filename="cpu\OpenSSL\aes.h" />
+		<Unit filename="gpu\amd\aes.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
