@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="clpp" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\clpp" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Debug\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\clpp" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="." />
+		</Compiler>
+		<Linker>
+			<Add library="OpenCL" />
+		</Linker>
+		<Unit filename="clpp\StopWatch.cpp" />
+		<Unit filename="clpp\StopWatch.h" />
+		<Unit filename="clpp\clpp.cpp" />
+		<Unit filename="clpp\clpp.h" />
+		<Unit filename="clpp\clppContext.cpp" />
+		<Unit filename="clpp\clppContext.h" />
+		<Unit filename="clpp\clppProgram.cpp" />
+		<Unit filename="clpp\clppProgram.h" />
+		<Unit filename="clpp\clppScan.h" />
+		<Unit filename="clpp\clppScan_Default.cl" />
+		<Unit filename="clpp\clppScan_Default.cpp" />
+		<Unit filename="clpp\clppScan_Default.h" />
+		<Unit filename="clpp\clppScan_GPU.cl" />
+		<Unit filename="clpp\clppScan_GPU.cpp" />
+		<Unit filename="clpp\clppScan_GPU.h" />
+		<Unit filename="clpp\clppSort.cpp" />
+		<Unit filename="clpp\clppSort.h" />
+		<Unit filename="clpp\clppSort_Blelloch.cl" />
+		<Unit filename="clpp\clppSort_Blelloch.cpp" />
+		<Unit filename="clpp\clppSort_Blelloch.h" />
+		<Unit filename="clpp\clppSort_CPU.cpp" />
+		<Unit filename="clpp\clppSort_CPU.h" />
+		<Unit filename="clpp\clppSort_RadixSort.cl" />
+		<Unit filename="clpp\clppSort_RadixSort.cpp" />
+		<Unit filename="clpp\clppSort_RadixSort.h" />
+		<Unit filename="clpp\clppSort_RadixSortGPU.cl" />
+		<Unit filename="clpp\clppSort_RadixSortGPU.cpp" />
+		<Unit filename="clpp\clppSort_RadixSortGPU.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

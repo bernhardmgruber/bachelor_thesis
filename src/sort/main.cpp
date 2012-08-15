@@ -31,7 +31,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 256 * 256 * 32;
+    const size_t size = 256 * 256 * 256;
 
     RUN(cpu::Quicksort, size, int);
     //RUN(cpu::QSort, size, int);
@@ -64,9 +64,9 @@ int main()
         //RUN_CL(gpu::bealto::ParallelBitonicSortC, size, int);
         //RUN_CL(gpu::bealto::ParallelMergeSort);
 
-        //RUN_CL(gpu::libcl::RadixSort, size, int);
+        //RUN_CL(gpu::clpp::RadixSort, size, int); // not working
 
-        RUN_CL(gpu::clpp::RadixSort, size, int);
+        //RUN_CL(gpu::libcl::RadixSort, size, int);
 
         //RUN_CL(gpu::amd::BitonicSort, size, int);
         //RUN_CL(gpu::amd::RadixSort, size, int);

@@ -14,6 +14,10 @@
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add library="libs\clpp\bin\Debug\libclpp.a" />
+					<Add library="opencl" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin\Release\sort" prefix_auto="1" extension_auto="1" />
@@ -25,6 +29,8 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="libs\clpp\bin\Release\libclpp.a" />
+					<Add library="opencl" />
 				</Linker>
 			</Target>
 		</Build>
@@ -32,10 +38,8 @@
 			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="libs\clpp" />
 		</Compiler>
-		<Linker>
-			<Add library="opencl" />
-		</Linker>
 		<Unit filename="..\common\OpenCL.cpp" />
 		<Unit filename="..\common\OpenCL.h" />
 		<Unit filename="..\common\Timer.cpp" />
@@ -77,10 +81,15 @@
 		<Unit filename="gpu\bealto\ParallelSelectionSortBlocks.h" />
 		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.cl" />
 		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.h" />
-		<Unit filename="gpu\clpp\RadixSort.cl" />
 		<Unit filename="gpu\clpp\RadixSort.h" />
 		<Unit filename="gpu\libCL\RadixSort.cl" />
 		<Unit filename="gpu\libCL\RadixSort.h" />
+		<Unit filename="libs\clpp\clppScan_Default.cl" />
+		<Unit filename="libs\clpp\clppScan_GPU.cl" />
+		<Unit filename="libs\clpp\clppSort_Blelloch.cl" />
+		<Unit filename="libs\clpp\clppSort_RadixSort.cl" />
+		<Unit filename="libs\clpp\clppSort_RadixSortGPU.cl" />
+		<Unit filename="libs\clpp\clppsort.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
