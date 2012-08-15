@@ -23,6 +23,7 @@
 #include "gpu/bealto/ParallelBitonicSortC.h"
 #include "gpu/bealto/ParallelMergeSort.h"
 #include "gpu/libCL/RadixSort.h"
+#include "gpu/clpp/RadixSort.h"
 #include "gpu/amd/BitonicSort.h"
 #include "gpu/amd/RadixSort.h"
 
@@ -59,11 +60,13 @@ int main()
         //RUN_CL(gpu::bealto::ParallelBitonicSortB2, size, int);
         //RUN_CL(gpu::bealto::ParallelBitonicSortB4, size, int);
         //RUN_CL(gpu::bealto::ParallelBitonicSortB8, size, int);
-        RUN_CL(gpu::bealto::ParallelBitonicSortB16, size, int);
+        //RUN_CL(gpu::bealto::ParallelBitonicSortB16, size, int);
         //RUN_CL(gpu::bealto::ParallelBitonicSortC, size, int);
         //RUN_CL(gpu::bealto::ParallelMergeSort);
 
         //RUN_CL(gpu::libcl::RadixSort, size, int);
+
+        RUN_CL(gpu::clpp::RadixSort, size, int);
 
         //RUN_CL(gpu::amd::BitonicSort, size, int);
         //RUN_CL(gpu::amd::RadixSort, size, int);

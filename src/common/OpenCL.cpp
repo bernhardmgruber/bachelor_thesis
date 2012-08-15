@@ -78,7 +78,6 @@ void checkError(int line)
             ss << error;
         throw OpenCLException(ss.str());
     }
-
 }
 
 //
