@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="libCL" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\cl" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Debug" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D_CRT_SECURE_NO_WARNINGS" />
+					<Add option="-Wall" />
+					<Add option="-O0" />
+					<Add directory="." />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="." />
+				</ResourceCompiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\cl" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D_CRT_SECURE_NO_WARNINGS" />
+					<Add option="-W" />
+					<Add option="-O2" />
+					<Add directory="." />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="." />
+				</ResourceCompiler>
+			</Target>
+		</Build>
+		<Unit filename="ReadMe.txt" />
+		<Unit filename="color\oclColor.cl" />
+		<Unit filename="color\oclColor.cpp" />
+		<Unit filename="color\oclColor.h" />
+		<Unit filename="color\oclQuantize.cl" />
+		<Unit filename="color\oclQuantize.cpp" />
+		<Unit filename="color\oclQuantize.h" />
+		<Unit filename="filter\oclBilateral.cl" />
+		<Unit filename="filter\oclBilateral.cpp" />
+		<Unit filename="filter\oclBilateral.h" />
+		<Unit filename="filter\oclBilateralGrid.cl" />
+		<Unit filename="filter\oclBilateralGrid.cpp" />
+		<Unit filename="filter\oclBilateralGrid.h" />
+		<Unit filename="filter\oclBilinearPyramid.cl" />
+		<Unit filename="filter\oclBilinearPyramid.cpp" />
+		<Unit filename="filter\oclBilinearPyramid.h" />
+		<Unit filename="filter\oclConvolute.cl" />
+		<Unit filename="filter\oclConvolute.cpp" />
+		<Unit filename="filter\oclConvolute.h" />
+		<Unit filename="filter\oclRecursiveGaussian.cl" />
+		<Unit filename="filter\oclRecursiveGaussian.cpp" />
+		<Unit filename="filter\oclRecursiveGaussian.h" />
+		<Unit filename="filter\oclSobel.cl" />
+		<Unit filename="filter\oclSobel.cpp" />
+		<Unit filename="filter\oclSobel.h" />
+		<Unit filename="filter\oclTangent.cl" />
+		<Unit filename="filter\oclTangent.cpp" />
+		<Unit filename="filter\oclTangent.h" />
+		<Unit filename="geom\oclBvhTrimesh.cl" />
+		<Unit filename="geom\oclBvhTrimesh.cpp" />
+		<Unit filename="geom\oclBvhTrimesh.h" />
+		<Unit filename="image\oclAmbientOcclusion.cl" />
+		<Unit filename="image\oclAmbientOcclusion.cpp" />
+		<Unit filename="image\oclAmbientOcclusion.h" />
+		<Unit filename="image\oclBloom.cl" />
+		<Unit filename="image\oclBloom.cpp" />
+		<Unit filename="image\oclBloom.h" />
+		<Unit filename="image\oclToneMapping.cl" />
+		<Unit filename="image\oclToneMapping.cpp" />
+		<Unit filename="image\oclToneMapping.h" />
+		<Unit filename="math\oclVector.cl" />
+		<Unit filename="math\oclVector.cpp" />
+		<Unit filename="math\oclVector.h" />
+		<Unit filename="oclBuffer.cpp" />
+		<Unit filename="oclBuffer.h" />
+		<Unit filename="oclCommon.cpp" />
+		<Unit filename="oclCommon.h" />
+		<Unit filename="oclContext.cpp" />
+		<Unit filename="oclContext.h" />
+		<Unit filename="oclDevice.cpp" />
+		<Unit filename="oclDevice.h" />
+		<Unit filename="oclImage2D.cpp" />
+		<Unit filename="oclImage2D.h" />
+		<Unit filename="oclImage3D.cpp" />
+		<Unit filename="oclImage3D.h" />
+		<Unit filename="oclKernel.cpp" />
+		<Unit filename="oclKernel.h" />
+		<Unit filename="oclMem.cpp" />
+		<Unit filename="oclMem.h" />
+		<Unit filename="oclObject.cpp" />
+		<Unit filename="oclObject.h" />
+		<Unit filename="oclProgram.cpp" />
+		<Unit filename="oclProgram.h" />
+		<Unit filename="phys\oclFluid3D.cl" />
+		<Unit filename="phys\oclFluid3D.cpp" />
+		<Unit filename="phys\oclFluid3D.h" />
+		<Unit filename="phys\oclFluid3Dnext.cl" />
+		<Unit filename="phys\oclFluid3Dnext.cpp" />
+		<Unit filename="phys\oclFluid3Dnext.h" />
+		<Unit filename="sort\oclRadixSort.cl" />
+		<Unit filename="sort\oclRadixSort.cpp" />
+		<Unit filename="sort\oclRadixSort.h" />
+		<Unit filename="util\oclMemory.cl" />
+		<Unit filename="util\oclMemory.cpp" />
+		<Unit filename="util\oclMemory.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
