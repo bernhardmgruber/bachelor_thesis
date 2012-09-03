@@ -6,10 +6,10 @@
 namespace cpu
 {
     template<typename T, size_t count>
-    class PrefixSum : public CPUScanAlgorithm<T, count>
+    class Scan : public CPUScanAlgorithm<T, count>
     {
         public:
-            PrefixSum()
+            Scan()
                 : CPUScanAlgorithm<T, count>("Prefix Sum")
             {
             }
