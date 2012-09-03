@@ -16,36 +16,24 @@ namespace gpu
         template<typename T, size_t count>
         class BitonicSort : public GPUSortingAlgorithm<T, count>
         {
-                using Base = GPUSortingAlgorithm<T, count>;
-
             public:
-                BitonicSort(Context* context, CommandQueue* queue)
-                    : GPUSortingAlgorithm<T, count>("Bitonic Sort (AMD)", context, queue, true)
+                string getName() override
                 {
+                    return "Bitonic Sort (AMD)";
                 }
 
-                virtual ~BitonicSort()
+                void init(Context* context) override
                 {
-                }
-
-            protected:
-                bool init()
-                {
-                    program = Base::context->createProgram("gpu/amd/BitonicSort.cl");
+                    program = context->createProgram("gpu/amd/BitonicSort.cl");
                     kernel = program->createKernel("BitonicSort");
-
-                    return true;
                 }
 
-                void upload()
+                void upload(Context* context, T* data) override
                 {
-                    in = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-
-                    Base::queue->enqueueWrite(in, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    in = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count, data);
                 }
 
-                void sort(size_t workGroupSize)
+                void sort(CommandQueue* queue, size_t workGroupSize) override
                 {
                     /*for (size_t length = 1; length < count; length <<= 1)
                         for (size_t inc = length; inc > 0; inc >>= 1)
@@ -128,8 +116,8 @@ namespace gpu
                              */
                             //cl_event ndrEvt;
                             //status = clEnqueueNDRangeKernel(commandQueue, kernel, 1, NULL, globalThreads, localThreads, 0, NULL, &ndrEvt);
-                            Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-                            Base::queue->enqueueBarrier();
+                            queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
+                            queue->enqueueBarrier();
 
                             //CHECK_OPENCL_ERROR(status, "clEnqueueNDRangeKernel failed.");
 
@@ -141,7 +129,7 @@ namespace gpu
                         }
                     }
 
-                    Base::queue->finish();
+                    queue->finish();
 
                     // Enqueue readBuffer
                     /*cl_event readEvt;
@@ -166,19 +154,20 @@ namespace gpu
                     return SDK_SUCCESS;*/
                 }
 
-                void download()
+                void download(CommandQueue* queue, T* data) override
                 {
-                    Base::queue->enqueueRead(in, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    queue->enqueueRead(in, SortingAlgorithm<T, count>::data);
+                    queue->finish();
                 }
 
-                void cleanup()
+                void cleanup() override
                 {
                     delete program;
                     delete in;
                     delete kernel;
                 }
 
+            private:
                 Program* program;
                 Kernel* kernel;
                 Buffer* in;

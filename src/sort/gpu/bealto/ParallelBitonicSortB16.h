@@ -21,35 +21,26 @@ namespace gpu
                 using Base = GPUSortingAlgorithm<T, count>;
 
             public:
-                ParallelBitonicSortB16(Context* context, CommandQueue* queue)
-                    : GPUSortingAlgorithm<T, count>("Parallel bitonic B16 (Bealto)", context, queue, true)
+                string getName() override
                 {
+                    return "Parallel bitonic B16 (Bealto)";
                 }
 
-                virtual ~ParallelBitonicSortB16()
-                {
-                }
-
-            protected:
-                bool init()
+                void init() override
                 {
                     program = Base::context->createProgram("gpu/bealto/ParallelBitonicSortB16.cl");
                     kernel2 = program->createKernel("ParallelBitonicSortB2");
                     kernel4 = program->createKernel("ParallelBitonicSortB4");
                     kernel8 = program->createKernel("ParallelBitonicSortB8");
                     kernel16 = program->createKernel("ParallelBitonicSortB16");
-
-                    return true;
                 }
 
-                void upload()
+                void upload(Context* context, T* data) override
                 {
-                    buffer = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-                    Base::queue->enqueueWrite(buffer, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    buffer = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count, data);
                 }
 
-                void sort(size_t workGroupSize)
+                void sort(CommandQueue* queue, size_t workGroupSize) override
                 {
                     for (size_t length=1; length<count; length<<=1)
                     {
@@ -97,21 +88,21 @@ namespace gpu
                             kernel->setArg(2, length << 1);  // DIR passed to kernel
                             size_t globalWorkSizes[1] = { nThreads };
                             size_t localWorkSizes[1] = { workGroupSize };
-                            Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-                            Base::queue->enqueueBarrier();
+                            queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
+                            queue->enqueueBarrier();
                             inc >>= ninc;
                         }
                     }
-                    Base::queue->finish();
+                    queue->finish();
                 }
 
-                void download()
+                void download(CommandQueue* queue, T* data) override
                 {
-                    Base::queue->enqueueRead(buffer, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    queue->enqueueRead(buffer, data);
+                    queue->finish();
                 }
 
-                void cleanup()
+                void cleanup() override
                 {
                     delete program;
                     delete buffer;
@@ -121,6 +112,7 @@ namespace gpu
                     delete kernel16;
                 }
 
+            private:
                 Program* program;
                 Kernel* kernel2;
                 Kernel* kernel4;

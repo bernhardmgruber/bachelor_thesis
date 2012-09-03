@@ -15,48 +15,38 @@ class ParallelBitonicSortLocal : public GPUSortingAlgorithm<T, count>
     using Base = GPUSortingAlgorithm<T, count>;
 
     public:
-        ParallelBitonicSortLocal(Context* context, CommandQueue* queue)
-            : GPUSortingAlgorithm<T, count>("Parallel bitonic local (Bealto)", context, queue, true)
+        string getName() override
         {
+            return "Parallel bitonic local (Bealto)";
         }
 
-        virtual ~ParallelBitonicSortLocal()
+        void init(Context* context) override
         {
-        }
-
-    protected:
-        bool init()
-        {
-            program = Base::context->createProgram("gpu/bealto/ParallelBitonicSortLocal.cl");
+            program = context->createProgram("gpu/bealto/ParallelBitonicSortLocal.cl");
             kernel = program->createKernel("ParallelBitonicSortLocal");
-
-            return true;
         }
 
-        void upload()
+        void upload(Context* context, T* data)
         {
-            in = Base::context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count);
-            out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-
-            Base::queue->enqueueWrite(in, SortingAlgorithm<T, count>::data);
-            Base::queue->finish();
+            in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count, data);
+            out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
         }
 
-        void sort(size_t workGroupSize)
+        void sort(CommandQueue* queue, size_t workGroupSize)
         {
             kernel->setArg(0, in);
             kernel->setArg(1, out);
             kernel->setArg(2, sizeof(cl_int) * workGroupSize, nullptr);
             size_t globalWorkSizes[1] = { count };
             size_t localWorkSizes[1] = { workGroupSize };
-            Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-            Base::queue->finish();
+            queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
+            queue->finish();
         }
 
-        void download()
+        void download(CommandQueue* queue, T* data)
         {
-            Base::queue->enqueueRead(out, SortingAlgorithm<T, count>::data);
-            Base::queue->finish();
+            queue->enqueueRead(out, data);
+            queue->finish();
         }
 
         void cleanup()

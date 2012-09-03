@@ -37,20 +37,15 @@ int main()
     {
         Runner<int, size> runner;
 
+        runner.printCLInfo();
+
         runner.run<cpu::Quicksort>();
         runner.run<cpu::QSort>();
         runner.run<cpu::STLSort>();
         runner.run<cpu::TimSort>();
         runner.run<cpu::amd::RadixSort>();
 
-
-        //cout << endl;
-        //cout << "Running on " << context->getInfoString(CL_DEVICE_NAME) << endl;
-        //cout << "   " << context->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE) << "B global mem" << endl;
-        //cout << "   " << context->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE) << "B local mem" << endl;
-        //cout << endl;
-
-        //RUN_CL(gpu::bealto::ParallelSelectionSort, size, int);
+        runner.runCLGPU<gpu::bealto::ParallelSelectionSort>(true);
         //RUN_CL(gpu::bealto::ParallelSelectionSortLocal, size, int);
         //RUN_CL(gpu::bealto::ParallelSelectionSortBlocks, size, int);
         //RUN_CL(gpu::bealto::ParallelBitonicSortLocal, size, int);

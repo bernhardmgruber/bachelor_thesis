@@ -16,53 +16,43 @@ namespace gpu
         template<typename T, size_t count>
         class ParallelSelectionSort : public GPUSortingAlgorithm<T, count>
         {
-                using Base = GPUSortingAlgorithm<T, count>;
-
             public:
-                ParallelSelectionSort(Context* context, CommandQueue* queue)
-                    : GPUSortingAlgorithm<T, count>("Parallel selection (Bealto)", context, queue, true)
+                string getName() override
                 {
+                    return "Parallel selection (Bealto)";
                 }
 
-                virtual ~ParallelSelectionSort()
+                bool init(Context* context) override
                 {
-                }
-
-            protected:
-                bool init()
-                {
-                    program = Base::context->createProgram("gpu/bealto/ParallelSelectionSort.cl");
+                    program = context->createProgram("gpu/bealto/ParallelSelectionSort.cl");
                     kernel = program->createKernel("ParallelSelectionSort");
 
                     return true;
                 }
 
-                void upload()
+                void upload(Context* context, T* data) override
                 {
-                    in = Base::context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count);
-                    out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-
-                    Base::queue->enqueueWrite(in, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count, data);
+                    out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                 }
 
-                void sort(size_t workGroupSize)
+                void sort(CommandQueue* queue, size_t workGroupSize) override
                 {
                     kernel->setArg(0, in);
                     kernel->setArg(1, out);
                     size_t globalWorkSizes[1] = { count };
                     size_t localWorkSizes[1] = { workGroupSize };
-                    Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-                    Base::queue->finish();
+                    queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
+                    queue->finish();
                 }
 
-                void download()
+                void download(CommandQueue* queue, T* data) override
                 {
-                    Base::queue->enqueueRead(out, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    queue->enqueueRead(out, data);
+                    queue->finish();
                 }
 
-                void cleanup()
+                void cleanup() override
                 {
                     delete program;
                     delete in;
@@ -70,6 +60,9 @@ namespace gpu
                     delete kernel;
                 }
 
+                virtual ~ParallelSelectionSort() {}
+
+            private:
                 Program* program;
                 Kernel* kernel;
                 Buffer* in;

@@ -15,7 +15,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="libs\clpp\bin\Debug\libclpp.a" />
+					<Add library="..\common\libs\clpp\bin\Debug\libclpp.a" />
 					<Add library="opencl" />
 				</Linker>
 			</Target>
@@ -29,7 +29,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="libs\clpp\bin\Release\libclpp.a" />
+					<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
 					<Add library="opencl" />
 				</Linker>
 			</Target>
@@ -38,7 +38,7 @@
 			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add directory="libs\clpp" />
+			<Add directory="..\common\libs\clpp" />
 		</Compiler>
 		<Unit filename="..\common\OpenCL.cpp" />
 		<Unit filename="..\common\OpenCL.h" />
@@ -46,6 +46,7 @@
 		<Unit filename="..\common\Timer.h" />
 		<Unit filename="CPUSortingAlgorithm.h" />
 		<Unit filename="GPUSortingAlgorithm.h" />
+		<Unit filename="Runner.h" />
 		<Unit filename="SortingAlgorithm.h" />
 		<Unit filename="cpu\QSort.h" />
 		<Unit filename="cpu\Quicksort.h" />
@@ -84,12 +85,6 @@
 		<Unit filename="gpu\clpp\RadixSort.h" />
 		<Unit filename="gpu\libCL\RadixSort.cl" />
 		<Unit filename="gpu\libCL\RadixSort.h" />
-		<Unit filename="libs\clpp\clppScan_Default.cl" />
-		<Unit filename="libs\clpp\clppScan_GPU.cl" />
-		<Unit filename="libs\clpp\clppSort_Blelloch.cl" />
-		<Unit filename="libs\clpp\clppSort_RadixSort.cl" />
-		<Unit filename="libs\clpp\clppSort_RadixSortGPU.cl" />
-		<Unit filename="libs\clpp\clppsort.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

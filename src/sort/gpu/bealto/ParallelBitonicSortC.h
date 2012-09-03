@@ -33,27 +33,22 @@ namespace gpu
                 }
 
             protected:
-                bool init()
+                void init(Context* context) override
                 {
-                    program = Base::context->createProgram("gpu/bealto/ParallelBitonicSortC.cl", "-I gpu/bealto/");
+                    program = context->createProgram("gpu/bealto/ParallelBitonicSortC.cl", "-I gpu/bealto/");
                     kernel2 = program->createKernel("ParallelBitonicSortB2");
                     kernel4 = program->createKernel("ParallelBitonicSortB4");
                     kernel8 = program->createKernel("ParallelBitonicSortB8");
                     kernel16 = program->createKernel("ParallelBitonicSortB16");
                     kernelC4 = program->createKernel("ParallelBitonicSortC4");
-
-                    return true;
                 }
 
-                void upload()
+                void upload(Context* context, T* data) override
                 {
-                    out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-
-                    Base::queue->enqueueWrite(out, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count, data);
                 }
 
-                void sort(size_t workGroupSize)
+                void sort(CommandQueue* queue, size_t workGroupSize) override
                 {
                     //int mLastN = -1;
 
@@ -141,8 +136,8 @@ namespace gpu
 
                             size_t globalWorkSizes[1] = { nThreads };
                             size_t localWorkSizes[1] = { wg };
-                            Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-                            Base::queue->enqueueBarrier();
+                            queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
+                            queue->enqueueBarrier();
                             // if (mLastN != n) printf("LENGTH=%d INC=%d KID=%d\n",length,inc,kid); // DEBUG
                             if (ninc < 0)
                                 break; // done
@@ -151,16 +146,16 @@ namespace gpu
                     }
                     //mLastN = count;
 
-                    Base::queue->finish();
+                    queue->finish();
                 }
 
-                void download()
+                void download(CommandQueue* queue, T* data) override
                 {
-                    Base::queue->enqueueRead(out, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    queue->enqueueRead(out, data);
+                    queue->finish();
                 }
 
-                void cleanup()
+                void cleanup() override
                 {
                     delete program;
                     delete out;
@@ -171,6 +166,7 @@ namespace gpu
                     delete kernelC4;
                 }
 
+            private:
                 Program* program;
                 Kernel* kernel2;
                 Kernel* kernel4;
