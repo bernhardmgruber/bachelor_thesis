@@ -3,6 +3,9 @@
 
 #include <CL/CL.h>
 
+#include <map>
+#include <algorithm>
+
 #include "ScanAlgorithm.h"
 
 template<typename T, size_t count>
@@ -34,12 +37,12 @@ class GPUScanAlgorithm : public ScanAlgorithm<T, count>
 
             // run scan algorithm
             size_t maxWorkGroupSize = min(context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
-            map<int, double> sortTimes;
+            map<int, double> scanTimes;
             if(!useMultipleWorkGroupSizes)
             {
                 Base::timer.start();
-                sort(maxWorkGroupSize);
-                sortTimes[maxWorkGroupSize] = Base::timer.stop();
+                scan(maxWorkGroupSize);
+                scanTimes[maxWorkGroupSize] = Base::timer.stop();
             }
             else
             {
@@ -49,8 +52,8 @@ class GPUScanAlgorithm : public ScanAlgorithm<T, count>
                     if(count % i == 0)
                     {
                         Base::timer.start();
-                        sort(i);
-                        sortTimes[i] = Base::timer.stop();
+                        scan(i);
+                        scanTimes[i] = Base::timer.stop();
                     }
                 }
             }
@@ -68,22 +71,18 @@ class GPUScanAlgorithm : public ScanAlgorithm<T, count>
             cout << "#  Init      " << fixed << initTime << "s" << flush << endl;
             cout << "#  Upload    " << fixed << uploadTime << "s" << flush << endl;
 
-            for(auto entry : sortTimes)
+            for(auto entry : scanTimes)
                 cout << "#  Sort      " << fixed << entry.second << "s " << "( WG size: " << entry.first << ")" << flush << endl;
 
             cout << "#  Download  " << fixed << downloadTime << "s" << flush << endl;
             cout << "#  Cleanup   " << fixed << cleanupTime << "s" << flush << endl;
-            cout << "#  " << (Base::isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << (initTime + uploadTime + min_element(sortTimes.begin(), sortTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
+            cout << "#  " << (Base::verify() ? "SUCCESS" : "FAILED ") << "   " << fixed << (initTime + uploadTime + min_element(scanTimes.begin(), scanTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
         }
 
     protected:
-        void sort()
-        {
-        }
-
         virtual bool init() = 0;
         virtual void upload() = 0;
-        virtual void sort(size_t workGroupSize) = 0;
+        virtual void scan(size_t workGroupSize) = 0;
         virtual void download() = 0;
         virtual void cleanup() = 0;
 
@@ -95,7 +94,7 @@ class GPUScanAlgorithm : public ScanAlgorithm<T, count>
 template <template <typename, size_t> class T, size_t count, typename V>
 void runGPU(Context* context, CommandQueue* queue)
 {
-    SortingAlgorithm<V, count>* alg;
+    ScanAlgorithm<V, count>* alg;
     alg = new T<V, count>(context, queue);
     alg->runTest();
     delete alg;

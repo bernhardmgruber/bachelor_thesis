@@ -4,16 +4,17 @@
 
 #include "../common/OpenCL.h"
 
-#include "cpu/PrefixSum.h"
+#include "cpu/Scan.h"
+#include "gpu/clpp/Scan.h"
 
 
 using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1024 * 64;
+    const size_t size = 1024 * 1 * 64;
 
-    RUN(cpu::PrefixSum, size, int);
+    RUN(cpu::Scan, size, int);
 
     try
     {
@@ -27,7 +28,7 @@ int main()
         //cout << "   " << context->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE) << "B local mem" << endl;
         //cout << endl;
 
-        //RUN_CL(gpu::bealto::ParallelSelectionSort, size, int);
+        RUN_CL(gpu::clpp::Scan, size, int);
 
         delete context;
         delete queue;
@@ -36,6 +37,7 @@ int main()
     catch(OpenCLException& e)
     {
         cerr << e.what() << endl;
+        return 1;
     }
 
     return 0;
