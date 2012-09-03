@@ -10,7 +10,7 @@
 
 #include "../../GPUSortingAlgorithm.h"
 
-#include "../../libs/clpp/clpp/clppSort_RadixSortGPU.h"
+#include "clpp/clppSort_RadixSortGPU.h"
 
 using namespace std;
 

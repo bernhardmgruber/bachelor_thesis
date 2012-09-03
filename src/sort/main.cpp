@@ -68,8 +68,8 @@ int main()
 
         //RUN_CL(gpu::libcl::RadixSort, size, int);
 
-        //RUN_CL(gpu::amd::BitonicSort, size, int);
-        //RUN_CL(gpu::amd::RadixSort, size, int);
+        RUN_CL(gpu::amd::BitonicSort, size, int);
+        RUN_CL(gpu::amd::RadixSort, size, int);
 
         delete context;
         delete queue;
@@ -78,6 +78,7 @@ int main()
     catch(OpenCLException& e)
     {
         cerr << e.what() << endl;
+        return 1;
     }
 
     return 0;
