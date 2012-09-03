@@ -16,29 +16,17 @@ namespace cpu
     class TimSort : public CPUSortingAlgorithm<T, count>
     {
         public:
-            TimSort()
-                : CPUSortingAlgorithm<T, count>("Timsort")
+            string getName() override
             {
+                return "Timsort";
             }
 
-            virtual ~TimSort()
+            void sort(T* data) override
             {
+                timsort(data, data + count, [](const T& a, const T& b) { return a < b; });
             }
 
-        protected:
-            bool init()
-            {
-                return true;
-            }
-
-            void sort()
-            {
-                timsort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count, [](const T& a, const T& b) { return a < b; });
-            }
-
-            void cleanup()
-            {
-            }
+            virtual ~TimSort() {}
     };
 }
 

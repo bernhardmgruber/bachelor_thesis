@@ -13,16 +13,17 @@ namespace cpu
     class STLSort : public CPUSortingAlgorithm<T, count>
     {
         public:
-            STLSort()
-                : CPUSortingAlgorithm<T, count>("C++ STL algorithm sort")
+            void sort(T* data) override
             {
+                std::sort(data, data + count);
             }
 
-        protected:
-            void sort()
+            string getName() override
             {
-                std::sort(SortingAlgorithm<T, count>::data, SortingAlgorithm<T, count>::data + count);
+                return "C++ STL algorithm sort";
             }
+
+            virtual ~STLSort() {}
     };
 }
 

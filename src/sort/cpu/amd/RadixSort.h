@@ -109,16 +109,13 @@ namespace cpu
         template<typename T, size_t count>
         class RadixSort : public CPUSortingAlgorithm<T, count>
         {
-                using Base = SortingAlgorithm<T, count>;
-
             public:
-                RadixSort()
-                    : CPUSortingAlgorithm<T, count>("RadixSort (AMD)")
+                string getName() override
                 {
+                    return "RadixSort (AMD)";
                 }
 
-            protected:
-                void sort()
+                void sort(T* data) override
                 {
                     size_t elementCount = count;
 
@@ -126,7 +123,7 @@ namespace cpu
                     T* tempData = new T[elementCount];
                     T* hSortedData = new T[elementCount];
 
-                    memcpy(tempData, Base::data, elementCount * sizeof(T));
+                    memcpy(tempData, data, elementCount * sizeof(T));
                     for(size_t bits = 0; bits < sizeof(T) * RADIX ; bits += RADIX)
                     {
                         // Initialize histogram bucket to zeros
@@ -165,12 +162,14 @@ namespace cpu
                     }
 
 
-                    memcpy(Base::data, hSortedData, elementCount * sizeof(T));
+                    memcpy(data, hSortedData, elementCount * sizeof(T));
 
                     delete[] tempData;
                     delete[] histogram;
                     delete[] hSortedData;
                 }
+
+                virtual ~RadixSort() {}
         };
 
     }

@@ -9,16 +9,18 @@ namespace cpu
     class Quicksort : public CPUSortingAlgorithm<T, count>
     {
         public:
-            Quicksort()
-                : CPUSortingAlgorithm<T, count>("Quicksort")
+            string getName() override
             {
+                return "Quicksort";
             }
 
-        protected:
-            void sort()
+            void sort(T* data) override
             {
+                this->data = data;
                 sort_r(0, count - 1);
             }
+
+            virtual ~Quicksort() {}
 
         private:
             /**
@@ -38,20 +40,20 @@ namespace cpu
                 int right = end;
 
                 // select pivot
-                int pivot = SortingAlgorithm<T, count>::data[(left + right) / 2];
+                int pivot = data[(left + right) / 2];
 
                 // partition array
                 while (left <= right)
                 {
-                    while (SortingAlgorithm<T, count>::data[left] < pivot)
+                    while (data[left] < pivot)
                         left++;
-                    while (pivot < SortingAlgorithm<T, count>::data[right])
+                    while (pivot < data[right])
                         right--;
 
                     // swap
                     if (left <= right)
                     {
-                        ::swap(SortingAlgorithm<T, count>::data[right], SortingAlgorithm<T, count>::data[left]);
+                        swap(data[right], data[left]);
 
                         left++;
                         right--;
@@ -62,6 +64,8 @@ namespace cpu
                 sort_r(start, left - 1);
                 sort_r(left, end);
             }
+
+            T* data;
     };
 }
 #endif // QUICKSORT_H

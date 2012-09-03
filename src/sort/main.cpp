@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "../common/OpenCL.h"
+#include "Runner.h"
 
 #include "cpu/Quicksort.h"
 #include "cpu/QSort.h"
@@ -31,19 +31,18 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 256 * 256 * 256;
-
-    RUN(cpu::Quicksort, size, int);
-    //RUN(cpu::QSort, size, int);
-    //RUN(cpu::STLSort, size, int);
-    //RUN(cpu::TimSort, size, int);
-    RUN(cpu::amd::RadixSort, size, int);
+    const size_t size = 256 * 256 * 16;
 
     try
     {
-        OpenCL::init();
-        Context* context = OpenCL::getGPUContext();
-        CommandQueue* queue = context->createCommandQueue();
+        Runner<int, size> runner;
+
+        runner.run<cpu::Quicksort>();
+        runner.run<cpu::QSort>();
+        runner.run<cpu::STLSort>();
+        runner.run<cpu::TimSort>();
+        runner.run<cpu::amd::RadixSort>();
+
 
         //cout << endl;
         //cout << "Running on " << context->getInfoString(CL_DEVICE_NAME) << endl;
@@ -68,12 +67,8 @@ int main()
 
         //RUN_CL(gpu::libcl::RadixSort, size, int);
 
-        RUN_CL(gpu::amd::BitonicSort, size, int);
-        RUN_CL(gpu::amd::RadixSort, size, int);
-
-        delete context;
-        delete queue;
-        OpenCL::cleanup();
+        //RUN_CL(gpu::amd::BitonicSort, size, int);
+        //RUN_CL(gpu::amd::RadixSort, size, int);
     }
     catch(OpenCLException& e)
     {
