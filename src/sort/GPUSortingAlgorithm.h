@@ -4,7 +4,7 @@
 template<typename T, size_t count>
 class GPUSortingAlgorithm
 {
- public:
+    public:
         virtual string getName() = 0;
         virtual void init(Context* context) = 0;
         virtual void upload(Context* context, T* data) = 0;

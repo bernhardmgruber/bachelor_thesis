@@ -1,4 +1,3 @@
-#include <CL/CL.h>
 #include <iostream>
 #include <fstream>
 
