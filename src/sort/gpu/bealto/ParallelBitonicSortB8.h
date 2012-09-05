@@ -34,7 +34,7 @@ namespace gpu
 
                 void upload(Context* context, T* data) override
                 {
-                    buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count, data);
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                 }
 
                 void sort(CommandQueue* queue, size_t workGroupSize) override
@@ -94,6 +94,8 @@ namespace gpu
                     delete kernel4;
                     delete kernel8;
                 }
+
+                virtual ~ParallelBitonicSortB8() {}
 
             private:
                 Program* program;

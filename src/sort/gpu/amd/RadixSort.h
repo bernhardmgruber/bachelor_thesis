@@ -110,25 +110,18 @@ namespace gpu
         template<typename T, size_t count>
         class RadixSort : public GPUSortingAlgorithm<T, count>
         {
-                using Base = GPUSortingAlgorithm<T, count>;
-
             public:
-                RadixSort(Context* context, CommandQueue* queue)
-                    : GPUSortingAlgorithm<T, count>("Radix sort (AMD)", context, queue)
+                string getName() override
                 {
+                    return "Radix sort (AMD)";
                 }
 
-                virtual ~RadixSort()
-                {
-                }
-
-            protected:
-                bool init()
+                void init(Context* context) override
                 {
                     //elementCount = sampleCommon->roundToPowerOf2<cl_uint>(elementCount);
                     elementCount = count;
 
-                    groupSize = Base::context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE);
+                    groupSize = context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
                     //element count must be multiple of GROUP_SIZE * RADICES
                     size_t mulFactor = groupSize * RADICES;
@@ -140,9 +133,6 @@ namespace gpu
 
                     numGroups = elementCount / mulFactor;
 
-                    // Allocate and init memory used by host
-                    unsortedData = SortingAlgorithm<T, count>::data;
-
                     dSortedData = new T[elementCount]();
 
                     hSortedData = new T[elementCount]();
@@ -150,37 +140,39 @@ namespace gpu
                     size_t tempSize = numGroups * groupSize * RADICES * sizeof(T);
                     histogramBins = new T[tempSize]();
 
-                    program = Base::context->createProgram("gpu/amd/RadixSort.cl");
+                    program = context->createProgram("gpu/amd/RadixSort.cl");
 
                     histogramKernel = program->createKernel("histogram");
                     permuteKernel = program->createKernel("permute");
 
                     // Output for histogram kernel
-                    unsortedDataBuf = Base::context->createBuffer(CL_MEM_READ_ONLY, elementCount * sizeof(T));
-                    histogramBinsBuf = Base::context->createBuffer(CL_MEM_WRITE_ONLY, tempSize);
+                    unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, elementCount * sizeof(T));
+                    histogramBinsBuf = context->createBuffer(CL_MEM_WRITE_ONLY, tempSize);
 
                     // Input for permute kernel
-                    scanedHistogramBinsBuf = Base::context->createBuffer(CL_MEM_READ_ONLY, tempSize);
+                    scanedHistogramBinsBuf = context->createBuffer(CL_MEM_READ_ONLY, tempSize);
 
                     // Final output
-                    sortedDataBuf = Base::context->createBuffer(CL_MEM_WRITE_ONLY, elementCount * sizeof(cl_uint));
-
-                    return true;
+                    sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, elementCount * sizeof(cl_uint));
                 }
 
-                void upload()
+                void upload(Context* context, T* data) override
                 {
-                    //bfKey = Base::context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) * count, SortingAlgorithm<T, count>::data);
+                    // Allocate and init memory used by host
+                    unsortedData = new T[elementCount];
+                    memcpy(unsortedData, data, count * sizeof(T));
 
-                    //Base::queue->finish();
+                    //bfKey = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) * count, SortingAlgorithm<T, count>::data);
+
+                    //queue->finish();
                 }
 
-                void sort(size_t workGroupSize)
+                void sort(CommandQueue* queue, size_t workGroupSize) override
                 {
                     for(size_t bits = 0; bits < sizeof(T) * RADIX; bits += RADIX)
                     {
                         // Calculate thread-histograms
-                        runHistogramKernel(bits, groupSize);
+                        runHistogramKernel(queue, bits, groupSize);
 
                         // Scan the histogram
                         int sum = 0;
@@ -199,14 +191,14 @@ namespace gpu
                         }
 
                         // Permute the element to appropriate place
-                        runPermuteKernel(bits, groupSize);
+                        runPermuteKernel(queue, bits, groupSize);
 
                         // Current output now becomes the next input
                         memcpy(unsortedData, dSortedData, elementCount * sizeof(cl_uint));
                     }
                 }
 
-                void runHistogramKernel(int bits, size_t groupSize)
+                void runHistogramKernel(CommandQueue* queue, int bits, size_t groupSize)
                 {
                     //cl_int status;
                     //cl_int eventStatus = CL_QUEUED;
@@ -227,7 +219,7 @@ namespace gpu
                     clWaitForEvents(1, &writeEvt);
                     clReleaseEvent(writeEvt);*/
 
-                    Base::queue->enqueueWrite(unsortedDataBuf, unsortedData);
+                    queue->enqueueWrite(unsortedDataBuf, unsortedData);
 
 
                     // Setup kernel arguments
@@ -271,7 +263,7 @@ namespace gpu
                     size_t globalThreads[] = { elementCount / RADICES };
                     size_t localThreads[] = { groupSize };
 
-                    Base::queue->enqueueKernel(histogramKernel, 1, globalThreads, localThreads);
+                    queue->enqueueKernel(histogramKernel, 1, globalThreads, localThreads);
                     /*status = clEnqueueNDRangeKernel(
                                   commandQueue,
                                   histogramKernel,
@@ -286,7 +278,7 @@ namespace gpu
                     //status = clFlush(commandQueue);
 
                     //status = sampleCommon->waitForEventAndRelease(&ndrEvt);
-                    Base::queue->enqueueBarrier();
+                    queue->enqueueBarrier();
 
                     // Enqueue the results to application pointer
                     /*cl_event readEvt;
@@ -300,15 +292,15 @@ namespace gpu
                                  0,
                                  NULL,
                                  &readEvt);*/
-                    Base::queue->enqueueRead(histogramBinsBuf, histogramBins);
+                    queue->enqueueRead(histogramBinsBuf, histogramBins);
 
                     //status = clFlush(commandQueue);
 
                     //status = sampleCommon->waitForEventAndRelease(&readEvt);
-                    Base::queue->enqueueBarrier();
+                    queue->enqueueBarrier();
                 }
 
-                void runPermuteKernel(int bits, size_t groupSize)
+                void runPermuteKernel(CommandQueue* queue, int bits, size_t groupSize)
                 {
                     //cl_int status;
                     //cl_int eventStatus = CL_QUEUED;
@@ -327,11 +319,11 @@ namespace gpu
                                                   0,
                                                   NULL,
                                                   &writeEvt);*/
-                    Base::queue->enqueueWrite(scanedHistogramBinsBuf, histogramBins);
+                    queue->enqueueWrite(scanedHistogramBinsBuf, histogramBins);
 
                     //status = clFlush(commandQueue);
                     //status = sampleCommon->waitForEventAndRelease(&writeEvt);
-                    Base::queue->enqueueBarrier();
+                    queue->enqueueBarrier();
 
                     /*if(localThreads > deviceInfo.maxWorkItemSizes[0] ||
                             localThreads > deviceInfo.maxWorkGroupSize)
@@ -395,12 +387,12 @@ namespace gpu
 
                     size_t globalThreads[] = { elementCount / RADICES };
                     size_t localThreads[] = { groupSize };
-                    Base::queue->enqueueKernel(permuteKernel, 1, globalThreads, localThreads);
+                    queue->enqueueKernel(permuteKernel, 1, globalThreads, localThreads);
 
                     //status = clFlush(commandQueue);
                     //status = sampleCommon->waitForEventAndRelease(&ndrEvt);
 
-                    //Base::queue->enqueueBarrier();
+                    //queue->enqueueBarrier();
 
                     // Enqueue the results to application pointe
                     /*cl_event readEvt;
@@ -414,21 +406,21 @@ namespace gpu
                                  0,
                                  NULL,
                                  &readEvt);*/
-                    Base::queue->enqueueRead(sortedDataBuf, dSortedData);
+                    queue->enqueueRead(sortedDataBuf, dSortedData);
 
                     //status = clFlush(commandQueue);
                     //status = sampleCommon->waitForEventAndRelease(&readEvt);
                 }
 
-                void download()
+                void download(CommandQueue* queue, T* data) override
                 {
-                    memcpy(SortingAlgorithm<T, count>::data, dSortedData, count * sizeof(T));
-                    //Base::queue->finish();
+                    memcpy(data, dSortedData, count * sizeof(T));
+                    //queue->finish();
                 }
 
-                void cleanup()
+                void cleanup() override
                 {
-                    //delete[] unsortedData;
+                    delete[] unsortedData;
                     delete[] dSortedData;
                     delete[] hSortedData;
                     delete[] histogramBins;
@@ -442,6 +434,9 @@ namespace gpu
                     delete sortedDataBuf;
                 }
 
+                virtual ~RadixSort() {}
+
+            private:
                 size_t numGroups;
                 size_t groupSize;
                 size_t elementCount;

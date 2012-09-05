@@ -21,55 +21,46 @@ namespace gpu
         template<typename T, size_t count>
         class RadixSort : public GPUSortingAlgorithm<T, count>
         {
-                using Base = GPUSortingAlgorithm<T, count>;
-
             public:
-                RadixSort(Context* context, CommandQueue* queue)
-                    : GPUSortingAlgorithm<T, count>("Radixsort (clpp)", context, queue)
+                string getName() override
                 {
-                    clppProgram::setBasePath("libs/clpp/clpp/");
+                    return "Radixsort (clpp)";
+                }
 
+                void init(Context* context) override
+                {
+                    clppProgram::setBasePath("../common/libs/clpp/clpp/");
                     clppcontext.setup(0, 0);
-                }
 
-                virtual ~RadixSort()
-                {
-                }
-
-            protected:
-                clppSort* s;
-                clppContext clppcontext;
-
-                bool init()
-                {
                     s = new clppSort_RadixSortGPU(&clppcontext, count, PARAM_SORT_BITS, true);
-
-                    assert(s->_context->clQueue != 0);
-
-                    return true;
                 }
 
-                void upload()
+                void upload(Context* context, T* data) override
                 {
-                    assert(s->_context->clQueue != 0);
-                    s->pushDatas(SortingAlgorithm<T, count>::data, count);
+                    s->pushDatas(data, count);
                 }
 
-                void sort(size_t workGroupSize)
+                void sort(CommandQueue* queue, size_t workGroupSize) override
                 {
                     s->sort();
                     s->waitCompletion();
                 }
 
-                void download()
+                void download(CommandQueue* queue, T* data) override
                 {
                     s->popDatas();
                 }
 
-                void cleanup()
+                void cleanup() override
                 {
                     delete s;
                 }
+
+                virtual ~RadixSort() {}
+
+            private:
+                clppSort* s;
+                clppContext clppcontext;
         };
     }
 }

@@ -31,7 +31,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 256 * 256 * 16;
+    const size_t size = 256 * 8;
 
     try
     {
@@ -46,24 +46,24 @@ int main()
         runner.run<cpu::amd::RadixSort>();
 
         runner.runCLGPU<gpu::bealto::ParallelSelectionSort>(true);
-        //RUN_CL(gpu::bealto::ParallelSelectionSortLocal, size, int);
-        //RUN_CL(gpu::bealto::ParallelSelectionSortBlocks, size, int);
-        //RUN_CL(gpu::bealto::ParallelBitonicSortLocal, size, int);
-        //RUN_CL(gpu::bealto::ParallelBitonicSortLocalOptim, size, int);
-        //RUN_CL(gpu::bealto::ParallelBitonicSortA, size, int);
-        //RUN_CL(gpu::bealto::ParallelBitonicSortB2, size, int);
-        //RUN_CL(gpu::bealto::ParallelBitonicSortB4, size, int);
-        //RUN_CL(gpu::bealto::ParallelBitonicSortB8, size, int);
-        //RUN_CL(gpu::bealto::ParallelBitonicSortB16, size, int);
-        //RUN_CL(gpu::bealto::ParallelBitonicSortC, size, int);
-        //RUN_CL(gpu::bealto::ParallelMergeSort);
+        runner.runCLGPU<gpu::bealto::ParallelSelectionSortLocal>(true);
+        runner.runCLGPU<gpu::bealto::ParallelSelectionSortBlocks>(true);
+        runner.runCLGPU<gpu::bealto::ParallelBitonicSortLocal>(true);
+        runner.runCLGPU<gpu::bealto::ParallelBitonicSortLocalOptim>(true);
+        runner.runCLGPU<gpu::bealto::ParallelBitonicSortA>(true);
+        runner.runCLGPU<gpu::bealto::ParallelBitonicSortB2>(true);
+        runner.runCLGPU<gpu::bealto::ParallelBitonicSortB4>(true);
+        runner.runCLGPU<gpu::bealto::ParallelBitonicSortB8>(true);
+        runner.runCLGPU<gpu::bealto::ParallelBitonicSortB16>(true);
+        runner.runCLGPU<gpu::bealto::ParallelBitonicSortC>(true);
+        runner.runCLGPU<gpu::bealto::ParallelMergeSort>(true);
 
-        //RUN_CL(gpu::clpp::RadixSort, size, int); // not working
+        //runner.runCLGPU<gpu::clpp::RadixSort>(true); // not working
 
-        //RUN_CL(gpu::libcl::RadixSort, size, int);
+        //runner.runCLGPU<gpu::libcl::RadixSort>(true); // not working
 
-        //RUN_CL(gpu::amd::BitonicSort, size, int);
-        //RUN_CL(gpu::amd::RadixSort, size, int);
+        runner.runCLGPU<gpu::amd::BitonicSort>(true);
+        runner.runCLGPU<gpu::amd::RadixSort>(true);
     }
     catch(OpenCLException& e)
     {

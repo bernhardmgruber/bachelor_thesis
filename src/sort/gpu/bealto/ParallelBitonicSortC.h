@@ -20,19 +20,13 @@ namespace gpu
         template<typename T, size_t count>
         class ParallelBitonicSortC : public GPUSortingAlgorithm<T, count>
         {
-                using Base = GPUSortingAlgorithm<T, count>;
 
             public:
-                ParallelBitonicSortC(Context* context, CommandQueue* queue)
-                    : GPUSortingAlgorithm<T, count>("Parallel bitonic C (Bealto)", context, queue, true)
+                string getName() override
                 {
+                    return "Parallel bitonic C (Bealto)";
                 }
 
-                virtual ~ParallelBitonicSortC()
-                {
-                }
-
-            protected:
                 void init(Context* context) override
                 {
                     program = context->createProgram("gpu/bealto/ParallelBitonicSortC.cl", "-I gpu/bealto/");
@@ -45,7 +39,7 @@ namespace gpu
 
                 void upload(Context* context, T* data) override
                 {
-                    out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count, data);
+                    out = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                 }
 
                 void sort(CommandQueue* queue, size_t workGroupSize) override
@@ -165,6 +159,8 @@ namespace gpu
                     delete kernel16;
                     delete kernelC4;
                 }
+
+                virtual ~ParallelBitonicSortC() {}
 
             private:
                 Program* program;

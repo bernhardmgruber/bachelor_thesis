@@ -19,7 +19,7 @@ namespace gpu
         class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
         {
             public:
-                ParallelSelectionSortBlocks(Context* context, CommandQueue* queue)
+                ParallelSelectionSortBlocks()
                 {
                     blockFactor = 1;
                 }
@@ -33,19 +33,17 @@ namespace gpu
                     return "Parallel selection sort blocks (Bealto)";
                 }
 
-                bool init(Context* context) override
+                void init(Context* context) override
                 {
                     stringstream options;
                     options << "-D BLOCK_FACTOR=" << blockFactor;
                     program = context->createProgram("gpu/bealto/ParallelSelectionSortBlocks.cl", options.str());
                     kernel = program->createKernel("ParallelSelectionSortBlocks");
-
-                    return true;
                 }
 
                 void upload(Context* context, T* data) override
                 {
-                    in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count, data);
+                    in = context->createBuffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                     out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                 }
 

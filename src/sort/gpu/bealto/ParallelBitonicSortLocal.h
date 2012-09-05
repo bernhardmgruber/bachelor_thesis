@@ -6,61 +6,70 @@
 
 using namespace std;
 
-/**
- * From: http://www.bealto.com/gpu-sorting_intro.html
- */
-template<typename T, size_t count>
-class ParallelBitonicSortLocal : public GPUSortingAlgorithm<T, count>
+namespace gpu
 {
-    using Base = GPUSortingAlgorithm<T, count>;
-
-    public:
-        string getName() override
+    namespace bealto
+    {
+        /**
+         * From: http://www.bealto.com/gpu-sorting_intro.html
+         */
+        template<typename T, size_t count>
+        class ParallelBitonicSortLocal : public GPUSortingAlgorithm<T, count>
         {
-            return "Parallel bitonic local (Bealto)";
-        }
+                using Base = GPUSortingAlgorithm<T, count>;
 
-        void init(Context* context) override
-        {
-            program = context->createProgram("gpu/bealto/ParallelBitonicSortLocal.cl");
-            kernel = program->createKernel("ParallelBitonicSortLocal");
-        }
+            public:
+                string getName() override
+                {
+                    return "Parallel bitonic local (Bealto)";
+                }
 
-        void upload(Context* context, T* data)
-        {
-            in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count, data);
-            out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-        }
+                void init(Context* context) override
+                {
+                    program = context->createProgram("gpu/bealto/ParallelBitonicSortLocal.cl");
+                    kernel = program->createKernel("ParallelBitonicSortLocal");
+                }
 
-        void sort(CommandQueue* queue, size_t workGroupSize)
-        {
-            kernel->setArg(0, in);
-            kernel->setArg(1, out);
-            kernel->setArg(2, sizeof(cl_int) * workGroupSize, nullptr);
-            size_t globalWorkSizes[1] = { count };
-            size_t localWorkSizes[1] = { workGroupSize };
-            queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-            queue->finish();
-        }
+                void upload(Context* context, T* data) override
+                {
+                    in = context->createBuffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
+                    out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                }
 
-        void download(CommandQueue* queue, T* data)
-        {
-            queue->enqueueRead(out, data);
-            queue->finish();
-        }
+                void sort(CommandQueue* queue, size_t workGroupSize) override
+                {
+                    kernel->setArg(0, in);
+                    kernel->setArg(1, out);
+                    kernel->setArg(2, sizeof(cl_int) * workGroupSize, nullptr);
+                    size_t globalWorkSizes[1] = { count };
+                    size_t localWorkSizes[1] = { workGroupSize };
+                    queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
+                    queue->finish();
+                }
 
-        void cleanup()
-        {
-            delete program;
-            delete in;
-            delete out;
-            delete kernel;
-        }
+                void download(CommandQueue* queue, T* data) override
+                {
+                    queue->enqueueRead(out, data);
+                    queue->finish();
+                }
 
-        Program* program;
-        Kernel* kernel;
-        Buffer* in;
-        Buffer* out;
-};
+                void cleanup() override
+                {
+                    delete program;
+                    delete in;
+                    delete out;
+                    delete kernel;
+                }
+
+                virtual ~ParallelBitonicSortLocal() {}
+
+            private:
+                Program* program;
+                Kernel* kernel;
+                Buffer* in;
+                Buffer* out;
+        };
+    }
+}
 
 #endif // PARALLELBITONICSORTLOCAL_H

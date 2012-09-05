@@ -30,7 +30,7 @@ namespace gpu
 
                 void upload(Context* context, T* data) override
                 {
-                    in = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count, data);
+                    in = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                 }
 
                 void sort(CommandQueue* queue, size_t workGroupSize) override
@@ -43,12 +43,12 @@ namespace gpu
                             kernel->setArg(2, inc);
                             kernel->setArg(3, length<<1);
 
-                            Base::queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-                            Base::queue->enqueueBarrier();
+                            queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
+                            queue->enqueueBarrier();
                             swapBuffers = !swapBuffers;
                             //nk++;
                         }
-                    Base::queue->finish();*/
+                    queue->finish();*/
 
                     size_t globalWorkSizes[1] = { count / 2 };
                     size_t localWorkSizes[1] = { workGroupSize };
@@ -156,7 +156,7 @@ namespace gpu
 
                 void download(CommandQueue* queue, T* data) override
                 {
-                    queue->enqueueRead(in, SortingAlgorithm<T, count>::data);
+                    queue->enqueueRead(in, data);
                     queue->finish();
                 }
 
@@ -166,6 +166,8 @@ namespace gpu
                     delete in;
                     delete kernel;
                 }
+
+                virtual ~BitonicSort() {}
 
             private:
                 Program* program;

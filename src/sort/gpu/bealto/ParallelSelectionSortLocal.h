@@ -24,17 +24,15 @@ namespace gpu
                     return "Parallel selection local (Bealto)";
                 }
 
-                bool init(Context* context) override
+                void init(Context* context) override
                 {
                     program = context->createProgram("gpu/bealto/ParallelSelectionSortLocal.cl");
                     kernel = program->createKernel("ParallelSelectionSortLocal");
-
-                    return true;
                 }
 
                 void upload(Context* context, T* data) override
                 {
-                    in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count, data);
+                    in = context->createBuffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                     out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                 }
 
@@ -63,6 +61,8 @@ namespace gpu
                     delete out;
                     delete kernel;
                 }
+
+                virtual ~ParallelSelectionSortLocal() {}
 
             private:
                 Program* program;

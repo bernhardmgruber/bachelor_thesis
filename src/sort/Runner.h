@@ -80,7 +80,7 @@ class Runner
         template <template <typename, size_t> class A>
         void runCLCPU(bool useMultipleWorkGroupSizes)
         {
-            runCL<A>(cpuContext, useMultipleWorkGroupSizes);
+            runCL<A>(cpuContext, cpuQueue, useMultipleWorkGroupSizes);
         }
 
         /**
@@ -89,12 +89,12 @@ class Runner
         template <template <typename, size_t> class A>
         void runCLGPU(bool useMultipleWorkGroupSizes)
         {
-            runCL<A>(gpuContext, useMultipleWorkGroupSizes);
+            runCL<A>(gpuContext, gpuQueue, useMultipleWorkGroupSizes);
         }
 
     private:
         template <template <typename, size_t> class A>
-        void runCL(Context* context, bool useMultipleWorkGroupSizes)
+        void runCL(Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes)
         {
             // create a new instance of our test algorithm and prepare the test run
             A<T, count>* alg = new A<T, count>();
@@ -102,12 +102,12 @@ class Runner
 
             // run custom initialization
             timer.start();
-            alg->init();
+            alg->init(context);
             double initTime = timer.stop();
 
             // upload data
             timer.start();
-            alg->upload();
+            alg->upload(context, data);
             double uploadTime = timer.stop();
 
             // run sorting algorithm
@@ -116,7 +116,7 @@ class Runner
             if(!useMultipleWorkGroupSizes)
             {
                 timer.start();
-                alg->sort(data, maxWorkGroupSize);
+                alg->sort(queue, maxWorkGroupSize);
                 sortTimes[maxWorkGroupSize] = timer.stop();
             }
             else
@@ -127,7 +127,7 @@ class Runner
                     if(count % i == 0)
                     {
                         timer.start();
-                        alg->sort(data, i);
+                        alg->sort(queue, i);
                         sortTimes[i] = timer.stop();
                     }
                 }
@@ -135,7 +135,7 @@ class Runner
 
             // download data
             timer.start();
-            alg->download();
+            alg->download(queue, data);
             double downloadTime = timer.stop();
 
             // cleanup
@@ -146,7 +146,7 @@ class Runner
             // delete the algorithm, print results and finish this test
             delete alg;
 
-            cout << "#  Init      " << fixed << initTime << "s" << flush << endl;
+            cout << "#  (Init)    " << fixed << initTime << "s" << flush << endl;
             cout << "#  Upload    " << fixed << uploadTime << "s" << flush << endl;
 
             for(auto entry : sortTimes)
@@ -154,7 +154,7 @@ class Runner
 
             cout << "#  Download  " << fixed << downloadTime << "s" << flush << endl;
             cout << "#  Cleanup   " << fixed << cleanupTime << "s" << flush << endl;
-            cout << "#  " << (isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << (initTime + uploadTime + min_element(sortTimes.begin(), sortTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
+            cout << "#  " << (isSorted() ? "SUCCESS" : "FAILED ") << "   " << fixed << (/*initTime +*/ uploadTime + min_element(sortTimes.begin(), sortTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
 
             finishTest();
         }

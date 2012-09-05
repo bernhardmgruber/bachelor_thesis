@@ -18,17 +18,15 @@ namespace gpu
         template<typename T, size_t count>
         class ParallelBitonicSortB16 : public GPUSortingAlgorithm<T, count>
         {
-                using Base = GPUSortingAlgorithm<T, count>;
-
             public:
                 string getName() override
                 {
                     return "Parallel bitonic B16 (Bealto)";
                 }
 
-                void init() override
+                void init(Context* context) override
                 {
-                    program = Base::context->createProgram("gpu/bealto/ParallelBitonicSortB16.cl");
+                    program = context->createProgram("gpu/bealto/ParallelBitonicSortB16.cl");
                     kernel2 = program->createKernel("ParallelBitonicSortB2");
                     kernel4 = program->createKernel("ParallelBitonicSortB4");
                     kernel8 = program->createKernel("ParallelBitonicSortB8");
@@ -37,7 +35,7 @@ namespace gpu
 
                 void upload(Context* context, T* data) override
                 {
-                    buffer = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count, data);
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                 }
 
                 void sort(CommandQueue* queue, size_t workGroupSize) override
@@ -111,6 +109,8 @@ namespace gpu
                     delete kernel8;
                     delete kernel16;
                 }
+
+                virtual ~ParallelBitonicSortB16() {}
 
             private:
                 Program* program;

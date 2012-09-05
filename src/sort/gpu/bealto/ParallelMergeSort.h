@@ -16,19 +16,12 @@ namespace gpu
         template<typename T, size_t count>
         class ParallelMergeSort : public GPUSortingAlgorithm<T, count>
         {
-                using Base = GPUSortingAlgorithm<T, count>;
-
             public:
-                ParallelMergeSort(Context* context, CommandQueue* queue)
-                    : GPUSortingAlgorithm<T, count>("Parallel merge (Bealto)", context, queue, true)
+                string getName() override
                 {
+                    return "Parallel merge (Bealto)";
                 }
 
-                virtual ~ParallelMergeSort()
-                {
-                }
-
-            protected:
                 void init(Context* context) override
                 {
                     program = context->createProgram("gpu/bealto/ParallelMergeSort.cl");
@@ -37,8 +30,8 @@ namespace gpu
 
                 void upload(Context* context, T* data) override
                 {
-                    in = Base::context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count, data);
-                    out = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    in = context->createBuffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
+                    out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                 }
 
                 void sort(CommandQueue* queue, size_t workGroupSize) override
@@ -65,6 +58,8 @@ namespace gpu
                     delete out;
                     delete kernel;
                 }
+
+                virtual ~ParallelMergeSort() {}
 
             private:
                 Program* program;

@@ -28,54 +28,43 @@ namespace gpu
     {
         /**
          * From: http://www.libcl.org/
+         * Modified by Bernhard Manfred Gruber to be key only.
          */
         template<typename T, size_t count>
         class RadixSort : public GPUSortingAlgorithm<T, count>
         {
-                using Base = GPUSortingAlgorithm<T, count>;
-
             public:
-                RadixSort(Context* context, CommandQueue* queue)
-                    : GPUSortingAlgorithm<T, count>("Radix sort (LibCL)", context, queue)
+                string getName() override
                 {
+                    return "Radix sort (LibCL)";
                 }
 
-                virtual ~RadixSort()
+                void init(Context* context) override
                 {
-                }
-
-            protected:
-                bool init()
-                {
-                    program = Base::context->createProgram("gpu/libCL/RadixSort.cl");
+                    program = context->createProgram("gpu/libCL/RadixSort.cl");
 
                     clBlockSort = program->createKernel("clBlockSort");
                     clBlockScan = program->createKernel("clBlockScan");
                     clBlockPrefix = program->createKernel("clBlockPrefix");
                     clReorder = program->createKernel("clReorder");
+                }
 
+                void upload(Context* context, T* data) override
+                {
                     size_t cBits = CBITS;
-                    size_t cBlockSize = Base::context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE);
+                    size_t cBlockSize = context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
                     size_t lBlockCount = ceil((float)count / cBlockSize);
 
-                    bfTempKey = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-                    //bfTempVal = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-                    bfBlockScan = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * lBlockCount * (1 << cBits));
-                    bfBlockOffset = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * lBlockCount * (1 << cBits));
-                    bfBlockSum = Base::context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * cBlockSize);
-
-                    return true;
+                    bfKey = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) * count, data);
+                    bfTempKey = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    //bfTempVal = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    bfBlockScan = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * lBlockCount * (1 << cBits));
+                    bfBlockOffset = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * lBlockCount * (1 << cBits));
+                    bfBlockSum = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * cBlockSize);
                 }
 
-                void upload()
-                {
-                    bfKey = Base::context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) * count, SortingAlgorithm<T, count>::data);
-
-                    Base::queue->finish();
-                }
-
-                void sort(size_t workGroupSize)
+                void sort(CommandQueue* queue, size_t workGroupSize) override
                 {
                     int iStartBit = 0;
                     int iEndBit = 32;
@@ -107,22 +96,22 @@ namespace gpu
                         clBlockSort->setArg(7, count);
                         clBlockSort->setArg(8, cBlockSize * sizeof(cl_uint), nullptr);
                         clBlockSort->setArg(9, cBlockSize * sizeof(cl_uint), nullptr);
-                        Base::queue->enqueueKernel(clBlockSort, 1, &lGlobalSize, &cBlockSize);
-                        Base::queue->finish();
+                        queue->enqueueKernel(clBlockSort, 1, &lGlobalSize, &cBlockSize);
+                        queue->finish();
 
                         clBlockScan->setArg(0, bfBlockScan);
                         clBlockScan->setArg(1, bfBlockSum);
                         clBlockScan->setArg(2, lScanCount);
                         clBlockScan->setArg(3, cBlockSize * sizeof(cl_uint), nullptr);
-                        Base::queue->enqueueKernel(clBlockScan, 1, &lScanSize, &cBlockSize);
-                        Base::queue->finish();
+                        queue->enqueueKernel(clBlockScan, 1, &lScanSize, &cBlockSize);
+                        queue->finish();
 
                         clBlockPrefix->setArg(0, bfBlockScan);
                         clBlockPrefix->setArg(1, bfBlockSum);
                         clBlockPrefix->setArg(2, lScanCount);
                         clBlockPrefix->setArg(3, cBlockSize * sizeof(cl_uint), nullptr);
-                        Base::queue->enqueueKernel(clBlockPrefix, 1, &lScanSize, &cBlockSize);
-                        Base::queue->finish();
+                        queue->enqueueKernel(clBlockPrefix, 1, &lScanSize, &cBlockSize);
+                        queue->finish();
 
                         clReorder->setArg(0, bfTempKey);
                         clReorder->setArg(1, bfKey);
@@ -132,20 +121,20 @@ namespace gpu
                         clReorder->setArg(5, bfBlockOffset);
                         clReorder->setArg(6, j);
                         clReorder->setArg(7, count);
-                        Base::queue->enqueueKernel(clReorder, 1, &lGlobalSize, &cBlockSize);
-                        Base::queue->finish();
+                        queue->enqueueKernel(clReorder, 1, &lGlobalSize, &cBlockSize);
+                        queue->finish();
                     }
 
-                    Base::queue->finish();
+                    queue->finish();
                 }
 
-                void download()
+                void download(CommandQueue* queue, T* data) override
                 {
-                    Base::queue->enqueueRead(bfKey, SortingAlgorithm<T, count>::data);
-                    Base::queue->finish();
+                    queue->enqueueRead(bfKey, data);
+                    queue->finish();
                 }
 
-                void cleanup()
+                void cleanup() override
                 {
                     delete program;
                     delete clBlockSort;
@@ -160,6 +149,9 @@ namespace gpu
                     delete bfBlockOffset;
                 }
 
+                virtual ~RadixSort() {}
+
+            private:
                 Program* program;
                 Kernel* clBlockSort;
                 Kernel* clBlockScan;
