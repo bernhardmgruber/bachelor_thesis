@@ -1,5 +1,5 @@
-#ifndef CPUPREFIXSUM_H
-#define CPUPREFIXSUM_H
+#ifndef CPUSCAN_H
+#define CPUSCAN_H
 
 #include "../CPUScanAlgorithm.h"
 
@@ -9,18 +9,20 @@ namespace cpu
     class Scan : public CPUScanAlgorithm<T, count>
     {
         public:
-            Scan()
-                : CPUScanAlgorithm<T, count>("Prefix Sum")
+            string getName() override
             {
+                return "Scan (inclusiv)";
             }
 
-            void scan()
+            void scan(T* data, T* result)
             {
-                ScanAlgorithm<T, count>::scanResult[0] = ScanAlgorithm<T, count>::data[0];
+                result[0] = data[0];
                 for(size_t i = 1; i < count; i++)
-                    ScanAlgorithm<T, count>::scanResult[i] = ScanAlgorithm<T, count>::scanResult[i - 1] + ScanAlgorithm<T, count>::data[i];
+                    result[i] = result[i - 1] + data[i];
             }
+
+            virtual ~Scan() {}
     };
 }
 
-#endif // CPUPREFIXSUM_H
+#endif // CPUSCAN_H
