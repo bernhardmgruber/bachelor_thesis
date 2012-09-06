@@ -6,13 +6,13 @@
 
 #include "cpu/Scan.h"
 #include "gpu/clpp/Scan.h"
-
+#include "gpu/gpugems/NaiveScan.h"
 
 using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1 * 64;
+    const size_t size = 1024 * 1024 * 1;
 
     try
     {
@@ -23,6 +23,7 @@ int main()
         runner.run<cpu::Scan>();
 
         // runner.runCLGPU<gpu::clpp::Scan>(true); // not working
+        runner.runCLGPU<gpu::gpugems::NaiveScan>(false);
     }
     catch(OpenCLException& e)
     {

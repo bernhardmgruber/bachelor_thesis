@@ -5,8 +5,6 @@
 
 #include "clpp/clppScan_GPU.h"
 
-using namespace std;
-
 namespace gpu
 {
     namespace clpp

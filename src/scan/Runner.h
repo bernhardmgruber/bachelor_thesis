@@ -3,6 +3,7 @@
 
 #include "../common/OpenCL.h"
 #include "../common/Timer.h"
+#include "../common/utils.h"
 
 #include <typeinfo>
 #include <iomanip>
@@ -42,12 +43,12 @@ class Runner
         void printCLInfo()
         {
             cout << "Running on CPU " << cpuContext->getInfoString(CL_DEVICE_NAME) << endl;
-            cout << "   " << fixed << setprecision(2) << (cpuContext->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE) / 1024.0 / 1024.0) << " MiB global mem" << endl;
-            cout << "   " << fixed << setprecision(2) << (cpuContext->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE) / 1024.0) << " KiB local mem" << endl;
+            cout << "   " << fixed << setprecision(2) << sizeToString(cpuContext->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
+            cout << "   " << fixed << setprecision(2) << sizeToString(cpuContext->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
             cout << endl;
             cout << "Running on GPU " << gpuContext->getInfoString(CL_DEVICE_NAME) << endl;
-            cout << "   " << fixed << setprecision(2) << (gpuContext->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE) / 1024.0 / 1024.0) << " MiB global mem" << endl;
-            cout << "   " << fixed << setprecision(2) << (gpuContext->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE) / 1024.0) << " KiB local mem" << endl;
+            cout << "   " << fixed << setprecision(2) << sizeToString(gpuContext->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
+            cout << "   " << fixed << setprecision(2) << sizeToString(gpuContext->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
             cout << endl;
         }
 
@@ -113,12 +114,12 @@ class Runner
 
             // run sorting algorithm
             size_t maxWorkGroupSize = min(context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
-            map<int, double> sortTimes;
+            map<int, double> scanTimes;
             if(!useMultipleWorkGroupSizes)
             {
                 timer.start();
                 alg->scan(queue, maxWorkGroupSize);
-                sortTimes[maxWorkGroupSize] = timer.stop();
+                scanTimes[maxWorkGroupSize] = timer.stop();
             }
             else
             {
@@ -129,7 +130,7 @@ class Runner
                     {
                         timer.start();
                         alg->scan(queue, i);
-                        sortTimes[i] = timer.stop();
+                        scanTimes[i] = timer.stop();
                     }
                 }
             }
@@ -150,12 +151,12 @@ class Runner
             cout << "#  (Init)    " << fixed << initTime << "s" << flush << endl;
             cout << "#  Upload    " << fixed << uploadTime << "s" << flush << endl;
 
-            for(auto entry : sortTimes)
-                cout << "#  Scan      " << fixed << entry.second << "s " << "( WG size: " << entry.first << ")" << flush << endl;
+            for(auto entry : scanTimes)
+                cout << "#  Scan      " << fixed << entry.second << "s " << "(WG size: " << entry.first << ")" << flush << endl;
 
             cout << "#  Download  " << fixed << downloadTime << "s" << flush << endl;
             cout << "#  Cleanup   " << fixed << cleanupTime << "s" << flush << endl;
-            cout << "#  " << (verify() ? "SUCCESS" : "FAILED ") << "   " << fixed << (/*initTime +*/ uploadTime + min_element(sortTimes.begin(), sortTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
+            cout << "#  " << (verify() ? "SUCCESS" : "FAILED ") << "   " << fixed << (/*initTime +*/ uploadTime + min_element(scanTimes.begin(), scanTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
 
             finishTest();
         }
@@ -164,12 +165,12 @@ class Runner
         {
             cout << "###############################################################################" << endl;
             cout << "# " << name << endl;
-            cout << "#  Scaning " << count << " elements of type " << typeid(T).name() << " (" << ((sizeof(T) * count) >> 10) << " KiB)" << endl;
+            cout << "#  Scaning " << count << " elements of type " << typeid(T).name() << " (" << sizeToString(count * sizeof(T)) << ")" << endl;
 
             // generate random array
             data = new T[count];
             for(size_t i = 0; i < count; i++)
-                data[i] = rand();
+                data[i] = 1; //rand() % 100;
             // allocate storage for the result
             result = new T[count];
         }

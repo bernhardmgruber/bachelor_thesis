@@ -46,9 +46,10 @@
 		<Unit filename="..\common\Timer.h" />
 		<Unit filename="CPUScanAlgorithm.h" />
 		<Unit filename="GPUScanAlgorithm.h" />
-		<Unit filename="ScanAlgorithm.h" />
 		<Unit filename="cpu\Scan.h" />
 		<Unit filename="gpu\clpp\Scan.h" />
+		<Unit filename="gpu\gpugems\NaiveScan.cl" />
+		<Unit filename="gpu\gpugems\NaiveScan.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

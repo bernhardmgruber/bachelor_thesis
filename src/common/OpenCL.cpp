@@ -355,21 +355,31 @@ void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t
     checkError(__LINE__);
 }
 
+void CommandQueue::enqueueRead(Buffer* buffer, void* destination, bool blocking)
+{
+    enqueueRead(buffer, destination, 0, buffer->size, blocking);
+}
+
 void CommandQueue::enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking)
 {
     error = clEnqueueReadBuffer(queue, buffer->buffer, blocking, offset, size, destination, 0, nullptr, nullptr);
     checkError(__LINE__);
 }
 
-void CommandQueue::enqueueRead(Buffer* buffer, void* destination, bool blocking)
-{
-    error = clEnqueueReadBuffer(queue, buffer->buffer, blocking, 0, buffer->size, destination, 0, nullptr, nullptr);
-    checkError(__LINE__);
-}
-
 void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, bool blocking)
 {
     error = clEnqueueWriteBuffer(queue, buffer->buffer, blocking, 0, buffer->size, source, 0, nullptr, nullptr);
+    checkError(__LINE__);
+}
+
+void CommandQueue::enqueueCopy(Buffer* src, Buffer* dest)
+{
+    enqueueCopy(src, dest, 0, 0, dest->size);
+}
+
+void CommandQueue::enqueueCopy(Buffer* src, Buffer* dest, size_t srcOffset, size_t destOffset, size_t size)
+{
+    error = clEnqueueCopyBuffer(queue, src->buffer, dest->buffer, srcOffset, destOffset, size, 0, nullptr, nullptr);
     checkError(__LINE__);
 }
 
