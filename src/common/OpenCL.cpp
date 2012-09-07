@@ -355,6 +355,12 @@ void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t
     checkError(__LINE__);
 }
 
+void CommandQueue::enqueueTask(Kernel* kernel)
+{
+    error = clEnqueueTask(queue, kernel->kernel, 0, nullptr, nullptr);
+    checkError(__LINE__);
+}
+
 void CommandQueue::enqueueRead(Buffer* buffer, void* destination, bool blocking)
 {
     enqueueRead(buffer, destination, 0, buffer->size, blocking);

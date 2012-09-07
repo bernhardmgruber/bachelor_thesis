@@ -6,6 +6,7 @@ class GPUScanAlgorithm
 {
     public:
         virtual string getName() = 0;
+        virtual bool isInclusiv() = 0;
         virtual void init(Context* context) = 0;
         virtual void upload(Context* context, T* data) = 0;
         virtual void scan(CommandQueue* queue, size_t workGroupSize) = 0;

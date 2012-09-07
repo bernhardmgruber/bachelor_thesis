@@ -125,6 +125,7 @@ class CommandQueue
         virtual ~CommandQueue();
 
         void enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes, const size_t* localWorkSizes = nullptr);
+        void enqueueTask(Kernel* kernel);
         void enqueueRead(Buffer* buffer, void* destination, bool blocking = true);
         void enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking = true);
         void enqueueWrite(Buffer* buffer, const void* source, bool blocking = true);

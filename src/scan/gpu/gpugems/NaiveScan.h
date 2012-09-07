@@ -19,7 +19,12 @@ namespace gpu
             public:
                 string getName() override
                 {
-                    return "Naive Scan (GPU Gems)";
+                    return "Naive Scan (GPU Gems) (inclusiv)";
+                }
+
+                bool isInclusiv() override
+                {
+                    return true;
                 }
 
                 void init(Context* context) override

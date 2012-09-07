@@ -44,12 +44,17 @@
 		<Unit filename="..\common\OpenCL.h" />
 		<Unit filename="..\common\Timer.cpp" />
 		<Unit filename="..\common\Timer.h" />
+		<Unit filename="..\common\utils.cpp" />
+		<Unit filename="..\common\utils.h" />
 		<Unit filename="CPUScanAlgorithm.h" />
 		<Unit filename="GPUScanAlgorithm.h" />
+		<Unit filename="Runner.h" />
 		<Unit filename="cpu\Scan.h" />
 		<Unit filename="gpu\clpp\Scan.h" />
 		<Unit filename="gpu\gpugems\NaiveScan.cl" />
 		<Unit filename="gpu\gpugems\NaiveScan.h" />
+		<Unit filename="gpu\gpugems\WorkEfficientScan.cl" />
+		<Unit filename="gpu\gpugems\WorkEfficientScan.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

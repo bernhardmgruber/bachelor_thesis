@@ -15,7 +15,12 @@ namespace gpu
             public:
                 string getName() override
                 {
-                    return "Scan (clpp)";
+                    return "Scan (clpp) (inclusiv)";
+                }
+
+                bool isInclusiv() override
+                {
+                    return true;
                 }
 
                 void init(Context* context) override

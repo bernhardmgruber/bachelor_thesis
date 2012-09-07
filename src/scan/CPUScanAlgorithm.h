@@ -6,6 +6,7 @@ class CPUScanAlgorithm
 {
     public:
         virtual string getName() = 0;
+        virtual bool isInclusiv() = 0;
         virtual void scan(T* data, T* result) = 0;
 };
 

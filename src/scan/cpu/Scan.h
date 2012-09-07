@@ -14,6 +14,11 @@ namespace cpu
                 return "Scan (inclusiv)";
             }
 
+            bool isInclusiv() override
+            {
+                return true;
+            }
+
             void scan(T* data, T* result)
             {
                 result[0] = data[0];

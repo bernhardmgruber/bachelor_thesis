@@ -7,12 +7,13 @@
 #include "cpu/Scan.h"
 #include "gpu/clpp/Scan.h"
 #include "gpu/gpugems/NaiveScan.h"
+#include "gpu/gpugems/WorkEfficientScan.h"
 
 using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1024 * 1;
+    const size_t size = 256;
 
     try
     {
@@ -24,6 +25,7 @@ int main()
 
         // runner.runCLGPU<gpu::clpp::Scan>(true); // not working
         runner.runCLGPU<gpu::gpugems::NaiveScan>(false);
+        runner.runCLGPU<gpu::gpugems::WorkEfficientScan>(false);
     }
     catch(OpenCLException& e)
     {

@@ -67,11 +67,12 @@ class Runner
             alg->scan(data, result);
             double scanTime = timer.stop();
 
-            // delete the algorithm, print results and finish this test
-            delete alg;
-
+            // print results
             cout << "#  Scan      " << fixed << scanTime << "s" << flush << endl;
-            cout << "#  " << (verify() ? "SUCCESS" : "FAILED ") << "   " << fixed << scanTime << "s" << flush << endl;
+            cout << "#  " << (verify(alg->isInclusiv()) ? "SUCCESS" : "FAILED ") << "   " << fixed << scanTime << "s" << flush << endl;
+
+            // delete the algorithm and finish this test
+            delete alg;
 
             finishTest();
         }
@@ -145,8 +146,7 @@ class Runner
             alg->cleanup();
             double cleanupTime = timer.stop();
 
-            // delete the algorithm, print results and finish this test
-            delete alg;
+            // print results
 
             cout << "#  (Init)    " << fixed << initTime << "s" << flush << endl;
             cout << "#  Upload    " << fixed << uploadTime << "s" << flush << endl;
@@ -156,7 +156,13 @@ class Runner
 
             cout << "#  Download  " << fixed << downloadTime << "s" << flush << endl;
             cout << "#  Cleanup   " << fixed << cleanupTime << "s" << flush << endl;
-            cout << "#  " << (verify() ? "SUCCESS" : "FAILED ") << "   " << fixed << (/*initTime +*/ uploadTime + min_element(scanTimes.begin(), scanTimes.end(), [](pair<int, double> a, pair<int, double> b) { return a.second < b.second; })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
+            cout << "#  " << (verify(alg->isInclusiv()) ? "SUCCESS" : "FAILED ") << "   " << fixed << (/*initTime +*/ uploadTime + min_element(scanTimes.begin(), scanTimes.end(), [](pair<int, double> a, pair<int, double> b)
+            {
+                return a.second < b.second;
+            })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
+
+            // delete the algorithm and finish this test
+            delete alg;
 
             finishTest();
         }
@@ -184,16 +190,30 @@ class Runner
             cout << endl;
         }
 
-        bool verify()
+        bool verify(bool inclusiv)
         {
-            if(data[0] != result[0])
-                return false;
-
-            for(size_t i = 1; i < count; i++)
-                if(result[i] !=  result[i - 1] + data[i])
+            if(inclusiv)
+            {
+                if(data[0] != result[0])
                     return false;
 
-            return true;
+                for(size_t i = 1; i < count; i++)
+                    if(result[i] !=  result[i - 1] + data[i])
+                        return false;
+
+                return true;
+            }
+            else
+            {
+                if(result[0] != 0)
+                    return false;
+
+                for(size_t i = 1; i < count; i++)
+                    if(result[i] != result[i - 1] + data[i - 1])
+                        return false;
+
+                return true;
+            }
         }
 
         Context* gpuContext;
