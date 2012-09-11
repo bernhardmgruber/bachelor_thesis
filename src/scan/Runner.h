@@ -108,58 +108,90 @@ class Runner
             alg->init(context);
             double initTime = timer.stop();
 
-            // upload data
-            timer.start();
-            alg->upload(context, data);
-            double uploadTime = timer.stop();
-
-            // run sorting algorithm
-            size_t maxWorkGroupSize = min(context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
+            map<int, double> uploadTimes;
             map<int, double> scanTimes;
+            map<int, double> downloadTimes;
+            map<int, bool> verifications;
+
+            size_t maxWorkGroupSize = min(context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
             if(!useMultipleWorkGroupSizes)
             {
+                // upload data
+                timer.start();
+                alg->upload(context, maxWorkGroupSize, data);
+                uploadTimes[maxWorkGroupSize] = timer.stop();
+
+                // run algorithm
                 timer.start();
                 alg->scan(queue, maxWorkGroupSize);
                 scanTimes[maxWorkGroupSize] = timer.stop();
+
+                // download data
+                timer.start();
+                alg->download(queue, result);
+                downloadTimes[maxWorkGroupSize] = timer.stop();
+
+                // verify
+                verifications[maxWorkGroupSize] = verify(alg->isInclusiv());
             }
             else
             {
                 for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
                 {
-                    // check if work group size divides the input
-                    if(count % i == 0)
-                    {
-                        timer.start();
-                        alg->scan(queue, i);
-                        scanTimes[i] = timer.stop();
-                    }
+                    // upload data
+                    timer.start();
+                    alg->upload(context, i, data);
+                    uploadTimes[i] = timer.stop();
+
+                    // run algorithm
+                    timer.start();
+                    alg->scan(queue, i);
+                    scanTimes[i] = timer.stop();
+
+                    // download data
+                    timer.start();
+                    alg->download(queue, result);
+                    downloadTimes[i] = timer.stop();
+
+                    // verify
+                    verifications[i] = verify(alg->isInclusiv());
                 }
             }
-
-            // download data
-            timer.start();
-            alg->download(queue, result);
-            double downloadTime = timer.stop();
 
             // cleanup
             timer.start();
             alg->cleanup();
             double cleanupTime = timer.stop();
 
-            // print results
-
-            cout << "#  (Init)    " << fixed << initTime << "s" << flush << endl;
-            cout << "#  Upload    " << fixed << uploadTime << "s" << flush << endl;
-
-            for(auto entry : scanTimes)
-                cout << "#  Scan      " << fixed << entry.second << "s " << "(WG size: " << entry.first << ")" << flush << endl;
-
-            cout << "#  Download  " << fixed << downloadTime << "s" << flush << endl;
-            cout << "#  Cleanup   " << fixed << cleanupTime << "s" << flush << endl;
-            cout << "#  " << (verify(alg->isInclusiv()) ? "SUCCESS" : "FAILED ") << "   " << fixed << (/*initTime +*/ uploadTime + min_element(scanTimes.begin(), scanTimes.end(), [](pair<int, double> a, pair<int, double> b)
+            // calculate sum figures
+            map<int, double> runs;
+            for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
+                runs[i] = uploadTimes[i] + scanTimes[i] + downloadTimes[i];
+            pair<int, double> fastest = *min_element(runs.begin(), runs.end(), [](pair<int, double> a, pair<int, double> b)
             {
                 return a.second < b.second;
-            })->second + downloadTime + cleanupTime) << "s (fastest)" << flush << endl;
+            });
+
+            double uploadAvg = 0;
+            for(auto e : uploadTimes)
+                uploadAvg += e.second;
+            uploadAvg /= uploadTimes.size();
+
+            double downloadAvg = 0;
+            for(auto e : downloadTimes)
+                downloadAvg += e.second;
+            downloadAvg /= downloadTimes.size();
+
+            // print results
+            cout << "#  (Init)         " << fixed << initTime << "s" << flush << endl;
+            cout << "#  Upload (avg)   " << fixed << uploadAvg << "s" << flush << endl;
+
+            for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
+                cout << "#  Scan           " << fixed << scanTimes[i] << "s " << "(WG size: " << i << ") " << (verifications[i] ? "SUCCESS" : "FAILED ") << flush << endl;
+
+            cout << "#  Download (avg) " << fixed << downloadAvg << "s" << flush << endl;
+            cout << "#  (Cleanup)      " << fixed << cleanupTime << "s" << flush << endl;
+            cout << "#  Fastest        " << fixed << fastest.second << "s " << "(WG size: " << fastest.first << ") " << flush << endl;
 
             // delete the algorithm and finish this test
             delete alg;

@@ -35,7 +35,7 @@ namespace gpu
                     downSweepKernel = program->createKernel("DownSweep");
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     bufferSize = pow2roundup(count);
 

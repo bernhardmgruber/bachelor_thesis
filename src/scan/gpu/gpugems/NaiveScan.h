@@ -33,7 +33,7 @@ namespace gpu
                     kernel = program->createKernel("NaiveScan");
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     bufferSize = pow2roundup(count);
 

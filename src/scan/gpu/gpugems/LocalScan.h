@@ -36,7 +36,7 @@ namespace gpu
                     addKernel = program->createKernel("AddSums");
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     bufferSize = roundToMultiple(count, workGroupSize);
 
