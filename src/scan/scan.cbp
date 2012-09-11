@@ -51,6 +51,8 @@
 		<Unit filename="Runner.h" />
 		<Unit filename="cpu\Scan.h" />
 		<Unit filename="gpu\clpp\Scan.h" />
+		<Unit filename="gpu\gpugems\LocalScan.cl" />
+		<Unit filename="gpu\gpugems\LocalScan.h" />
 		<Unit filename="gpu\gpugems\NaiveScan.cl" />
 		<Unit filename="gpu\gpugems\NaiveScan.h" />
 		<Unit filename="gpu\gpugems\WorkEfficientScan.cl" />
