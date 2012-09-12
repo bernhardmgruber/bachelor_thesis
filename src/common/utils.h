@@ -11,7 +11,14 @@ using namespace std;
  *
  * From: http://stackoverflow.com/questions/364985/algorithm-for-finding-the-smallest-power-of-two-thats-greater-or-equal-to-a-giv
  */
-uint32_t pow2roundup(uint32_t x);
+size_t pow2roundup(size_t x);
+
+
+/**
+ * Rounds the value of x up to the next number which is a multiple of multiple.
+ */
+size_t roundToMultiple(size_t x, size_t multiple);
+
 
 /**
  * Creates a string representation of the given size (a number of bytes).

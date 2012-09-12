@@ -218,7 +218,7 @@ CommandQueue* Context::createCommandQueue()
     checkError(__LINE__);
 
     // create CommandQueue object
-    CommandQueue* queueObj = new CommandQueue(cmdqueue);
+    CommandQueue* queueObj = new CommandQueue(cmdqueue, this);
     //queues.push_back(queueObj);
 
     return queueObj;
@@ -339,8 +339,8 @@ size_t Kernel::getWorkGroupSize()
 // class CommandQueue
 //
 
-CommandQueue::CommandQueue(cl_command_queue queue)
-    : queue(queue)
+CommandQueue::CommandQueue(cl_command_queue queue ,Context* context)
+    : queue(queue), context(context)
 {
 }
 
@@ -395,10 +395,21 @@ void CommandQueue::enqueueBarrier()
     checkError(__LINE__);
 }
 
+void CommandQueue::flush()
+{
+    error = clFlush(queue);
+    checkError(__LINE__);
+}
+
 void CommandQueue::finish()
 {
     error = clFinish(queue);
     checkError(__LINE__);
+}
+
+Context* CommandQueue::getContext()
+{
+    return context;
 }
 
 //

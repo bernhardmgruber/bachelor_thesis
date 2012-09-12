@@ -1,23 +1,33 @@
 #include <sstream>
 #include <iomanip>
-
+#include <stdlib.h>
 
 #include "utils.h"
 
 using namespace std;
 
-uint32_t pow2roundup(uint32_t x)
+size_t pow2roundup(size_t x)
 {
-    if (x < 0)
-        return 0;
     --x;
     x |= x >> 1;
     x |= x >> 2;
     x |= x >> 4;
     x |= x >> 8;
     x |= x >> 16;
+    if(sizeof(size_t) >= 8)
+        x |= x >> 32;
 
     return x + 1;
+}
+
+size_t roundToMultiple(size_t x, size_t multiple)
+{
+    div_t result = div(x, multiple);
+
+    if(result.rem == 0)
+        return x;
+    else
+        return (result.quot + 1) * multiple;
 }
 
 string sizeToString(size_t size)

@@ -121,7 +121,7 @@ class Kernel
 class CommandQueue
 {
     public:
-        CommandQueue(cl_command_queue queue);
+        CommandQueue(cl_command_queue queue, Context* context);
         virtual ~CommandQueue();
 
         void enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes, const size_t* localWorkSizes = nullptr);
@@ -133,10 +133,16 @@ class CommandQueue
         void enqueueCopy(Buffer* src, Buffer* dest, size_t srcOffset, size_t destOffset, size_t size);
         void enqueueBarrier();
 
+        void flush();
         void finish();
+
+        Context* getContext();
 
     private:
         cl_command_queue queue;
+
+        /// The context and device this kernel has been created for.
+        Context* context;
 };
 
 class Buffer

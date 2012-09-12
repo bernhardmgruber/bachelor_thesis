@@ -19,6 +19,8 @@ template <typename T, size_t count>
 class Runner
 {
     public:
+        const int FLOAT_PRECISION = 3;
+
         Runner()
         {
             OpenCL::init();
@@ -42,14 +44,18 @@ class Runner
          */
         void printCLInfo()
         {
-            cout << "Running on CPU " << cpuContext->getInfoString(CL_DEVICE_NAME) << endl;
-            cout << "   " << fixed << setprecision(2) << sizeToString(cpuContext->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
-            cout << "   " << fixed << setprecision(2) << sizeToString(cpuContext->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
-            cout << endl;
-            cout << "Running on GPU " << gpuContext->getInfoString(CL_DEVICE_NAME) << endl;
-            cout << "   " << fixed << setprecision(2) << sizeToString(gpuContext->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
-            cout << "   " << fixed << setprecision(2) << sizeToString(gpuContext->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
-            cout << endl;
+            printDevice(cpuContext);
+            printDevice(gpuContext);
+        }
+
+        void printDevice(Context* context)
+        {
+            cout << "Device " << context->getInfoString(CL_DEVICE_NAME) << endl;
+            cout << "   " << context->getInfoString(CL_DEVICE_VENDOR) << endl;
+            cout << "   " << context->getInfoSize(CL_DEVICE_MAX_COMPUTE_UNITS) << " compute units" << endl;
+            cout << "   " << context->getInfoSize(CL_DEVICE_MAX_CLOCK_FREQUENCY) << " MHz frequency" << endl;
+            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
+            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
         }
 
         /**
@@ -68,8 +74,7 @@ class Runner
             double scanTime = timer.stop();
 
             // print results
-            cout << "#  Scan      " << fixed << scanTime << "s" << flush << endl;
-            cout << "#  " << (verify(alg->isInclusiv()) ? "SUCCESS" : "FAILED ") << "   " << fixed << scanTime << "s" << flush << endl;
+            cout << "#  Scan      " << fixed << setprecision(FLOAT_PRECISION) << scanTime << "s " << (verify(alg->isInclusiv()) ? "SUCCESS" : "FAILED ") << endl;
 
             // delete the algorithm and finish this test
             delete alg;
@@ -96,6 +101,21 @@ class Runner
         }
 
     private:
+        struct Stats
+        {
+            double uploadTime;
+            double runTime;
+            double downloadTime;
+            bool verificationResult;
+            bool exceptionOccured;
+            string exceptionMsg;
+
+            Stats()
+                : uploadTime(0), runTime(0), downloadTime(0), verificationResult(false), exceptionOccured(false)
+            {
+            }
+        };
+
         template <template <typename, size_t> class A>
         void runCL(Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes)
         {
@@ -108,55 +128,14 @@ class Runner
             alg->init(context);
             double initTime = timer.stop();
 
-            map<int, double> uploadTimes;
-            map<int, double> scanTimes;
-            map<int, double> downloadTimes;
-            map<int, bool> verifications;
+            map<int, Stats> stats;
 
             size_t maxWorkGroupSize = min(context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
             if(!useMultipleWorkGroupSizes)
-            {
-                // upload data
-                timer.start();
-                alg->upload(context, maxWorkGroupSize, data);
-                uploadTimes[maxWorkGroupSize] = timer.stop();
-
-                // run algorithm
-                timer.start();
-                alg->scan(queue, maxWorkGroupSize);
-                scanTimes[maxWorkGroupSize] = timer.stop();
-
-                // download data
-                timer.start();
-                alg->download(queue, result);
-                downloadTimes[maxWorkGroupSize] = timer.stop();
-
-                // verify
-                verifications[maxWorkGroupSize] = verify(alg->isInclusiv());
-            }
+                stats[maxWorkGroupSize] = uploadRunDownload(alg, context, queue, maxWorkGroupSize);
             else
-            {
                 for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
-                {
-                    // upload data
-                    timer.start();
-                    alg->upload(context, i, data);
-                    uploadTimes[i] = timer.stop();
-
-                    // run algorithm
-                    timer.start();
-                    alg->scan(queue, i);
-                    scanTimes[i] = timer.stop();
-
-                    // download data
-                    timer.start();
-                    alg->download(queue, result);
-                    downloadTimes[i] = timer.stop();
-
-                    // verify
-                    verifications[i] = verify(alg->isInclusiv());
-                }
-            }
+                    stats[i] = uploadRunDownload(alg, context, queue, i);
 
             // cleanup
             timer.start();
@@ -164,39 +143,79 @@ class Runner
             double cleanupTime = timer.stop();
 
             // calculate sum figures
-            map<int, double> runs;
-            for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
-                runs[i] = uploadTimes[i] + scanTimes[i] + downloadTimes[i];
-            pair<int, double> fastest = *min_element(runs.begin(), runs.end(), [](pair<int, double> a, pair<int, double> b)
+            pair<int, Stats> fastest = *min_element(stats.begin(), stats.end(), [](pair<int, Stats> a, pair<int, Stats> b)
             {
-                return a.second < b.second;
+                if(a.second.exceptionOccured || !a.second.verificationResult)
+                    return false;
+                if(b.second.exceptionOccured || !b.second.verificationResult)
+                    return true;
+                return a.second.uploadTime + a.second.runTime + a.second.downloadTime < b.second.uploadTime + b.second.runTime + b.second.downloadTime;
             });
 
             double uploadAvg = 0;
-            for(auto e : uploadTimes)
-                uploadAvg += e.second;
-            uploadAvg /= uploadTimes.size();
+            for(auto e : stats)
+                if(!e.second.exceptionOccured)
+                    uploadAvg += e.second.uploadTime;
+            uploadAvg /= stats.size();
 
             double downloadAvg = 0;
-            for(auto e : downloadTimes)
-                downloadAvg += e.second;
-            downloadAvg /= downloadTimes.size();
+            for(auto e : stats)
+                if(!e.second.exceptionOccured)
+                    downloadAvg += e.second.downloadTime;
+            downloadAvg /= stats.size();
 
             // print results
-            cout << "#  (Init)         " << fixed << initTime << "s" << flush << endl;
-            cout << "#  Upload (avg)   " << fixed << uploadAvg << "s" << flush << endl;
+            cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << initTime << "s" << endl;
+            cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << uploadAvg << "s" << endl;
 
-            for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
-                cout << "#  Scan           " << fixed << scanTimes[i] << "s " << "(WG size: " << i << ") " << (verifications[i] ? "SUCCESS" : "FAILED ") << flush << endl;
+            for(auto s : stats)
+                if(s.second.exceptionOccured)
+                    cout << "#  Scan           EXCEPTION" << " (WG size: " << s.first << "): " << s.second.exceptionMsg << endl;
+                else
+                    cout << "#  Scan           " << fixed << setprecision(FLOAT_PRECISION) << s.second.runTime << "s " << "(WG size: " << s.first << ") " << (s.second.verificationResult ? "SUCCESS" : "FAILED ") << endl;
 
-            cout << "#  Download (avg) " << fixed << downloadAvg << "s" << flush << endl;
-            cout << "#  (Cleanup)      " << fixed << cleanupTime << "s" << flush << endl;
-            cout << "#  Fastest        " << fixed << fastest.second << "s " << "(WG size: " << fastest.first << ") " << flush << endl;
+            cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << downloadAvg << "s" << endl;
+            cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << cleanupTime << "s" << endl;
+            cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (fastest.second.uploadTime + fastest.second.runTime + fastest.second.downloadTime) << "s " << "(WG size: " << fastest.first << ") " << endl;
 
             // delete the algorithm and finish this test
             delete alg;
 
             finishTest();
+        }
+
+        template <template <typename, size_t> class A>
+        inline Stats uploadRunDownload(A<T, count>* alg, Context* context, CommandQueue* queue, size_t workGroupSize)
+        {
+            Stats stats;
+
+            try
+            {
+                // upload data
+                timer.start();
+                alg->upload(context, workGroupSize, data);
+                stats.uploadTime = timer.stop();
+
+                // run algorithm
+                timer.start();
+                alg->scan(queue, workGroupSize);
+                stats.runTime = timer.stop();
+
+                // download data
+                timer.start();
+                alg->download(queue, result);
+                stats.downloadTime = timer.stop();
+
+                // verify
+                stats.verificationResult = verify(alg->isInclusiv());
+            }
+            catch(OpenCLException& e)
+            {
+                stats.exceptionOccured = true;
+                stats.exceptionMsg = e.what();
+            }
+
+            return stats;
         }
 
         void prepareTest(string name)

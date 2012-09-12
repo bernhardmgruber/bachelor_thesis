@@ -8,12 +8,13 @@ __kernel void LocalScan(__global int* buffer, __global int* sums, __local int* s
 {
     size_t globalId = get_global_id(0);
     size_t thid = get_local_id(0);
-    size_t n = get_local_size(0);
+    size_t n = get_local_size(0) * 2;
 
     int offset = 1;
 
     shared[2*thid] = buffer[2*globalId]; // load input into shared memory
     shared[2*thid+1] = buffer[2*globalId+1];
+    //shared[thid] = buffer[globalId];
 
     for (int d = n>>1; d > 0; d >>= 1)                    // build sum in place up the tree
     {
@@ -25,7 +26,7 @@ __kernel void LocalScan(__global int* buffer, __global int* sums, __local int* s
 
             shared[bi] += shared[ai];
         }
-        offset *= 2;
+        offset <<= 1;
     }
 
     if (thid == 0)
@@ -52,18 +53,22 @@ __kernel void LocalScan(__global int* buffer, __global int* sums, __local int* s
 
     buffer[2*globalId] = shared[2*thid]; // write results to device memory
     buffer[2*globalId+1] = shared[2*thid+1];
+
+    //buffer[globalId] = shared[thid];
 }
 
 __kernel void AddSums(__global int* buffer, __global int* sums, __local int* shared)
 {
-    size_t thid = get_local_id(0);
     size_t gid = get_group_id(0);
 
-    if(thid == 0)
-        shared[gid] = sums[gid];
+    if(get_local_id(0) == 0)
+            shared[gid] = sums[gid];
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    buffer[get_global_id(0)] += shared[gid];
+    size_t id = get_global_id(0);
+
+    buffer[id * 2]     += shared[gid];
+    buffer[id * 2 + 1] += shared[gid];
 }
 
 #define NUM_BANKS 16
