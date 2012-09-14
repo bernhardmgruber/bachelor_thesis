@@ -50,12 +50,12 @@ class Runner
 
         void printDevice(Context* context)
         {
-            cout << "Device " << context->getInfoString(CL_DEVICE_NAME) << endl;
-            cout << "   " << context->getInfoString(CL_DEVICE_VENDOR) << endl;
-            cout << "   " << context->getInfoSize(CL_DEVICE_MAX_COMPUTE_UNITS) << " compute units" << endl;
-            cout << "   " << context->getInfoSize(CL_DEVICE_MAX_CLOCK_FREQUENCY) << " MHz frequency" << endl;
-            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfoSize(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
-            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfoSize(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
+            cout << "Device " << context->getInfo<string>(CL_DEVICE_NAME) << endl;
+            cout << "   " << context->getInfo<string>(CL_DEVICE_VENDOR) << endl;
+            cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_COMPUTE_UNITS) << " compute units" << endl;
+            cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_CLOCK_FREQUENCY) << " MHz frequency" << endl;
+            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
+            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
         }
 
         /**
@@ -130,7 +130,7 @@ class Runner
 
             map<int, Stats> stats;
 
-            size_t maxWorkGroupSize = min(context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
+            size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
             if(!useMultipleWorkGroupSizes)
                 stats[maxWorkGroupSize] = uploadRunDownload(alg, context, queue, maxWorkGroupSize);
             else

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void checkError(int line);
+void checkError(cl_int error, int line);
 
 class Context;
 class CommandQueue;
@@ -61,8 +61,18 @@ class Context
         CommandQueue* createCommandQueue();
         Buffer* createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
 
-        size_t getInfoSize(cl_device_info info);
-        string getInfoString(cl_device_info info);
+        //size_t getInfoSize(cl_device_info info);
+        //string getInfoString(cl_device_info info);
+
+        template <typename T>
+        T getInfo(cl_device_info info)
+        {
+            T value = 0;
+            cl_int error = clGetDeviceInfo(device, info, sizeof(T), (void*) &value, nullptr);
+            checkError(error, __LINE__);
+
+            return value;
+        }
 
     private:
         string readFile(string fileName);
@@ -75,6 +85,14 @@ class Context
         //vector<Buffer*> buffers;
         friend Kernel;
 };
+
+/**
+ * Tempalte specialization for querying a information string from a device.
+ *
+ * @param info One of the predefined values for device information that usually returns a char*.
+ */
+template <>
+string Context::getInfo<string>(cl_device_info info);
 
 class Program
 {
@@ -103,8 +121,8 @@ class Kernel
         template <typename T>
         void setArg(cl_uint index, T value)
         {
-            clSetKernelArg(kernel, index, sizeof(T), &value);
-            checkError(__LINE__);
+            cl_int error = clSetKernelArg(kernel, index, sizeof(T), &value);
+            checkError(error, __LINE__);
         }
 
         size_t getWorkGroupSize();

@@ -74,6 +74,8 @@ namespace gpu
                         globalWorkSizes[0] = blocks->getSize() / sizeof(T) / 2;
                         localWorkSizes[0] = min(workGroupSize, globalWorkSizes[0]);
 
+                        //size_t maxLocalMemSize = context->getInfoSize(CL_MAX_M)
+
                         addKernel->setArg(0, blocks);
                         addKernel->setArg(1, sums);
                         addKernel->setArg(2, sums->getSize(), nullptr);
