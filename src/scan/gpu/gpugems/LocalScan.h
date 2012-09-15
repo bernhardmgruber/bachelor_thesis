@@ -59,7 +59,7 @@ namespace gpu
                     size_t globalWorkSizes[] = { blocks->getSize() / sizeof(T) / 2 }; // the global work size is the half number of elements (each thread processed 2 elements)
                     size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
 
-                    cout << "global " << globalWorkSizes[0] << " local " << localWorkSizes[0] << endl;
+                    //cout << "global " << globalWorkSizes[0] << " local " << localWorkSizes[0] << endl;
 
                     kernel->setArg(0, blocks);
                     kernel->setArg(1, sums);
@@ -68,18 +68,31 @@ namespace gpu
 
                     if(blocks->getSize() / sizeof(T) > localWorkSizes[0] * 2)
                     {
-                        // the buffer containes more than one scanned block
+                        // the buffer containes more than one scanned block, scan the created sum buffer
                         scan_r(context, queue, workGroupSize, sums);
 
-                        globalWorkSizes[0] = blocks->getSize() / sizeof(T) / 2;
-                        localWorkSizes[0] = min(workGroupSize, globalWorkSizes[0]);
+                        // get the remaining available local memory
+                        size_t totalGlobalWorkSize = blocks->getSize() / sizeof(T) / 2;
+                        size_t maxLocalMemSize = context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE);
+                        size_t maxGlobalWorkSize = maxLocalMemSize / sizeof(cl_int) * workGroupSize;
 
-                        //size_t maxLocalMemSize = context->getInfoSize(CL_MAX_M)
+                        size_t offset = 0;
 
-                        addKernel->setArg(0, blocks);
-                        addKernel->setArg(1, sums);
-                        addKernel->setArg(2, sums->getSize(), nullptr);
-                        queue->enqueueKernel(addKernel, 1, globalWorkSizes, localWorkSizes);
+                        do
+                        {
+                            globalWorkSizes[0] = min(totalGlobalWorkSize - offset, maxGlobalWorkSize);
+                            localWorkSizes[0] = min(workGroupSize, globalWorkSizes[0]);
+                            size_t globalWorkOffsets[] = { offset };
+
+                            // apply the sums to the buffer
+                            addKernel->setArg(0, blocks);
+                            addKernel->setArg(1, sums);
+                            addKernel->setArg(2, min(sums->getSize(), maxLocalMemSize), nullptr);
+                            queue->enqueueKernel(addKernel, 1, globalWorkSizes, localWorkSizes, globalWorkOffsets);
+
+                            offset += maxGlobalWorkSize;
+                        }
+                        while(offset < totalGlobalWorkSize);
                     }
 
                     delete sums;

@@ -371,9 +371,9 @@ CommandQueue::~CommandQueue()
     clReleaseCommandQueue(queue);
 }
 
-void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes, const size_t* localWorkSizes)
+void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes, const size_t* localWorkSizes, const size_t* globalWorkOffsets)
 {
-    error = clEnqueueNDRangeKernel(queue, kernel->kernel, dimension, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
+    error = clEnqueueNDRangeKernel(queue, kernel->kernel, dimension, globalWorkOffsets, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
     checkError(__LINE__);
 }
 
