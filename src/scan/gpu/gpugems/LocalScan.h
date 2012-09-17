@@ -19,9 +19,19 @@ namespace gpu
         class LocalScan : public GPUScanAlgorithm<T, count>
         {
             public:
+                /**
+                 * Constructor.
+                 *
+                 * @param useOptimizedKernel: Uses a local memory access optimized kernel implementation when set to true.
+                 */
+                LocalScan(bool useOptimizedKernel = false)
+                    : useOptimizedKernel(useOptimizedKernel)
+                {
+                };
+
                 string getName() override
                 {
-                    return "Local Scan (GPU Gems) (exclusiv)";
+                    return "Local Scan (GPU Gems) (exclusiv)" + string(useOptimizedKernel ? " (optimized)" : "");
                 }
 
                 bool isInclusiv() override
@@ -32,7 +42,7 @@ namespace gpu
                 void init(Context* context) override
                 {
                     Program* program = context->createProgram("gpu/gpugems/LocalScan.cl");
-                    kernel = program->createKernel("LocalScan");
+                    kernel = program->createKernel(useOptimizedKernel ? "LocalScanOptim" : "LocalScan");
                     addKernel = program->createKernel("AddSums");
                 }
 
@@ -101,6 +111,9 @@ namespace gpu
                 void download(CommandQueue* queue, T* result) override
                 {
                     queue->enqueueRead(buffer, result, 0, count * sizeof(T));
+
+                    //for(int i = 0; i < count; i++)
+                    //    cout << result[i] << endl;
                 }
 
                 void cleanup() override
@@ -117,6 +130,7 @@ namespace gpu
                 Kernel* kernel;
                 Kernel* addKernel;
                 Buffer* buffer;
+                bool useOptimizedKernel;
         };
     }
 }
