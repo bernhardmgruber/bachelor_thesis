@@ -24,7 +24,7 @@ namespace gpu
                  *
                  * @param useOptimizedKernel: Uses a local memory access optimized kernel implementation when set to true.
                  */
-                LocalScan(bool useOptimizedKernel = false)
+                LocalScan(bool useOptimizedKernel = true)
                     : useOptimizedKernel(useOptimizedKernel)
                 {
                 };
@@ -48,6 +48,9 @@ namespace gpu
 
                 void upload(Context* context, size_t workGroupSize, T* data) override
                 {
+                    if(workGroupSize == 1)
+                        throw OpenCLException("work group size must be greater than 1");
+
                     bufferSize = roundToMultiple(count, workGroupSize * 2);
 
                     buffer = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, bufferSize * sizeof(T), data);
@@ -83,7 +86,7 @@ namespace gpu
 
                         // get the remaining available local memory
                         size_t totalGlobalWorkSize = blocks->getSize() / sizeof(T) / 2;
-                        size_t maxLocalMemSize = context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE);
+                        size_t maxLocalMemSize = context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE); // FIXME: This does not work for NVIDIA cards, raises OUT_OF_RESOURCES
                         size_t maxGlobalWorkSize = maxLocalMemSize / sizeof(cl_int) * workGroupSize;
 
                         size_t offset = 0;

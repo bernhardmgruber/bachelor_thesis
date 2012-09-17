@@ -21,21 +21,29 @@ class Runner
     public:
         const int FLOAT_PRECISION = 3;
 
-        Runner()
+        Runner(bool noCPU = true)
+            : noCPU(noCPU)
         {
             OpenCL::init();
             gpuContext = OpenCL::getGPUContext();
-            cpuContext = OpenCL::getCPUContext();
+            if(noCPU)
+                cpuContext = nullptr;
+            else
+                cpuContext = OpenCL::getCPUContext();
             gpuQueue = gpuContext->createCommandQueue();
-            cpuQueue = cpuContext->createCommandQueue();
+            if(cpuContext)
+                cpuQueue = cpuContext->createCommandQueue();
         }
 
         virtual ~Runner()
         {
             delete gpuContext;
-            delete cpuContext;
             delete gpuQueue;
-            delete cpuQueue;
+            if(cpuContext)
+            {
+                delete cpuContext;
+                delete cpuQueue;
+            }
             OpenCL::cleanup();
         }
 
@@ -44,7 +52,8 @@ class Runner
          */
         void printCLInfo()
         {
-            printDevice(cpuContext);
+            if(cpuContext)
+                printDevice(cpuContext);
             printDevice(gpuContext);
         }
 
@@ -276,6 +285,8 @@ class Runner
 
         T* data;
         T* result;
+
+        bool noCPU;
 };
 
 #endif // RUNNER_H
