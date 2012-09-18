@@ -15,7 +15,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1024 * 1;
+    const size_t size = 1024 * 1024 * 64;
 
     try
     {

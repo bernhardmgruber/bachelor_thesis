@@ -430,7 +430,7 @@ namespace gpu
             return CL_SUCCESS;
         }
 
-        int PreScanBufferRecursive(CommandQueue* queue, Buffer* output_data, Buffer* input_data, int max_group_size, int max_work_item_count, int element_count, int level)
+        int PreScanBufferRecursive(CommandQueue* queue, Buffer* output_data, Buffer* input_data, unsigned int max_group_size, unsigned int max_work_item_count, unsigned int element_count, int level)
         {
             unsigned int group_size = max_group_size;
             unsigned int group_count = (int)fmax(1.0f, (int)ceil((float)element_count / (2.0f * group_size)));

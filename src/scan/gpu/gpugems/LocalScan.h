@@ -24,7 +24,7 @@ namespace gpu
                  *
                  * @param useOptimizedKernel: Uses a local memory access optimized kernel implementation when set to true.
                  */
-                LocalScan(bool useOptimizedKernel = true)
+                LocalScan(bool useOptimizedKernel = false)
                     : useOptimizedKernel(useOptimizedKernel)
                 {
                 };
