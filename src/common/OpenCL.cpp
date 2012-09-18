@@ -241,29 +241,6 @@ Buffer* Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
     return bufferObj;
 }
 
-/*size_t Context::getInfoSize(cl_device_info info)
-{
-    size_t value = 0;
-    error = clGetDeviceInfo(device, info, sizeof(value), (void*) &value, nullptr);
-    checkError(__LINE__);
-
-    return value;
-}
-
-string Context::getInfoString(cl_device_info info)
-{
-    size_t size = 0;
-    error = clGetDeviceInfo(device, info, 0, nullptr, &size);
-    checkError(__LINE__);
-
-    char* buffer = new char[size + 1];
-    error = clGetDeviceInfo(device, info, size + 1, buffer, nullptr);
-    checkError(__LINE__);
-    buffer[size + 1] = 0;
-
-    return string(buffer);
-}*/
-
 template <>
 string Context::getInfo<string>(cl_device_info info)
 {
