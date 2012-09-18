@@ -50,8 +50,8 @@
 		<Unit filename="GPUScanAlgorithm.h" />
 		<Unit filename="Runner.h" />
 		<Unit filename="cpu\Scan.h" />
-		<Unit filename="gpu\apple\scan.cl" />
-		<Unit filename="gpu\apple\scan.h" />
+		<Unit filename="gpu\apple\Scan.cl" />
+		<Unit filename="gpu\apple\Scan.h" />
 		<Unit filename="gpu\clpp\Scan.h" />
 		<Unit filename="gpu\gpugems\LocalScan.cl" />
 		<Unit filename="gpu\gpugems\LocalScan.h" />
