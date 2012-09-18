@@ -29,7 +29,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    Program* program = context->createProgram("gpu/gpugems/NaiveScan.cl");
+                    Program* program = context->createProgram("gpu/gpugems/NaiveScan.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("NaiveScan");
                 }
 

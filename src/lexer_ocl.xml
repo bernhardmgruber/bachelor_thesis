@@ -108,7 +108,8 @@
                                    intptr_t uintptr_t intmax_t uintmax_t
                                    wint_t wchar_t wctrans_t wctype_t size_t time_t
                                    and and_eq bitand bitor compl not not_eq or or_eq xor xor_eq
-								   uchar ushort uint ulong"/>
+								   uchar ushort uint ulong
+								   uint4"/>
                         <!-- Secondary keywords and identifiers -->
                         <Set index="1"
                             value="__global __local __private __constant __kernel

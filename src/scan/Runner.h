@@ -231,7 +231,7 @@ class Runner
         {
             cout << "###############################################################################" << endl;
             cout << "# " << name << endl;
-            cout << "#  Scaning " << count << " elements of type " << typeid(T).name() << " (" << sizeToString(count * sizeof(T)) << ")" << endl;
+            cout << "#  Scaning " << count << " elements of type " << getTypeName<T>() << " (" << sizeToString(count * sizeof(T)) << ")" << endl;
 
             // generate random array
             data = new T[count];

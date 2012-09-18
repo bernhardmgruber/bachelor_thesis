@@ -4,7 +4,7 @@
  * Chapter: 39.2.2 A Work-Efficient Parallel Scan
  */
 
-__kernel void LocalScan(__global int* buffer, __global int* sums, __local int* shared)
+__kernel void LocalScan(__global T* buffer, __global T* sums, __local T* shared)
 {
     size_t globalId = get_global_id(0);
     size_t thid = get_local_id(0);
@@ -43,7 +43,7 @@ __kernel void LocalScan(__global int* buffer, __global int* sums, __local int* s
             int ai = offset*(2*thid+1)-1;
             int bi = offset*(2*thid+2)-1;
 
-            float t = shared[ai];
+            T t = shared[ai];
             shared[ai] = shared[bi];
             shared[bi] += t;
         }
@@ -58,7 +58,7 @@ __kernel void LocalScan(__global int* buffer, __global int* sums, __local int* s
 #define LOG_NUM_BANKS 5
 #define CONFLICT_FREE_OFFSET(n) ((n) >> NUM_BANKS + (n) >> (2 * LOG_NUM_BANKS))
 
-__kernel void LocalScanOptim(__global int* buffer, __global int* sums, __local int* shared)
+__kernel void LocalScanOptim(__global T* buffer, __global T* sums, __local T* shared)
 {
     size_t globalId = get_global_id(0) + get_group_id(0) * get_local_size(0);
     size_t thid = get_local_id(0);
@@ -106,7 +106,7 @@ __kernel void LocalScanOptim(__global int* buffer, __global int* sums, __local i
             ai += CONFLICT_FREE_OFFSET(ai);
             bi += CONFLICT_FREE_OFFSET(bi);
 
-            float t = shared[ai];
+            T t = shared[ai];
             shared[ai] = shared[bi];
             shared[bi] += t;
         }
@@ -117,7 +117,7 @@ __kernel void LocalScanOptim(__global int* buffer, __global int* sums, __local i
     buffer[globalId + (n/2)] = shared[bi + bankOffsetB];
 }
 
-__kernel void AddSums(__global int* buffer, __global int* sums, __local int* shared)
+__kernel void AddSums(__global T* buffer, __global T* sums, __local T* shared)
 {
     //size_t gid = get_group_id(0);
     size_t groupIdWithOffset = get_global_id(0) / get_local_size(0);

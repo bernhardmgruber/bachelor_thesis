@@ -396,7 +396,7 @@ namespace gpu
 
                     GROUP_SIZE = min( GROUP_SIZE, max_workgroup_size );
 
-                    Program* program = context->createProgram("gpu/apple/Scan.cl");
+                    Program* program = context->createProgram("gpu/apple/Scan.cl", "-D T=" + getTypeName<T>());
 
                     //ComputeKernels = (cl_kernel*) malloc(KernelCount * sizeof(cl_kernel));
                     kernels = new Kernel*[KernelCount];

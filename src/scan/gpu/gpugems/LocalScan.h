@@ -41,7 +41,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    Program* program = context->createProgram("gpu/gpugems/LocalScan.cl");
+                    Program* program = context->createProgram("gpu/gpugems/LocalScan.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel(useOptimizedKernel ? "LocalScanOptim" : "LocalScan");
                     addKernel = program->createKernel("AddSums");
                 }

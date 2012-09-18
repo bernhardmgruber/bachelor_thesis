@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <typeinfo>
 
 using namespace std;
 
@@ -27,5 +28,17 @@ size_t roundToMultiple(size_t x, size_t multiple);
  * ...
  */
 string sizeToString(size_t size);
+
+template <typename T>
+string getTypeName()
+{
+    if(typeid(T) == typeid(int))
+        return "int";
+    if(typeid(T) == typeid(float))
+        return "float";
+    if(typeid(T) == typeid(double))
+        return "double";
+    return "unknown";
+}
 
 #endif // UTILS_H

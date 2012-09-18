@@ -29,7 +29,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    Program* program = context->createProgram("gpu/gpugems/WorkEfficientScan.cl");
+                    Program* program = context->createProgram("gpu/gpugems/WorkEfficientScan.cl", "-D T=" + getTypeName<T>());
                     upSweepKernel = program->createKernel("UpSweep");
                     setLastZeroKernel = program->createKernel("SetLastZeroSweep");
                     downSweepKernel = program->createKernel("DownSweep");
