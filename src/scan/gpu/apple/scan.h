@@ -57,41 +57,16 @@ namespace gpu
 {
     namespace apple
     {
-
-#include <libc.h>
-#include <stdbool.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <mach/mach_time.h>
 #include <math.h>
 
-#include <OpenCL/opencl.h>
+#include <CL/CL.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define DEBUG_INFO      (0)
-        int		GROUP_SIZE      = 256;
 #define NUM_BANKS       (16)
-#define MAX_ERROR       (1e-7)
-#define SEPARATOR       ("----------------------------------------------------------------------\n")
-
-#define min(A,B) ((A) < (B) ? (A) : (B))
-
-        static int iterations = 1000;
-        static int count      = 1024 * 1024;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        cl_device_id            ComputeDeviceId;
-        cl_command_queue        ComputeCommands;
-        cl_context              ComputeContext;
-        cl_program              ComputeProgram;
-        cl_kernel*              ComputeKernels;
-        cl_mem*                 ScanPartialSums = 0;
-        unsigned int            ElementsAllocated = 0;
-        unsigned int            LevelsAllocated = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,9 +90,21 @@ namespace gpu
 
         static const unsigned int KernelCount = sizeof(KernelNames) / sizeof(char *);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T, size_t count>
+        class Scan : public GPUScanAlgorithm<T, count>
+        {
+            public:
+                string getName() override
+                {
+                    return "Scan (apple) (exclusiv)";
+                }
 
-        uint64_t GetCurrentTime()
+                bool isInclusiv() override
+                {
+                    return false;
+                }
+
+        /*uint64_t GetCurrentTime()
         {
             return mach_absolute_time();
         }
@@ -153,7 +140,7 @@ namespace gpu
             source[statbuf.st_size] = '\0';
 
             return source;
-        }
+        }*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -171,12 +158,12 @@ namespace gpu
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        int CreatePartialSumBuffers(unsigned int count)
+        int CreatePartialSumBuffers(Context* context, unsigned int size)
         {
-            ElementsAllocated = count;
+            ElementsAllocated = size;
 
             unsigned int group_size = GROUP_SIZE;
-            unsigned int element_count = count;
+            unsigned int element_count = size;
 
             int level = 0;
 
@@ -192,11 +179,12 @@ namespace gpu
             }
             while (element_count > 1);
 
-            ScanPartialSums = (cl_mem*) malloc(level * sizeof(cl_mem));
+            //ScanPartialSums = (cl_mem*) malloc(level * sizeof(cl_mem));
+            ScanPartialSums = new Buffer*[level];
             LevelsAllocated = level;
-            memset(ScanPartialSums, 0, sizeof(cl_mem) * level);
+            memset(ScanPartialSums, 0, sizeof(Buffer*) * level);
 
-            element_count = count;
+            element_count = size;
             level = 0;
 
             do
@@ -205,7 +193,8 @@ namespace gpu
                 if (group_count > 1)
                 {
                     size_t buffer_size = group_count * sizeof(float);
-                    ScanPartialSums[level++] = clCreateBuffer(ComputeContext, CL_MEM_READ_WRITE, buffer_size, NULL, NULL);
+                    //ScanPartialSums[level++] = clCreateBuffer(ComputeContext, CL_MEM_READ_WRITE, buffer_size, NULL, NULL);
+                    ScanPartialSums[level++] = context->createBuffer(CL_MEM_READ_WRITE, buffer_size);
                 }
 
                 element_count = group_count;
@@ -216,15 +205,15 @@ namespace gpu
             return CL_SUCCESS;
         }
 
-        void ReleasePartialSums(void)
+        void ReleasePartialSums()
         {
             unsigned int i;
             for (i = 0; i < LevelsAllocated; i++)
             {
-                clReleaseMemObject(ScanPartialSums[i]);
+                delete ScanPartialSums[i];
             }
 
-            free(ScanPartialSums);
+            delete ScanPartialSums;
             ScanPartialSums = 0;
             ElementsAllocated = 0;
             LevelsAllocated = 0;
@@ -232,15 +221,7 @@ namespace gpu
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        int  PreScan(
-            size_t *global,
-            size_t *local,
-            size_t shared,
-            cl_mem output_data,
-            cl_mem input_data,
-            unsigned int n,
-            int group_index,
-            int base_index)
+        int PreScan(CommandQueue* queue, size_t *global, size_t *local, size_t shared, Buffer* output_data, Buffer* input_data, unsigned int n, int group_index, int base_index)
         {
 #if DEBUG_INFO
             printf("PreScan: Global[%4d] Local[%4d] Shared[%4d] BlockIndex[%4d] BaseIndex[%4d] Entries[%d]\n",
@@ -250,7 +231,7 @@ namespace gpu
             unsigned int k = PRESCAN;
             unsigned int a = 0;
 
-            int err = CL_SUCCESS;
+            /*int err = CL_SUCCESS;
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &output_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &input_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, shared,         0);
@@ -261,29 +242,27 @@ namespace gpu
             {
                 printf("Error: %s: Failed to set kernel arguments!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            kernels[k]->setArg(a++, output_data);
+            kernels[k]->setArg(a++, input_data);
+            kernels[k]->setArg(a++, shared, nullptr);
+            kernels[k]->setArg(a++, (cl_int) group_index);
+            kernels[k]->setArg(a++, (cl_int) base_index);
+            kernels[k]->setArg(a++, (cl_int) n);
 
-            err = CL_SUCCESS;
+            queue->enqueueKernel(kernels[k], 1, global, local);
+            /*err = CL_SUCCESS;
             err |= clEnqueueNDRangeKernel(ComputeCommands, ComputeKernels[k], 1, NULL, global, local, 0, NULL, NULL);
             if (err != CL_SUCCESS)
             {
                 printf("Error: %s: Failed to execute kernel!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
 
             return CL_SUCCESS;
         }
 
-        int PreScanStoreSum(
-            size_t *global,
-            size_t *local,
-            size_t shared,
-            cl_mem output_data,
-            cl_mem input_data,
-            cl_mem partial_sums,
-            unsigned int n,
-            int group_index,
-            int base_index)
+        int PreScanStoreSum(CommandQueue* queue, size_t *global, size_t *local, size_t shared, Buffer* output_data, Buffer* input_data, Buffer* partial_sums, unsigned int n, int group_index, int base_index)
         {
 #if DEBUG_INFO
             printf("PreScan: Global[%4d] Local[%4d] Shared[%4d] BlockIndex[%4d] BaseIndex[%4d] Entries[%d]\n",
@@ -293,7 +272,7 @@ namespace gpu
             unsigned int k = PRESCAN_STORE_SUM;
             unsigned int a = 0;
 
-            int err = CL_SUCCESS;
+            /*int err = CL_SUCCESS;
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &output_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &input_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &partial_sums);
@@ -305,29 +284,28 @@ namespace gpu
             {
                 printf("Error: %s: Failed to set kernel arguments!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            kernels[k]->setArg(a++, output_data);
+            kernels[k]->setArg(a++, input_data);
+            kernels[k]->setArg(a++, partial_sums);
+            kernels[k]->setArg(a++, shared, nullptr);
+            kernels[k]->setArg(a++, (cl_int) group_index);
+            kernels[k]->setArg(a++, (cl_int) base_index);
+            kernels[k]->setArg(a++, (cl_int) n);
 
-            err = CL_SUCCESS;
+            /*err = CL_SUCCESS;
             err |= clEnqueueNDRangeKernel(ComputeCommands, ComputeKernels[k], 1, NULL, global, local, 0, NULL, NULL);
             if (err != CL_SUCCESS)
             {
                 printf("Error: %s: Failed to execute kernel!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            queue->enqueueKernel(kernels[k], 1, global, local);
 
             return CL_SUCCESS;
         }
 
-        int PreScanStoreSumNonPowerOfTwo(
-            size_t *global,
-            size_t *local,
-            size_t shared,
-            cl_mem output_data,
-            cl_mem input_data,
-            cl_mem partial_sums,
-            unsigned int n,
-            int group_index,
-            int base_index)
+        int PreScanStoreSumNonPowerOfTwo(CommandQueue* queue, size_t *global, size_t *local, size_t shared, Buffer* output_data, Buffer* input_data, Buffer* partial_sums, unsigned int n, int group_index, int base_index)
         {
 #if DEBUG_INFO
             printf("PreScanStoreSumNonPowerOfTwo: Global[%4d] Local[%4d] BlockIndex[%4d] BaseIndex[%4d] Entries[%d]\n",
@@ -337,7 +315,7 @@ namespace gpu
             unsigned int k = PRESCAN_STORE_SUM_NON_POWER_OF_TWO;
             unsigned int a = 0;
 
-            int err = CL_SUCCESS;
+            /*int err = CL_SUCCESS;
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &output_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &input_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &partial_sums);
@@ -349,28 +327,28 @@ namespace gpu
             {
                 printf("Error: %s: Failed to set kernel arguments!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            kernels[k]->setArg(a++, output_data);
+            kernels[k]->setArg(a++, input_data);
+            kernels[k]->setArg(a++, partial_sums);
+            kernels[k]->setArg(a++, shared, nullptr);
+            kernels[k]->setArg(a++, (cl_int)group_index);
+            kernels[k]->setArg(a++, (cl_int)base_index);
+            kernels[k]->setArg(a++, (cl_int)n);
 
-            err = CL_SUCCESS;
+            /*err = CL_SUCCESS;
             err |= clEnqueueNDRangeKernel(ComputeCommands, ComputeKernels[k], 1, NULL, global, local, 0, NULL, NULL);
             if (err != CL_SUCCESS)
             {
                 printf("Error: %s: Failed to execute kernel!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            queue->enqueueKernel(kernels[k], 1, global, local);
 
             return CL_SUCCESS;
         }
 
-        int PreScanNonPowerOfTwo(
-            size_t *global,
-            size_t *local,
-            size_t shared,
-            cl_mem output_data,
-            cl_mem input_data,
-            unsigned int n,
-            int group_index,
-            int base_index)
+        int PreScanNonPowerOfTwo(CommandQueue* queue, size_t *global, size_t *local, size_t shared, Buffer* output_data, Buffer* input_data, unsigned int n, int group_index, int base_index)
         {
 #if DEBUG_INFO
             printf("PreScanNonPowerOfTwo: Global[%4d] Local[%4d] BlockIndex[%4d] BaseIndex[%4d] Entries[%d]\n",
@@ -380,7 +358,7 @@ namespace gpu
             unsigned int k = PRESCAN_NON_POWER_OF_TWO;
             unsigned int a = 0;
 
-            int err = CL_SUCCESS;
+            /*int err = CL_SUCCESS;
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &output_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &input_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, shared,         0);
@@ -391,26 +369,27 @@ namespace gpu
             {
                 printf("Error: %s: Failed to set kernel arguments!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            kernels[k]->setArg(a++, output_data);
+            kernels[k]->setArg(a++, input_data);
+            kernels[k]->setArg(a++, shared, nullptr);
+            kernels[k]->setArg(a++, (cl_int)group_index);
+            kernels[k]->setArg(a++, (cl_int)base_index);
+            kernels[k]->setArg(a++, (cl_int)n);
 
-            err = CL_SUCCESS;
+            /*err = CL_SUCCESS;
             err |= clEnqueueNDRangeKernel(ComputeCommands, ComputeKernels[k], 1, NULL, global, local, 0, NULL, NULL);
             if (err != CL_SUCCESS)
             {
                 printf("Error: %s: Failed to execute kernel!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            queue->enqueueKernel(kernels[k], 1, global, local);
+
             return CL_SUCCESS;
         }
 
-        int UniformAdd(
-            size_t *global,
-            size_t *local,
-            cl_mem output_data,
-            cl_mem partial_sums,
-            unsigned int n,
-            unsigned int group_offset,
-            unsigned int base_index)
+        int UniformAdd(CommandQueue* queue, size_t *global, size_t *local, Buffer* output_data, Buffer* partial_sums, unsigned int n, unsigned int group_offset, unsigned int base_index)
         {
 #if DEBUG_INFO
             printf("UniformAdd: Global[%4d] Local[%4d] BlockOffset[%4d] BaseIndex[%4d] Entries[%d]\n",
@@ -420,7 +399,7 @@ namespace gpu
             unsigned int k = UNIFORM_ADD;
             unsigned int a = 0;
 
-            int err = CL_SUCCESS;
+            /*int err = CL_SUCCESS;
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &output_data);
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(cl_mem), &partial_sums);
             err |= clSetKernelArg(ComputeKernels[k],  a++, sizeof(float),  0);
@@ -431,26 +410,27 @@ namespace gpu
             {
                 printf("Error: %s: Failed to set kernel arguments!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            kernels[k]->setArg(a++, output_data);
+            kernels[k]->setArg(a++, partial_sums);
+            kernels[k]->setArg(a++, sizeof(T), nullptr);
+            kernels[k]->setArg(a++, (cl_int)group_offset);
+            kernels[k]->setArg(a++, (cl_int)base_index);
+            kernels[k]->setArg(a++, (cl_int)n);
 
-            err = CL_SUCCESS;
+            /*err = CL_SUCCESS;
             err |= clEnqueueNDRangeKernel(ComputeCommands, ComputeKernels[k], 1, NULL, global, local, 0, NULL, NULL);
             if (err != CL_SUCCESS)
             {
                 printf("Error: %s: Failed to execute kernel!\n", KernelNames[k]);
                 return EXIT_FAILURE;
-            }
+            }*/
+            queue->enqueueKernel(kernels[k], 1, global, local);
 
             return CL_SUCCESS;
         }
 
-        int PreScanBufferRecursive(
-            cl_mem output_data,
-            cl_mem input_data,
-            int max_group_size,
-            int max_work_item_count,
-            int element_count,
-            int level)
+        int PreScanBufferRecursive(CommandQueue* queue, Buffer* output_data, Buffer* input_data, int max_group_size, int max_work_item_count, int element_count, int level)
         {
             unsigned int group_size = max_group_size;
             unsigned int group_count = (int)fmax(1.0f, (int)ceil((float)element_count / (2.0f * group_size)));
@@ -492,12 +472,12 @@ namespace gpu
             unsigned int padding = element_count_per_group / NUM_BANKS;
             size_t shared = sizeof(float) * (element_count_per_group + padding);
 
-            cl_mem partial_sums = ScanPartialSums[level];
+            Buffer* partial_sums = ScanPartialSums[level];
             int err = CL_SUCCESS;
 
             if (group_count > 1)
             {
-                err = PreScanStoreSum(global, local, shared, output_data, input_data, partial_sums, work_item_count * 2, 0, 0);
+                err = PreScanStoreSum(queue, global, local, shared, output_data, input_data, partial_sums, work_item_count * 2, 0, 0);
                 if(err != CL_SUCCESS)
                     return err;
 
@@ -506,7 +486,7 @@ namespace gpu
                     size_t last_global[] = { 1 * remaining_work_item_count, 1 };
                     size_t last_local[]  = { remaining_work_item_count, 1 };
 
-                    err = PreScanStoreSumNonPowerOfTwo(
+                    err = PreScanStoreSumNonPowerOfTwo(queue,
                               last_global, last_local, last_shared,
                               output_data, input_data, partial_sums,
                               last_group_element_count,
@@ -518,11 +498,11 @@ namespace gpu
 
                 }
 
-                err = PreScanBufferRecursive(partial_sums, partial_sums, max_group_size, max_work_item_count, group_count, level + 1);
+                err = PreScanBufferRecursive(queue, partial_sums, partial_sums, max_group_size, max_work_item_count, group_count, level + 1);
                 if(err != CL_SUCCESS)
                     return err;
 
-                err = UniformAdd(global, local, output_data, partial_sums,  element_count - last_group_element_count, 0, 0);
+                err = UniformAdd(queue, global, local, output_data, partial_sums,  element_count - last_group_element_count, 0, 0);
                 if(err != CL_SUCCESS)
                     return err;
 
@@ -531,7 +511,7 @@ namespace gpu
                     size_t last_global[] = { 1 * remaining_work_item_count, 1 };
                     size_t last_local[]  = { remaining_work_item_count, 1 };
 
-                    err = UniformAdd(
+                    err = UniformAdd(queue,
                               last_global, last_local,
                               output_data, partial_sums,
                               last_group_element_count,
@@ -544,13 +524,13 @@ namespace gpu
             }
             else if (IsPowerOfTwo(element_count))
             {
-                err = PreScan(global, local, shared, output_data, input_data, work_item_count * 2, 0, 0);
+                err = PreScan(queue, global, local, shared, output_data, input_data, work_item_count * 2, 0, 0);
                 if(err != CL_SUCCESS)
                     return err;
             }
             else
             {
-                err = PreScanNonPowerOfTwo(global, local, shared, output_data, input_data, element_count, 0, 0);
+                err = PreScanNonPowerOfTwo(queue, global, local, shared, output_data, input_data, element_count, 0, 0);
                 if(err != CL_SUCCESS)
                     return err;
             }
@@ -558,19 +538,14 @@ namespace gpu
             return CL_SUCCESS;
         }
 
-        void PreScanBuffer(
-            cl_mem output_data,
-            cl_mem input_data,
-            unsigned int max_group_size,
-            unsigned int max_work_item_count,
-            unsigned int element_count)
+        void PreScanBuffer(CommandQueue* queue, Buffer* output_data, Buffer* input_data, unsigned int max_group_size, unsigned int max_work_item_count, unsigned int element_count)
         {
-            PreScanBufferRecursive(output_data, input_data, max_group_size, max_work_item_count, element_count, 0);
+            PreScanBufferRecursive(queue, output_data, input_data, max_group_size, max_work_item_count, element_count, 0);
         }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        void ScanReference( float* reference, float* input, const unsigned int count)
+        /*void ScanReference( float* reference, float* input, const unsigned int count)
         {
             reference[0] = 0;
             double total_sum = 0;
@@ -583,259 +558,233 @@ namespace gpu
             }
             if (total_sum != reference[count-1])
                 printf("Warning: Exceeding single-precision accuracy.  Scan will be inaccurate.\n");
-        }
+        }*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        int main(int argc, char **argv)
-        {
-            int i;
-            uint64_t         t0 = 0;
-            uint64_t         t1 = 0;
-            uint64_t         t2 = 0;
-            int              err = 0;
-            cl_mem			 output_buffer;
-            cl_mem           input_buffer;
-
-            // Create some random input data on the host
-            //
-            float *float_data = (float*)malloc(count * sizeof(float));
-            for (i = 0; i < count; i++)
-            {
-                float_data[i] = (int)(10 * ((float) rand() / (float) RAND_MAX));
-            }
-
-            // Connect to a GPU compute device
-            //
-            err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &ComputeDeviceId, NULL);
-            if (err != CL_SUCCESS)
-            {
-                printf("Error: Failed to locate a compute device!\n");
-                return EXIT_FAILURE;
-            }
-
-            size_t returned_size = 0;
-            size_t max_workgroup_size = 0;
-            err = clGetDeviceInfo(ComputeDeviceId, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &max_workgroup_size, &returned_size);
-            if (err != CL_SUCCESS)
-            {
-                printf("Error: Failed to retrieve device info!\n");
-                return EXIT_FAILURE;
-            }
-
-            GROUP_SIZE = min( GROUP_SIZE, max_workgroup_size );
-
-            cl_char vendor_name[1024] = {0};
-            cl_char device_name[1024] = {0};
-            err = clGetDeviceInfo(ComputeDeviceId, CL_DEVICE_VENDOR, sizeof(vendor_name), vendor_name, &returned_size);
-            err|= clGetDeviceInfo(ComputeDeviceId, CL_DEVICE_NAME, sizeof(device_name), device_name, &returned_size);
-            if (err != CL_SUCCESS)
-            {
-                printf("Error: Failed to retrieve device info!\n");
-                return EXIT_FAILURE;
-            }
-
-            printf(SEPARATOR);
-            printf("Connecting to %s %s...\n", vendor_name, device_name);
-
-            // Load the compute program from disk into a cstring buffer
-            //
-            printf(SEPARATOR);
-            const char* filename = "./../../scan_kernel.cl";
-            printf("Loading program '%s'...\n", filename);
-            printf(SEPARATOR);
-
-            char *source = LoadProgramSourceFromFile(filename);
-            if(!source)
-            {
-                printf("Error: Failed to load compute program from file!\n");
-                return EXIT_FAILURE;
-            }
-
-            // Create a compute ComputeContext
-            //
-            ComputeContext = clCreateContext(0, 1, &ComputeDeviceId, NULL, NULL, &err);
-            if (!ComputeContext)
-            {
-                printf("Error: Failed to create a compute ComputeContext!\n");
-                return EXIT_FAILURE;
-            }
-
-            // Create a command queue
-            //
-            ComputeCommands = clCreateCommandQueue(ComputeContext, ComputeDeviceId, 0, &err);
-            if (!ComputeCommands)
-            {
-                printf("Error: Failed to create a command ComputeCommands!\n");
-                return EXIT_FAILURE;
-            }
-
-            // Create the compute program from the source buffer
-            //
-            ComputeProgram = clCreateProgramWithSource(ComputeContext, 1, (const char **) & source, NULL, &err);
-            if (!ComputeProgram || err != CL_SUCCESS)
-            {
-                printf("%s\n", source);
-                printf("Error: Failed to create compute program!\n");
-                return EXIT_FAILURE;
-            }
-
-            // Build the program executable
-            //
-            err = clBuildProgram(ComputeProgram, 0, NULL, NULL, NULL, NULL);
-            if (err != CL_SUCCESS)
-            {
-                size_t length;
-                char build_log[2048];
-                printf("%s\n", source);
-                printf("Error: Failed to build program executable!\n");
-                clGetProgramBuildInfo(ComputeProgram, ComputeDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(build_log), build_log, &length);
-                printf("%s\n", build_log);
-                return EXIT_FAILURE;
-            }
-
-            ComputeKernels = (cl_kernel*) malloc(KernelCount * sizeof(cl_kernel));
-            for(i = 0; i < KernelCount; i++)
-            {
-                // Create each compute kernel from within the program
-                //
-                ComputeKernels[i] = clCreateKernel(ComputeProgram, KernelNames[i], &err);
-                if (!ComputeKernels[i] || err != CL_SUCCESS)
+                void init(Context* context) override
                 {
-                    printf("Error: Failed to create compute kernel!\n");
-                    return EXIT_FAILURE;
+                    /*int i;
+                    uint64_t         t0 = 0;
+                    uint64_t         t1 = 0;
+                    uint64_t         t2 = 0;
+                    int              err = 0;
+                    cl_mem			 output_buffer;
+                    cl_mem           input_buffer;
+
+                    // Create some random input data on the host
+                    //
+                    T *float_data = (T*)malloc(count * sizeof(T));
+                    for (i = 0; i < count; i++)
+                    {
+                        float_data[i] = (int)(10 * ((float) rand() / (float) RAND_MAX));
+                    }
+
+                    // Connect to a GPU compute device
+                    //
+                    err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, 1, &ComputeDeviceId, NULL);
+                    if (err != CL_SUCCESS)
+                    {
+                        printf("Error: Failed to locate a compute device!\n");
+                        return EXIT_FAILURE;
+                    }*/
+
+                    /*size_t returned_size = 0;
+                    size_t max_workgroup_size = 0;
+                    err = clGetDeviceInfo(ComputeDeviceId, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &max_workgroup_size, &returned_size);
+                    if (err != CL_SUCCESS)
+                    {
+                        printf("Error: Failed to retrieve device info!\n");
+                        return EXIT_FAILURE;
+                    }*/
+                    size_t max_workgroup_size = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
+
+                    GROUP_SIZE = min( GROUP_SIZE, max_workgroup_size );
+
+                    /*cl_char vendor_name[1024] = {0};
+                    cl_char device_name[1024] = {0};
+                    err = clGetDeviceInfo(ComputeDeviceId, CL_DEVICE_VENDOR, sizeof(vendor_name), vendor_name, &returned_size);
+                    err|= clGetDeviceInfo(ComputeDeviceId, CL_DEVICE_NAME, sizeof(device_name), device_name, &returned_size);
+                    if (err != CL_SUCCESS)
+                    {
+                        printf("Error: Failed to retrieve device info!\n");
+                        return EXIT_FAILURE;
+                    }
+
+                    printf(SEPARATOR);
+                    printf("Connecting to %s %s...\n", vendor_name, device_name);
+
+                    // Load the compute program from disk into a cstring buffer
+                    //
+                    printf(SEPARATOR);
+                    const char* filename = "./../../scan_kernel.cl";
+                    printf("Loading program '%s'...\n", filename);
+                    printf(SEPARATOR);
+
+                    char *source = LoadProgramSourceFromFile(filename);
+                    if(!source)
+                    {
+                        printf("Error: Failed to load compute program from file!\n");
+                        return EXIT_FAILURE;
+                    }
+
+                    // Create a compute ComputeContext
+                    //
+                    ComputeContext = clCreateContext(0, 1, &ComputeDeviceId, NULL, NULL, &err);
+                    if (!ComputeContext)
+                    {
+                        printf("Error: Failed to create a compute ComputeContext!\n");
+                        return EXIT_FAILURE;
+                    }*/
+
+                    // Create a command queue
+                    //
+                    /*ComputeCommands = clCreateCommandQueue(ComputeContext, ComputeDeviceId, 0, &err);
+                    if (!ComputeCommands)
+                    {
+                        printf("Error: Failed to create a command ComputeCommands!\n");
+                        return EXIT_FAILURE;
+                    }*/
+
+                    // Create the compute program from the source buffer
+                    //
+                    /*ComputeProgram = clCreateProgramWithSource(ComputeContext, 1, (const char **) & source, NULL, &err);
+                    if (!ComputeProgram || err != CL_SUCCESS)
+                    {
+                        printf("%s\n", source);
+                        printf("Error: Failed to create compute program!\n");
+                        return EXIT_FAILURE;
+                    }*/
+
+                    // Build the program executable
+                    //
+                    /*err = clBuildProgram(ComputeProgram, 0, NULL, NULL, NULL, NULL);
+                    if (err != CL_SUCCESS)
+                    {
+                        size_t length;
+                        char build_log[2048];
+                        printf("%s\n", source);
+                        printf("Error: Failed to build program executable!\n");
+                        clGetProgramBuildInfo(ComputeProgram, ComputeDeviceId, CL_PROGRAM_BUILD_LOG, sizeof(build_log), build_log, &length);
+                        printf("%s\n", build_log);
+                        return EXIT_FAILURE;
+                    }*/
+                    Program* program = context->createProgram("gpu/apple/Scan.cl");
+
+                    //ComputeKernels = (cl_kernel*) malloc(KernelCount * sizeof(cl_kernel));
+                    kernels = new Kernel*[KernelCount];
+                    for(size_t i = 0; i < KernelCount; i++)
+                    {
+                        // Create each compute kernel from within the program
+                        //
+                        kernels[i] = program->createKernel(KernelNames[i]);
+                        /*ComputeKernels[i] = clCreateKernel(ComputeProgram, KernelNames[i], &err);
+                        if (!ComputeKernels[i] || err != CL_SUCCESS)
+                        {
+                            printf("Error: Failed to create compute kernel!\n");
+                            return EXIT_FAILURE;
+                        }*/
+
+                        /*size_t wgSize;
+                        err = clGetKernelWorkGroupInfo(ComputeKernels[i], ComputeDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &wgSize, NULL);
+                        if(err)
+                        {
+                            printf("Error: Failed to get kernel work group size\n");
+                            return EXIT_FAILURE;
+                        }*/
+                        size_t wgSize = kernels[i]->getWorkGroupSize();
+                        GROUP_SIZE = min( GROUP_SIZE, wgSize );
+
+                    }
                 }
 
-                size_t wgSize;
-                err = clGetKernelWorkGroupInfo(ComputeKernels[i], ComputeDeviceId, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &wgSize, NULL);
-                if(err)
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
-                    printf("Error: Failed to get kernel work group size\n");
-                    return EXIT_FAILURE;
+                    // Create the input buffer on the device
+                    //
+                    size_t buffer_size = sizeof(T) * count;
+                    /*input_buffer = clCreateBuffer(ComputeContext, CL_MEM_READ_WRITE, buffer_size, NULL, NULL);
+                    if (!input_buffer)
+                    {
+                        printf("Error: Failed to allocate input buffer on device!\n");
+                        return EXIT_FAILURE;
+                    }*/
+                    input = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, buffer_size, data);
+
+                    // Fill the input buffer with the host allocated random data
+                    //
+                    /*err = clEnqueueWriteBuffer(ComputeCommands, input_buffer, CL_TRUE, 0, buffer_size, float_data, 0, NULL, NULL);
+                    if (err != CL_SUCCESS)
+                    {
+                        printf("Error: Failed to write to source array!\n");
+                        return EXIT_FAILURE;
+                    }*/
+
+                    // Create the output buffer on the device
+                    //
+                    /*output = clCreateBuffer(ComputeContext, CL_MEM_READ_WRITE, buffer_size, NULL, NULL);
+                    if (!output_buffer)
+                    {
+                        printf("Error: Failed to allocate result buffer on device!\n");
+                        return EXIT_FAILURE;
+                    }*/
+
+                    T* result = (T*)malloc(buffer_size);
+                    memset(result, 0, buffer_size);
+
+                    /*err = clEnqueueWriteBuffer(ComputeCommands, output_buffer, CL_TRUE, 0, buffer_size, result, 0, NULL, NULL);
+                    if (err != CL_SUCCESS)
+                    {
+                        printf("Error: Failed to write to source array!\n");
+                        return EXIT_FAILURE;
+                    }*/
+                    output = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, buffer_size, result);
+                    free(result);
                 }
-                GROUP_SIZE = min( GROUP_SIZE, wgSize );
 
-            }
+                void scan(CommandQueue* queue, size_t workGroupSize) override
+                {
+                    CreatePartialSumBuffers(queue->getContext(), count);
+                    PreScanBuffer(queue, output, input, GROUP_SIZE, GROUP_SIZE, count);
+                    queue->finish();
+                }
 
-            free(source);
+                void download(CommandQueue* queue, T* result) override
+                {
+                    // Read back the results that were computed on the device
+                    //
+                    /*err = clEnqueueReadBuffer(ComputeCommands, output_buffer, CL_TRUE, 0, buffer_size, result, 0, NULL, NULL);
+                    if (err)
+                    {
+                        printf("Error: Failed to read back results from the device!\n");
+                        return EXIT_FAILURE;
+                    }*/
+                    queue->enqueueRead(output, result);
+                }
 
-            // Create the input buffer on the device
-            //
-            size_t buffer_size = sizeof(float) * count;
-            input_buffer = clCreateBuffer(ComputeContext, CL_MEM_READ_WRITE, buffer_size, NULL, NULL);
-            if (!input_buffer)
-            {
-                printf("Error: Failed to allocate input buffer on device!\n");
-                return EXIT_FAILURE;
-            }
+                void cleanup() override
+                {
+                    // Shutdown and cleanup
+                    //
+                    ReleasePartialSums();
+                    for(size_t  i = 0; i < KernelCount; i++)
+                        delete kernels[i];
+                    delete[] kernels;
+                    delete input;
+                    delete output;
+                }
 
-            // Fill the input buffer with the host allocated random data
-            //
-            err = clEnqueueWriteBuffer(ComputeCommands, input_buffer, CL_TRUE, 0, buffer_size, float_data, 0, NULL, NULL);
-            if (err != CL_SUCCESS)
-            {
-                printf("Error: Failed to write to source array!\n");
-                return EXIT_FAILURE;
-            }
+                virtual ~Scan() {}
 
-            // Create the output buffer on the device
-            //
-            output_buffer = clCreateBuffer(ComputeContext, CL_MEM_READ_WRITE, buffer_size, NULL, NULL);
-            if (!output_buffer)
-            {
-                printf("Error: Failed to allocate result buffer on device!\n");
-                return EXIT_FAILURE;
-            }
+            private:
+                Kernel** kernels;
+                Buffer* input;
+                Buffer* output;
 
-            float* result = (float*)malloc(buffer_size);
-            memset(result, 0, buffer_size);
-
-            err = clEnqueueWriteBuffer(ComputeCommands, output_buffer, CL_TRUE, 0, buffer_size, result, 0, NULL, NULL);
-            if (err != CL_SUCCESS)
-            {
-                printf("Error: Failed to write to source array!\n");
-                return EXIT_FAILURE;
-            }
-
-            CreatePartialSumBuffers(count);
-            PreScanBuffer(output_buffer, input_buffer, GROUP_SIZE, GROUP_SIZE, count);
-
-            printf("Starting timing run of '%d' iterations...\n", iterations);
-
-            t0 = t1 = GetCurrentTime();
-            for (i = 0; i < iterations; i++)
-            {
-                PreScanBuffer(output_buffer, input_buffer, GROUP_SIZE, GROUP_SIZE, count);
-            }
-
-            err = clFinish(ComputeCommands);
-            if (err != CL_SUCCESS)
-            {
-                printf("Error: Failed to wait for command queue to finish! %d\n", err);
-                return EXIT_FAILURE;
-            }
-            t2 = GetCurrentTime();
-
-
-            // Calculate the statistics for execution time and throughput
-            //
-            double t = SubtractTimeInSec(t2, t1);
-            printf("Exec Time:  %.2f ms\n", 1000.0 * t / (double)(iterations));
-            printf("Throughput: %.2f GB/sec\n", 1e-9 * buffer_size * iterations / t);
-            printf(SEPARATOR);
-
-            // Read back the results that were computed on the device
-            //
-            err = clEnqueueReadBuffer(ComputeCommands, output_buffer, CL_TRUE, 0, buffer_size, result, 0, NULL, NULL);
-            if (err)
-            {
-                printf("Error: Failed to read back results from the device!\n");
-                return EXIT_FAILURE;
-            }
-
-            // Verify the results are correct
-            //
-            float* reference = (float*) malloc( buffer_size);
-            ScanReference(reference, float_data, count);
-
-            float error = 0.0f;
-            float diff = 0.0f;
-            for(i = 0; i < count; i++)
-            {
-                diff = fabs(reference[i] - result[i]);
-                error = diff > error ? diff : error;
-            }
-
-            if (error > MAX_ERROR)
-            {
-                printf("Error:   Incorrect results obtained! Max error = %f\n", error);
-                return EXIT_FAILURE;
-            }
-            else
-            {
-                printf("Results Validated!\n");
-                printf(SEPARATOR);
-            }
-
-            // Shutdown and cleanup
-            //
-            ReleasePartialSums();
-            for(i = 0; i < KernelCount; i++)
-                clReleaseKernel(ComputeKernels[i]);
-            clReleaseProgram(ComputeProgram);
-            clReleaseMemObject(input_buffer);
-            clReleaseMemObject(output_buffer);
-            clReleaseCommandQueue(ComputeCommands);
-            clReleaseContext(ComputeContext);
-
-            free(ComputeKernels);
-            free(float_data);
-            free(reference);
-            free(result);
-
-
-            return 0;
-        }
-
+                size_t GROUP_SIZE = 256;
+                Buffer** ScanPartialSums = 0;
+                unsigned int ElementsAllocated = 0;
+                unsigned int LevelsAllocated = 0;
+        };
     }
 }

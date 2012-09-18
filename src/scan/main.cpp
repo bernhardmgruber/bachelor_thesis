@@ -9,12 +9,13 @@
 #include "gpu/gpugems/NaiveScan.h"
 #include "gpu/gpugems/WorkEfficientScan.h"
 #include "gpu/gpugems/LocalScan.h"
+#include "gpu/apple/Scan.h"
 
 using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1024 * 64;
+    const size_t size = 1024 * 1024 * 1;
 
     try
     {
@@ -28,6 +29,7 @@ int main()
         //runner.runCLGPU<gpu::gpugems::NaiveScan>(false);
         //runner.runCLGPU<gpu::gpugems::WorkEfficientScan>(false);
         runner.runCLGPU<gpu::gpugems::LocalScan>(false);
+        runner.runCLGPU<gpu::apple::Scan>(false);
     }
     catch(OpenCLException& e)
     {
