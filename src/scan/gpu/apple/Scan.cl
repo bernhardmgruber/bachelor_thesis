@@ -67,8 +67,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-uint4
-GetAddressMapping(int index)
+uint4 GetAddressMapping(int index)
 {
     const uint local_id = get_local_id(0);
     const uint group_id = get_global_id(0) / get_local_size(0);
@@ -85,12 +84,7 @@ GetAddressMapping(int index)
     return (uint4)(global_index.x, global_index.y, local_index.x, local_index.y);
 }
 
-void
-LoadLocalFromGlobal(
-    __local int *shared_data,
-    __global const int *input_data,
-    const uint4 address_pair,
-    const uint n)
+void LoadLocalFromGlobal(__local int *shared_data, __global const int *input_data, const uint4 address_pair, const uint n)
 {
     const uint global_index_a = address_pair.x;
     const uint global_index_b = address_pair.y;
@@ -105,12 +99,7 @@ LoadLocalFromGlobal(
     shared_data[local_index_b + bank_offset_b] = input_data[global_index_b];
 }
 
-void
-LoadLocalFromGlobalNonPowerOfTwo(
-    __local int *shared_data,
-    __global const int *input_data,
-    const uint4 address_pair,
-    const uint n)
+void LoadLocalFromGlobalNonPowerOfTwo(__local int *shared_data, __global const int *input_data, const uint4 address_pair, const uint n)
 {
     const uint global_index_a = address_pair.x;
     const uint global_index_b = address_pair.y;
@@ -127,12 +116,7 @@ LoadLocalFromGlobalNonPowerOfTwo(
 	barrier(CLK_LOCAL_MEM_FENCE);
 }
 
-void
-StoreLocalToGlobal(
-    __global int* output_data,
-    __local const int* shared_data,
-    const uint4 address_pair,
-    const uint n)
+void StoreLocalToGlobal( __global int* output_data, __local const int* shared_data, const uint4 address_pair, const uint n)
 {
     barrier(CLK_LOCAL_MEM_FENCE);
 
@@ -149,12 +133,7 @@ StoreLocalToGlobal(
     output_data[global_index_b] = shared_data[local_index_b + bank_offset_b];
 }
 
-void
-StoreLocalToGlobalNonPowerOfTwo(
-    __global int* output_data,
-    __local const int* shared_data,
-    const uint4 address_pair,
-    const uint n)
+void StoreLocalToGlobalNonPowerOfTwo(__global int* output_data, __local const int* shared_data, const uint4 address_pair, const uint n)
 {
     barrier(CLK_LOCAL_MEM_FENCE);
 
@@ -174,10 +153,7 @@ StoreLocalToGlobalNonPowerOfTwo(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-ClearLastElement(
-    __local int* shared_data,
-    int group_index)
+void ClearLastElement(__local int* shared_data, int group_index)
 {
     const uint local_id = get_local_id(0);
     const uint group_id = get_global_id(0) / get_local_size(0);
@@ -191,11 +167,7 @@ ClearLastElement(
     }
 }
 
-void
-ClearLastElementStoreSum(
-    __local int* shared_data,
-    __global int *partial_sums,
-    int group_index)
+void ClearLastElementStoreSum(__local int* shared_data, __global int *partial_sums, int group_index)
 {
     const uint group_id = get_global_id(0) / get_local_size(0);
     const uint group_size = get_local_size(0);
@@ -212,9 +184,7 @@ ClearLastElementStoreSum(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-uint
-BuildPartialSum(
-    __local int *shared_data)
+uint BuildPartialSum(__local int *shared_data)
 {
     const uint local_id = get_local_id(0);
     const uint group_size = get_local_size(0);
@@ -244,10 +214,7 @@ BuildPartialSum(
     return stride;
 }
 
-void
-ScanRootToLeaves(
-    __local int *shared_data,
-    uint stride)
+void ScanRootToLeaves( __local int *shared_data, uint stride)
 {
     const uint local_id = get_local_id(0);
     const uint group_id = get_global_id(0) / get_local_size(0);
@@ -277,10 +244,7 @@ ScanRootToLeaves(
     }
 }
 
-void
-PreScanGroup(
-    __local int *shared_data,
-    int group_index)
+void PreScanGroup( __local int *shared_data, int group_index)
 {
     const uint group_id = get_global_id(0) / get_local_size(0);
 
@@ -289,11 +253,7 @@ PreScanGroup(
     ScanRootToLeaves(shared_data, stride);
 }
 
-void
-PreScanGroupStoreSum(
-    __global int *partial_sums,
-    __local int *shared_data,
-    int group_index)
+void PreScanGroupStoreSum( __global int *partial_sums, __local int *shared_data, int group_index)
 {
     const uint group_id = get_global_id(0) / get_local_size(0);
 
@@ -304,14 +264,7 @@ PreScanGroupStoreSum(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__kernel void
-PreScanKernel(
-    __global int *output_data,
-    __global const int *input_data,
-    __local int* shared_data,
-    const uint  group_index,
-    const uint  base_index,
-    const uint  n)
+__kernel void PreScanKernel( __global int *output_data, __global const int *input_data, __local int* shared_data, const uint  group_index, const uint  base_index, const uint  n)
 {
     const uint group_id = get_global_id(0) / get_local_size(0);
     const uint group_size = get_local_size(0);
@@ -324,15 +277,7 @@ PreScanKernel(
     StoreLocalToGlobal(output_data, shared_data, address_pair, n);
 }
 
-__kernel void
-PreScanStoreSumKernel(
-    __global int *output_data,
-    __global const int *input_data,
-    __global int *partial_sums,
-    __local int* shared_data,
-    const uint group_index,
-    const uint base_index,
-    const uint n)
+__kernel void PreScanStoreSumKernel( __global int *output_data, __global const int *input_data, __global int *partial_sums, __local int* shared_data, const uint group_index, const uint base_index, const uint n)
 {
     const uint group_id = get_global_id(0) / get_local_size(0);
     const uint group_size = get_local_size(0);
@@ -345,15 +290,7 @@ PreScanStoreSumKernel(
     StoreLocalToGlobal(output_data, shared_data, address_pair, n);
 }
 
-__kernel void
-PreScanStoreSumNonPowerOfTwoKernel(
-    __global int *output_data,
-    __global const int *input_data,
-    __global int *partial_sums,
-    __local int* shared_data,
-    const uint group_index,
-    const uint base_index,
-    const uint n)
+__kernel void PreScanStoreSumNonPowerOfTwoKernel( __global int *output_data, __global const int *input_data, __global int *partial_sums, __local int* shared_data, const uint group_index, const uint base_index, const uint n)
 {
     const uint local_id = get_local_id(0);
     const uint group_id = get_global_id(0) / get_local_size(0);
@@ -367,14 +304,7 @@ PreScanStoreSumNonPowerOfTwoKernel(
     StoreLocalToGlobalNonPowerOfTwo(output_data, shared_data, address_pair, n);
 }
 
-__kernel void
-PreScanNonPowerOfTwoKernel(
-    __global int *output_data,
-    __global const int *input_data,
-    __local int* shared_data,
-    const uint group_index,
-    const uint base_index,
-    const uint n)
+__kernel void PreScanNonPowerOfTwoKernel( __global int *output_data, __global const int *input_data, __local int* shared_data, const uint group_index, const uint base_index, const uint n)
 {
     const uint local_id = get_local_id(0);
     const uint group_id = get_global_id(0) / get_local_size(0);
@@ -390,13 +320,7 @@ PreScanNonPowerOfTwoKernel(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__kernel void UniformAddKernel(
-    __global int *output_data,
-    __global int *input_data,
-    __local int *shared_data,
-    const uint group_offset,
-    const uint base_index,
-    const uint n)
+__kernel void UniformAddKernel(__global int *output_data, __global int *input_data, __local int *shared_data, const uint group_offset, const uint base_index, const uint n)
 {
     const uint local_id = get_local_id(0);
     const uint group_id = get_global_id(0) / get_local_size(0);
