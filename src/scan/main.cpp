@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "Runner.h"
+#include "../common/Runner.h"
 
 #include "cpu/Scan.h"
 #include "gpu/clpp/Scan.h"
@@ -25,7 +25,7 @@ int main()
 
         runner.run<cpu::Scan>();
 
-        runner.runCLGPU<gpu::clpp::Scan>(true); // not working
+        //runner.runCLGPU<gpu::clpp::Scan>(true); // not working
         runner.runCLGPU<gpu::gpugems::NaiveScan>(false);
         runner.runCLGPU<gpu::gpugems::WorkEfficientScan>(false);
         runner.runCLGPU<gpu::gpugems::LocalScan>(false);

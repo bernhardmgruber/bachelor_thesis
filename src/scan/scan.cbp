@@ -44,11 +44,11 @@
 		<Unit filename="..\common\GPUAlgorithm.h" />
 		<Unit filename="..\common\OpenCL.cpp" />
 		<Unit filename="..\common\OpenCL.h" />
+		<Unit filename="..\common\Runner.h" />
 		<Unit filename="..\common\Timer.cpp" />
 		<Unit filename="..\common\Timer.h" />
 		<Unit filename="..\common\utils.cpp" />
 		<Unit filename="..\common\utils.h" />
-		<Unit filename="Runner.h" />
 		<Unit filename="ScanAlgorithm.h" />
 		<Unit filename="cpu\Scan.h" />
 		<Unit filename="gpu\apple\Scan.cl" />

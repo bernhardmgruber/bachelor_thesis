@@ -13,7 +13,7 @@
 using namespace std;
 
 /**
- * Used to run scan algorithms.
+ * Used to run algorithms.
  */
 template <typename T, size_t count>
 class Runner
