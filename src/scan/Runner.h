@@ -79,7 +79,7 @@ class Runner
 
             // run algorithms
             timer.start();
-            alg->scan(data, result);
+            alg->run(data, result);
             double scanTime = timer.stop();
 
             // print results
@@ -207,7 +207,7 @@ class Runner
 
                 // run algorithm
                 timer.start();
-                alg->scan(queue, workGroupSize);
+                alg->run(queue, workGroupSize);
                 stats.runTime = timer.stop();
 
                 // download data

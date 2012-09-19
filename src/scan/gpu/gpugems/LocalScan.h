@@ -3,7 +3,8 @@
 
 #include <vector>
 
-#include "../../GPUScanAlgorithm.h"
+#include "../../ScanAlgorithm.h"
+#include "../../../common/GPUAlgorithm.h"
 
 #include "../../../common/utils.h"
 
@@ -16,7 +17,7 @@ namespace gpu
          * Chapter: 39.2.3 Avoiding Bank Conflicts and 39.2.4 Arrays of Arbitrary Size
          */
         template<typename T, size_t count>
-        class LocalScan : public GPUScanAlgorithm<T, count>
+        class LocalScan : public GPUAlgorithm<T, count>, public ScanAlgorithm
         {
             public:
                 /**
@@ -56,16 +57,16 @@ namespace gpu
                     buffer = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, bufferSize * sizeof(T), data);
                 }
 
-                void scan(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     Context* context = queue->getContext();
 
-                    scan_r(context, queue, workGroupSize, buffer);
+                    run_r(context, queue, workGroupSize, buffer);
 
                     queue->finish();
                 }
 
-                void scan_r(Context* context, CommandQueue* queue, size_t workGroupSize, Buffer* blocks)
+                void run_r(Context* context, CommandQueue* queue, size_t workGroupSize, Buffer* blocks)
                 {
                     Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, roundToMultiple(blocks->getSize() / workGroupSize, workGroupSize * 2 * sizeof(T)));
 
@@ -82,7 +83,7 @@ namespace gpu
                     if(blocks->getSize() / sizeof(T) > localWorkSizes[0] * 2)
                     {
                         // the buffer containes more than one scanned block, scan the created sum buffer
-                        scan_r(context, queue, workGroupSize, sums);
+                        run_r(context, queue, workGroupSize, sums);
 
                         // get the remaining available local memory
                         size_t totalGlobalWorkSize = blocks->getSize() / sizeof(T) / 2;

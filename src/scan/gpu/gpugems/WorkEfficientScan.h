@@ -1,7 +1,8 @@
 #ifndef GPUGEMSWORKEFFICIENTSCAN_H
 #define GPUGEMSWORKEFFICIENTSCAN_H
 
-#include "../../GPUScanAlgorithm.h"
+#include "../../ScanAlgorithm.h"
+#include "../../../common/GPUAlgorithm.h"
 
 #include "../../../common/utils.h"
 
@@ -14,7 +15,7 @@ namespace gpu
          * Chapter: 39.2.2 A Work-Efficient Parallel Scan
          */
         template<typename T, size_t count>
-        class WorkEfficientScan : public GPUScanAlgorithm<T, count>
+        class WorkEfficientScan : public GPUAlgorithm<T, count>, public ScanAlgorithm
         {
             public:
                 string getName() override
@@ -42,7 +43,7 @@ namespace gpu
                     buffer = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, bufferSize * sizeof(T), data);
                 }
 
-                void scan(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     size_t globalWorkSizes[] = { count };
                     size_t localWorkSizes[] = { workGroupSize };

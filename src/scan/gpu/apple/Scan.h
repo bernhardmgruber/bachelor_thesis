@@ -53,23 +53,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include "../../ScanAlgorithm.h"
+#include "../../../common/GPUAlgorithm.h"
+
+#define NUM_BANKS       (32)
+
 namespace gpu
 {
     namespace apple
     {
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#include <CL/CL.h>
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#define DEBUG_INFO      (0)
-#define NUM_BANKS       (32)
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
         enum KernelMethods
         {
             PRESCAN                             = 0,
@@ -91,7 +83,7 @@ namespace gpu
         static const unsigned int KernelCount = sizeof(KernelNames) / sizeof(char *);
 
         template<typename T, size_t count>
-        class Scan : public GPUScanAlgorithm<T, count>
+        class Scan : public GPUAlgorithm<T, count>, public ScanAlgorithm
         {
             public:
                 string getName() override
@@ -422,7 +414,7 @@ namespace gpu
                     free(result);
                 }
 
-                void scan(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     CreatePartialSumBuffers(queue->getContext(), count);
                     PreScanBuffer(queue, output, input, GROUP_SIZE, GROUP_SIZE, count);

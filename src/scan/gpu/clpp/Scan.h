@@ -1,7 +1,8 @@
 #ifndef GPUCLPPSCAN_H
 #define GPUCLPPSCAN_H
 
-#include "../../GPUScanAlgorithm.h"
+#include "../../ScanAlgorithm.h"
+#include "../../../common/GPUAlgorithm.h"
 
 #include "clpp/clppScan_GPU.h"
 
@@ -10,7 +11,7 @@ namespace gpu
     namespace clpp
     {
         template<typename T, size_t count>
-        class Scan : public GPUScanAlgorithm<T, count>
+        class Scan : public GPUAlgorithm<T, count>, public ScanAlgorithm
         {
             public:
                 string getName() override
@@ -32,7 +33,7 @@ namespace gpu
                     assert(s->_context->clQueue != 0);
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     assert(s->_context->clQueue != 0);
                     buffer = new T[count];
@@ -40,7 +41,7 @@ namespace gpu
                     s->pushDatas(buffer, count);
                 }
 
-                void scan(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     s->scan();
                     s->waitCompletion();
