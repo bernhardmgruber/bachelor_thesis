@@ -50,6 +50,7 @@
 		<Unit filename="..\common\utils.cpp" />
 		<Unit filename="..\common\utils.h" />
 		<Unit filename="ScanAlgorithm.h" />
+		<Unit filename="ScanVerifier.h" />
 		<Unit filename="cpu\Scan.h" />
 		<Unit filename="gpu\apple\Scan.cl" />
 		<Unit filename="gpu\apple\Scan.h" />

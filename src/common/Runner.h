@@ -250,32 +250,6 @@ class Runner
             cout << endl;
         }
 
-        bool verify(bool inclusiv)
-        {
-            if(inclusiv)
-            {
-                if(data[0] != result[0])
-                    return false;
-
-                for(size_t i = 1; i < count; i++)
-                    if(result[i] !=  result[i - 1] + data[i])
-                        return false;
-
-                return true;
-            }
-            else
-            {
-                if(result[0] != 0)
-                    return false;
-
-                for(size_t i = 1; i < count; i++)
-                    if(result[i] != result[i - 1] + data[i - 1])
-                        return false;
-
-                return true;
-            }
-        }
-
         Context* gpuContext;
         Context* cpuContext;
         CommandQueue* gpuQueue;

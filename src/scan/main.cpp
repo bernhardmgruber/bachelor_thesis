@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "../common/Runner.h"
+#include "ScanVerifier.h"
 
 #include "cpu/Scan.h"
 #include "gpu/clpp/Scan.h"
@@ -19,7 +20,7 @@ int main()
 
     try
     {
-        Runner<int, size> runner;
+        Runner<int, size, ScanVerifier> runner;
 
         runner.printCLInfo();
 
