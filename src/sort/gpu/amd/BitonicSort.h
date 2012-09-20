@@ -1,8 +1,8 @@
 #ifndef AMDBITONICSORT_H
 #define AMDBITONICSORT_H
 
-#include "../../GPUSortingAlgorithm.h"
-//#include "../../OpenCL.h"
+#include "../../../common/GPUAlgorithm.h"
+#include "../../SortAlgorithm.h"
 
 using namespace std;
 
@@ -14,12 +14,17 @@ namespace gpu
          * From: AMD Stream SDK Samples
          */
         template<typename T, size_t count>
-        class BitonicSort : public GPUSortingAlgorithm<T, count>
+        class BitonicSort : public GPUAlgorithm<T, count>, public SortAlgorithm
         {
             public:
                 string getName() override
                 {
                     return "Bitonic Sort (AMD)";
+                }
+
+                bool isInPlace() override
+                {
+                    return false;
                 }
 
                 void init(Context* context) override
@@ -28,12 +33,12 @@ namespace gpu
                     kernel = program->createKernel("BitonicSort");
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     in = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                 }
 
-                void sort(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     /*for (size_t length = 1; length < count; length <<= 1)
                         for (size_t inc = length; inc > 0; inc >>= 1)
@@ -154,9 +159,9 @@ namespace gpu
                     return SDK_SUCCESS;*/
                 }
 
-                void download(CommandQueue* queue, T* data) override
+                void download(CommandQueue* queue, T* result) override
                 {
-                    queue->enqueueRead(in, data);
+                    queue->enqueueRead(in, result);
                     queue->finish();
                 }
 

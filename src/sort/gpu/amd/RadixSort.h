@@ -95,8 +95,8 @@ jurisdiction and venue of these courts.
 #define RADIX 4
 #define RADICES (1 << RADIX)
 
-#include "../../GPUSortingAlgorithm.h"
-//#include "../../OpenCL.h"
+#include "../../../common/GPUAlgorithm.h"
+#include "../../SortAlgorithm.h"
 
 using namespace std;
 
@@ -108,7 +108,7 @@ namespace gpu
          * From:
          */
         template<typename T, size_t count>
-        class RadixSort : public GPUSortingAlgorithm<T, count>
+        class RadixSort : public GPUAlgorithm<T, count>, public SortAlgorithm
         {
             public:
                 string getName() override
@@ -116,12 +116,17 @@ namespace gpu
                     return "Radix sort (AMD)";
                 }
 
+                bool isInPlace() override
+                {
+                    return false;
+                }
+
                 void init(Context* context) override
                 {
                     //elementCount = sampleCommon->roundToPowerOf2<cl_uint>(elementCount);
                     elementCount = count;
 
-                    groupSize = context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE);
+                    groupSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
                     //element count must be multiple of GROUP_SIZE * RADICES
                     size_t mulFactor = groupSize * RADICES;
@@ -156,7 +161,7 @@ namespace gpu
                     sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, elementCount * sizeof(cl_uint));
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     // Allocate and init memory used by host
                     unsortedData = new T[elementCount];
@@ -167,7 +172,7 @@ namespace gpu
                     //queue->finish();
                 }
 
-                void sort(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     for(size_t bits = 0; bits < sizeof(T) * RADIX; bits += RADIX)
                     {
@@ -412,9 +417,9 @@ namespace gpu
                     //status = sampleCommon->waitForEventAndRelease(&readEvt);
                 }
 
-                void download(CommandQueue* queue, T* data) override
+                void download(CommandQueue* queue, T* result) override
                 {
-                    memcpy(data, dSortedData, count * sizeof(T));
+                    memcpy(result, dSortedData, count * sizeof(T));
                     //queue->finish();
                 }
 

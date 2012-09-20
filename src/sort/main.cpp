@@ -1,7 +1,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "Runner.h"
+#include "../common/Runner.h"
+#include "SortVerifier.h"
 
 #include "cpu/Quicksort.h"
 #include "cpu/QSort.h"
@@ -34,7 +35,7 @@ int main()
 
     try
     {
-        Runner<int, size> runner;
+        Runner<int, size, SortVerifier> runner;
 
         runner.printCLInfo();
 

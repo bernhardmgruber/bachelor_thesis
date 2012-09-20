@@ -1,12 +1,13 @@
 #ifndef QUICKSORT_H
 #define QUICKSORT_H
 
-#include "../CPUSortingAlgorithm.h"
+#include "../../common/CPUAlgorithm.h"
+#include "../SortAlgorithm.h"
 
 namespace cpu
 {
     template<typename T, size_t count>
-    class Quicksort : public CPUSortingAlgorithm<T, count>
+    class Quicksort : public CPUAlgorithm<T, count>, public SortAlgorithm
     {
         public:
             string getName() override
@@ -14,7 +15,12 @@ namespace cpu
                 return "Quicksort";
             }
 
-            void sort(T* data) override
+            bool isInPlace() override
+            {
+                return true;
+            }
+
+            void run(T* data, T* result) override
             {
                 this->data = data;
                 sort_r(0, count - 1);

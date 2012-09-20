@@ -15,7 +15,7 @@ using namespace std;
 /**
  * Used to run algorithms.
  */
-template <typename T, size_t count>
+template <typename T, size_t count, template <typename, size_t, template <typename, size_t> class> class V>
 class Runner
 {
     public:
@@ -83,7 +83,7 @@ class Runner
             double scanTime = timer.stop();
 
             // print results
-            cout << "#  Scan      " << fixed << setprecision(FLOAT_PRECISION) << scanTime << "s " << (verify(alg->isInclusiv()) ? "SUCCESS" : "FAILED ") << endl;
+            cout << "#  Run       " << fixed << setprecision(FLOAT_PRECISION) << scanTime << "s " << (V<T, count, A>::verify(alg, data, result) ? "SUCCESS" : "FAILED ") << endl;
 
             // delete the algorithm and finish this test
             delete alg;
@@ -216,7 +216,7 @@ class Runner
                 stats.downloadTime = timer.stop();
 
                 // verify
-                stats.verificationResult = verify(alg->isInclusiv());
+                stats.verificationResult = V<T, count, A>::verify(alg, data, result);
             }
             catch(OpenCLException& e)
             {

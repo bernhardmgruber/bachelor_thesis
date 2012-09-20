@@ -3,8 +3,8 @@
 
 #include <list>
 
-#include "../../GPUSortingAlgorithm.h"
-//#include "../../OpenCL.h"
+#include "../../../common/GPUAlgorithm.h"
+#include "../../SortAlgorithm.h"
 
 #define ALLOWB (16 + 8 + 4 + 2)
 
@@ -18,13 +18,18 @@ namespace gpu
          * From: http://www.bealto.com/gpu-sorting_intro.html
          */
         template<typename T, size_t count>
-        class ParallelBitonicSortC : public GPUSortingAlgorithm<T, count>
+        class ParallelBitonicSortC : public GPUAlgorithm<T, count>, public SortAlgorithm
         {
 
             public:
                 string getName() override
                 {
                     return "Parallel bitonic C (Bealto)";
+                }
+
+                bool isInPlace() override
+                {
+                    return false;
                 }
 
                 void init(Context* context) override
@@ -37,12 +42,12 @@ namespace gpu
                     kernelC4 = program->createKernel("ParallelBitonicSortC4");
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     out = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                 }
 
-                void sort(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     //int mLastN = -1;
 
@@ -143,9 +148,9 @@ namespace gpu
                     queue->finish();
                 }
 
-                void download(CommandQueue* queue, T* data) override
+                void download(CommandQueue* queue, T* result) override
                 {
-                    queue->enqueueRead(out, data);
+                    queue->enqueueRead(out, result);
                     queue->finish();
                 }
 

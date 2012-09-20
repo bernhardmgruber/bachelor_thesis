@@ -8,7 +8,8 @@
 // The number of bits to sort
 #define PARAM_SORT_BITS 32
 
-#include "../../GPUSortingAlgorithm.h"
+#include "../../../common/GPUAlgorithm.h"
+#include "../../SortAlgorithm.h"
 
 #include "clpp/clppSort_RadixSortGPU.h"
 
@@ -19,7 +20,7 @@ namespace gpu
     namespace clpp
     {
         template<typename T, size_t count>
-        class RadixSort : public GPUSortingAlgorithm<T, count>
+        class RadixSort : public GPUAlgorithm<T, count>, public SortAlgorithm
         {
             public:
                 string getName() override
@@ -35,18 +36,18 @@ namespace gpu
                     s = new clppSort_RadixSortGPU(&clppcontext, count, PARAM_SORT_BITS, true);
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     s->pushDatas(data, count);
                 }
 
-                void sort(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     s->sort();
                     s->waitCompletion();
                 }
 
-                void download(CommandQueue* queue, T* data) override
+                void download(CommandQueue* queue, T* result) override
                 {
                     s->popDatas();
                 }

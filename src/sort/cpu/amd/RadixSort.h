@@ -102,12 +102,14 @@ using namespace std;
 #define RADICES (1 << RADIX)
 #define RADIX_MASK (RADICES - 1)
 
+#include "../../../common/CPUAlgorithm.h"
+
 namespace cpu
 {
     namespace amd
     {
         template<typename T, size_t count>
-        class RadixSort : public CPUSortingAlgorithm<T, count>
+        class RadixSort : public CPUAlgorithm<T, count>, public SortAlgorithm
         {
             public:
                 string getName() override
@@ -115,22 +117,25 @@ namespace cpu
                     return "RadixSort (AMD)";
                 }
 
-                void sort(T* data) override
+                bool isInPlace() override
                 {
-                    size_t elementCount = count;
+                    return false;
+                }
 
+                void run(T* data, T* result) override
+                {
                     T* histogram = new T[RADICES];
-                    T* tempData = new T[elementCount];
-                    T* hSortedData = new T[elementCount];
+                    T* tempData = new T[count];
+                    T* hSortedData = result;
 
-                    memcpy(tempData, data, elementCount * sizeof(T));
+                    memcpy(tempData, data, count * sizeof(T));
                     for(size_t bits = 0; bits < sizeof(T) * RADIX ; bits += RADIX)
                     {
                         // Initialize histogram bucket to zeros
                         memset(histogram, 0, RADICES * sizeof(T));
 
                         // Calculate 256 histogram for all element
-                        for(size_t i = 0; i < elementCount; ++i)
+                        for(size_t i = 0; i < count; ++i)
                         {
                             T element = tempData[i];
                             T value = (element >> bits) & RADIX_MASK;
@@ -147,7 +152,7 @@ namespace cpu
                         }
 
                         // Rearrange  the elements based on prescaned histogram
-                        for(size_t i = 0; i < elementCount; ++i)
+                        for(size_t i = 0; i < count; ++i)
                         {
                             T element = tempData[i];
                             T value = (element >> bits) & RADIX_MASK;
@@ -158,15 +163,11 @@ namespace cpu
 
                         // Copy to tempData for further use
                         if(bits != RADIX * 3)
-                            memcpy(tempData, hSortedData, elementCount * sizeof(T));
+                            memcpy(tempData, hSortedData, count * sizeof(T));
                     }
-
-
-                    memcpy(data, hSortedData, elementCount * sizeof(T));
 
                     delete[] tempData;
                     delete[] histogram;
-                    delete[] hSortedData;
                 }
 
                 virtual ~RadixSort() {}

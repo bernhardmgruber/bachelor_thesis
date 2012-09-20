@@ -1,8 +1,8 @@
 #ifndef PARALLELBITONICSORTA_H
 #define PARALLELBITONICSORTA_H
 
-#include "../../GPUSortingAlgorithm.h"
-//#include "../../OpenCL.h"
+#include "../../../common/GPUAlgorithm.h"
+#include "../../SortAlgorithm.h"
 
 using namespace std;
 
@@ -14,12 +14,17 @@ namespace gpu
          * From: http://www.bealto.com/gpu-sorting_intro.html
          */
         template<typename T, size_t count>
-        class ParallelBitonicSortA : public GPUSortingAlgorithm<T, count>
+        class ParallelBitonicSortA : public GPUAlgorithm<T, count>, public SortAlgorithm
         {
             public:
                 string getName() override
                 {
                     return "Parallel bitonic A (Bealto)";
+                }
+
+                bool isInPlace() override
+                {
+                    return false;
                 }
 
                 void init(Context* context) override
@@ -28,13 +33,13 @@ namespace gpu
                     kernel = program->createKernel("ParallelBitonicSortA");
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     in = context->createBuffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                     out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                 }
 
-                void sort(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     bool swapBuffers = false;
 
@@ -54,9 +59,9 @@ namespace gpu
                     queue->finish();
                 }
 
-                void download(CommandQueue* queue, T* data) override
+                void download(CommandQueue* queue, T* result) override
                 {
-                    queue->enqueueRead(out, data);
+                    queue->enqueueRead(out, result);
                     queue->finish();
                 }
 

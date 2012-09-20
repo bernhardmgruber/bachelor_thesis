@@ -15,8 +15,8 @@
 #ifndef LibCLRadixSort
 #define LibCLRadixSort
 
-#include "../../GPUSortingAlgorithm.h"
-//#include "../../OpenCL.h"
+#include "../../../common/GPUAlgorithm.h"
+#include "../../SortAlgorithm.h"
 
 using namespace std;
 
@@ -31,7 +31,7 @@ namespace gpu
          * Modified by Bernhard Manfred Gruber to be key only.
          */
         template<typename T, size_t count>
-        class RadixSort : public GPUSortingAlgorithm<T, count>
+        class RadixSort : public GPUAlgorithm<T, count>, public SortAlgorithm
         {
             public:
                 string getName() override
@@ -49,10 +49,10 @@ namespace gpu
                     clReorder = program->createKernel("clReorder");
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     size_t cBits = CBITS;
-                    size_t cBlockSize = context->getInfoSize(CL_DEVICE_MAX_WORK_GROUP_SIZE);
+                    size_t cBlockSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
                     size_t lBlockCount = ceil((float)count / cBlockSize);
 
@@ -64,7 +64,7 @@ namespace gpu
                     bfBlockSum = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * cBlockSize);
                 }
 
-                void sort(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     int iStartBit = 0;
                     int iEndBit = 32;
@@ -128,9 +128,9 @@ namespace gpu
                     queue->finish();
                 }
 
-                void download(CommandQueue* queue, T* data) override
+                void download(CommandQueue* queue, T* result) override
                 {
-                    queue->enqueueRead(bfKey, data);
+                    queue->enqueueRead(bfKey, result);
                     queue->finish();
                 }
 

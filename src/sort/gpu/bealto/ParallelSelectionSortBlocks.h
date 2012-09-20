@@ -3,8 +3,8 @@
 
 #include <sstream>
 
-#include "../../GPUSortingAlgorithm.h"
-//#include "../../OpenCL.h"
+#include "../../../common/GPUAlgorithm.h"
+#include "../../SortAlgorithm.h"
 
 using namespace std;
 
@@ -16,7 +16,7 @@ namespace gpu
          * From: http://www.bealto.com/gpu-sorting_intro.html
          */
         template<typename T, size_t count>
-        class ParallelSelectionSortBlocks : public GPUSortingAlgorithm<T, count>
+        class ParallelSelectionSortBlocks : public GPUAlgorithm<T, count>, public SortAlgorithm
         {
             public:
                 ParallelSelectionSortBlocks()
@@ -33,6 +33,11 @@ namespace gpu
                     return "Parallel selection sort blocks (Bealto)";
                 }
 
+                bool isInPlace() override
+                {
+                    return false;
+                }
+
                 void init(Context* context) override
                 {
                     stringstream options;
@@ -41,13 +46,13 @@ namespace gpu
                     kernel = program->createKernel("ParallelSelectionSortBlocks");
                 }
 
-                void upload(Context* context, T* data) override
+                void upload(Context* context, size_t workGroupSize, T* data) override
                 {
                     in = context->createBuffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
                     out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                 }
 
-                void sort(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize) override
                 {
                     kernel->setArg(0, in);
                     kernel->setArg(1, out);
@@ -58,9 +63,9 @@ namespace gpu
                     queue->finish();
                 }
 
-                void download(CommandQueue* queue, T* data) override
+                void download(CommandQueue* queue, T* result) override
                 {
-                    queue->enqueueRead(out, data);
+                    queue->enqueueRead(out, result);
                     queue->finish();
                 }
 
