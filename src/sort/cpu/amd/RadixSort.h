@@ -92,8 +92,6 @@ jurisdiction and venue of these courts.
 #ifndef AMDCPURADIXSORT_H
 #define AMDCPURADIXSORT_H
 
-#include "../../CPUSortingAlgorithm.h"
-
 #include <math.h>
 
 using namespace std;

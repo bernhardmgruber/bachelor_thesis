@@ -33,9 +33,10 @@ namespace gpu
                     kernel = program->createKernel("ParallelBitonicSortA");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
-                    in = context->createBuffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
+                    in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count);
+                    queue->enqueueWrite(in, data);
                     out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                 }
 
@@ -56,13 +57,11 @@ namespace gpu
                             queue->enqueueBarrier();
                             swapBuffers = !swapBuffers;
                         }
-                    queue->finish();
                 }
 
                 void download(CommandQueue* queue, T* result) override
                 {
                     queue->enqueueRead(out, result);
-                    queue->finish();
                 }
 
                 void cleanup() override

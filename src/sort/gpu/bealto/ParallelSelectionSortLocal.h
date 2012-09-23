@@ -33,9 +33,10 @@ namespace gpu
                     kernel = program->createKernel("ParallelSelectionSortLocal");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
-                    in = context->createBuffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
+                    in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count);
+                    queue->enqueueWrite(in, data);
                     out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                 }
 
@@ -48,13 +49,11 @@ namespace gpu
                     kernel->setArg(1, out);
                     kernel->setArg(2, sizeof(cl_uint) * localWorkSizes[0], nullptr); // local memory
                     queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
-                    queue->finish();
                 }
 
                 void download(CommandQueue* queue, T* result) override
                 {
                     queue->enqueueRead(out, result);
-                    queue->finish();
                 }
 
                 void cleanup() override

@@ -36,9 +36,10 @@ namespace gpu
                     kernel4 = program->createKernel("ParallelBitonicSortB4");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
-                    buffer = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    queue->enqueueWrite(buffer, data);
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize) override
@@ -75,13 +76,11 @@ namespace gpu
                             inc >>= ninc;
                         }
                     }
-                    queue->finish();
                 }
 
                 void download(CommandQueue* queue, T* result) override
                 {
                     queue->enqueueRead(buffer, result);
-                    queue->finish();
                 }
 
                 void cleanup() override

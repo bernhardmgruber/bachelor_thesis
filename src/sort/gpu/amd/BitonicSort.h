@@ -33,9 +33,10 @@ namespace gpu
                     kernel = program->createKernel("BitonicSort");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
-                    in = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
+                    in = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    queue->enqueueWrite(in, data);
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize) override
@@ -134,8 +135,6 @@ namespace gpu
                         }
                     }
 
-                    queue->finish();
-
                     // Enqueue readBuffer
                     /*cl_event readEvt;
                     status = clEnqueueReadBuffer(
@@ -162,7 +161,6 @@ namespace gpu
                 void download(CommandQueue* queue, T* result) override
                 {
                     queue->enqueueRead(in, result);
-                    queue->finish();
                 }
 
                 void cleanup() override

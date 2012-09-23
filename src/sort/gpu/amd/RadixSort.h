@@ -161,7 +161,7 @@ namespace gpu
                     sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, elementCount * sizeof(cl_uint));
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
                     // Allocate and init memory used by host
                     unsortedData = new T[elementCount];

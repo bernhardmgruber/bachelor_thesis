@@ -42,9 +42,10 @@ namespace gpu
                     kernelC4 = program->createKernel("ParallelBitonicSortC4");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
-                    out = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sizeof(T) * count, data);
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    queue->enqueueWrite(buffer, data);
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize) override
@@ -126,7 +127,7 @@ namespace gpu
                             }
                             size_t wg = workGroupSize;
                             wg = std::min(wg, nThreads);
-                            kernel->setArg(0, out);
+                            kernel->setArg(0, buffer);
                             kernel->setArg(1, inc); // INC passed to kernel
                             kernel->setArg(2, (int)(length << 1)); // DIR passed to kernel
 
@@ -137,27 +138,22 @@ namespace gpu
                             size_t localWorkSizes[1] = { wg };
                             queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
                             queue->enqueueBarrier();
-                            // if (mLastN != n) printf("LENGTH=%d INC=%d KID=%d\n",length,inc,kid); // DEBUG
                             if (ninc < 0)
                                 break; // done
                             inc >>= ninc;
                         }
                     }
-                    //mLastN = count;
-
-                    queue->finish();
                 }
 
                 void download(CommandQueue* queue, T* result) override
                 {
-                    queue->enqueueRead(out, result);
-                    queue->finish();
+                    queue->enqueueRead(buffer, result);
                 }
 
                 void cleanup() override
                 {
                     delete program;
-                    delete out;
+                    delete buffer;
                     delete kernel2;
                     delete kernel4;
                     delete kernel8;
@@ -174,7 +170,7 @@ namespace gpu
                 Kernel* kernel8;
                 Kernel* kernel16;
                 Kernel* kernelC4;
-                Buffer* out;
+                Buffer* buffer;
         };
     }
 }

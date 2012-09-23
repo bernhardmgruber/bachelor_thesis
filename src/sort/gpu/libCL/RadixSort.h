@@ -49,14 +49,15 @@ namespace gpu
                     clReorder = program->createKernel("clReorder");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
                     size_t cBits = CBITS;
                     size_t cBlockSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
                     size_t lBlockCount = ceil((float)count / cBlockSize);
 
-                    bfKey = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) * count, data);
+                    bfKey = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    queue->enqueueWrite(bfKey, data);
                     bfTempKey = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                     //bfTempVal = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
                     bfBlockScan = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * lBlockCount * (1 << cBits));
@@ -97,21 +98,21 @@ namespace gpu
                         clBlockSort->setArg(8, cBlockSize * sizeof(cl_uint), nullptr);
                         clBlockSort->setArg(9, cBlockSize * sizeof(cl_uint), nullptr);
                         queue->enqueueKernel(clBlockSort, 1, &lGlobalSize, &cBlockSize);
-                        queue->finish();
+                        queue->enqueueBarrier();
 
                         clBlockScan->setArg(0, bfBlockScan);
                         clBlockScan->setArg(1, bfBlockSum);
                         clBlockScan->setArg(2, lScanCount);
                         clBlockScan->setArg(3, cBlockSize * sizeof(cl_uint), nullptr);
                         queue->enqueueKernel(clBlockScan, 1, &lScanSize, &cBlockSize);
-                        queue->finish();
+                        queue->enqueueBarrier();
 
                         clBlockPrefix->setArg(0, bfBlockScan);
                         clBlockPrefix->setArg(1, bfBlockSum);
                         clBlockPrefix->setArg(2, lScanCount);
                         clBlockPrefix->setArg(3, cBlockSize * sizeof(cl_uint), nullptr);
                         queue->enqueueKernel(clBlockPrefix, 1, &lScanSize, &cBlockSize);
-                        queue->finish();
+                        queue->enqueueBarrier();
 
                         clReorder->setArg(0, bfTempKey);
                         clReorder->setArg(1, bfKey);
@@ -122,16 +123,13 @@ namespace gpu
                         clReorder->setArg(6, j);
                         clReorder->setArg(7, count);
                         queue->enqueueKernel(clReorder, 1, &lGlobalSize, &cBlockSize);
-                        queue->finish();
+                        queue->enqueueBarrier();
                     }
-
-                    queue->finish();
                 }
 
                 void download(CommandQueue* queue, T* result) override
                 {
                     queue->enqueueRead(bfKey, result);
-                    queue->finish();
                 }
 
                 void cleanup() override

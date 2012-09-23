@@ -31,7 +31,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 256 * 8;
+    const size_t size = 1024 * 1024;
 
     try
     {
@@ -42,21 +42,21 @@ int main()
         runner.run<cpu::Quicksort>();
         runner.run<cpu::QSort>();
         runner.run<cpu::STLSort>();
-        runner.run<cpu::TimSort>();
+        //runner.run<cpu::TimSort>();
         runner.run<cpu::amd::RadixSort>();
 
-        runner.runCLGPU<gpu::bealto::ParallelSelectionSort>(true);
-        runner.runCLGPU<gpu::bealto::ParallelSelectionSortLocal>(true);
-        runner.runCLGPU<gpu::bealto::ParallelSelectionSortBlocks>(true);
-        runner.runCLGPU<gpu::bealto::ParallelBitonicSortLocal>(true);
-        runner.runCLGPU<gpu::bealto::ParallelBitonicSortLocalOptim>(true);
-        runner.runCLGPU<gpu::bealto::ParallelBitonicSortA>(true);
-        runner.runCLGPU<gpu::bealto::ParallelBitonicSortB2>(true);
-        runner.runCLGPU<gpu::bealto::ParallelBitonicSortB4>(true);
-        runner.runCLGPU<gpu::bealto::ParallelBitonicSortB8>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelSelectionSort>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelSelectionSortLocal>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelSelectionSortBlocks>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortLocal>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortLocalOptim>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortA>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB2>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB4>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB8>(true);
         runner.runCLGPU<gpu::bealto::ParallelBitonicSortB16>(true);
         runner.runCLGPU<gpu::bealto::ParallelBitonicSortC>(true);
-        runner.runCLGPU<gpu::bealto::ParallelMergeSort>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelMergeSort>(true);
 
         //runner.runCLGPU<gpu::clpp::RadixSort>(true); // not working
 
