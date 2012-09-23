@@ -1,13 +1,6 @@
 #ifndef GPUCLPPRADIXSORT_H
 #define GPUCLPPRADIXSORT_H
 
-// In order to test that no value has been loosed ! Can take time to check !
-#define PARAM_CHECK_HASLOOSEDVALUES 0
-#define PARAM_BENCHMARK_LOOPS 20
-
-// The number of bits to sort
-#define PARAM_SORT_BITS 32
-
 #include "../../../common/GPUAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
@@ -28,15 +21,20 @@ namespace gpu
                     return "Radixsort (clpp)";
                 }
 
+                bool isInPlace() override
+                {
+                    return true;
+                }
+
                 void init(Context* context) override
                 {
                     clppProgram::setBasePath("../common/libs/clpp/clpp/");
                     clppcontext.setup(0, 0);
 
-                    s = new clppSort_RadixSortGPU(&clppcontext, count, PARAM_SORT_BITS, true);
+                    s = new clppSort_RadixSortGPU(&clppcontext, count, sizeof(T) * 8, true);
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
                     s->pushDatas(data, count);
                 }

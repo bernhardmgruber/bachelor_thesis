@@ -15,12 +15,12 @@
 #ifndef LibCLRadixSort
 #define LibCLRadixSort
 
+#include "../../../common/libs/libcl/oclContext.h"
+#include "../../../common/libs/libcl/oclBuffer.h"
+#include "../../../common/libs/libcl/sort/oclRadixSort.h"
+
 #include "../../../common/GPUAlgorithm.h"
 #include "../../SortAlgorithm.h"
-
-using namespace std;
-
-#define CBITS 4
 
 namespace gpu
 {
@@ -39,128 +39,79 @@ namespace gpu
                     return "Radix sort (LibCL)";
                 }
 
+                bool isInPlace() override
+                {
+                    return false;
+                }
+
                 void init(Context* context) override
                 {
-                    program = context->createProgram("gpu/libCL/RadixSort.cl", "-D T=" + getTypeName<T>());
+                    ctx = oclContext::create(oclContext::VENDOR_NVIDIA, CL_DEVICE_TYPE_GPU);
+                    if (!ctx)
+                        ctx = oclContext::create(oclContext::VENDOR_AMD, CL_DEVICE_TYPE_GPU);
 
-                    clBlockSort = program->createKernel("clBlockSort");
-                    clBlockScan = program->createKernel("clBlockScan");
-                    clBlockPrefix = program->createKernel("clBlockPrefix");
-                    clReorder = program->createKernel("clReorder");
+                    if (!ctx)
+                        throw OpenCLException("no OpenCL capable platform detected");
+
+                    program = new oclRadixSort(*ctx);
+                    if (!program->compile())
+                        throw OpenCLException("compilation failed!");
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
-                    size_t cBits = CBITS;
-                    size_t cBlockSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
+                    bfKey = new oclBuffer(*ctx, "bfKey");
+                    bfVal = new oclBuffer(*ctx, "bfVal");
 
-                    size_t lBlockCount = ceil((float)count / cBlockSize);
+                    bfKey->create<cl_uint> (CL_MEM_READ_WRITE, count);
+                    bfVal->create<cl_uint> (CL_MEM_READ_WRITE, count);
 
-                    bfKey = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-                    queue->enqueueWrite(bfKey, data);
-                    bfTempKey = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-                    //bfTempVal = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
-                    bfBlockScan = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * lBlockCount * (1 << cBits));
-                    bfBlockOffset = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * lBlockCount * (1 << cBits));
-                    bfBlockSum = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * cBlockSize);
+                    if (!bfKey->map(CL_MAP_READ | CL_MAP_WRITE))
+                        throw OpenCLException("map failed!");
+                    //if (!bfVal.map(CL_MAP_READ | CL_MAP_WRITE))
+                    //    throw OpenCLException("map failed!");
+
+                    T* keyPtr = bfKey->ptr<T>();
+                    //T* ptrVal = bfVal.ptr<T>();
+                    memcpy(keyPtr, data, sizeof(T) * count);
+
+                    bfVal->write();
+                    //bfKey.write();
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize) override
                 {
-                    int iStartBit = 0;
-                    int iEndBit = 32;
-
-                    size_t cBits = CBITS;
-                    size_t cBlockSize = workGroupSize;
-
-                    if ((iEndBit - iStartBit) % cBits != 0)
-                    {
-                        cerr << "end bit(" << iEndBit << ") - start bit(" << iStartBit << ") must be divisible by 4";
-                        return;
-                    }
-
-                    size_t lBlockCount = ceil((float)count / cBlockSize);
-
-                    size_t lGlobalSize = lBlockCount * cBlockSize;
-                    size_t lScanCount = lBlockCount * (1 << cBits) / 4;
-                    size_t lScanSize = ceil((float)lScanCount / cBlockSize) * cBlockSize;
-
-                    for (int j = iStartBit; j < iEndBit; j += cBits)
-                    {
-                        clBlockSort->setArg(0, bfKey);
-                        clBlockSort->setArg(1, bfTempKey);
-                        clBlockSort->setArg(2, nullptr);
-                        clBlockSort->setArg(3, nullptr);
-                        clBlockSort->setArg(4, j);
-                        clBlockSort->setArg(5, bfBlockScan);
-                        clBlockSort->setArg(6, bfBlockOffset);
-                        clBlockSort->setArg(7, count);
-                        clBlockSort->setArg(8, cBlockSize * sizeof(cl_uint), nullptr);
-                        clBlockSort->setArg(9, cBlockSize * sizeof(cl_uint), nullptr);
-                        queue->enqueueKernel(clBlockSort, 1, &lGlobalSize, &cBlockSize);
-                        queue->enqueueBarrier();
-
-                        clBlockScan->setArg(0, bfBlockScan);
-                        clBlockScan->setArg(1, bfBlockSum);
-                        clBlockScan->setArg(2, lScanCount);
-                        clBlockScan->setArg(3, cBlockSize * sizeof(cl_uint), nullptr);
-                        queue->enqueueKernel(clBlockScan, 1, &lScanSize, &cBlockSize);
-                        queue->enqueueBarrier();
-
-                        clBlockPrefix->setArg(0, bfBlockScan);
-                        clBlockPrefix->setArg(1, bfBlockSum);
-                        clBlockPrefix->setArg(2, lScanCount);
-                        clBlockPrefix->setArg(3, cBlockSize * sizeof(cl_uint), nullptr);
-                        queue->enqueueKernel(clBlockPrefix, 1, &lScanSize, &cBlockSize);
-                        queue->enqueueBarrier();
-
-                        clReorder->setArg(0, bfTempKey);
-                        clReorder->setArg(1, bfKey);
-                        clReorder->setArg(2, nullptr);
-                        clReorder->setArg(3, nullptr);
-                        clReorder->setArg(4, bfBlockScan);
-                        clReorder->setArg(5, bfBlockOffset);
-                        clReorder->setArg(6, j);
-                        clReorder->setArg(7, count);
-                        queue->enqueueKernel(clReorder, 1, &lGlobalSize, &cBlockSize);
-                        queue->enqueueBarrier();
-                    }
+                    program->compute(ctx->getDevice(0), *bfKey, *bfVal, 0, 32);
                 }
 
                 void download(CommandQueue* queue, T* result) override
                 {
-                    queue->enqueueRead(bfKey, result);
+                    bfVal->read();
+                    //bfKey.read();
+
+                    memcpy(result, keyPtr, sizeof(T) * count);
+
+                    bfVal->unmap();
+                    //bfKey.unmap();
                 }
 
                 void cleanup() override
                 {
                     delete program;
-                    delete clBlockSort;
-                    delete clBlockScan;
-                    delete clBlockPrefix;
-                    delete clReorder;
+                    delete ctx;
                     delete bfKey;
-                    delete bfTempKey;
-                    //delete bfTempVal;
-                    delete bfBlockScan;
-                    delete bfBlockSum;
-                    delete bfBlockOffset;
+                    delete bfVal;
                 }
 
                 virtual ~RadixSort() {}
 
             private:
-                Program* program;
-                Kernel* clBlockSort;
-                Kernel* clBlockScan;
-                Kernel* clBlockPrefix;
-                Kernel* clReorder;
-                Buffer* bfKey;
-                Buffer* bfTempKey;
-                //Buffer* bfTempVal;
-                Buffer* bfBlockScan;
-                Buffer* bfBlockSum;
-                Buffer* bfBlockOffset;
+                oclContext* ctx;
+                oclRadixSort* program;
+                oclBuffer* bfKey;
+                oclBuffer* bfVal;
+
+                T* keyPtr;
         };
     }
 }

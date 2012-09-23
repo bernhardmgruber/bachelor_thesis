@@ -16,7 +16,9 @@
 				</Compiler>
 				<Linker>
 					<Add library="..\common\libs\clpp\bin\Debug\libclpp.a" />
+					<Add library="..\common\libs\libcl\bin\Debug\libcl.a" />
 					<Add library="opencl" />
+					<Add library="opengl32" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -30,7 +32,9 @@
 				<Linker>
 					<Add option="-s" />
 					<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
+					<Add library="..\common\libs\libcl\bin\Release\libcl.a" />
 					<Add library="opencl" />
+					<Add library="opengl32" />
 				</Linker>
 			</Target>
 		</Build>
@@ -39,6 +43,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add directory="..\common\libs\clpp" />
+			<Add directory="..\common\libs\libcl" />
 		</Compiler>
 		<Unit filename="..\common\CPUAlgorithm.h" />
 		<Unit filename="..\common\GPUAlgorithm.h" />

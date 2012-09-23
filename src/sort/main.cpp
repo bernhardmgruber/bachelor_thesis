@@ -39,9 +39,9 @@ int main()
 
         runner.printCLInfo();
 
-        runner.run<cpu::Quicksort>();
-        runner.run<cpu::QSort>();
-        runner.run<cpu::STLSort>();
+        //runner.run<cpu::Quicksort>();
+        //runner.run<cpu::QSort>();
+        //runner.run<cpu::STLSort>();
         //runner.run<cpu::TimSort>();
         runner.run<cpu::amd::RadixSort>();
 
@@ -54,7 +54,7 @@ int main()
         //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB2>(true);
         //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB4>(true);
         //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB8>(true);
-        runner.runCLGPU<gpu::bealto::ParallelBitonicSortB16>(true);
+        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB16>(true);
         runner.runCLGPU<gpu::bealto::ParallelBitonicSortC>(true);
         //runner.runCLGPU<gpu::bealto::ParallelMergeSort>(true);
 
