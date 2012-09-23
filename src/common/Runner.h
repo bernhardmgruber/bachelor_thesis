@@ -202,7 +202,7 @@ class Runner
             {
                 // upload data
                 timer.start();
-                alg->upload(context, workGroupSize, data);
+                alg->upload(context, queue, workGroupSize, data);
                 stats.uploadTime = timer.stop();
 
                 // run algorithm

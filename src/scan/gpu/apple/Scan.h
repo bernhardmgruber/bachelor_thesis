@@ -401,17 +401,19 @@ namespace gpu
                     }
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
                     // Create the input buffer on the device
                     size_t buffer_size = sizeof(T) * count;
 
-                    input = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, buffer_size, data);
+                    input = context->createBuffer(CL_MEM_READ_WRITE, buffer_size);
+                    queue->enqueueWrite(input, data);
 
-                    T* result = (T*)malloc(buffer_size);
-                    memset(result, 0, buffer_size);
-                    output = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, buffer_size, result);
-                    free(result);
+                    T* zeroMem = new T[count];
+                    memset(zeroMem, 0, sizeof(T) * count);
+                    output = context->createBuffer(CL_MEM_READ_WRITE, buffer_size);
+                    queue->enqueueWrite(output, zeroMem);
+                    delete[] zeroMem;
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize) override

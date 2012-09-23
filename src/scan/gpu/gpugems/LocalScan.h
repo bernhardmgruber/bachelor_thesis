@@ -23,7 +23,7 @@ namespace gpu
                 /**
                  * Constructor.
                  *
-                 * @param useOptimizedKernel: Uses a local memory access optimized kernel implementation when set to true.
+                 * @param useOptimizedKernel: Uses a local memory access optimized kernel implementation when set to true. Address computation will be slower.
                  */
                 LocalScan(bool useOptimizedKernel = false)
                     : useOptimizedKernel(useOptimizedKernel)
@@ -47,14 +47,19 @@ namespace gpu
                     addKernel = program->createKernel("AddSums");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
                     if(workGroupSize == 1)
                         throw OpenCLException("work group size must be greater than 1");
 
                     bufferSize = roundToMultiple(count, workGroupSize * 2);
 
-                    buffer = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, bufferSize * sizeof(T), data);
+                    // note: when using CL_MEM_COPY_HOST_PTR the data is copied into the context (not onto the device).
+                    // The data may still be stored in the host memory and copied to the device on demand.
+                    //Therefore, we use an explicit enquueeRead() to ensure the data to be on the device.
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+
+                    queue->enqueueWrite(buffer, data);
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize) override

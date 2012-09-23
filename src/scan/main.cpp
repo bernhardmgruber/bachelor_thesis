@@ -16,7 +16,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1;
+    const size_t size = 1024 * 1024 * 128;
 
     try
     {
@@ -27,10 +27,10 @@ int main()
         runner.run<cpu::Scan>();
 
         //runner.runCLGPU<gpu::clpp::Scan>(true); // not working
-        runner.runCLGPU<gpu::gpugems::NaiveScan>(false);
-        runner.runCLGPU<gpu::gpugems::WorkEfficientScan>(false);
+        //runner.runCLGPU<gpu::gpugems::NaiveScan>(false);
+        //runner.runCLGPU<gpu::gpugems::WorkEfficientScan>(false);
         runner.runCLGPU<gpu::gpugems::LocalScan>(false);
-        runner.runCLGPU<gpu::apple::Scan>(false);
+        //runner.runCLGPU<gpu::apple::Scan>(false);
     }
     catch(OpenCLException& e)
     {

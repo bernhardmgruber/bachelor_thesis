@@ -33,7 +33,7 @@ namespace gpu
                     assert(s->_context->clQueue != 0);
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
                     assert(s->_context->clQueue != 0);
                     buffer = new T[count];

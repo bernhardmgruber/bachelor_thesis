@@ -33,12 +33,15 @@ namespace gpu
                     kernel = program->createKernel("NaiveScan");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
                     bufferSize = pow2roundup(count);
 
-                    source = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, bufferSize * sizeof(T), data);
-                    destination = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, bufferSize * sizeof(T), data);
+                    source = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+                    destination = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+
+                    queue->enqueueWrite(source, data);
+                    queue->enqueueCopy(source, destination);
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize) override

@@ -36,11 +36,13 @@ namespace gpu
                     downSweepKernel = program->createKernel("DownSweep");
                 }
 
-                void upload(Context* context, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
                 {
                     bufferSize = pow2roundup(count);
 
-                    buffer = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, bufferSize * sizeof(T), data);
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+
+                    queue->enqueueWrite(buffer, data);
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize) override
