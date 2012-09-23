@@ -1,4 +1,4 @@
-__kernel void ParallelBitonicSortLocalOptim(__global const int * in,__global int * out,__local int * aux)
+__kernel void ParallelBitonicSortLocalOptim(__global const T * in,__global T * out,__local T * aux)
 {
     int i = get_local_id(0); // index in workgroup
     int wg = get_local_size(0); // workgroup size = block size, power of 2
@@ -9,7 +9,7 @@ __kernel void ParallelBitonicSortLocalOptim(__global const int * in,__global int
     out += offset;
 
     // Load block in AUX[WG]
-    int iData = in[i];
+    T iData = in[i];
     aux[i] = iData;
     barrier(CLK_LOCAL_MEM_FENCE); // make sure AUX is entirely up to date
 
@@ -21,7 +21,7 @@ __kernel void ParallelBitonicSortLocalOptim(__global const int * in,__global int
         for (int inc=length; inc>0; inc>>=1)
         {
             int j = i ^ inc; // sibling to compare
-            int jData = aux[j];
+            T jData = aux[j];
             bool smaller = (jData < iData) || ( jData == iData && j < i );
             bool swap = smaller ^ (j < i) ^ direction;
             iData = swap ? jData : iData; // update iData

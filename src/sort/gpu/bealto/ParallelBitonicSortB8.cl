@@ -1,8 +1,8 @@
 
-#define ORDER(a,b) { bool swap = reverse ^ (a < b); int auxa = a; int auxb = b; a = (swap)?auxb:auxa; b = (swap)?auxa:auxb; }
+#define ORDER(a,b) { bool swap = reverse ^ (a < b); T auxa = a; T auxb = b; a = (swap)?auxb:auxa; b = (swap)?auxa:auxb; }
 
 // N/2 threads
-__kernel void ParallelBitonicSortB2(__global int* data, int inc, int dir)
+__kernel void ParallelBitonicSortB2(__global T* data, int inc, int dir)
 {
     int t = get_global_id(0); // thread index
     int low = t & (inc - 1); // low order bits (below INC)
@@ -11,8 +11,8 @@ __kernel void ParallelBitonicSortB2(__global int* data, int inc, int dir)
     data += i; // translate to first value
 
     // Load
-    int x0 = data[  0];
-    int x1 = data[inc];
+    T x0 = data[  0];
+    T x1 = data[inc];
 
     // Sort
     ORDER(x0,x1)
@@ -23,7 +23,7 @@ __kernel void ParallelBitonicSortB2(__global int* data, int inc, int dir)
 }
 
 // N/4 threads
-__kernel void ParallelBitonicSortB4(__global int * data,int inc,int dir)
+__kernel void ParallelBitonicSortB4(__global T * data,int inc,int dir)
 {
     inc >>= 1;
     int t = get_global_id(0); // thread index
@@ -33,10 +33,10 @@ __kernel void ParallelBitonicSortB4(__global int * data,int inc,int dir)
     data += i; // translate to first value
 
     // Load
-    int x0 = data[    0];
-    int x1 = data[  inc];
-    int x2 = data[2*inc];
-    int x3 = data[3*inc];
+    T x0 = data[    0];
+    T x1 = data[  inc];
+    T x2 = data[2*inc];
+    T x3 = data[3*inc];
 
     // Sort
     ORDER(x0,x2)
@@ -52,7 +52,7 @@ __kernel void ParallelBitonicSortB4(__global int * data,int inc,int dir)
 }
 
 #define ORDERV(x,a,b) { bool swap = reverse ^ (x[a] < x[b]); \
-      int auxa = x[a]; int auxb = x[b]; \
+      T auxa = x[a]; T auxb = x[b]; \
       x[a] = (swap)?auxb:auxa; x[b] = (swap)?auxa:auxb; }
 #define B2V(x,a) { ORDERV(x,a,a+1) }
 #define B4V(x,a) { for (int i4=0;i4<2;i4++) { ORDERV(x,a+i4,a+i4+2) } B2V(x,a) B2V(x,a+2) }
@@ -60,7 +60,7 @@ __kernel void ParallelBitonicSortB4(__global int * data,int inc,int dir)
 #define B16V(x,a) { for (int i16=0;i16<8;i16++) { ORDERV(x,a+i16,a+i16+8) } B8V(x,a) B8V(x,a+8) }
 
 // N/8 threads
-__kernel void ParallelBitonicSortB8(__global int * data,int inc,int dir)
+__kernel void ParallelBitonicSortB8(__global T * data, int inc, int dir)
 {
   inc >>= 2;
   int t = get_global_id(0); // thread index
@@ -70,12 +70,14 @@ __kernel void ParallelBitonicSortB8(__global int * data,int inc,int dir)
   data += i; // translate to first value
 
   // Load
-  int x[8];
-  for (int k=0;k<8;k++) x[k] = data[k*inc];
+  T x[8];
+  for (int k=0;k<8;k++)
+    x[k] = data[k*inc];
 
   // Sort
   B8V(x,0)
 
   // Store
-  for (int k=0;k<8;k++) data[k*inc] = x[k];
+  for (int k=0;k<8;k++)
+    data[k*inc] = x[k];
 }

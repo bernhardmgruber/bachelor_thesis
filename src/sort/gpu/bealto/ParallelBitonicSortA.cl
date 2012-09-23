@@ -1,12 +1,12 @@
 
-__kernel void ParallelBitonicSortA(__global const int * in, __global int * out, int inc, int dir)
+__kernel void ParallelBitonicSortA(__global const T * in, __global T * out, int inc, int dir)
 {
     int id = get_global_id(0); // thread index
     int j = id ^ inc; // sibling to compare
 
     // Load values at I and J
-    int element = in[id];
-    int jData = in[j];
+    T element = in[id];
+    T jData = in[j];
 
     // Compare
     bool smaller = (jData < element) || (jData == element && j < id);

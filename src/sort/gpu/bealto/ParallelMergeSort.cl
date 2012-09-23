@@ -1,5 +1,5 @@
 // N threads, WG is workgroup size. Sort WG input blocks in each workgroup.
-__kernel void ParallelMergeSort(__global const int * in,__global int * out,__local int * aux)
+__kernel void ParallelMergeSort(__global const T * in,__global T * out,__local T * aux)
 {
     int i = get_local_id(0); // index in workgroup
     int wg = get_local_size(0); // workgroup size = block size, power of 2
@@ -16,8 +16,7 @@ __kernel void ParallelMergeSort(__global const int * in,__global int * out,__loc
     // Now we will merge sub-sequences of length 1,2,...,WG/2
     for (int length=1; length<wg; length<<=1)
     {
-        int iData = aux[i];
-        int iKey = iData;
+        T iData = aux[i];
         int ii = i & (length-1);  // index in our sequence in 0..length-1
         int sibling = (i - ii) ^ length; // beginning of the sibling sequence
         int pos = 0;
@@ -25,7 +24,7 @@ __kernel void ParallelMergeSort(__global const int * in,__global int * out,__loc
         {
             int j = sibling+pos+inc-1;
             int jKey = aux[j];
-            bool smaller = (jKey < iKey) || ( jKey == iKey && j < i );
+            bool smaller = (jKey < iData) || ( jKey == iData && j < i );
             pos += (smaller)?inc:0;
             pos = min(pos,length);
         }

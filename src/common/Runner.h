@@ -52,14 +52,16 @@ class Runner
          */
         void printCLInfo()
         {
+            cout << "Running on the following devices:" << endl;
             if(cpuContext)
                 printDevice(cpuContext);
             printDevice(gpuContext);
+            cout << endl;
         }
 
         void printDevice(Context* context)
         {
-            cout << "Device " << context->getInfo<string>(CL_DEVICE_NAME) << endl;
+            cout << "" << context->getInfo<string>(CL_DEVICE_NAME) << endl;
             cout << "   " << context->getInfo<string>(CL_DEVICE_VENDOR) << endl;
             cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_COMPUTE_UNITS) << " compute units" << endl;
             cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_CLOCK_FREQUENCY) << " MHz frequency" << endl;
@@ -179,9 +181,9 @@ class Runner
 
             for(auto s : stats)
                 if(s.second.exceptionOccured)
-                    cout << "#  Scan           EXCEPTION" << " (WG size: " << s.first << "): " << s.second.exceptionMsg << endl;
+                    cout << "#  Run            EXCEPTION" << " (WG size: " << s.first << "): " << s.second.exceptionMsg << endl;
                 else
-                    cout << "#  Scan           " << fixed << setprecision(FLOAT_PRECISION) << s.second.runTime << "s " << "(WG size: " << s.first << ") " << (s.second.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+                    cout << "#  Run            " << fixed << setprecision(FLOAT_PRECISION) << s.second.runTime << "s " << "(WG size: " << s.first << ") " << (s.second.verificationResult ? "SUCCESS" : "FAILED ") << endl;
 
             cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << downloadAvg << "s" << endl;
             cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << cleanupTime << "s" << endl;
@@ -234,7 +236,7 @@ class Runner
         {
             cout << "###############################################################################" << endl;
             cout << "# " << name << endl;
-            cout << "#  Scaning " << count << " elements of type " << getTypeName<T>() << " (" << sizeToString(count * sizeof(T)) << ")" << endl;
+            cout << "#  Processing " << count << " elements of type " << getTypeName<T>() << " (" << sizeToString(count * sizeof(T)) << ")" << endl;
 
             // generate random array
             data = new T[count];

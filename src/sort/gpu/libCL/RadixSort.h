@@ -41,7 +41,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    program = context->createProgram("gpu/libCL/RadixSort.cl");
+                    program = context->createProgram("gpu/libCL/RadixSort.cl", "-D T=" + getTypeName<T>());
 
                     clBlockSort = program->createKernel("clBlockSort");
                     clBlockScan = program->createKernel("clBlockScan");

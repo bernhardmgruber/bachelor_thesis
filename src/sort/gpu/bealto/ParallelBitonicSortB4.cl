@@ -1,8 +1,8 @@
 
-#define ORDER(a,b) { bool swap = reverse ^ (a < b); int auxa = a; int auxb = b; a = (swap)?auxb:auxa; b = (swap)?auxa:auxb; }
+#define ORDER(a,b) { bool swap = reverse ^ (a < b); T auxa = a; T auxb = b; a = (swap)?auxb:auxa; b = (swap)?auxa:auxb; }
 
 // N/2 threads
-__kernel void ParallelBitonicSortB2(__global int* data, int inc, int dir)
+__kernel void ParallelBitonicSortB2(__global T* data, int inc, int dir)
 {
     int t = get_global_id(0); // thread index
     int low = t & (inc - 1); // low order bits (below INC)
@@ -11,8 +11,8 @@ __kernel void ParallelBitonicSortB2(__global int* data, int inc, int dir)
     data += i; // translate to first value
 
     // Load
-    int x0 = data[  0];
-    int x1 = data[inc];
+    T x0 = data[  0];
+    T x1 = data[inc];
 
     // Sort
     ORDER(x0,x1)
@@ -33,10 +33,10 @@ __kernel void ParallelBitonicSortB4(__global int * data,int inc,int dir)
     data += i; // translate to first value
 
     // Load
-    int x0 = data[    0];
-    int x1 = data[  inc];
-    int x2 = data[2*inc];
-    int x3 = data[3*inc];
+    T x0 = data[    0];
+    T x1 = data[  inc];
+    T x2 = data[2*inc];
+    T x3 = data[3*inc];
 
     // Sort
     ORDER(x0,x2)

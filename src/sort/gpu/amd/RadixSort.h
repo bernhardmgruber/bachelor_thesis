@@ -145,7 +145,7 @@ namespace gpu
                     size_t tempSize = numGroups * groupSize * RADICES * sizeof(T);
                     histogramBins = new T[tempSize]();
 
-                    program = context->createProgram("gpu/amd/RadixSort.cl");
+                    program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
 
                     histogramKernel = program->createKernel("histogram");
                     permuteKernel = program->createKernel("permute");

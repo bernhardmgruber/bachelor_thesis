@@ -113,7 +113,7 @@ jurisdiction and venue of these courts.
  * has been explained in detail in the document mentioned above.
  */
 
-__kernel void BitonicSort(__global uint * theArray,
+__kernel void BitonicSort(__global T * theArray,
                  const uint stage,
                  const uint passOfStage,
                  const uint width,
@@ -130,16 +130,16 @@ __kernel void BitonicSort(__global uint * theArray,
 
     uint rightId = leftId + pairDistance;
 
-    uint leftElement = theArray[leftId];
-    uint rightElement = theArray[rightId];
+    T leftElement = theArray[leftId];
+    T rightElement = theArray[rightId];
 
     uint sameDirectionBlockWidth = 1 << stage;
 
     if((threadId/sameDirectionBlockWidth) % 2 == 1)
         sortIncreasing = 1 - sortIncreasing;
 
-    uint greater;
-    uint lesser;
+    T greater;
+    T lesser;
     if(leftElement > rightElement)
     {
         greater = leftElement;

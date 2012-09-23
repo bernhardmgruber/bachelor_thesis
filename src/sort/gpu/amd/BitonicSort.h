@@ -29,7 +29,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    program = context->createProgram("gpu/amd/BitonicSort.cl");
+                    program = context->createProgram("gpu/amd/BitonicSort.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("BitonicSort");
                 }
 

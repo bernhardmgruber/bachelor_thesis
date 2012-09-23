@@ -31,7 +31,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1024;
+    const size_t size = 1024 * 1024 * 1;
 
     try
     {
@@ -62,8 +62,8 @@ int main()
 
         //runner.runCLGPU<gpu::libcl::RadixSort>(true); // not working
 
-        runner.runCLGPU<gpu::amd::BitonicSort>(true);
-        runner.runCLGPU<gpu::amd::RadixSort>(true);
+        //runner.runCLGPU<gpu::amd::BitonicSort>(true);
+        //runner.runCLGPU<gpu::amd::RadixSort>(true);
     }
     catch(OpenCLException& e)
     {

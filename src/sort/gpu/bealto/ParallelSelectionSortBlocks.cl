@@ -3,12 +3,12 @@
 #endif
 
 // One thread per record, local memory size AUX is BLOCK_FACTOR * workgroup size keys
-__kernel void ParallelSelectionSortBlocks(__global const int* in, __global int* out, __local int* aux)
+__kernel void ParallelSelectionSortBlocks(__global const T* in, __global T* out, __local T* aux)
 {
     int id = get_global_id(0); // current thread
     int n = get_global_size(0); // input size
     int wg = get_local_size(0); // workgroup size
-    int element = in[id]; // input record for current thread
+    T element = in[id]; // input record for current thread
     int blockSize = BLOCK_FACTOR * wg; // block size
 
     // Compute position of element in output
@@ -26,7 +26,7 @@ __kernel void ParallelSelectionSortBlocks(__global const int* in, __global int* 
         // Loop on all values in AUX
         for (int index = 0; index < blockSize; index++)
         {
-            uint jKey = aux[index]; // broadcasted, local memory
+            T jKey = aux[index]; // broadcasted, local memory
             bool smaller = (jKey < element) || ( jKey == element && (j + index) < id ); // in[j] < in[id] ?
             pos += smaller ? 1 : 0;
         }

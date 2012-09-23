@@ -29,7 +29,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    program = context->createProgram("gpu/bealto/ParallelSelectionSort.cl");
+                    program = context->createProgram("gpu/bealto/ParallelSelectionSort.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("ParallelSelectionSort");
                 }
 

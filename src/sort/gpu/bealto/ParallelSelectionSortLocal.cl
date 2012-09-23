@@ -1,4 +1,4 @@
-__kernel void ParallelSelectionSortLocal(__global const int * in,__global int * out,__local int * aux)
+__kernel void ParallelSelectionSortLocal(__global const T * in,__global T * out,__local T * aux)
 {
     int id = get_local_id(0); // index in workgroup
     int wg = get_local_size(0); // workgroup size = block size
@@ -9,7 +9,7 @@ __kernel void ParallelSelectionSortLocal(__global const int * in,__global int * 
     out += offset;
 
     // Load block in aus[wg]
-    int element = in[id];
+    T element = in[id];
     aux[id] = element;
 
     barrier(CLK_LOCAL_MEM_FENCE);
@@ -18,7 +18,7 @@ __kernel void ParallelSelectionSortLocal(__global const int * in,__global int * 
     int pos = 0;
     for (int j = 0; j < wg; j++)
     {
-        int jKey = aux[j];
+        T jKey = aux[j];
         bool smaller = (jKey < element) || ( jKey == element && j < id ); // in[j] < in[id] ?
         pos += (smaller) ? 1 : 0;
     }

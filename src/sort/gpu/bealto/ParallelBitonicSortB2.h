@@ -31,7 +31,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    program = context->createProgram("gpu/bealto/ParallelBitonicSortB2.cl");
+                    program = context->createProgram("gpu/bealto/ParallelBitonicSortB2.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("ParallelBitonicSortB2");
                 }
 
