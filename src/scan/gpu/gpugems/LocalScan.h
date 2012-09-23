@@ -58,7 +58,6 @@ namespace gpu
                     // The data may still be stored in the host memory and copied to the device on demand.
                     //Therefore, we use an explicit enquueeRead() to ensure the data to be on the device.
                     buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
-
                     queue->enqueueWrite(buffer, data);
                 }
 
@@ -67,8 +66,6 @@ namespace gpu
                     Context* context = queue->getContext();
 
                     run_r(context, queue, workGroupSize, buffer);
-
-                    queue->finish();
                 }
 
                 void run_r(Context* context, CommandQueue* queue, size_t workGroupSize, Buffer* blocks)
@@ -120,9 +117,6 @@ namespace gpu
                 void download(CommandQueue* queue, T* result) override
                 {
                     queue->enqueueRead(buffer, result, 0, count * sizeof(T));
-
-                    //for(int i = 0; i < count; i++)
-                    //    cout << result[i] << endl;
                 }
 
                 void cleanup() override

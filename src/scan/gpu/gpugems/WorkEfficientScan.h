@@ -41,7 +41,6 @@ namespace gpu
                     bufferSize = pow2roundup(count);
 
                     buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
-
                     queue->enqueueWrite(buffer, data);
                 }
 
@@ -80,7 +79,6 @@ namespace gpu
                         queue->enqueueKernel(downSweepKernel, 1, globalWorkSizes, localWorkSizes);
                         queue->enqueueBarrier();
                     }
-                    queue->finish();
                 }
 
                 void download(CommandQueue* queue, T* result) override

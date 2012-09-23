@@ -420,7 +420,6 @@ namespace gpu
                 {
                     CreatePartialSumBuffers(queue->getContext(), count);
                     PreScanBuffer(queue, output, input, GROUP_SIZE, GROUP_SIZE, count);
-                    queue->finish();
                 }
 
                 void download(CommandQueue* queue, T* result) override
