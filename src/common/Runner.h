@@ -203,16 +203,19 @@ class Runner
                 // upload data
                 timer.start();
                 alg->upload(context, queue, workGroupSize, data);
+                queue->finish();
                 stats.uploadTime = timer.stop();
 
                 // run algorithm
                 timer.start();
                 alg->run(queue, workGroupSize);
+                queue->finish();
                 stats.runTime = timer.stop();
 
                 // download data
                 timer.start();
                 alg->download(queue, result);
+                queue->finish();
                 stats.downloadTime = timer.stop();
 
                 // verify
@@ -236,7 +239,7 @@ class Runner
             // generate random array
             data = new T[count];
             for(size_t i = 0; i < count; i++)
-                data[i] = 1; //rand() % 100;
+                data[i] = rand() % 100;
             // allocate storage for the result
             result = new T[count];
         }
