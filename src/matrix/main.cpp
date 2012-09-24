@@ -3,7 +3,7 @@
 #include <fstream>
 
 #include "../common/Runner.h"
-#include "MatrixVerifier.h"
+#include "MatrixPlugin.h"
 
 #include "cpu/Mult.h"
 
@@ -11,15 +11,15 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 1024;
+    const size_t size = 10;
 
     try
     {
-        Runner<int, size, MatrixVerifier> runner;
+        Runner<int, MatrixPlugin> runner;
 
         runner.printCLInfo();
 
-        runner.run<cpu::Mult>();
+        runner.run<cpu::Mult>(size);
     }
     catch(OpenCLException& e)
     {

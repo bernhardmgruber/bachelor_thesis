@@ -6,8 +6,8 @@
 
 namespace cpu
 {
-    template<typename T, size_t count>
-    class Mult : public CPUAlgorithm<T, count>, public MatrixAlgorithm
+    template<typename T>
+    class Mult : public CPUAlgorithm, public MatrixAlgorithm
     {
         public:
             string getName() override
@@ -15,9 +15,21 @@ namespace cpu
                 return "Matrix multiplication";
             }
 
-            void run(T* data, T* result)
+            void run(void* data, void* result, size_t size) override
             {
+                T* a = (T*)data;
+                T* b = a + size * size;
+                T* r = (T*) result;
 
+                for(size_t i = 0; i < size; i++)
+                {
+                    for(size_t j = 0; j < size; j++)
+                    {
+                        r[i * size + j] = 0;
+                        for(size_t k = 0; k < size; k++)
+                            r[i * size + j] += a[i * size + k] * b[k * size + j];
+                    }
+                }
             }
 
             virtual ~Mult() {}

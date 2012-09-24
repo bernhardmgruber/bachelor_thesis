@@ -1,12 +1,15 @@
 #ifndef CPUALGORITHM_H
 #define CPUALGORITHM_H
 
-template<typename T, size_t count>
+#include <string>
+
+using namespace std;
+
 class CPUAlgorithm
 {
     public:
         virtual string getName() = 0;
-        virtual void run(T* data, T* result) = 0;
+        virtual void run(void* data, void* result, size_t size) = 0;
 };
 
 #endif // CPUALGORITHM_H

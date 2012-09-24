@@ -50,7 +50,7 @@
 		<Unit filename="..\common\utils.cpp" />
 		<Unit filename="..\common\utils.h" />
 		<Unit filename="MatrixAlgorithm.h" />
-		<Unit filename="MatrixVerifier.h" />
+		<Unit filename="MatrixPlugin.h" />
 		<Unit filename="cpu\Mult.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>

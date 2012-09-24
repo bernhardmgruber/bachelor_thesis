@@ -9,13 +9,15 @@
 #include <iomanip>
 #include <map>
 #include <algorithm>
+#include <vector>
+#include <string>
 
 using namespace std;
 
 /**
  * Used to run algorithms.
  */
-template <typename T, size_t count, template <typename, size_t, template <typename, size_t> class> class V>
+template <typename T, template <typename> class Plugin>
 class Runner
 {
     public:
@@ -70,22 +72,27 @@ class Runner
         }
 
         /**
-         * Runs an algorithm on the CPU.
+         * Runs an algorithm on the CPU with the given problem size.
          */
-        template <template <typename, size_t> class A>
-        void run()
+        template <template <typename> class Algorithm>
+        void run(size_t size)
         {
             // create a new instance of our test algorithm and prepare the test run
-            A<T, count>* alg = new A<T, count>();
-            prepareTest(alg->getName());
+            Algorithm<T>* alg = new Algorithm<T>();
+            prepareTest(size);
 
             // run algorithms
             timer.start();
-            alg->run(data, result);
-            double scanTime = timer.stop();
+            alg->run(data, result, size);
+            double runTime = timer.stop();
 
             // print results
-            cout << "#  Run       " << fixed << setprecision(FLOAT_PRECISION) << scanTime << "s " << (V<T, count, A>::verify(alg, data, result) ? "SUCCESS" : "FAILED ") << endl;
+            cout << "###############################################################################" << endl;
+            cout << "# " << alg->getName() << endl;
+            cout << "#  " << plugin->getTaskDescription() << endl;
+            cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << runTime << "s " << (plugin->verifyResult(alg, data, result) ? "SUCCESS" : "FAILED ") << endl;
+            cout << "###############################################################################" << endl;
+            cout << endl;
 
             // delete the algorithm and finish this test
             delete alg;
@@ -96,19 +103,19 @@ class Runner
         /**
          * Runs an algorithm on the CPU using OpenCL.
          */
-        template <template <typename, size_t> class A>
-        void runCLCPU(bool useMultipleWorkGroupSizes)
+        template <template <typename> class Algorithm>
+        void runCLCPU(size_t size, bool useMultipleWorkGroupSizes)
         {
-            runCL<A>(cpuContext, cpuQueue, useMultipleWorkGroupSizes);
+            runCL<Algorithm>(cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
         }
 
         /**
          * Runs an algorithm on the GPU using OpenCL.
          */
-        template <template <typename, size_t> class A>
-        void runCLGPU(bool useMultipleWorkGroupSizes)
+        template <template <typename> class Algorithm>
+        void runCLGPU(size_t size, bool useMultipleWorkGroupSizes)
         {
-            runCL<A>(gpuContext, gpuQueue, useMultipleWorkGroupSizes);
+            runCL<Algorithm>(gpuContext, gpuQueue, useMultipleWorkGroupSizes, size);
         }
 
     private:
@@ -127,12 +134,12 @@ class Runner
             }
         };
 
-        template <template <typename, size_t> class A>
-        void runCL(Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes)
+        template <template <typename> class A>
+        void runCL(Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
         {
             // create a new instance of our test algorithm and prepare the test run
-            A<T, count>* alg = new A<T, count>();
-            prepareTest(alg->getName());
+            A<T>* alg = new A<T>();
+            prepareTest(size);
 
             // run custom initialization
             timer.start();
@@ -141,9 +148,9 @@ class Runner
 
             map<int, Stats> stats;
 
-            size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), count);
+            size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), size);
             if(!useMultipleWorkGroupSizes)
-                stats[maxWorkGroupSize] = uploadRunDownload(alg, context, queue, maxWorkGroupSize);
+                stats[maxWorkGroupSize] = uploadRunDownload(alg, context, queue, maxWorkGroupSize, size);
             else
                 for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
                     stats[i] = uploadRunDownload(alg, context, queue, i);
@@ -176,18 +183,23 @@ class Runner
             downloadAvg /= stats.size();
 
             // print results
+            cout << "###############################################################################" << endl;
+            cout << "# " << alg->getName() << endl;
+            cout << "#  " << plugin->getTaskDescription() << endl;
             cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << initTime << "s" << endl;
             cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << uploadAvg << "s" << endl;
 
             for(auto s : stats)
                 if(s.second.exceptionOccured)
-                    cout << "#  Run            EXCEPTION" << " (WG size: " << s.first << "): " << s.second.exceptionMsg << endl;
+                    cout << "#  GPU (WG: " << setw(4) << s.first << ") EXCEPTION: " << s.second.exceptionMsg << endl;
                 else
-                    cout << "#  Run            " << fixed << setprecision(FLOAT_PRECISION) << s.second.runTime << "s " << "(WG size: " << s.first << ") " << (s.second.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+                    cout << "#  GPU (WG: " << setw(4) << s.first << ") " << fixed << setprecision(FLOAT_PRECISION) << s.second.runTime << "s " << (s.second.verificationResult ? "SUCCESS" : "FAILED ") << endl;
 
             cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << downloadAvg << "s" << endl;
             cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << cleanupTime << "s" << endl;
             cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (fastest.second.uploadTime + fastest.second.runTime + fastest.second.downloadTime) << "s " << "(WG size: " << fastest.first << ") " << endl;
+            cout << "###############################################################################" << endl;
+            cout << endl;
 
             // delete the algorithm and finish this test
             delete alg;
@@ -195,8 +207,8 @@ class Runner
             finishTest();
         }
 
-        template <template <typename, size_t> class A>
-        inline Stats uploadRunDownload(A<T, count>* alg, Context* context, CommandQueue* queue, size_t workGroupSize)
+        template <template <typename> class Algorithm>
+        inline Stats uploadRunDownload(Algorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
         {
             Stats stats;
 
@@ -204,24 +216,24 @@ class Runner
             {
                 // upload data
                 timer.start();
-                alg->upload(context, queue, workGroupSize, data);
+                alg->upload(context, queue, workGroupSize, data, size);
                 queue->finish();
                 stats.uploadTime = timer.stop();
 
                 // run algorithm
                 timer.start();
-                alg->run(queue, workGroupSize);
+                alg->run(queue, workGroupSize, size);
                 queue->finish();
                 stats.runTime = timer.stop();
 
                 // download data
                 timer.start();
-                alg->download(queue, result);
+                alg->download(queue, result, size);
                 queue->finish();
                 stats.downloadTime = timer.stop();
 
                 // verify
-                stats.verificationResult = V<T, count, A>::verify(alg, data, result);
+                stats.verificationResult = plugin->verify(alg, data, result);
             }
             catch(OpenCLException& e)
             {
@@ -232,27 +244,20 @@ class Runner
             return stats;
         }
 
-        void prepareTest(string name)
+        void prepareTest(size_t size)
         {
-            cout << "###############################################################################" << endl;
-            cout << "# " << name << endl;
-            cout << "#  Processing " << count << " elements of type " << getTypeName<T>() << " (" << sizeToString(count * sizeof(T)) << ")" << endl;
+            plugin = new Plugin<T>(size);
 
-            // generate random array
-            data = new T[count];
-            for(size_t i = 0; i < count; i++)
-                data[i] = rand() % 100;
-            // allocate storage for the result
-            result = new T[count];
+            data = plugin->genInput();
+            result = plugin->genResult();
         }
 
         void finishTest()
         {
-            delete[] data;
-            delete[] result;
+            plugin->freeInput(data);
+            plugin->freeResult(result);
 
-            cout << "###############################################################################" << endl;
-            cout << endl;
+            delete plugin;
         }
 
         Context* gpuContext;
@@ -260,10 +265,12 @@ class Runner
         CommandQueue* gpuQueue;
         CommandQueue* cpuQueue;
 
+        Plugin<T>* plugin;
+
         Timer timer;
 
-        T* data;
-        T* result;
+        void* data;
+        void* result;
 
         bool noCPU;
 };
