@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="matrix" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\matrix" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add library="..\common\libs\clpp\bin\Debug\libclpp.a" />
+					<Add library="opencl" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\matrix" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
+					<Add library="opencl" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++0x" />
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add directory="..\common\libs\clpp" />
+		</Compiler>
+		<Unit filename="..\common\CPUAlgorithm.h" />
+		<Unit filename="..\common\GPUAlgorithm.h" />
+		<Unit filename="..\common\OpenCL.cpp" />
+		<Unit filename="..\common\OpenCL.h" />
+		<Unit filename="..\common\Runner.h" />
+		<Unit filename="..\common\Timer.cpp" />
+		<Unit filename="..\common\Timer.h" />
+		<Unit filename="..\common\utils.cpp" />
+		<Unit filename="..\common\utils.h" />
+		<Unit filename="MatrixAlgorithm.h" />
+		<Unit filename="MatrixVerifier.h" />
+		<Unit filename="cpu\Mult.h" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
