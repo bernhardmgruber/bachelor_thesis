@@ -89,7 +89,14 @@ class Runner
         template <template <typename> class Algorithm>
         void printRun(size_t size)
         {
-            run<Algorithm>(size);
+            RunStats stats = run<Algorithm>(size);
+
+            cout << "###############################################################################" << endl;
+            cout << "# " << stats.algorithmName << endl;
+            cout << "#  " << stats.taskDescription << endl;
+            cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << stats.runTime << "s " << (stats.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+            cout << "###############################################################################" << endl;
+            cout << endl;
         }
 
         /**
@@ -111,9 +118,11 @@ class Runner
         }
 
     private:
-        struct CLRunStats
+        struct RunStats
         {
             RunType runType;
+            const string algorithmName;
+            const string taskDescription;
             size_t wgSize;
             double initTime;
             double uploadTime;
@@ -124,8 +133,8 @@ class Runner
             bool exceptionOccured;
             string exceptionMsg;
 
-            CLRunStats()
-                : wgSize(0), initTime(0), uploadTime(0), runTime(0), downloadTime(0), cleanupTime(0), verificationResult(false), exceptionOccured(false)
+            RunStats(RunType runType, const string algorithmName, const string taskDescription)
+                : runType(runType), algorithmName(algorithmName), taskDescription(taskDescription), wgSize(0), initTime(0), uploadTime(0), runTime(0), downloadTime(0), cleanupTime(0), verificationResult(false), exceptionOccured(false)
             {
             }
         };
@@ -134,44 +143,46 @@ class Runner
          * Runs an algorithm on the CPU with the given problem size.
          */
         template <template <typename> class Algorithm>
-        void run(size_t size)
+        RunStats run(size_t size)
         {
-            // create a new instance of our test algorithm and prepare the test run
+            // create algorithm and stats, prepare input
             Algorithm<T>* alg = new Algorithm<T>();
-            prepareTest(size);
+            RunStats stats(RunType::CPU, alg->getName(), plugin->getTaskDescription(size));
+
+            data = plugin->genInput(size);
+            result = plugin->genResult(size);
 
             // run algorithm
             timer.start();
             alg->run(data, result, size);
-            double runTime = timer.stop();
+            stats.runTime = timer.stop();
 
-            // print results
-            cout << "###############################################################################" << endl;
-            cout << "# " << alg->getName() << endl;
-            cout << "#  " << plugin->getTaskDescription(size) << endl;
-            cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << runTime << "s " << (plugin->verifyResult(alg, data, result, size) ? "SUCCESS" : "FAILED ") << endl;
-            cout << "###############################################################################" << endl;
-            cout << endl;
+            // verfiy result
+            stats.verificationResult = plugin->verifyResult(alg, data, result, size);
 
-            // delete the algorithm and finish this test
+            // cleanup
+            plugin->freeInput(data);
+            plugin->freeResult(result);
+
             delete alg;
 
-            finishTest();
+            return stats;
         }
 
         template <template <typename> class Algorithm>
         void runCL(Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
         {
-            // create a new instance of our test algorithm and prepare the test run
+            // create algorithm and stats, prepare input
             Algorithm<T>* alg = new Algorithm<T>();
-            prepareTest(size);
+            data = plugin->genInput(size);
+            result = plugin->genResult(size);
 
             // run custom initialization
             timer.start();
             alg->init(context);
             double initTime = timer.stop();
 
-            map<int, CLRunStats> stats;
+            map<int, RunStats> stats;
 
             size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), size);
             if(!useMultipleWorkGroupSizes)
@@ -186,7 +197,7 @@ class Runner
             double cleanupTime = timer.stop();
 
             // calculate sum figures
-            pair<int, CLRunStats> fastest = *min_element(stats.begin(), stats.end(), [](pair<int, CLRunStats> a, pair<int, CLRunStats> b)
+            pair<int, RunStats> fastest = *min_element(stats.begin(), stats.end(), [](pair<int, RunStats> a, pair<int, RunStats> b)
             {
                 if(a.second.exceptionOccured || !a.second.verificationResult)
                     return false;
@@ -226,16 +237,17 @@ class Runner
             cout << "###############################################################################" << endl;
             cout << endl;
 
-            // delete the algorithm and finish this test
-            delete alg;
+            // cleanup
+            plugin->freeInput(data);
+            plugin->freeResult(result);
 
-            finishTest();
+            delete alg;
         }
 
         template <template <typename> class Algorithm>
-        inline CLRunStats uploadRunDownload(Algorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
+        inline RunStats uploadRunDownload(Algorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
         {
-            CLRunStats stats;
+            RunStats stats;
 
             try
             {
@@ -271,14 +283,12 @@ class Runner
 
         void prepareTest(size_t size)
         {
-            data = plugin->genInput(size);
-            result = plugin->genResult(size);
+
         }
 
         void finishTest()
         {
-            plugin->freeInput(data);
-            plugin->freeResult(result);
+
         }
 
         Context* gpuContext;

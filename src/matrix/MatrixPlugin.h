@@ -12,7 +12,7 @@ template <typename T>
 class MatrixPlugin
 {
     public:
-        string getTaskDescription(size_t size)
+        const string getTaskDescription(size_t size)
         {
             //return "Processing " << size << " elements of type " << getTypeName<T>() << " (" << sizeToString(size * sizeof(T)) << ")";
             stringstream ss;

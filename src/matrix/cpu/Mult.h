@@ -10,7 +10,7 @@ namespace cpu
     class Mult : public CPUAlgorithm, public MatrixAlgorithm
     {
         public:
-            string getName() override
+            const string getName() override
             {
                 return "Matrix multiplication";
             }

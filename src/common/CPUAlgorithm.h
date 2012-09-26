@@ -8,7 +8,7 @@ using namespace std;
 class CPUAlgorithm
 {
     public:
-        virtual string getName() = 0;
+        virtual const string getName() = 0;
         virtual void run(void* data, void* result, size_t size) = 0;
 };
 

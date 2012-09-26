@@ -4,7 +4,7 @@
 class GPUAlgorithm
 {
     public:
-        virtual string getName() = 0;
+        virtual const string getName() = 0;
         virtual void init(Context* context) = 0;
         virtual void upload(Context* context, CommandQueue* queue, size_t workGroupSize, void* data, size_t size) = 0;
         virtual void run(CommandQueue* queue, size_t workGroupSize, size_t size) = 0;
