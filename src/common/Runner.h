@@ -23,6 +23,13 @@ class Runner
     public:
         const int FLOAT_PRECISION = 3;
 
+        enum RunType
+        {
+            CPU,
+            CL_CPU,
+            CL_GPU
+        };
+
         Runner(bool noCPU = true)
             : noCPU(noCPU)
         {
@@ -77,6 +84,54 @@ class Runner
 
         /**
          * Runs an algorithm on the CPU with the given problem size.
+         * The results of the run are printed to stdout.
+         */
+        template <template <typename> class Algorithm>
+        void printRun(size_t size)
+        {
+            run<Algorithm>(size);
+        }
+
+        /**
+         * Runs an algorithm on the CPU using OpenCL.
+         */
+        template <template <typename> class Algorithm>
+        void runCLCPU(size_t size, bool useMultipleWorkGroupSizes)
+        {
+            runCL<Algorithm>(cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
+        }
+
+        /**
+         * Runs an algorithm on the GPU using OpenCL.
+         */
+        template <template <typename> class Algorithm>
+        void runCLGPU(size_t size, bool useMultipleWorkGroupSizes)
+        {
+            runCL<Algorithm>(gpuContext, gpuQueue, useMultipleWorkGroupSizes, size);
+        }
+
+    private:
+        struct CLRunStats
+        {
+            RunType runType;
+            size_t wgSize;
+            double initTime;
+            double uploadTime;
+            double runTime;
+            double downloadTime;
+            double cleanupTime;
+            bool verificationResult;
+            bool exceptionOccured;
+            string exceptionMsg;
+
+            CLRunStats()
+                : wgSize(0), initTime(0), uploadTime(0), runTime(0), downloadTime(0), cleanupTime(0), verificationResult(false), exceptionOccured(false)
+            {
+            }
+        };
+
+        /**
+         * Runs an algorithm on the CPU with the given problem size.
          */
         template <template <typename> class Algorithm>
         void run(size_t size)
@@ -103,40 +158,6 @@ class Runner
 
             finishTest();
         }
-
-        /**
-         * Runs an algorithm on the CPU using OpenCL.
-         */
-        template <template <typename> class Algorithm>
-        void runCLCPU(size_t size, bool useMultipleWorkGroupSizes)
-        {
-            runCL<Algorithm>(cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
-        }
-
-        /**
-         * Runs an algorithm on the GPU using OpenCL.
-         */
-        template <template <typename> class Algorithm>
-        void runCLGPU(size_t size, bool useMultipleWorkGroupSizes)
-        {
-            runCL<Algorithm>(gpuContext, gpuQueue, useMultipleWorkGroupSizes, size);
-        }
-
-    private:
-        struct CLRunStats
-        {
-            double uploadTime;
-            double runTime;
-            double downloadTime;
-            bool verificationResult;
-            bool exceptionOccured;
-            string exceptionMsg;
-
-            CLRunStats()
-                : uploadTime(0), runTime(0), downloadTime(0), verificationResult(false), exceptionOccured(false)
-            {
-            }
-        };
 
         template <template <typename> class Algorithm>
         void runCL(Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)

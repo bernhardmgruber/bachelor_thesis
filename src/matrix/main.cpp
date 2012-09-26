@@ -19,7 +19,7 @@ int main()
 
         runner.printCLInfo();
 
-        runner.run<cpu::Mult>(size);
+        runner.printRun<cpu::Mult>(size);
     }
     catch(OpenCLException& e)
     {
