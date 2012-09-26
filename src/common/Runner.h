@@ -85,7 +85,7 @@ class Runner
             Algorithm<T>* alg = new Algorithm<T>();
             prepareTest(size);
 
-            // run algorithms
+            // run algorithm
             timer.start();
             alg->run(data, result, size);
             double runTime = timer.stop();
@@ -138,11 +138,11 @@ class Runner
             }
         };
 
-        template <template <typename> class A>
+        template <template <typename> class Algorithm>
         void runCL(Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
         {
             // create a new instance of our test algorithm and prepare the test run
-            A<T>* alg = new A<T>();
+            Algorithm<T>* alg = new Algorithm<T>();
             prepareTest(size);
 
             // run custom initialization
