@@ -12,12 +12,7 @@ template <typename T>
 class MatrixPlugin
 {
     public:
-        MatrixPlugin(size_t size)
-            : size(size)
-        {
-        }
-
-        string getTaskDescription()
+        string getTaskDescription(size_t size)
         {
             //return "Processing " << size << " elements of type " << getTypeName<T>() << " (" << sizeToString(size * sizeof(T)) << ")";
             stringstream ss;
@@ -25,7 +20,7 @@ class MatrixPlugin
             return ss.str();
         }
 
-        void* genInput()
+        void* genInput(size_t size)
         {
             size_t bufferSize = size * size * 2;
 
@@ -36,7 +31,7 @@ class MatrixPlugin
             return data;
         }
 
-        void* genResult()
+        void* genResult(size_t size)
         {
             return new T[size * size];
         }
@@ -51,13 +46,10 @@ class MatrixPlugin
             delete[] (T*)result;
         }
 
-        bool verifyResult(MatrixAlgorithm* alg, void* data, void* result)
+        bool verifyResult(MatrixAlgorithm* alg, void* data, void* result, size_t size)
         {
             return false;
         }
-
-    private:
-        size_t size;
 };
 
 #endif // MATRIXPLUGIN_H

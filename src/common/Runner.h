@@ -35,6 +35,8 @@ class Runner
             gpuQueue = gpuContext->createCommandQueue();
             if(cpuContext)
                 cpuQueue = cpuContext->createCommandQueue();
+
+            plugin = new Plugin<T>();
         }
 
         virtual ~Runner()
@@ -47,6 +49,8 @@ class Runner
                 delete cpuQueue;
             }
             OpenCL::cleanup();
+
+            delete plugin;
         }
 
         /**
@@ -89,8 +93,8 @@ class Runner
             // print results
             cout << "###############################################################################" << endl;
             cout << "# " << alg->getName() << endl;
-            cout << "#  " << plugin->getTaskDescription() << endl;
-            cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << runTime << "s " << (plugin->verifyResult(alg, data, result) ? "SUCCESS" : "FAILED ") << endl;
+            cout << "#  " << plugin->getTaskDescription(size) << endl;
+            cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << runTime << "s " << (plugin->verifyResult(alg, data, result, size) ? "SUCCESS" : "FAILED ") << endl;
             cout << "###############################################################################" << endl;
             cout << endl;
 
@@ -119,7 +123,7 @@ class Runner
         }
 
     private:
-        struct Stats
+        struct CLRunStats
         {
             double uploadTime;
             double runTime;
@@ -128,7 +132,7 @@ class Runner
             bool exceptionOccured;
             string exceptionMsg;
 
-            Stats()
+            CLRunStats()
                 : uploadTime(0), runTime(0), downloadTime(0), verificationResult(false), exceptionOccured(false)
             {
             }
@@ -146,7 +150,7 @@ class Runner
             alg->init(context);
             double initTime = timer.stop();
 
-            map<int, Stats> stats;
+            map<int, CLRunStats> stats;
 
             size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), size);
             if(!useMultipleWorkGroupSizes)
@@ -161,7 +165,7 @@ class Runner
             double cleanupTime = timer.stop();
 
             // calculate sum figures
-            pair<int, Stats> fastest = *min_element(stats.begin(), stats.end(), [](pair<int, Stats> a, pair<int, Stats> b)
+            pair<int, CLRunStats> fastest = *min_element(stats.begin(), stats.end(), [](pair<int, CLRunStats> a, pair<int, CLRunStats> b)
             {
                 if(a.second.exceptionOccured || !a.second.verificationResult)
                     return false;
@@ -208,9 +212,9 @@ class Runner
         }
 
         template <template <typename> class Algorithm>
-        inline Stats uploadRunDownload(Algorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
+        inline CLRunStats uploadRunDownload(Algorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
         {
-            Stats stats;
+            CLRunStats stats;
 
             try
             {
@@ -246,18 +250,14 @@ class Runner
 
         void prepareTest(size_t size)
         {
-            plugin = new Plugin<T>(size);
-
-            data = plugin->genInput();
-            result = plugin->genResult();
+            data = plugin->genInput(size);
+            result = plugin->genResult(size);
         }
 
         void finishTest()
         {
             plugin->freeInput(data);
             plugin->freeResult(result);
-
-            delete plugin;
         }
 
         Context* gpuContext;
