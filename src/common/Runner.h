@@ -127,12 +127,6 @@ class Runner
             os << endl;
             os << endl;
 
-            // print device information
-            writeDeviceInfo(gpuContext, os, sep);
-            os << endl;
-            os << endl;
-
-
             // print results of all previous run tests
             for(Range* r : ranges)
             {
@@ -155,7 +149,7 @@ class Runner
                     for(Stats* s : r->stats)
                     {
                         CLBatch* batch = static_cast<CLBatch*>(s);
-                        os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTime << sep << batch->fastest->runTime << sep << batch->fastest->downloadTime << batch->cleanupTime << sep << (batch->fastest->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                        os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTime << sep << batch->fastest->runTime << sep << batch->fastest->downloadTime << sep << batch->cleanupTime << sep << (batch->fastest->verificationResult ? "SUCCESS" : "FAILED") << endl;
                     }
                 }
 
@@ -167,7 +161,18 @@ class Runner
             cout << "DONE" << endl;
         }
 
+        void writeCPUDeviceInfo(string fileName)
+        {
+            if(hasCLCPU())
+                writeDeviceInfo(cpuContext, fileName, ';');
+            else
+                throw OpenCLException("No CPU context initialized!");
+        }
 
+        void writeGPUDeviceInfo(string fileName)
+        {
+            writeDeviceInfo(gpuContext, fileName, ';');
+        }
 
     private:
         struct Stats
@@ -535,8 +540,10 @@ class Runner
             return cpuContext != nullptr;
         }
 
-      void writeDeviceInfo(Context* context, ostream& os, char sep)
+        void writeDeviceInfo(Context* context, string fileName, char sep)
         {
+            ofstream os(fileName);
+
             os << "CL_DEVICE_ADDRESS_BITS" << sep << context->getInfo<cl_uint>(CL_DEVICE_ADDRESS_BITS) << endl;
             os << "CL_DEVICE_AVAILABLE" << sep << context->getInfo<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
             os << "CL_DEVICE_COMPILER_AVAILABLE" << sep << context->getInfo<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
@@ -738,6 +745,8 @@ class Runner
             os << "CL_DEVICE_VENDOR_ID" << sep << context->getInfo<cl_uint>(CL_DEVICE_VENDOR_ID) << endl;
             os << "CL_DEVICE_VERSION" << sep << context->getInfo<string>(CL_DEVICE_VERSION) << endl;
             os << "CL_DRIVER_VERSION" << sep << context->getInfo<string>(CL_DRIVER_VERSION) << endl;
+
+            os.close();
         }
 
         Context* gpuContext;

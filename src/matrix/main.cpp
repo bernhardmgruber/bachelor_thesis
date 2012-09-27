@@ -27,6 +27,7 @@ int main()
         runner.printRange<gpu::book::Mult>(RunType::CL_GPU, range, length, false);
 
         runner.writeStats("stats.csv");
+        runner.writeGPUDeviceInfo("gpuinfo.csv");
     }
     catch(OpenCLException& e)
     {
