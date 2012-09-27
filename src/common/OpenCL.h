@@ -144,6 +144,7 @@ class CommandQueue
         void enqueueRead(Buffer* buffer, void* destination, bool blocking = true);
         void enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking = true);
         void enqueueWrite(Buffer* buffer, const void* source, bool blocking = true);
+        void enqueueWrite(Buffer* buffer, const void* source, size_t offset, size_t size, bool blocking = true);
         void enqueueCopy(Buffer* src, Buffer* dest);
         void enqueueCopy(Buffer* src, Buffer* dest, size_t srcOffset, size_t destOffset, size_t size);
         void enqueueBarrier();

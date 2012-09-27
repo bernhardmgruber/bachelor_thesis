@@ -377,6 +377,12 @@ void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, bool blockin
     checkError(__LINE__);
 }
 
+void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, size_t offset, size_t size, bool blocking)
+{
+    error = clEnqueueWriteBuffer(queue, buffer->buffer, blocking, offset, size, source, 0, nullptr, nullptr);
+    checkError(__LINE__);
+}
+
 void CommandQueue::enqueueCopy(Buffer* src, Buffer* dest)
 {
     enqueueCopy(src, dest, 0, 0, dest->size);

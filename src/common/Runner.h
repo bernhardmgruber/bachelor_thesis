@@ -89,7 +89,7 @@ class Runner
         template <template <typename> class Algorithm>
         void printRun(size_t size)
         {
-            RunStats stats = run<Algorithm>(size);
+            CPURun stats = run<Algorithm>(size);
 
             cout << "###############################################################################" << endl;
             cout << "# " << stats.algorithmName << endl;
@@ -101,53 +101,114 @@ class Runner
 
         /**
          * Runs an algorithm on the CPU using OpenCL.
+         * The results of the run are printed to stdout.
          */
         template <template <typename> class Algorithm>
-        void runCLCPU(size_t size, bool useMultipleWorkGroupSizes)
+        void printRunCLCPU(size_t size, bool useMultipleWorkGroupSizes)
         {
-            runCL<Algorithm>(cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
+            if(cpuContext)
+                printRunCL<Algorithm>(cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
+            else
+                cout << "Cant run algorithm. No CPU context!" << endl;
         }
 
         /**
          * Runs an algorithm on the GPU using OpenCL.
+         * The results of the run are printed to stdout.
          */
         template <template <typename> class Algorithm>
-        void runCLGPU(size_t size, bool useMultipleWorkGroupSizes)
+        void printRunCLGPU(size_t size, bool useMultipleWorkGroupSizes)
         {
-            runCL<Algorithm>(gpuContext, gpuQueue, useMultipleWorkGroupSizes, size);
+            printRunCL<Algorithm>(gpuContext, gpuQueue, size, useMultipleWorkGroupSizes);
         }
 
     private:
-        struct RunStats
+        struct Stats
         {
             RunType runType;
             const string algorithmName;
             const string taskDescription;
-            size_t wgSize;
-            double initTime;
-            double uploadTime;
-            double runTime;
-            double downloadTime;
-            double cleanupTime;
-            bool verificationResult;
-            bool exceptionOccured;
-            string exceptionMsg;
 
-            RunStats(RunType runType, const string algorithmName, const string taskDescription)
-                : runType(runType), algorithmName(algorithmName), taskDescription(taskDescription), wgSize(0), initTime(0), uploadTime(0), runTime(0), downloadTime(0), cleanupTime(0), verificationResult(false), exceptionOccured(false)
+            Stats(RunType runType, string algorithmName, string taskDescription)
+                : runType(runType), algorithmName(algorithmName), taskDescription(taskDescription)
             {
             }
         };
+
+        struct CPURun : public Stats
+        {
+            double runTime;
+            bool verificationResult;
+            bool exceptionOccured = false;
+            string exceptionMsg;
+
+            CPURun(RunType runType, string algorithmName, string taskDescription)
+                : Stats(runType,algorithmName, taskDescription)
+            {
+            }
+        };
+
+        struct CLRun
+        {
+            size_t wgSize;
+            double uploadTime;
+            double runTime;
+            double downloadTime;
+            bool verificationResult;
+            bool exceptionOccured = false;
+            string exceptionMsg;
+        };
+
+        struct CLBatch : public Stats
+        {
+            double initTime;
+            double cleanupTime;
+            vector<CLRun> runs;
+            typename vector<CLRun>::iterator fastest;
+            double avgUploadTime;
+            double avgRunTime;
+            double avgDownloadTime;
+
+            CLBatch(RunType runType, string algorithmName, string taskDescription)
+                : Stats(runType,algorithmName, taskDescription)
+            {
+            }
+        };
+
+        template <template <typename> class Algorithm>
+        void printRunCL(Context* context, CommandQueue* queue, size_t size, bool useMultipleWorkGroupSizes)
+        {
+            CLBatch batch = runCL<Algorithm>(context, queue, size, useMultipleWorkGroupSizes);
+
+            // print results
+            cout << "###############################################################################" << endl;
+            cout << "# " << batch.algorithmName << endl;
+            cout << "#  " << batch.taskDescription << endl;
+            cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << batch.initTime << "s" << endl;
+            cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << batch.avgUploadTime << "s" << endl;
+
+            for(auto r : batch.runs)
+                if(r.exceptionOccured)
+                    cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
+                else
+                    cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTime << "s " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+
+            cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << batch.avgDownloadTime << "s" << endl;
+            cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << batch.cleanupTime << "s" << endl;
+            cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch.fastest->uploadTime + batch.fastest->runTime + batch.fastest->downloadTime) << "s " << "(WG size: " << batch.fastest->wgSize << ") " << endl;
+            cout << "###############################################################################" << endl;
+            cout << endl;
+        }
 
         /**
          * Runs an algorithm on the CPU with the given problem size.
          */
         template <template <typename> class Algorithm>
-        RunStats run(size_t size)
+        CPURun run(size_t size)
         {
             // create algorithm and stats, prepare input
             Algorithm<T>* alg = new Algorithm<T>();
-            RunStats stats(RunType::CPU, alg->getName(), plugin->getTaskDescription(size));
+            CPURun stats(RunType::CPU, alg->getName(), plugin->getTaskDescription(size));
 
             data = plugin->genInput(size);
             result = plugin->genResult(size);
@@ -170,84 +231,77 @@ class Runner
         }
 
         template <template <typename> class Algorithm>
-        void runCL(Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
+        CLBatch runCL(Context* context, CommandQueue* queue, size_t size, bool useMultipleWorkGroupSizes)
         {
             // create algorithm and stats, prepare input
             Algorithm<T>* alg = new Algorithm<T>();
+            CLBatch batch(context == cpuContext ? RunType::CL_CPU : RunType::CL_GPU, alg->getName(), plugin->getTaskDescription(size));;
+
             data = plugin->genInput(size);
             result = plugin->genResult(size);
 
             // run custom initialization
             timer.start();
             alg->init(context);
-            double initTime = timer.stop();
+            batch.initTime = timer.stop();
 
-            map<int, RunStats> stats;
 
-            size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), size);
+            //size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), size);
+            size_t maxWorkGroupSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
             if(!useMultipleWorkGroupSizes)
-                stats[maxWorkGroupSize] = uploadRunDownload(alg, context, queue, maxWorkGroupSize, size);
+                batch.runs.push_back(uploadRunDownload(alg, context, queue, maxWorkGroupSize, size));
             else
                 for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
-                    stats[i] = uploadRunDownload(alg, context, queue, i);
+                    batch.runs.push_back(uploadRunDownload(alg, context, queue, i, size));
 
             // cleanup
             timer.start();
             alg->cleanup();
-            double cleanupTime = timer.stop();
+            batch.cleanupTime = timer.stop();
 
-            // calculate sum figures
-            pair<int, RunStats> fastest = *min_element(stats.begin(), stats.end(), [](pair<int, RunStats> a, pair<int, RunStats> b)
+            // set init and cleanup time
+
+
+            // calculate fastest run
+            batch.fastest = min_element(batch.runs.begin(), batch.runs.end(), [](CLRun& a, CLRun& b)
             {
-                if(a.second.exceptionOccured || !a.second.verificationResult)
+                if(a.exceptionOccured || !a.verificationResult)
                     return false;
-                if(b.second.exceptionOccured || !b.second.verificationResult)
+                if(b.exceptionOccured || !b.verificationResult)
                     return true;
-                return a.second.uploadTime + a.second.runTime + a.second.downloadTime < b.second.uploadTime + b.second.runTime + b.second.downloadTime;
+                return a.uploadTime + a.runTime + a.downloadTime < b.uploadTime + b.runTime + b.downloadTime;
             });
 
-            double uploadAvg = 0;
-            for(auto e : stats)
-                if(!e.second.exceptionOccured)
-                    uploadAvg += e.second.uploadTime;
-            uploadAvg /= stats.size();
+            // calculate averages
+            batch.avgUploadTime = 0;
+            batch.avgRunTime = 0;
+            batch.avgDownloadTime = 0;
+            for(auto r : batch.runs)
+                if(!r.exceptionOccured)
+                {
+                    batch.avgUploadTime += r.uploadTime;
+                    batch.avgRunTime += r.runTime;
+                    batch.avgDownloadTime += r.downloadTime;
+                }
 
-            double downloadAvg = 0;
-            for(auto e : stats)
-                if(!e.second.exceptionOccured)
-                    downloadAvg += e.second.downloadTime;
-            downloadAvg /= stats.size();
-
-            // print results
-            cout << "###############################################################################" << endl;
-            cout << "# " << alg->getName() << endl;
-            cout << "#  " << plugin->getTaskDescription() << endl;
-            cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << initTime << "s" << endl;
-            cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << uploadAvg << "s" << endl;
-
-            for(auto s : stats)
-                if(s.second.exceptionOccured)
-                    cout << "#  GPU (WG: " << setw(4) << s.first << ") EXCEPTION: " << s.second.exceptionMsg << endl;
-                else
-                    cout << "#  GPU (WG: " << setw(4) << s.first << ") " << fixed << setprecision(FLOAT_PRECISION) << s.second.runTime << "s " << (s.second.verificationResult ? "SUCCESS" : "FAILED ") << endl;
-
-            cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << downloadAvg << "s" << endl;
-            cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << cleanupTime << "s" << endl;
-            cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (fastest.second.uploadTime + fastest.second.runTime + fastest.second.downloadTime) << "s " << "(WG size: " << fastest.first << ") " << endl;
-            cout << "###############################################################################" << endl;
-            cout << endl;
+            batch.avgUploadTime /= batch.runs.size();
+            batch.avgRunTime /= batch.runs.size();
+            batch.avgDownloadTime /= batch.runs.size();
 
             // cleanup
             plugin->freeInput(data);
             plugin->freeResult(result);
 
             delete alg;
+
+            return batch;
         }
 
         template <template <typename> class Algorithm>
-        inline RunStats uploadRunDownload(Algorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
+        inline CLRun uploadRunDownload(Algorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
         {
-            RunStats stats;
+            CLRun run;
+            run.wgSize = workGroupSize;
 
             try
             {
@@ -255,30 +309,35 @@ class Runner
                 timer.start();
                 alg->upload(context, queue, workGroupSize, data, size);
                 queue->finish();
-                stats.uploadTime = timer.stop();
+                run.uploadTime = timer.stop();
 
                 // run algorithm
                 timer.start();
                 alg->run(queue, workGroupSize, size);
                 queue->finish();
-                stats.runTime = timer.stop();
+                run.runTime = timer.stop();
 
                 // download data
                 timer.start();
                 alg->download(queue, result, size);
                 queue->finish();
-                stats.downloadTime = timer.stop();
+                run.downloadTime = timer.stop();
 
                 // verify
-                stats.verificationResult = plugin->verify(alg, data, result);
+                run.verificationResult = plugin->verifyResult(alg, data, result, size);
             }
             catch(OpenCLException& e)
             {
-                stats.exceptionOccured = true;
-                stats.exceptionMsg = e.what();
+                run.exceptionOccured = true;
+                run.exceptionMsg = e.what();
+            }
+            catch(...)
+            {
+                run.exceptionOccured = true;
+                run.exceptionMsg = "unkown";
             }
 
-            return stats;
+            return run;
         }
 
         void prepareTest(size_t size)

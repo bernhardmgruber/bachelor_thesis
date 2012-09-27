@@ -52,6 +52,8 @@
 		<Unit filename="MatrixAlgorithm.h" />
 		<Unit filename="MatrixPlugin.h" />
 		<Unit filename="cpu\Mult.h" />
+		<Unit filename="gpu\book\Mult.cl" />
+		<Unit filename="gpu\book\Mult.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

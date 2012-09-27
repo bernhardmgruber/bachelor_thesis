@@ -26,7 +26,10 @@ class MatrixPlugin
 
             T* data = new T[bufferSize]; // two size x size matrixes
 
-            generate(data, data + bufferSize, [](){ return rand() % 100; });
+            generate(data, data + bufferSize, []()
+            {
+                return rand() % 100;
+            });
 
             return data;
         }
@@ -48,7 +51,27 @@ class MatrixPlugin
 
         bool verifyResult(MatrixAlgorithm* alg, void* data, void* result, size_t size)
         {
-            return false;
+            T* a = (T*)data;
+            T* b = a + size * size;
+            T* c = (T*) result;
+
+            //for(size_t i = 0; i < size * size; i++)
+            //    cout << c[i] << ((i + 1) % size == 0 ? "\n" : ", ");
+            //cout << endl;
+
+            for(size_t i = 0; i < size; i++)
+            {
+                for(size_t j = 0; j < size; j++)
+                {
+                    T sum = 0;
+                    for(size_t k = 0; k < size; k++)
+                        sum += a[i * size + k] * b[k * size + j];
+                    if(c[i * size + j] != sum)
+                        return false;
+                }
+            }
+
+            return true;
         }
 };
 
