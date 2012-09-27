@@ -6,13 +6,14 @@
 #include "MatrixPlugin.h"
 
 #include "cpu/Mult.h"
+#include "cpu/MultThreads.h"
 #include "gpu/book/Mult.h"
 
 using namespace std;
 
 int main()
 {
-    const size_t size = 1000;
+    const size_t size = 800;
 
     try
     {
@@ -21,7 +22,10 @@ int main()
         runner.printCLInfo();
 
         runner.printRun<cpu::Mult>(size);
+        runner.printRun<cpu::MultThreads>(size);
         runner.printRunCLGPU<gpu::book::Mult>(size, true);
+
+        //runner.writeStats("stats.csv");
     }
     catch(OpenCLException& e)
     {
