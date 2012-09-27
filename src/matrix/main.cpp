@@ -13,17 +13,18 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 500;
-
     try
     {
         Runner<int, MatrixPlugin> runner;
 
         runner.printCLInfo();
 
-        runner.printOnce<cpu::Mult, RunType::CPU>(size);
-        runner.printOnce<cpu::MultThreads, RunType::CPU>(size);
-        runner.printOnce<gpu::book::Mult, RunType::CL_GPU>(size);
+        size_t range[] = {3, 10, 30, 50, 100, 200, 300 };
+        size_t length = sizeof(range) / sizeof(size_t);
+
+        runner.printRange<cpu::Mult>(RunType::CPU, range, length);
+        runner.printRange<cpu::MultThreads>(RunType::CPU, range, length);
+        runner.printRange<gpu::book::Mult>(RunType::CL_GPU, range, length, false);
 
         runner.writeStats("stats.csv");
     }

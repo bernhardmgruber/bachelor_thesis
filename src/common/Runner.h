@@ -88,53 +88,24 @@ class Runner
          * Runs an algorithm once with the given problem size.
          * The results of the run are printed to stdout.
          */
-        template <template <typename> class Algorithm, RunType runType>
-        void printOnce(size_t size, bool useMultipleWorkGroupSizes = true)
+        template <template <typename> class Algorithm>
+        void printOnce(RunType runType, size_t size, bool useMultipleWorkGroupSizes = true)
         {
             Range* r = runOnce<Algorithm>(size, runType, useMultipleWorkGroupSizes);
 
-            if(runType == RunType::CPU)
-            {
-                CPURun* cpuRun = (CPURun*) r->stats[0];
+            printRange(r, runType);
+        }
 
-                cout << "###############################################################################" << endl;
-                cout << "# " << r->algorithmName << endl;
-                cout << "#  " << cpuRun->taskDescription << endl;
-                if(cpuRun->exceptionOccured)
-                    cout << "#  CPU       " << "EXCEPTION: " << cpuRun->exceptionMsg << endl;
-                else
-                    cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << cpuRun->runTime << "s " << (cpuRun->verificationResult ? "SUCCESS" : "FAILED") << endl;
-                cout << "###############################################################################" << endl;
-                cout << endl;
-            }
-            else
-            {
-                if(runType == RunType::CL_CPU)
-                    if(!hasCLCPU())
-                        throw OpenCLException("No CPU context initialized!");
+        /**
+         * Runs the given algorithm once for every provided problem size.
+         * The results of the runs are printed to stdout.
+         */
+        template <template <typename> class Algorithm>
+        void printRange(RunType runType, size_t* range, size_t count, bool useMultipleWorkGroupSizes = true)
+        {
+            Range* r = runRange<Algorithm>(range, count, runType, useMultipleWorkGroupSizes);
 
-
-                CLBatch* batch = (CLBatch*) r->stats[0];
-
-                // print results
-                cout << "###############################################################################" << endl;
-                cout << "# " << r->algorithmName << endl;
-                cout << "#  " << batch->taskDescription << endl;
-                cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << batch->initTime << "s" << endl;
-                cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << batch->avgUploadTime << "s" << endl;
-
-                for(auto r : batch->runs)
-                    if(r.exceptionOccured)
-                        cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
-                    else
-                        cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTime << "s " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
-
-                cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << batch->avgDownloadTime << "s" << endl;
-                cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << batch->cleanupTime << "s" << endl;
-                cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << "s " << "(WG size: " << batch->fastest->wgSize << ") " << endl;
-                cout << "###############################################################################" << endl;
-                cout << endl;
-            }
+            printRange(r, runType);
         }
 
         /**
@@ -269,6 +240,64 @@ class Runner
             cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
         }
 
+        void printRange(Range* r, RunType runType)
+        {
+            if(runType == RunType::CPU)
+            {
+                cout << "###############################################################################" << endl;
+                cout << "# " << r->algorithmName << endl;
+
+                for(Stats* s : r->stats)
+                {
+                    CPURun* run = (CPURun*) s;
+
+                    cout << "#  " << run->taskDescription << endl;
+                    if(run->exceptionOccured)
+                        cout << "#  CPU       " << "EXCEPTION: " << run->exceptionMsg << endl;
+                    else
+                        cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << run->runTime << "s " << (run->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                }
+
+                cout << "###############################################################################" << endl;
+                cout << endl;
+            }
+            else
+            {
+                if(runType == RunType::CL_CPU)
+                    if(!hasCLCPU())
+                        throw OpenCLException("No CPU context initialized!");
+
+                // print results
+                cout << "###############################################################################" << endl;
+                cout << "# " << r->algorithmName << endl;
+
+                for(Stats* s : r->stats)
+                {
+                    CLBatch* batch = (CLBatch*) s;
+
+                    cout << "#  " << batch->taskDescription << endl;
+                    cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << batch->initTime << "s" << endl;
+                    cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << batch->avgUploadTime << "s" << endl;
+
+                    for(auto r : batch->runs)
+                        if(r.exceptionOccured)
+                            cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
+                        else
+                            cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTime << "s " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+
+                    cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << batch->avgDownloadTime << "s" << endl;
+                    cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << batch->cleanupTime << "s" << endl;
+                    cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << "s " << "(WG size: " << batch->fastest->wgSize << ") " << endl;
+                }
+
+                cout << "###############################################################################" << endl;
+                cout << endl;
+            }
+        }
+
+        /**
+         * Runs the given algorithm once for the given problem size.
+         */
         template <template <typename> class Algorithm>
         Range* runOnce(size_t size, RunType runType, bool useMultipleWorkGroupSizes)
         {
@@ -296,10 +325,36 @@ class Runner
             return r;
         }
 
+        /**
+         * Runs the given algorithm once for every provided problem size.
+         */
         template <template <typename> class Algorithm>
-        Range* runRange(size_t size, RunType runType, bool useMultipleWorkGroupSizes)
+        Range* runRange(size_t* range, size_t count, RunType runType, bool useMultipleWorkGroupSizes)
         {
+            Algorithm<T>* alg = new Algorithm<T>();
+            Range* r = new Range(runType, alg->getName());
 
+            for(size_t i = 0; i < count; i++)
+            {
+                Stats* s;
+                switch(runType)
+                {
+                    case CPU:
+                        s = run(alg, range[i]);
+                        break;
+                    case CL_CPU:
+                        s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, range[i]);
+                        break;
+                    case CL_GPU:
+                        s = runCL(alg, gpuContext, gpuQueue, useMultipleWorkGroupSizes, range[i]);
+                        break;
+                }
+                r->stats.push_back(s);
+            }
+
+            delete alg;
+
+            return r;
         }
 
         CPURun* run(GPUAlgorithm* alg, size_t size)
