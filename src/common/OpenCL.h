@@ -2,7 +2,8 @@
 #define OPENCL_H
 
 #define CL_USE_DEPRECATED_OPENCL_1_1_APIS
-#include <CL/CL.h>
+#include <CL/cl.h>
+#include <CL/cl_ext.h>
 #include <string>
 #include <vector>
 #include <exception>
@@ -70,6 +71,11 @@ class Context
 
             return value;
         }
+
+        /**
+         * Gets information about the requested property. The required size of the value is determined and allocated by this function. The user is responsible for freeing the returned buffer using the delete operator.
+         */
+        void* getInfo(cl_device_info);
 
     private:
         string readFile(string fileName);

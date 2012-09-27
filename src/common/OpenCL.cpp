@@ -256,6 +256,19 @@ string Context::getInfo<string>(cl_device_info info)
     return string(buffer);
 }
 
+void* Context::getInfo(cl_device_info info)
+{
+    size_t neededSize;
+    cl_int error = clGetDeviceInfo(device, info, 0, nullptr, &neededSize);
+    checkError(error, __LINE__);
+
+    void* value = operator new(neededSize);
+    error = clGetDeviceInfo(device, info, neededSize, value, nullptr);
+    checkError(error, __LINE__);
+
+    return value;
+}
+
 string Context::readFile(string fileName)
 {
     ifstream file(fileName, ios::in);
