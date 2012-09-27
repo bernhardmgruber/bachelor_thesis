@@ -1,9 +1,11 @@
 #ifndef RUNNER_H
 #define RUNNER_H
 
-#include "../common/OpenCL.h"
-#include "../common/Timer.h"
-#include "../common/utils.h"
+#include "OpenCL.h"
+#include "CPUAlgorithm.h"
+#include "GPUAlgorithm.h"
+#include "Timer.h"
+#include "utils.h"
 
 #include <typeinfo>
 #include <iomanip>
@@ -11,8 +13,16 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 using namespace std;
+
+enum RunType
+{
+    CPU,
+    CL_CPU,
+    CL_GPU
+};
 
 /**
  * Used to run algorithms.
@@ -42,11 +52,14 @@ class Runner
             plugin = new Plugin<T>();
         }
 
+        /**
+         * Destructor
+         */
         virtual ~Runner()
         {
             delete gpuContext;
             delete gpuQueue;
-            if(cpuContext)
+            if(hasCLCPU())
             {
                 delete cpuContext;
                 delete cpuQueue;
@@ -55,8 +68,8 @@ class Runner
 
             delete plugin;
 
-            for(Stats* s : stats)
-                delete s;
+            for(Range* r : ranges)
+                delete r;
         }
 
         /**
@@ -71,74 +84,115 @@ class Runner
             cout << endl;
         }
 
-        void printDevice(Context* context)
-        {
-            cout << "" << context->getInfo<string>(CL_DEVICE_NAME) << endl;
-            cout << "   " << context->getInfo<string>(CL_DEVICE_VENDOR) << endl;
-            cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_COMPUTE_UNITS) << " compute units" << endl;
-            cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_CLOCK_FREQUENCY) << " MHz frequency" << endl;
-            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
-            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
-        }
-
         /**
-         * Runs an algorithm on the CPU with the given problem size.
+         * Runs an algorithm once with the given problem size.
          * The results of the run are printed to stdout.
          */
-        template <template <typename> class Algorithm>
-        void printRun(size_t size)
+        template <template <typename> class Algorithm, RunType runType>
+        void printOnce(size_t size, bool useMultipleWorkGroupSizes = true)
         {
-            CPURun* cpuRun = run<Algorithm>(size);
+            Range* r = runOnce<Algorithm>(size, runType, useMultipleWorkGroupSizes);
 
-            cout << "###############################################################################" << endl;
-            cout << "# " << cpuRun->algorithmName << endl;
-            cout << "#  " << cpuRun->taskDescription << endl;
-            cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << cpuRun->runTime << "s " << (cpuRun->verificationResult ? "SUCCESS" : "FAILED") << endl;
-            cout << "###############################################################################" << endl;
-            cout << endl;
+            if(runType == RunType::CPU)
+            {
+                CPURun* cpuRun = (CPURun*) r->stats[0];
 
-            stats.push_back(cpuRun);
-        }
-
-        /**
-         * Runs an algorithm on the CPU using OpenCL.
-         * The results of the run are printed to stdout.
-         */
-        template <template <typename> class Algorithm>
-        void printRunCLCPU(size_t size, bool useMultipleWorkGroupSizes)
-        {
-            if(cpuContext)
-                printRunCL<Algorithm>(cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
+                cout << "###############################################################################" << endl;
+                cout << "# " << r->algorithmName << endl;
+                cout << "#  " << cpuRun->taskDescription << endl;
+                if(cpuRun->exceptionOccured)
+                    cout << "#  CPU       " << "EXCEPTION: " << cpuRun->exceptionMsg << endl;
+                else
+                    cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << cpuRun->runTime << "s " << (cpuRun->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                cout << "###############################################################################" << endl;
+                cout << endl;
+            }
             else
-                cout << "Cant run algorithm. No CPU context!" << endl;
+            {
+                if(runType == RunType::CL_CPU)
+                    if(!hasCLCPU())
+                        throw OpenCLException("No CPU context initialized!");
+
+
+                CLBatch* batch = (CLBatch*) r->stats[0];
+
+                // print results
+                cout << "###############################################################################" << endl;
+                cout << "# " << r->algorithmName << endl;
+                cout << "#  " << batch->taskDescription << endl;
+                cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << batch->initTime << "s" << endl;
+                cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << batch->avgUploadTime << "s" << endl;
+
+                for(auto r : batch->runs)
+                    if(r.exceptionOccured)
+                        cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
+                    else
+                        cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTime << "s " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+
+                cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << batch->avgDownloadTime << "s" << endl;
+                cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << batch->cleanupTime << "s" << endl;
+                cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << "s " << "(WG size: " << batch->fastest->wgSize << ") " << endl;
+                cout << "###############################################################################" << endl;
+                cout << endl;
+            }
         }
 
         /**
-         * Runs an algorithm on the GPU using OpenCL.
-         * The results of the run are printed to stdout.
+         * Writes the results of all previous runs to the given file.
          */
-        template <template <typename> class Algorithm>
-        void printRunCLGPU(size_t size, bool useMultipleWorkGroupSizes)
+        void writeStats(string fileName)
         {
-            printRunCL<Algorithm>(gpuContext, gpuQueue, size, useMultipleWorkGroupSizes);
+            const char sep = ';';
+
+            ofstream os(fileName);
+
+            os << "Runner" << endl;
+            os << "Bernhard Manfred Gruber" << endl;
+            os << __DATE__ << " " << __TIME__ << endl;
+            os << endl;
+            os << endl;
+
+            //os << "Algorithm name" << sep << "Type" << endl;
+
+            for(Range* r : ranges)
+            {
+                os << r->algorithmName << sep << runTypeToString(r->runType) << endl;
+
+                if(r->runType == RunType::CPU)
+                {
+                    os << "run time" << sep << "result" << endl;
+
+                    for(Stats* s : r->stats)
+                    {
+                        CPURun* run = static_cast<CPURun*>(s);
+                        os << run->runTime << sep << (run->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                    }
+                }
+                else
+                {
+                    os << "init time" << sep << "upload time" << sep << "run time" << sep << "download time " << sep << "cleanup time" << sep << "result" << endl;
+
+                    for(Stats* s : r->stats)
+                    {
+                        CLBatch* batch = static_cast<CLBatch*>(s);
+                        os << batch->initTime << sep << batch->fastest->uploadTime << sep << batch->fastest->runTime << sep << batch->fastest->downloadTime << batch->cleanupTime << sep << (batch->fastest->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                    }
+                }
+
+                os << endl;
+            }
+
+            os.close();
         }
 
     private:
-        enum RunType
-        {
-            CPU,
-            CL_CPU,
-            CL_GPU
-        };
-
         struct Stats
         {
-            RunType runType;
-            const string algorithmName;
             const string taskDescription;
+            size_t size;
 
-            Stats(RunType runType, string algorithmName, string taskDescription)
-                : runType(runType), algorithmName(algorithmName), taskDescription(taskDescription)
+            Stats(string taskDescription, size_t size)
+                : taskDescription(taskDescription), size(size)
             {
             }
         };
@@ -150,8 +204,8 @@ class Runner
             bool exceptionOccured = false;
             string exceptionMsg;
 
-            CPURun(RunType runType, string algorithmName, string taskDescription)
-                : Stats(runType,algorithmName, taskDescription)
+            CPURun(string taskDescription, size_t size)
+                : Stats(taskDescription, size)
             {
             }
         };
@@ -177,46 +231,89 @@ class Runner
             double avgRunTime;
             double avgDownloadTime;
 
-            CLBatch(RunType runType, string algorithmName, string taskDescription)
-                : Stats(runType,algorithmName, taskDescription)
+            CLBatch(string taskDescription, size_t size)
+                : Stats(taskDescription, size)
             {
             }
         };
 
-        template <template <typename> class Algorithm>
-        void printRunCL(Context* context, CommandQueue* queue, size_t size, bool useMultipleWorkGroupSizes)
+        struct Range
         {
-            CLBatch* batch = runCL<Algorithm>(context, queue, size, useMultipleWorkGroupSizes);
+            RunType runType;
+            const string algorithmName;
 
-            // print results
-            cout << "###############################################################################" << endl;
-            cout << "# " << batch->algorithmName << endl;
-            cout << "#  " << batch->taskDescription << endl;
-            cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << batch->initTime << "s" << endl;
-            cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << batch->avgUploadTime << "s" << endl;
+            vector<Stats*> stats;
 
-            for(auto r : batch->runs)
-                if(r.exceptionOccured)
-                    cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
-                else
-                    cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTime << "s " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+            Range(RunType runType, string algorithmName)
+                : runType(runType), algorithmName(algorithmName)
+            {
+            }
 
-            cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << batch->avgDownloadTime << "s" << endl;
-            cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << batch->cleanupTime << "s" << endl;
-            cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << "s " << "(WG size: " << batch->fastest->wgSize << ") " << endl;
-            cout << "###############################################################################" << endl;
-            cout << endl;
+            ~Range()
+            {
+                for(Stats* s : stats)
+                    delete s;
+            }
+        };
+
+        /**
+         * Prints information about a device.
+         */
+        void printDevice(Context* context)
+        {
+            cout << "" << context->getInfo<string>(CL_DEVICE_NAME) << endl;
+            cout << "   " << context->getInfo<string>(CL_DEVICE_VENDOR) << endl;
+            cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_COMPUTE_UNITS) << " compute units" << endl;
+            cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_CLOCK_FREQUENCY) << " MHz frequency" << endl;
+            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
+            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
+        }
+
+        template <template <typename> class Algorithm>
+        Range* runOnce(size_t size, RunType runType, bool useMultipleWorkGroupSizes)
+        {
+            Algorithm<T>* alg = new Algorithm<T>();
+            Range* r = new Range(runType, alg->getName());
+
+            Stats* s;
+
+            switch(runType)
+            {
+                case CPU:
+                    s = run(alg, size);
+                    break;
+                case CL_CPU:
+                    s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
+                    break;
+                case CL_GPU:
+                    s = runCL(alg, gpuContext, gpuQueue, useMultipleWorkGroupSizes, size);
+                    break;
+            }
+            r->stats.push_back(s);
+
+            delete alg;
+
+            return r;
+        }
+
+        template <template <typename> class Algorithm>
+        Range* runRange(size_t size, RunType runType, bool useMultipleWorkGroupSizes)
+        {
+
+        }
+
+        CPURun* run(GPUAlgorithm* alg, size_t size)
+        {
+            throw runtime_error(string(__FUNCTION__) + " should never be called!");
         }
 
         /**
          * Runs an algorithm on the CPU with the given problem size.
          */
-        template <template <typename> class Algorithm>
-        CPURun* run(size_t size)
+        CPURun* run(CPUAlgorithm* alg, size_t size)
         {
-            // create algorithm and run stats, prepare input
-            Algorithm<T>* alg = new Algorithm<T>();
-            CPURun* run = new CPURun(RunType::CPU, alg->getName(), plugin->getTaskDescription(size));
+            // create run stats and prepare input
+            CPURun* run = new CPURun(plugin->getTaskDescription(size), size);
 
             data = plugin->genInput(size);
             result = plugin->genResult(size);
@@ -227,25 +324,27 @@ class Runner
             run->runTime = timer.stop();
 
             // verfiy result
-            run->verificationResult = plugin->verifyResult(alg, data, result, size);
+            run->verificationResult = plugin->verifyResult((typename Plugin<T>::AlgorithmType*)alg, data, result, size);
 
             // cleanup
             plugin->freeInput(data);
             plugin->freeResult(result);
 
-            delete alg;
-
-            stats.push_back(run);
-
             return run;
         }
 
-        template <template <typename> class Algorithm>
-        CLBatch* runCL(Context* context, CommandQueue* queue, size_t size, bool useMultipleWorkGroupSizes)
+        CLBatch* runCL(CPUAlgorithm* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
+        {
+            throw runtime_error(string(__FUNCTION__) + " should never be called!");
+        }
+
+        /**
+         * Runs an algorithm using OpenCL with the given problem size.
+         */
+        CLBatch* runCL(GPUAlgorithm* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
         {
             // create algorithm and batch stats, prepare input
-            Algorithm<T>* alg = new Algorithm<T>();
-            CLBatch* batch = new CLBatch(context == cpuContext ? RunType::CL_CPU : RunType::CL_GPU, alg->getName(), plugin->getTaskDescription(size));
+            CLBatch* batch = new CLBatch(plugin->getTaskDescription(size), size);
 
             data = plugin->genInput(size);
             result = plugin->genResult(size);
@@ -299,15 +398,10 @@ class Runner
             plugin->freeInput(data);
             plugin->freeResult(result);
 
-            delete alg;
-
-            stats.push_back(batch);
-
             return batch;
         }
 
-        template <template <typename> class Algorithm>
-        inline CLRun uploadRunDownload(Algorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
+        inline CLRun uploadRunDownload(GPUAlgorithm* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
         {
             CLRun run;
             run.wgSize = workGroupSize;
@@ -333,7 +427,7 @@ class Runner
                 run.downloadTime = timer.stop();
 
                 // verify
-                run.verificationResult = plugin->verifyResult(alg, data, result, size);
+                run.verificationResult = plugin->verifyResult((typename Plugin<T>::AlgorithmType*)alg, data, result, size);
             }
             catch(OpenCLException& e)
             {
@@ -349,14 +443,24 @@ class Runner
             return run;
         }
 
-        void prepareTest(size_t size)
+        string runTypeToString(RunType runType)
         {
+            switch(runType)
+            {
+                case CPU:
+                    return "CPU";
+                case CL_CPU:
+                    return "CPU CL";
+                case CL_GPU:
+                    return "GPU CL";
+            }
 
+            return "unkown";
         }
 
-        void finishTest()
+        bool hasCLCPU()
         {
-
+            return cpuContext != nullptr;
         }
 
         Context* gpuContext;
@@ -373,7 +477,7 @@ class Runner
 
         bool noCPU;
 
-        vector<Stats*> stats;
+        vector<Range*> ranges;
 };
 
 #endif // RUNNER_H

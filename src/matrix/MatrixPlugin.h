@@ -12,6 +12,8 @@ template <typename T>
 class MatrixPlugin
 {
     public:
+        typedef MatrixAlgorithm AlgorithmType;
+
         const string getTaskDescription(size_t size)
         {
             //return "Processing " << size << " elements of type " << getTypeName<T>() << " (" << sizeToString(size * sizeof(T)) << ")";

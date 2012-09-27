@@ -13,7 +13,7 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 800;
+    const size_t size = 500;
 
     try
     {
@@ -21,11 +21,11 @@ int main()
 
         runner.printCLInfo();
 
-        runner.printRun<cpu::Mult>(size);
-        runner.printRun<cpu::MultThreads>(size);
-        runner.printRunCLGPU<gpu::book::Mult>(size, true);
+        runner.printOnce<cpu::Mult, RunType::CPU>(size);
+        runner.printOnce<cpu::MultThreads, RunType::CPU>(size);
+        runner.printOnce<gpu::book::Mult, RunType::CL_GPU>(size);
 
-        //runner.writeStats("stats.csv");
+        runner.writeStats("stats.csv");
     }
     catch(OpenCLException& e)
     {
