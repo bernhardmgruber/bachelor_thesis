@@ -17,7 +17,7 @@ int main()
     {
         Runner<int, MatrixPlugin> runner;
 
-        runner.printCLInfo();
+        //runner.printCLInfo();
 
         size_t range[] = {3, 10, 30, 50, 100, 200, 300 };
         size_t length = sizeof(range) / sizeof(size_t);

@@ -144,12 +144,12 @@ class Runner
                 }
                 else
                 {
-                    os << "size" << sep << "init time" << sep << "upload time" << sep << "run time" << sep << "download time " << sep << "cleanup time" << sep << "result" << endl;
+                    os << "size" << sep << "init time" << sep << "upload time" << sep << "run time" << sep << "download time " << sep << "cleanup time" << sep << "up run down sum" << sep << "result" << endl;
 
                     for(Stats* s : r->stats)
                     {
                         CLBatch* batch = static_cast<CLBatch*>(s);
-                        os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTime << sep << batch->fastest->runTime << sep << batch->fastest->downloadTime << sep << batch->cleanupTime << sep << (batch->fastest->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                        os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTime << sep << batch->fastest->runTime << sep << batch->fastest->downloadTime << sep << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << sep << batch->cleanupTime << sep << (batch->fastest->verificationResult ? "SUCCESS" : "FAILED") << endl;
                     }
                 }
 
