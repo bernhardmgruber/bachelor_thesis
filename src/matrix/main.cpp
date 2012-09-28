@@ -15,16 +15,17 @@ int main()
 {
     try
     {
-        Runner<int, MatrixPlugin> runner;
+        Runner<int, MatrixPlugin> runner(false);
 
         //runner.printCLInfo();
 
-        size_t range[] = {3, 10, 30, 50, 100, 200, 300 };
+        size_t range[] = {1, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000 };
         size_t length = sizeof(range) / sizeof(size_t);
 
         runner.printRange<cpu::Mult>(RunType::CPU, range, length);
         runner.printRange<cpu::MultThreads>(RunType::CPU, range, length);
         runner.printRange<gpu::book::Mult>(RunType::CL_GPU, range, length, false);
+        runner.printRange<gpu::book::Mult>(RunType::CL_CPU, range, length, false);
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");
