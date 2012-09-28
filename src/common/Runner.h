@@ -542,6 +542,8 @@ class Runner
 
         void writeDeviceInfo(Context* context, string fileName, char sep)
         {
+            cout << "Writing device info file to " << fileName << " ... ";
+
             ofstream os(fileName);
 
             os << "CL_DEVICE_ADDRESS_BITS" << sep << context->getInfo<cl_uint>(CL_DEVICE_ADDRESS_BITS) << endl;
@@ -747,6 +749,8 @@ class Runner
             os << "CL_DRIVER_VERSION" << sep << context->getInfo<string>(CL_DRIVER_VERSION) << endl;
 
             os.close();
+
+            cout << "DONE" << endl;
         }
 
         Context* gpuContext;
