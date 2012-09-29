@@ -22,7 +22,7 @@ class MatrixPlugin
             return ss.str();
         }
 
-        void* genInput(size_t size)
+        T* genInput(size_t size)
         {
             size_t bufferSize = size * size * 2;
 
@@ -36,22 +36,22 @@ class MatrixPlugin
             return data;
         }
 
-        void* genResult(size_t size)
+        T* genResult(size_t size)
         {
             return new T[size * size];
         }
 
-        void freeInput(void* data)
+        void freeInput(T* data)
         {
             delete[] (T*)data;
         }
 
-        void freeResult(void* result)
+        void freeResult(T* result)
         {
             delete[] (T*)result;
         }
 
-        bool verifyResult(MatrixAlgorithm* alg, void* data, void* result, size_t size)
+        bool verifyResult(MatrixAlgorithm* alg, T* data, T* result, size_t size)
         {
             T* a = (T*)data;
             T* b = a + size * size;

@@ -10,7 +10,7 @@ namespace gpu
     namespace book
     {
         template<typename T>
-        class Mult : public GPUAlgorithm, public MatrixAlgorithm
+        class Mult : public GPUAlgorithm<T>, public MatrixAlgorithm
         {
             public:
                 const string getName() override
@@ -24,7 +24,7 @@ namespace gpu
                     kernel = program->createKernel("Mult");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, void* data, size_t size) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
                     size_t elementCount = size * size;
                     adjustedSize = roundToMultiple(elementCount, workGroupSize);
@@ -51,7 +51,7 @@ namespace gpu
                     queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
                 }
 
-                void download(CommandQueue* queue, void* result, size_t size) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(c, result, 0, size * size * sizeof(T));
                 }

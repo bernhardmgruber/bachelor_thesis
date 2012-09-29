@@ -19,7 +19,8 @@ int main()
 
         //runner.printCLInfo();
 
-        size_t range[] = {1, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000 };
+        //size_t range[] = {1, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000 };
+        size_t range[] = {1, 25, 50, 75, 100, 150, 200, 250, 300, 400 };
         size_t length = sizeof(range) / sizeof(size_t);
 
         runner.printRange<cpu::Mult>(RunType::CPU, range, length);

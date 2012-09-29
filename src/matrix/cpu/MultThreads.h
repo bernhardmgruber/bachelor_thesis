@@ -7,7 +7,7 @@
 namespace cpu
 {
     template<typename T>
-    class MultThreads : public CPUAlgorithm, public MatrixAlgorithm
+    class MultThreads : public CPUAlgorithm<T>, public MatrixAlgorithm
     {
         public:
             const string getName() override
@@ -15,11 +15,11 @@ namespace cpu
                 return "Matrix multiplication (Threads)";
             }
 
-            void run(void* data, void* result, size_t size) override
+            void run(T* data, T* result, size_t size) override
             {
-                T* a = (T*)data;
+                T* a = data;
                 T* b = a + size * size;
-                T* r = (T*) result;
+                T* r = result;
 
                 #pragma omp parallel for
                 for(size_t i = 0; i < size; i++)
