@@ -379,7 +379,7 @@ class Runner
             return r;
         }
 
-        CPURun* run(GPUAlgorithm* alg, size_t size)
+        CPURun* run(GPUAlgorithm<T>* alg, size_t size)
         {
             throw runtime_error(string(__FUNCTION__) + " should never be called!");
         }
@@ -387,7 +387,7 @@ class Runner
         /**
          * Runs an algorithm on the CPU with the given problem size.
          */
-        CPURun* run(CPUAlgorithm* alg, size_t size)
+        CPURun* run(CPUAlgorithm<T>* alg, size_t size)
         {
             // create run stats and prepare input
             CPURun* run = new CPURun(plugin->getTaskDescription(size), size);
@@ -410,7 +410,7 @@ class Runner
             return run;
         }
 
-        CLBatch* runCL(CPUAlgorithm* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
+        CLBatch* runCL(CPUAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
         {
             throw runtime_error(string(__FUNCTION__) + " should never be called!");
         }
@@ -418,7 +418,7 @@ class Runner
         /**
          * Runs an algorithm using OpenCL with the given problem size.
          */
-        CLBatch* runCL(GPUAlgorithm* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
+        CLBatch* runCL(GPUAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
         {
             // create algorithm and batch stats, prepare input
             CLBatch* batch = new CLBatch(plugin->getTaskDescription(size), size);
@@ -478,7 +478,7 @@ class Runner
             return batch;
         }
 
-        inline CLRun uploadRunDownload(GPUAlgorithm* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
+        inline CLRun uploadRunDownload(GPUAlgorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
         {
             CLRun run;
             run.wgSize = workGroupSize;
@@ -762,8 +762,8 @@ class Runner
 
         Timer timer;
 
-        void* data;
-        void* result;
+        T* data;
+        T* result;
 
         bool noCPU;
 

@@ -6,11 +6,11 @@
 
 namespace cpu
 {
-    template<typename T, size_t count>
-    class Scan : public CPUAlgorithm<T, count>, public ScanAlgorithm
+    template<typename T>
+    class Scan : public CPUAlgorithm<T>, public ScanAlgorithm
     {
         public:
-            string getName() override
+            const string getName() override
             {
                 return "Scan (inclusiv)";
             }
@@ -20,10 +20,10 @@ namespace cpu
                 return true;
             }
 
-            void run(T* data, T* result)
+            void run(T* data, T* result, size_t size)
             {
                 result[0] = data[0];
-                for(size_t i = 1; i < count; i++)
+                for(size_t i = 1; i < size; i++)
                     result[i] = result[i - 1] + data[i];
             }
 

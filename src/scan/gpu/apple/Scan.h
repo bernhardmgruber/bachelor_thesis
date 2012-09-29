@@ -82,11 +82,11 @@ namespace gpu
 
         static const unsigned int KernelCount = sizeof(KernelNames) / sizeof(char *);
 
-        template<typename T, size_t count>
-        class Scan : public GPUAlgorithm<T, count>, public ScanAlgorithm
+        template<typename T>
+        class Scan : public GPUAlgorithm<T>, public ScanAlgorithm
         {
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "Scan (apple) (exclusiv)";
                 }
@@ -401,28 +401,28 @@ namespace gpu
                     }
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
                     // Create the input buffer on the device
-                    size_t buffer_size = sizeof(T) * count;
+                    size_t buffer_size = sizeof(T) * size;
 
                     input = context->createBuffer(CL_MEM_READ_WRITE, buffer_size);
                     queue->enqueueWrite(input, data);
 
-                    T* zeroMem = new T[count];
-                    memset(zeroMem, 0, sizeof(T) * count);
+                    T* zeroMem = new T[size];
+                    memset(zeroMem, 0, sizeof(T) * size);
                     output = context->createBuffer(CL_MEM_READ_WRITE, buffer_size);
                     queue->enqueueWrite(output, zeroMem);
                     delete[] zeroMem;
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
-                    CreatePartialSumBuffers(queue->getContext(), count);
-                    PreScanBuffer(queue, output, input, GROUP_SIZE, GROUP_SIZE, count);
+                    CreatePartialSumBuffers(queue->getContext(), size);
+                    PreScanBuffer(queue, output, input, GROUP_SIZE, GROUP_SIZE, size);
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(output, result);
                 }

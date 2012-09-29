@@ -14,11 +14,11 @@ namespace gpu
          * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
          * Chapter: 39.2.2 A Work-Efficient Parallel Scan
          */
-        template<typename T, size_t count>
-        class WorkEfficientScan : public GPUAlgorithm<T, count>, public ScanAlgorithm
+        template<typename T>
+        class WorkEfficientScan : public GPUAlgorithm<T>, public ScanAlgorithm
         {
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "Work Efficient Scan (GPU Gems) (exclusiv)";
                 }
@@ -36,17 +36,17 @@ namespace gpu
                     downSweepKernel = program->createKernel("DownSweep");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    bufferSize = pow2roundup(count);
+                    bufferSize = pow2roundup(size);
 
                     buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
                     queue->enqueueWrite(buffer, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
-                    size_t globalWorkSizes[] = { count };
+                    size_t globalWorkSizes[] = { size };
                     size_t localWorkSizes[] = { workGroupSize };
 
                     // upsweep (reduce)
@@ -81,9 +81,9 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
-                    queue->enqueueRead(buffer, result, 0, count * sizeof(T));
+                    queue->enqueueRead(buffer, result, 0, size * sizeof(T));
                 }
 
                 void cleanup() override

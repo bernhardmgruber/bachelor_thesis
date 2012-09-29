@@ -16,8 +16,8 @@ namespace gpu
          * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
          * Chapter: 39.2.3 Avoiding Bank Conflicts and 39.2.4 Arrays of Arbitrary Size
          */
-        template<typename T, size_t count>
-        class LocalScan : public GPUAlgorithm<T, count>, public ScanAlgorithm
+        template<typename T>
+        class LocalScan : public GPUAlgorithm<T>, public ScanAlgorithm
         {
             public:
                 /**
@@ -30,7 +30,7 @@ namespace gpu
                 {
                 };
 
-                string getName() override
+                const string getName() override
                 {
                     return "Local Scan (GPU Gems) (exclusiv)" + string(useOptimizedKernel ? " (optimized)" : "");
                 }
@@ -47,12 +47,12 @@ namespace gpu
                     addKernel = program->createKernel("AddSums");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
                     if(workGroupSize == 1)
                         throw OpenCLException("work group size must be greater than 1");
 
-                    bufferSize = roundToMultiple(count, workGroupSize * 2);
+                    bufferSize = roundToMultiple(size, workGroupSize * 2);
 
                     // note: when using CL_MEM_COPY_HOST_PTR the data is copied into the context (not onto the device).
                     // The data may still be stored in the host memory and copied to the device on demand.
@@ -61,14 +61,14 @@ namespace gpu
                     queue->enqueueWrite(buffer, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
                     Context* context = queue->getContext();
 
-                    run_r(context, queue, workGroupSize, buffer);
+                    run_r(context, queue, workGroupSize, buffer, size);
                 }
 
-                void run_r(Context* context, CommandQueue* queue, size_t workGroupSize, Buffer* blocks)
+                void run_r(Context* context, CommandQueue* queue, size_t workGroupSize, Buffer* blocks, size_t size)
                 {
                     Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, roundToMultiple(blocks->getSize() / workGroupSize, workGroupSize * 2 * sizeof(T)));
 
@@ -85,7 +85,7 @@ namespace gpu
                     if(blocks->getSize() / sizeof(T) > localWorkSizes[0] * 2)
                     {
                         // the buffer containes more than one scanned block, scan the created sum buffer
-                        run_r(context, queue, workGroupSize, sums);
+                        run_r(context, queue, workGroupSize, sums, size);
 
                         // get the remaining available local memory
                         size_t totalGlobalWorkSize = blocks->getSize() / sizeof(T) / 2;
@@ -114,9 +114,9 @@ namespace gpu
                     delete sums;
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
-                    queue->enqueueRead(buffer, result, 0, count * sizeof(T));
+                    queue->enqueueRead(buffer, result, 0, size * sizeof(T));
                 }
 
                 void cleanup() override

@@ -10,11 +10,11 @@ namespace gpu
 {
     namespace clpp
     {
-        template<typename T, size_t count>
-        class Scan : public GPUAlgorithm<T, count>, public ScanAlgorithm
+        template<typename T>
+        class Scan : public GPUAlgorithm<T>, public ScanAlgorithm
         {
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "Scan (clpp) (inclusiv)";
                 }
@@ -29,28 +29,28 @@ namespace gpu
                     clppProgram::setBasePath("../common/libs/clpp/clpp/");
                     clppcontext.setup(0, 0);
 
-                    s = new clppScan_GPU(&clppcontext, sizeof(T), count);
+                    s = new clppScan_GPU(&clppcontext, sizeof(T), 0);
                     assert(s->_context->clQueue != 0);
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
                     assert(s->_context->clQueue != 0);
-                    buffer = new T[count];
-                    memcpy(buffer, data, sizeof(T) * count);
-                    s->pushDatas(buffer, count);
+                    buffer = new T[size];
+                    memcpy(buffer, data, sizeof(T) * size);
+                    s->pushDatas(buffer, size);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
                     s->scan();
                     s->waitCompletion();
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     s->popDatas();
-                    memcpy(buffer, result, count * sizeof(T));
+                    memcpy(buffer, result, size * sizeof(T));
                 }
 
                 void cleanup() override

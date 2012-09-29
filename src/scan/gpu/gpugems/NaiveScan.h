@@ -13,11 +13,11 @@ namespace gpu
          * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
          * Chapter: 39.2.1 A Naive Parallel Scan
          */
-        template<typename T, size_t count>
-        class NaiveScan : public GPUAlgorithm<T, count>, public ScanAlgorithm
+        template<typename T>
+        class NaiveScan : public GPUAlgorithm<T>, public ScanAlgorithm
         {
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "Naive Scan (GPU Gems) (inclusiv)";
                 }
@@ -33,9 +33,9 @@ namespace gpu
                     kernel = program->createKernel("NaiveScan");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    bufferSize = pow2roundup(count);
+                    bufferSize = pow2roundup(size);
 
                     source = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
                     queue->enqueueWrite(source, data);
@@ -44,7 +44,7 @@ namespace gpu
                     queue->enqueueCopy(source, destination);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
                     for(size_t dpower = 1; dpower < bufferSize; dpower <<= 1)
                     {
@@ -52,7 +52,7 @@ namespace gpu
                         kernel->setArg(1, destination);
                         kernel->setArg(2, dpower);
 
-                        size_t globalWorkSizes[] = { count };
+                        size_t globalWorkSizes[] = { size };
                         size_t localWorkSizes[] = { workGroupSize };
 
                         queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
@@ -60,9 +60,9 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
-                    queue->enqueueRead(source, result, 0, count * sizeof(T));
+                    queue->enqueueRead(source, result, 0, size * sizeof(T));
                 }
 
                 void cleanup() override

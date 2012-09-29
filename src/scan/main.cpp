@@ -3,7 +3,7 @@
 #include <fstream>
 
 #include "../common/Runner.h"
-#include "ScanVerifier.h"
+#include "ScanPlugin.h"
 
 #include "cpu/Scan.h"
 #include "gpu/clpp/Scan.h"
@@ -16,21 +16,21 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1024 * 128;
+    const size_t size = 1024 * 1 * 128;
 
     try
     {
-        Runner<int, size, ScanVerifier> runner;
+        Runner<int, ScanPlugin> runner;
 
         runner.printCLInfo();
 
-        runner.run<cpu::Scan>();
+        runner.printOnce<cpu::Scan>(RunType::CPU, size);
 
-        //runner.runCLGPU<gpu::clpp::Scan>(true); // not working
-        //runner.runCLGPU<gpu::gpugems::NaiveScan>(false);
-        //runner.runCLGPU<gpu::gpugems::WorkEfficientScan>(false);
-        runner.runCLGPU<gpu::gpugems::LocalScan>(false);
-        //runner.runCLGPU<gpu::apple::Scan>(false);
+        //runner.printOnce<gpu::clpp::Scan>(RunType::CL_GPU, size, false); // not working
+        runner.printOnce<gpu::gpugems::NaiveScan>(RunType::CL_GPU, size, false);
+        runner.printOnce<gpu::gpugems::WorkEfficientScan>(RunType::CL_GPU, size, false);
+        runner.printOnce<gpu::gpugems::LocalScan>(RunType::CL_GPU, size, false);
+        runner.printOnce<gpu::apple::Scan>(RunType::CL_GPU, size, false);
     }
     catch(OpenCLException& e)
     {
