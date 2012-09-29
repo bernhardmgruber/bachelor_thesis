@@ -106,11 +106,11 @@ namespace cpu
 {
     namespace amd
     {
-        template<typename T, size_t count>
-        class RadixSort : public CPUAlgorithm<T, count>, public SortAlgorithm
+        template<typename T>
+        class RadixSort : public CPUAlgorithm<T>, public SortAlgorithm
         {
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "RadixSort (AMD)";
                 }
@@ -120,20 +120,20 @@ namespace cpu
                     return false;
                 }
 
-                void run(T* data, T* result) override
+                void run(T* data, T* result, size_t size) override
                 {
                     T* histogram = new T[RADICES];
-                    T* tempData = new T[count];
+                    T* tempData = new T[size];
                     T* hSortedData = result;
 
-                    memcpy(tempData, data, count * sizeof(T));
+                    memcpy(tempData, data, size * sizeof(T));
                     for(size_t bits = 0; bits < sizeof(T) * RADIX ; bits += RADIX)
                     {
                         // Initialize histogram bucket to zeros
                         memset(histogram, 0, RADICES * sizeof(T));
 
                         // Calculate 256 histogram for all element
-                        for(size_t i = 0; i < count; ++i)
+                        for(size_t i = 0; i < size; ++i)
                         {
                             T element = tempData[i];
                             T value = (element >> bits) & RADIX_MASK;
@@ -150,7 +150,7 @@ namespace cpu
                         }
 
                         // Rearrange  the elements based on prescaned histogram
-                        for(size_t i = 0; i < count; ++i)
+                        for(size_t i = 0; i < size; ++i)
                         {
                             T element = tempData[i];
                             T value = (element >> bits) & RADIX_MASK;
@@ -161,7 +161,7 @@ namespace cpu
 
                         // Copy to tempData for further use
                         if(bits != RADIX * 3)
-                            memcpy(tempData, hSortedData, count * sizeof(T));
+                            memcpy(tempData, hSortedData, size * sizeof(T));
                     }
 
                     delete[] tempData;

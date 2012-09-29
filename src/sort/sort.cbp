@@ -55,7 +55,7 @@
 		<Unit filename="..\common\utils.cpp" />
 		<Unit filename="..\common\utils.h" />
 		<Unit filename="SortAlgorithm.h" />
-		<Unit filename="SortVerifier.h" />
+		<Unit filename="SortPlugin.h" />
 		<Unit filename="cpu\QSort.h" />
 		<Unit filename="cpu\Quicksort.h" />
 		<Unit filename="cpu\STLSort.h" />

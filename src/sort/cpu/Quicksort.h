@@ -6,11 +6,11 @@
 
 namespace cpu
 {
-    template<typename T, size_t count>
-    class Quicksort : public CPUAlgorithm<T, count>, public SortAlgorithm
+    template<typename T>
+    class Quicksort : public CPUAlgorithm<T>, public SortAlgorithm
     {
         public:
-            string getName() override
+            const string getName() override
             {
                 return "Quicksort";
             }
@@ -20,10 +20,10 @@ namespace cpu
                 return true;
             }
 
-            void run(T* data, T* result) override
+            void run(T* data, T* result, size_t size) override
             {
                 this->data = data;
-                sort_r(0, count - 1);
+                sort_r(0, size - 1);
             }
 
             virtual ~Quicksort() {}

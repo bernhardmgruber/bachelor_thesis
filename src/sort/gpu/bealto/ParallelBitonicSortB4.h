@@ -15,11 +15,11 @@ namespace gpu
         /**
          * From: http://www.bealto.com/gpu-sorting_intro.html
          */
-        template<typename T, size_t count>
-        class ParallelBitonicSortB4 : public GPUAlgorithm<T, count>, public SortAlgorithm
+        template<typename T>
+        class ParallelBitonicSortB4 : public GPUAlgorithm<T>, public SortAlgorithm
         {
             public:
-                string getName()
+                const string getName()
                 {
                     return "Parallel bitonic B4 (Bealto)";
                 }
@@ -36,15 +36,15 @@ namespace gpu
                     kernel4 = program->createKernel("ParallelBitonicSortB4");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
                     queue->enqueueWrite(buffer, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
-                    for (size_t length=1; length<count; length<<=1)
+                    for (size_t length=1; length<size; length<<=1)
                     {
                         int inc = length;
                         while (inc > 0)
@@ -64,7 +64,7 @@ namespace gpu
                             // Always allow B2
                             if (ninc == 0)
                                 ninc = 1;
-                            size_t nThreads = count >> ninc;
+                            size_t nThreads = size >> ninc;
                             workGroupSize = std::min(workGroupSize, nThreads);
                             kernel->setArg(0, buffer);
                             kernel->setArg(1, inc);          // INC passed to kernel
@@ -78,7 +78,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(buffer, result);
                 }

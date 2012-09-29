@@ -10,11 +10,11 @@ using namespace std;
 
 namespace cpu
 {
-    template<typename T, size_t count>
-    class STLSort : public CPUAlgorithm<T, count>, public SortAlgorithm
+    template<typename T>
+    class STLSort : public CPUAlgorithm<T>, public SortAlgorithm
     {
         public:
-            string getName() override
+            const string getName() override
             {
                 return "C++ STL algorithm sort";
             }
@@ -24,9 +24,9 @@ namespace cpu
                 return true;
             }
 
-            void run(T* data, T* result) override
+            void run(T* data, T* result, size_t size) override
             {
-                std::sort(data, data + count);
+                std::sort(data, data + size);
             }
 
             virtual ~STLSort() {}

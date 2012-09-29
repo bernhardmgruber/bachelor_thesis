@@ -10,11 +10,11 @@ using namespace std;
 
 namespace cpu
 {
-    template<typename T, size_t count>
-    class QSort : public CPUAlgorithm<T, count>, public SortAlgorithm
+    template<typename T>
+    class QSort : public CPUAlgorithm<T>, public SortAlgorithm
     {
         public:
-            string getName() override
+            const string getName() override
             {
                 return "C stdlib qsort";
             }
@@ -24,9 +24,9 @@ namespace cpu
                 return true;
             }
 
-            void run(T* data, T* result) override
+            void run(T* data, T* result, size_t size) override
             {
-                qsort(data, count, sizeof(T), [](const void* a, const void* b)
+                qsort(data, size, sizeof(T), [](const void* a, const void* b)
                 {
                     return *(T*)a - *(T*)b;
                 });

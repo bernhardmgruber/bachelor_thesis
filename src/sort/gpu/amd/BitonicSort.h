@@ -13,11 +13,11 @@ namespace gpu
         /**
          * From: AMD Stream SDK Samples
          */
-        template<typename T, size_t count>
-        class BitonicSort : public GPUAlgorithm<T, count>, public SortAlgorithm
+        template<typename T>
+        class BitonicSort : public GPUAlgorithm<T>, public SortAlgorithm
         {
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "Bitonic Sort (AMD)";
                 }
@@ -33,15 +33,15 @@ namespace gpu
                     kernel = program->createKernel("BitonicSort");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    in = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    in = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
                     queue->enqueueWrite(in, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
-                    /*for (size_t length = 1; length < count; length <<= 1)
+                    /*for (size_t length = 1; length < size; length <<= 1)
                         for (size_t inc = length; inc > 0; inc >>= 1)
                         {
                             kernel->setArg(0, in);
@@ -56,7 +56,7 @@ namespace gpu
                         }
                     queue->finish();*/
 
-                    size_t globalWorkSizes[1] = { count / 2 };
+                    size_t globalWorkSizes[1] = { size / 2 };
                     size_t localWorkSizes[1] = { workGroupSize };
 
                     /*
@@ -82,7 +82,7 @@ namespace gpu
                      * i.e the number of times you halve length to get 1 should be numStages
                      */
                     size_t numStages = 0;
-                    for(size_t temp = count; temp > 1; temp >>= 1)
+                    for(size_t temp = size; temp > 1; temp >>= 1)
                         ++numStages;
 
                     // Set appropriate arguments to the kernel
@@ -92,8 +92,8 @@ namespace gpu
                     kernel->setArg(0, in);
 
                     // length - i.e number of elements in the array
-                    //status = clSetKernelArg(kernel, 3, sizeof(cl_uint), (void *)&count);
-                    kernel->setArg(3, count);
+                    //status = clSetKernelArg(kernel, 3, sizeof(cl_uint), (void *)&size);
+                    kernel->setArg(3, size);
 
                     // whether sort is to be in increasing order. CL_TRUE implies increasing
                     cl_bool sortDescending = CL_TRUE;
@@ -158,7 +158,7 @@ namespace gpu
                     return SDK_SUCCESS;*/
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(in, result);
                 }

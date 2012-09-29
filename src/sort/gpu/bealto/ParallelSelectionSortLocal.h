@@ -13,11 +13,11 @@ namespace gpu
         /**
          * From: http://www.bealto.com/gpu-sorting_intro.html
          */
-        template<typename T, size_t count>
-        class ParallelSelectionSortLocal : public GPUAlgorithm<T, count>, public SortAlgorithm
+        template<typename T>
+        class ParallelSelectionSortLocal : public GPUAlgorithm<T>, public SortAlgorithm
         {
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "Parallel selection local (Bealto)";
                 }
@@ -33,16 +33,16 @@ namespace gpu
                     kernel = program->createKernel("ParallelSelectionSortLocal");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * count);
+                    in = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * size);
                     queue->enqueueWrite(in, data);
-                    out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    out = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
-                    size_t globalWorkSizes[1] = { count };
+                    size_t globalWorkSizes[1] = { size };
                     size_t localWorkSizes[1] = { workGroupSize };
 
                     kernel->setArg(0, in);
@@ -51,7 +51,7 @@ namespace gpu
                     queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(out, result);
                 }

@@ -17,12 +17,12 @@ namespace gpu
         /**
          * From: http://www.bealto.com/gpu-sorting_intro.html
          */
-        template<typename T, size_t count>
-        class ParallelBitonicSortC : public GPUAlgorithm<T, count>, public SortAlgorithm
+        template<typename T>
+        class ParallelBitonicSortC : public GPUAlgorithm<T>, public SortAlgorithm
         {
 
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "Parallel bitonic C (Bealto)";
                 }
@@ -42,17 +42,17 @@ namespace gpu
                     kernelC4 = program->createKernel("ParallelBitonicSortC4");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * count);
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
                     queue->enqueueWrite(buffer, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
                     //int mLastN = -1;
 
-                    for (size_t length=1; length<count; length<<=1)
+                    for (size_t length=1; length<size; length<<=1)
                     {
                         int inc = length;
                         std::list<int> strategy; // vector defining the sequence of reductions
@@ -99,27 +99,27 @@ namespace gpu
                                     kernel = kernelC4;
                                     ninc = -1; // reduce all bits
                                     doLocal = 4;
-                                    nThreads = count >> 2;
+                                    nThreads = size >> 2;
                                     break;
                                 case 4:
                                     kernel = kernel16;
                                     ninc = 4;
-                                    nThreads = count >> ninc;
+                                    nThreads = size >> ninc;
                                     break;
                                 case 3:
                                     kernel = kernel8;
                                     ninc = 3;
-                                    nThreads = count >> ninc;
+                                    nThreads = size >> ninc;
                                     break;
                                 case 2:
                                     kernel = kernel4;
                                     ninc = 2;
-                                    nThreads = count >> ninc;
+                                    nThreads = size >> ninc;
                                     break;
                                 case 1:
                                     kernel = kernel2;
                                     ninc = 1;
-                                    nThreads = count >> ninc;
+                                    nThreads = size >> ninc;
                                     break;
                                 default:
                                     printf("Strategy error!\n");
@@ -145,7 +145,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(buffer, result);
                 }

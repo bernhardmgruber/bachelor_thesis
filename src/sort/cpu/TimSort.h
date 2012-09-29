@@ -13,11 +13,11 @@ namespace cpu
     /**
      * Timsort implementation from https://github.com/swenson/sort
      */
-    template<typename T, size_t count>
-    class TimSort : public CPUAlgorithm<T, count>, public SortAlgorithm
+    template<typename T>
+    class TimSort : public CPUAlgorithm<T>, public SortAlgorithm
     {
         public:
-            string getName() override
+            const string getName() override
             {
                 return "Timsort";
             }
@@ -27,9 +27,9 @@ namespace cpu
                 return true;
             }
 
-            void run(T* data, T* result) override
+            void run(T* data, T* result, size_t size) override
             {
-                timsort(data, data + count, [](const T& a, const T& b) { return a < b; });
+                timsort(data, data + size, [](const T& a, const T& b) { return a < b; });
             }
 
             virtual ~TimSort() {}

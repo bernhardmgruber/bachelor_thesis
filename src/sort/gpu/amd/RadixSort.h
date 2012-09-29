@@ -107,11 +107,11 @@ namespace gpu
         /**
          * From:
          */
-        template<typename T, size_t count>
-        class RadixSort : public GPUAlgorithm<T, count>, public SortAlgorithm
+        template<typename T>
+        class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
         {
             public:
-                string getName() override
+                const string getName() override
                 {
                     return "Radix sort (AMD)";
                 }
@@ -123,8 +123,16 @@ namespace gpu
 
                 void init(Context* context) override
                 {
+                    program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
+
+                    histogramKernel = program->createKernel("histogram");
+                    permuteKernel = program->createKernel("permute");
+                }
+
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                {
                     //elementCount = sampleCommon->roundToPowerOf2<cl_uint>(elementCount);
-                    elementCount = count;
+                    elementCount = size;
 
                     groupSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
@@ -145,11 +153,6 @@ namespace gpu
                     size_t tempSize = numGroups * groupSize * RADICES * sizeof(T);
                     histogramBins = new T[tempSize]();
 
-                    program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
-
-                    histogramKernel = program->createKernel("histogram");
-                    permuteKernel = program->createKernel("permute");
-
                     // Output for histogram kernel
                     unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, elementCount * sizeof(T));
                     histogramBinsBuf = context->createBuffer(CL_MEM_WRITE_ONLY, tempSize);
@@ -159,20 +162,17 @@ namespace gpu
 
                     // Final output
                     sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, elementCount * sizeof(cl_uint));
-                }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data) override
-                {
                     // Allocate and init memory used by host
                     unsortedData = new T[elementCount];
-                    memcpy(unsortedData, data, count * sizeof(T));
+                    memcpy(unsortedData, data, size * sizeof(T));
 
                     //bfKey = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) * count, SortingAlgorithm<T, count>::data);
 
                     //queue->finish();
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize) override
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
                     for(size_t bits = 0; bits < sizeof(T) * RADIX; bits += RADIX)
                     {
@@ -417,9 +417,9 @@ namespace gpu
                     //status = sampleCommon->waitForEventAndRelease(&readEvt);
                 }
 
-                void download(CommandQueue* queue, T* result) override
+                void download(CommandQueue* queue, T* result, size_t size) override
                 {
-                    memcpy(result, dSortedData, count * sizeof(T));
+                    memcpy(result, dSortedData, size * sizeof(T));
                     //queue->finish();
                 }
 

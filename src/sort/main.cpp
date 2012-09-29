@@ -2,7 +2,7 @@
 #include <fstream>
 
 #include "../common/Runner.h"
-#include "SortVerifier.h"
+#include "SortPlugin.h"
 
 #include "cpu/Quicksort.h"
 #include "cpu/QSort.h"
@@ -31,39 +31,43 @@ using namespace std;
 
 int main()
 {
-    const size_t size = 1024 * 1024 * 1;
-
     try
     {
-        Runner<int, size, SortVerifier> runner;
+        Runner<int, SortPlugin> runner;
 
-        runner.printCLInfo();
+        //runner.printCLInfo();
 
-        //runner.run<cpu::Quicksort>();
-        //runner.run<cpu::QSort>();
-        //runner.run<cpu::STLSort>();
-        //runner.run<cpu::TimSort>();
-        runner.run<cpu::amd::RadixSort>();
+        size_t range[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 5000000, 10000000, 25000000, 50000000, 75000000, 100000000 };
+        size_t length = sizeof(range) / sizeof(size_t);
 
-        //runner.runCLGPU<gpu::bealto::ParallelSelectionSort>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelSelectionSortLocal>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelSelectionSortBlocks>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortLocal>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortLocalOptim>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortA>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB2>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB4>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB8>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelBitonicSortB16>(true);
-        runner.runCLGPU<gpu::bealto::ParallelBitonicSortC>(true);
-        //runner.runCLGPU<gpu::bealto::ParallelMergeSort>(true);
+        runner.printRange<cpu::Quicksort>(RunType::CPU, range, length);
+        runner.printRange<cpu::QSort>(RunType::CPU, range, length);
+        runner.printRange<cpu::STLSort>(RunType::CPU, range, length);
+        runner.printRange<cpu::TimSort>(RunType::CPU, range, length);
+        runner.printRange<cpu::amd::RadixSort>(RunType::CPU, range, length);
 
-        //runner.runCLGPU<gpu::clpp::RadixSort>(true); // not working
+        //runner.printOnce<gpu::bealto::ParallelSelectionSort>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelSelectionSortLocal>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelSelectionSortBlocks>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelBitonicSortLocal>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelBitonicSortLocalOptim>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelBitonicSortA>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelBitonicSortB2>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelBitonicSortB4>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelBitonicSortB8>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelBitonicSortB16>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelBitonicSortC>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::bealto::ParallelMergeSort>(RunType::CL_GPU, size, true);
 
-        //runner.runCLGPU<gpu::libcl::RadixSort>(true); // not working
+        //runner.printOnce<gpu::clpp::RadixSort>(RunType::CL_GPU, size, true); // not working
 
-        //runner.runCLGPU<gpu::amd::BitonicSort>(true);
-        //runner.runCLGPU<gpu::amd::RadixSort>(true);
+        //runner.printOnce<gpu::libcl::RadixSort>(RunType::CL_GPU, size, true); // not working
+
+        //runner.printOnce<gpu::amd::BitonicSort>(RunType::CL_GPU, size, true);
+        //runner.printOnce<gpu::amd::RadixSort>(RunType::CL_GPU, size, true);
+
+        runner.writeStats("stats.csv");
+        runner.writeGPUDeviceInfo("gpuinfo.csv");
     }
     catch(OpenCLException& e)
     {
