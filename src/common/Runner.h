@@ -401,7 +401,7 @@ class Runner
             run->runTime = timer.stop();
 
             // verfiy result
-            run->verificationResult = plugin->verifyResult((typename Plugin<T>::AlgorithmType*)alg, data, result, size);
+            run->verificationResult = plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size);
 
             // cleanup
             plugin->freeInput(data);
@@ -504,7 +504,7 @@ class Runner
                 run.downloadTime = timer.stop();
 
                 // verify
-                run.verificationResult = plugin->verifyResult((typename Plugin<T>::AlgorithmType*)alg, data, result, size);
+                run.verificationResult = plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size);
             }
             catch(OpenCLException& e)
             {

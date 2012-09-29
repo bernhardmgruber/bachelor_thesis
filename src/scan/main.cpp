@@ -22,7 +22,7 @@ int main()
     {
         Runner<int, ScanPlugin> runner;
 
-        runner.printCLInfo();
+        //runner.printCLInfo();
 
         runner.printOnce<cpu::Scan>(RunType::CPU, size);
 
@@ -31,6 +31,9 @@ int main()
         runner.printOnce<gpu::gpugems::WorkEfficientScan>(RunType::CL_GPU, size, false);
         runner.printOnce<gpu::gpugems::LocalScan>(RunType::CL_GPU, size, false);
         runner.printOnce<gpu::apple::Scan>(RunType::CL_GPU, size, false);
+
+        runner.writeStats("stats.csv");
+        runner.writeGPUDeviceInfo("gpuinfo.csv");
     }
     catch(OpenCLException& e)
     {
