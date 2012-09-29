@@ -14,6 +14,7 @@
 #ifndef _oclObject
 #define _oclObject
 
+#define CL_USE_DEPRECATED_OPENCL_1_1_APIS
 #include <CL/cl.h>
 #include <CL/cl_gl.h>
 
@@ -55,12 +56,12 @@ class oclObject
 //
 //
 
-template <class TYPE> TYPE oclObject::getData() 
+template <class TYPE> TYPE oclObject::getData()
 {
     return (TYPE)mData;
 }
 
-template <class TYPE> TYPE* oclObject::getOwner() 
+template <class TYPE> TYPE* oclObject::getOwner()
 {
     return (TYPE*)mOwner;
 }
