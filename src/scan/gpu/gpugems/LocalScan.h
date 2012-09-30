@@ -117,13 +117,13 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(buffer, result, 0, size * sizeof(T));
+                    delete buffer;
                 }
 
                 void cleanup() override
                 {
                     delete kernel;
                     delete addKernel;
-                    delete buffer;
                 }
 
                 virtual ~LocalScan() {}

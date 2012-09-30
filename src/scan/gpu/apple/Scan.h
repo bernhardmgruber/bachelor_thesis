@@ -425,6 +425,8 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(output, result);
+                    delete input;
+                    delete output;
                 }
 
                 void cleanup() override
@@ -433,8 +435,6 @@ namespace gpu
                     for(size_t  i = 0; i < KernelCount; i++)
                         delete kernels[i];
                     delete[] kernels;
-                    delete input;
-                    delete output;
                 }
 
                 virtual ~Scan() {}

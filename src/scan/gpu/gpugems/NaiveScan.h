@@ -63,13 +63,13 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(source, result, 0, size * sizeof(T));
+                    delete source;
+                    delete destination;
                 }
 
                 void cleanup() override
                 {
                     delete kernel;
-                    delete source;
-                    delete destination;
                 }
 
                 virtual ~NaiveScan() {}

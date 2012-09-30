@@ -84,6 +84,7 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(buffer, result, 0, size * sizeof(T));
+                    delete buffer;
                 }
 
                 void cleanup() override
@@ -91,7 +92,6 @@ namespace gpu
                     delete upSweepKernel;
                     delete downSweepKernel;
                     delete setLastZeroKernel;
-                    delete buffer;
                 }
 
                 virtual ~WorkEfficientScan() {}

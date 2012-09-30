@@ -281,10 +281,6 @@ class Runner
             }
             else
             {
-                if(runType == RunType::CL_CPU)
-                    if(!hasCLCPU())
-                        throw OpenCLException("No CPU context initialized!");
-
                 // print results
                 cout << "###############################################################################" << endl;
                 cout << "# " << r->algorithmName << endl;
@@ -299,13 +295,13 @@ class Runner
 
                     for(auto r : batch->runs)
                         if(r.exceptionOccured)
-                            cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
+                            cout << "#  " << (runType == RunType::CL_CPU ? "C" : "G") << "PU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
                         else
-                            cout << "#  GPU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTime << "s " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+                            cout << "#  " << (runType == RunType::CL_CPU ? "C" : "G") << "PU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTime << "s " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
 
                     cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << batch->avgDownloadTime << "s" << endl;
                     cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << batch->cleanupTime << "s" << endl;
-                    cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << "s " << "(WG size: " << batch->fastest->wgSize << ") " << endl;
+                    cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << "s " << "(WG: " << batch->fastest->wgSize << ") " << endl;
                 }
 
                 cout << "###############################################################################" << endl;
@@ -364,6 +360,8 @@ class Runner
                         s = run(alg, range[i]);
                         break;
                     case CL_CPU:
+                        if(!hasCLCPU())
+                            throw OpenCLException("No CPU context initialized!");
                         s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, range[i]);
                         break;
                     case CL_GPU:
