@@ -93,14 +93,15 @@ namespace gpu
 
                     bfVal->unmap();
                     //bfKey.unmap();
+
+                    delete bfKey;
+                    delete bfVal;
                 }
 
                 void cleanup() override
                 {
                     delete program;
                     delete ctx;
-                    delete bfKey;
-                    delete bfVal;
                 }
 
                 virtual ~RadixSort() {}

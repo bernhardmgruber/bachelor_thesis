@@ -161,12 +161,12 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(in, result);
+                    delete in;
                 }
 
                 void cleanup() override
                 {
                     delete program;
-                    delete in;
                     delete kernel;
                 }
 

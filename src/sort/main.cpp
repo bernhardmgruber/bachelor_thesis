@@ -37,34 +37,35 @@ int main()
 
         //runner.printCLInfo();
 
-        size_t range[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 5000000, 10000000, 25000000, 50000000, 75000000, 100000000 };
+        //size_t range[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 5000000, 10000000, 25000000, 50000000, 75000000, 100000000 };
+        size_t range[] = { 1024 * 256 };
         size_t length = sizeof(range) / sizeof(size_t);
 
-        runner.printRange<cpu::Quicksort>(RunType::CPU, range, length);
-        runner.printRange<cpu::QSort>(RunType::CPU, range, length);
-        runner.printRange<cpu::STLSort>(RunType::CPU, range, length);
-        runner.printRange<cpu::TimSort>(RunType::CPU, range, length);
-        runner.printRange<cpu::amd::RadixSort>(RunType::CPU, range, length);
+        //runner.printRange<cpu::Quicksort>(RunType::CPU, range, length);
+        //runner.printRange<cpu::QSort>(RunType::CPU, range, length);
+        //runner.printRange<cpu::STLSort>(RunType::CPU, range, length);
+        //runner.printRange<cpu::TimSort>(RunType::CPU, range, length);
+        //runner.printRange<cpu::amd::RadixSort>(RunType::CPU, range, length);
 
-        //runner.printOnce<gpu::bealto::ParallelSelectionSort>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelSelectionSortLocal>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelSelectionSortBlocks>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelBitonicSortLocal>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelBitonicSortLocalOptim>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelBitonicSortA>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelBitonicSortB2>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelBitonicSortB4>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelBitonicSortB8>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelBitonicSortB16>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelBitonicSortC>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::bealto::ParallelMergeSort>(RunType::CL_GPU, size, true);
+        /*runner.printRange<gpu::bealto::ParallelSelectionSort>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelSelectionSortLocal>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelSelectionSortBlocks>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelBitonicSortLocal>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelBitonicSortLocalOptim>(RunType::CL_GPU, range, length, true);*/
+        runner.printRange<gpu::bealto::ParallelBitonicSortA>(RunType::CL_GPU, range, length, false);
+        /*runner.printRange<gpu::bealto::ParallelBitonicSortB2>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelBitonicSortB4>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelBitonicSortB8>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelBitonicSortB16>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelBitonicSortC>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::bealto::ParallelMergeSort>(RunType::CL_GPU, range, length, true);
 
-        //runner.printOnce<gpu::clpp::RadixSort>(RunType::CL_GPU, size, true); // not working
+        //runner.printRange<gpu::clpp::RadixSort>(RunType::CL_GPU, range, length, true); // not working
 
-        //runner.printOnce<gpu::libcl::RadixSort>(RunType::CL_GPU, size, true); // not working
+        //runner.printRange<gpu::libcl::RadixSort>(RunType::CL_GPU, range, length, true); // not working
 
-        //runner.printOnce<gpu::amd::BitonicSort>(RunType::CL_GPU, size, true);
-        //runner.printOnce<gpu::amd::RadixSort>(RunType::CL_GPU, size, true);
+        runner.printRange<gpu::amd::BitonicSort>(RunType::CL_GPU, range, length, true);
+        runner.printRange<gpu::amd::RadixSort>(RunType::CL_GPU, range, length, true);*/
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");

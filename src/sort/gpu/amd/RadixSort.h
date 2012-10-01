@@ -420,7 +420,10 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     memcpy(result, dSortedData, size * sizeof(T));
-                    //queue->finish();
+                    delete unsortedDataBuf;
+                    delete histogramBinsBuf;
+                    delete scanedHistogramBinsBuf;
+                    delete sortedDataBuf;
                 }
 
                 void cleanup() override
@@ -433,10 +436,6 @@ namespace gpu
                     delete program;
                     delete histogramKernel;
                     delete permuteKernel;
-                    delete unsortedDataBuf;
-                    delete histogramBinsBuf;
-                    delete scanedHistogramBinsBuf;
-                    delete sortedDataBuf;
                 }
 
                 virtual ~RadixSort() {}
