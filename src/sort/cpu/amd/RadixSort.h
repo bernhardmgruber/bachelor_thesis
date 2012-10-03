@@ -124,7 +124,6 @@ namespace cpu
                 {
                     T* histogram = new T[RADICES];
                     T* tempData = new T[size];
-                    T* hSortedData = result;
 
                     memcpy(tempData, data, size * sizeof(T));
                     for(size_t bits = 0; bits < sizeof(T) * RADIX ; bits += RADIX)
@@ -140,7 +139,7 @@ namespace cpu
                             histogram[value]++;
                         }
 
-                        // Prescan the histogram bucket
+                        // Prescan the histogram bucket (exclusive scan)
                         T sum = 0;
                         for(size_t i = 0; i < RADICES; ++i)
                         {
@@ -155,13 +154,13 @@ namespace cpu
                             T element = tempData[i];
                             T value = (element >> bits) & RADIX_MASK;
                             T index = histogram[value];
-                            hSortedData[index] = tempData[i];
+                            result[index] = tempData[i];
                             histogram[value] = index + 1;
                         }
 
                         // Copy to tempData for further use
                         if(bits != RADIX * 3)
-                            memcpy(tempData, hSortedData, size * sizeof(T));
+                            memcpy(tempData, result, size * sizeof(T));
                     }
 
                     delete[] tempData;
