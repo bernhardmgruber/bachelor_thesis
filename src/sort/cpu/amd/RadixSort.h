@@ -96,10 +96,6 @@ jurisdiction and venue of these courts.
 
 using namespace std;
 
-#define RADIX 4
-#define RADICES (1 << RADIX)
-#define RADIX_MASK (RADICES - 1)
-
 #include "../../../common/CPUAlgorithm.h"
 
 namespace cpu
@@ -109,6 +105,10 @@ namespace cpu
         template<typename T>
         class RadixSort : public CPUAlgorithm<T>, public SortAlgorithm
         {
+            static const unsigned int RADIX = 4;
+            static const unsigned int RADICES = (1 << RADIX);
+            static const unsigned int RADIX_MASK = (RADICES - 1);
+
             public:
                 const string getName() override
                 {

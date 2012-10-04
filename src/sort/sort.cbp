@@ -91,6 +91,8 @@
 		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.cl" />
 		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.h" />
 		<Unit filename="gpu\clpp\RadixSort.h" />
+		<Unit filename="gpu\dixxi\RadixSort.cl" />
+		<Unit filename="gpu\dixxi\RadixSort.h" />
 		<Unit filename="gpu\libCL\RadixSort.cl" />
 		<Unit filename="gpu\libCL\RadixSort.h" />
 		<Unit filename="main.cpp" />

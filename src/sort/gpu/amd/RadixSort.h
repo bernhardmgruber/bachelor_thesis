@@ -92,9 +92,6 @@ jurisdiction and venue of these courts.
 #ifndef AMDRADIXSORT_H
 #define AMDRADIXSORT_H
 
-#define RADIX 4
-#define RADICES (1 << RADIX)
-
 #include "../../../common/GPUAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
@@ -110,6 +107,9 @@ namespace gpu
         template<typename T>
         class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
         {
+            const unsigned int RADIX = 4;
+            const unsigned int RADICES = (1 << RADIX);
+
             public:
                 const string getName() override
                 {
