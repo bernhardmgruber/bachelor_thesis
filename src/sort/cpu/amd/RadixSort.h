@@ -122,7 +122,7 @@ namespace cpu
 
                 void run(T* data, T* result, size_t size) override
                 {
-                    T* histogram = new T[RADICES];
+                    unsigned int* histogram = new unsigned int[RADICES];
                     T* tempData = new T[size];
 
                     memcpy(tempData, data, size * sizeof(T));
@@ -153,7 +153,7 @@ namespace cpu
                         {
                             T element = tempData[i];
                             T value = (element >> bits) & RADIX_MASK;
-                            T index = histogram[value];
+                            unsigned int index = histogram[value];
                             result[index] = tempData[i];
                             histogram[value] = index + 1;
                         }
