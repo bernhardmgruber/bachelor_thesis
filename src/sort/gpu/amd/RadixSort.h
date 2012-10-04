@@ -105,7 +105,7 @@ namespace gpu
     namespace amd
     {
         /**
-         * From:
+         * From: AMD
          */
         template<typename T>
         class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
@@ -131,45 +131,36 @@ namespace gpu
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    //elementCount = sampleCommon->roundToPowerOf2<cl_uint>(elementCount);
-                    elementCount = size;
-
-                    groupSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
-
                     //element count must be multiple of GROUP_SIZE * RADICES
-                    size_t mulFactor = groupSize * RADICES;
+                    size_t mulFactor = workGroupSize * RADICES;
 
-                    if(elementCount < mulFactor)
-                        elementCount = mulFactor;
+                    if(size < mulFactor)
+                        size = mulFactor;
                     else
-                        elementCount = (elementCount / mulFactor) * mulFactor;
+                        size = (size / mulFactor) * mulFactor;
 
-                    numGroups = elementCount / mulFactor;
+                    numGroups = size / mulFactor;
 
-                    dSortedData = new T[elementCount]();
+                    dSortedData = new T[size]();
 
-                    hSortedData = new T[elementCount]();
+                    hSortedData = new T[size]();
 
-                    size_t tempSize = numGroups * groupSize * RADICES * sizeof(T);
+                    size_t tempSize = numGroups * workGroupSize * RADICES * sizeof(T);
                     histogramBins = new T[tempSize]();
 
                     // Output for histogram kernel
-                    unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, elementCount * sizeof(T));
+                    unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, size * sizeof(T));
                     histogramBinsBuf = context->createBuffer(CL_MEM_WRITE_ONLY, tempSize);
 
                     // Input for permute kernel
                     scanedHistogramBinsBuf = context->createBuffer(CL_MEM_READ_ONLY, tempSize);
 
                     // Final output
-                    sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, elementCount * sizeof(cl_uint));
+                    sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, size * sizeof(cl_uint));
 
                     // Allocate and init memory used by host
-                    unsortedData = new T[elementCount];
+                    unsortedData = new T[size];
                     memcpy(unsortedData, data, size * sizeof(T));
-
-                    //bfKey = context->createBuffer(CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) * count, SortingAlgorithm<T, count>::data);
-
-                    //queue->finish();
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
@@ -177,7 +168,7 @@ namespace gpu
                     for(size_t bits = 0; bits < sizeof(T) * RADIX; bits += RADIX)
                     {
                         // Calculate thread-histograms
-                        runHistogramKernel(queue, bits, groupSize);
+                        runHistogramKernel(queue, bits, workGroupSize, size);
 
                         // Scan the histogram
                         int sum = 0;
@@ -185,9 +176,9 @@ namespace gpu
                         {
                             for(size_t j = 0; j < numGroups; ++j)
                             {
-                                for(size_t k = 0; k < groupSize; ++k)
+                                for(size_t k = 0; k < workGroupSize; ++k)
                                 {
-                                    int index = j * groupSize * RADICES + k * RADICES + i;
+                                    int index = j * workGroupSize * RADICES + k * RADICES + i;
                                     int value = histogramBins[index];
                                     histogramBins[index] = sum;
                                     sum += value;
@@ -196,225 +187,49 @@ namespace gpu
                         }
 
                         // Permute the element to appropriate place
-                        runPermuteKernel(queue, bits, groupSize);
+                        runPermuteKernel(queue, bits, workGroupSize, size);
 
                         // Current output now becomes the next input
-                        memcpy(unsortedData, dSortedData, elementCount * sizeof(cl_uint));
+                        memcpy(unsortedData, dSortedData, size * sizeof(cl_uint));
                     }
                 }
 
-                void runHistogramKernel(CommandQueue* queue, int bits, size_t groupSize)
+                void runHistogramKernel(CommandQueue* queue, int bits, size_t workGroupSize, size_t size)
                 {
-                    //cl_int status;
-                    //cl_int eventStatus = CL_QUEUED;
-                    //cl_event ndrEvt;
-
-                    /*if(localThreads > deviceInfo.maxWorkItemSizes[0] ||
-                            localThreads > deviceInfo.maxWorkGroupSize)
-                    {
-                        std::cout << "Unsupported: Device does not"
-                                  "support requested number of work items.";
-                        return SDK_FAILURE;
-                    }*/
-
-                    // Enqueue write from unSortedData to unSortedDataBuf
-                    /*cl_event writeEvt;
-                    clEnqueueWriteBuffer(commandQueue, unsortedDataBuf, CL_FALSE, 0, sizeof(cl_uint) * elementCount, unsortedData, 0, NULL, &writeEvt);
-                    clFlush(commandQueue);
-                    clWaitForEvents(1, &writeEvt);
-                    clReleaseEvent(writeEvt);*/
-
                     queue->enqueueWrite(unsortedDataBuf, unsortedData);
 
-
-                    // Setup kernel arguments
-                    /*status = clSetKernelArg(histogramKernel,
-                                            0,
-                                            sizeof(cl_mem),
-                                            (void *)&unsortedDataBuf);
-
-                    status = clSetKernelArg(histogramKernel,
-                                            1,
-                                            sizeof(cl_mem),
-                                            (void *)&histogramBinsBuf);
-
-                    status = clSetKernelArg(histogramKernel,
-                                            2,
-                                            sizeof(cl_int),
-                                            (void *)&bits);
-
-                    status = clSetKernelArg(histogramKernel,
-                                            3,
-                                            (groupSize * RADICES * sizeof(cl_ushort)),
-                                            NULL);*/
-                    size_t localSize = (groupSize * RADICES * sizeof(cl_ushort));
+                    size_t localSize = (workGroupSize * RADICES * sizeof(cl_ushort));
 
                     histogramKernel->setArg(0, unsortedDataBuf);
                     histogramKernel->setArg(1, histogramBinsBuf);
                     histogramKernel->setArg(2, bits);
                     histogramKernel->setArg(3, localSize, nullptr);
 
-                    /*
-                    if(kernelInfoHistogram.localMemoryUsed > deviceInfo.localMemSize)
-                    {
-                        std::cout << "Unsupported: Insufficient"
-                                  "local memory on device." << std::endl;
-                        return SDK_FAILURE;
-                    }*/
-
-                    /*
-                    * Enqueue a kernel run call.
-                    */
-                    size_t globalThreads[] = { elementCount / RADICES };
-                    size_t localThreads[] = { groupSize };
+                    size_t globalThreads[] = { size / RADICES };
+                    size_t localThreads[] = { workGroupSize };
 
                     queue->enqueueKernel(histogramKernel, 1, globalThreads, localThreads);
-                    /*status = clEnqueueNDRangeKernel(
-                                  commandQueue,
-                                  histogramKernel,
-                                  1,
-                                  NULL,
-                                  &globalThreads,
-                                  &localThreads,
-                                  0,
-                                  NULL,
-                                  &ndrEvt);*/
-
-                    //status = clFlush(commandQueue);
-
-                    //status = sampleCommon->waitForEventAndRelease(&ndrEvt);
                     queue->enqueueBarrier();
 
-                    // Enqueue the results to application pointer
-                    /*cl_event readEvt;
-                    status = clEnqueueReadBuffer(
-                                 commandQueue,
-                                 histogramBinsBuf,
-                                 CL_FALSE,
-                                 0,
-                                 numGroups * groupSize * RADICES * sizeof(cl_uint),
-                                 histogramBins,
-                                 0,
-                                 NULL,
-                                 &readEvt);*/
                     queue->enqueueRead(histogramBinsBuf, histogramBins);
-
-                    //status = clFlush(commandQueue);
-
-                    //status = sampleCommon->waitForEventAndRelease(&readEvt);
-                    queue->enqueueBarrier();
                 }
 
-                void runPermuteKernel(CommandQueue* queue, int bits, size_t groupSize)
+                void runPermuteKernel(CommandQueue* queue, int bits, size_t workGroupSize, size_t size)
                 {
-                    //cl_int status;
-                    //cl_int eventStatus = CL_QUEUED;
-                    //cl_event ndrEvt;
-
-                    //size_t bufferSize = numGroups * groupSize * RADICES * sizeof(cl_uint);
-
-                    // Write the host updated data to histogramBinsBuf
-                    /*cl_event writeEvt;
-                    status = clEnqueueWriteBuffer(commandQueue,
-                                                  scanedHistogramBinsBuf,
-                                                  CL_FALSE,
-                                                  0,
-                                                  bufferSize,
-                                                  histogramBins,
-                                                  0,
-                                                  NULL,
-                                                  &writeEvt);*/
                     queue->enqueueWrite(scanedHistogramBinsBuf, histogramBins);
-
-                    //status = clFlush(commandQueue);
-                    //status = sampleCommon->waitForEventAndRelease(&writeEvt);
                     queue->enqueueBarrier();
 
-                    /*if(localThreads > deviceInfo.maxWorkItemSizes[0] ||
-                            localThreads > deviceInfo.maxWorkGroupSize)
-                    {
-                        std::cout<<"Unsupported: Device does not"
-                                 "support requested number of work items.";
-                        return SDK_FAILURE;
-                    }*/
-
-                    // Whether sort is to be in increasing order. CL_TRUE implies increasing
-                    /*status = clSetKernelArg(permuteKernel,
-                                            0,
-                                            sizeof(cl_mem),
-                                            (void *)&unsortedDataBuf);
-
-                    status = clSetKernelArg(permuteKernel,
-                                            1,
-                                            sizeof(cl_mem),
-                                            (void *)&scanedHistogramBinsBuf);
-
-                    status = clSetKernelArg(permuteKernel,
-                                            2,
-                                            sizeof(cl_int),
-                                            (void *)&bits);
-
-                    status = clSetKernelArg(permuteKernel,
-                                            3,
-                                            (groupSize * RADICES * sizeof(cl_ushort)),
-                                            NULL);
-
-                    status = clSetKernelArg(permuteKernel,
-                                            4,
-                                            sizeof(cl_mem),
-                                            (void *)&sortedDataBuf);*/
                     permuteKernel->setArg(0, unsortedDataBuf);
                     permuteKernel->setArg(1, scanedHistogramBinsBuf);
                     permuteKernel->setArg(2, bits);
-                    permuteKernel->setArg(3, (groupSize * RADICES * sizeof(cl_ushort)), nullptr);
+                    permuteKernel->setArg(3, (workGroupSize * RADICES * sizeof(cl_ushort)), nullptr);
                     permuteKernel->setArg(4, sortedDataBuf);
 
-                    /*if(kernelInfoPermute.localMemoryUsed > deviceInfo.localMemSize)
-                    {
-                        std::cout << "Unsupported: Insufficient"
-                                  "local memory on device." << std::endl;
-                        return SDK_FAILURE;
-                    }*/
-
-                    /*
-                    * Enqueue a kernel run call.
-                    */
-                    /*status = clEnqueueNDRangeKernel(
-                                 commandQueue,
-                                 permuteKernel,
-                                 1,
-                                 NULL,
-                                 &globalThreads,
-                                 &localThreads,
-                                 0,
-                                 NULL,
-                                 &ndrEvt);*/
-
-                    size_t globalThreads[] = { elementCount / RADICES };
-                    size_t localThreads[] = { groupSize };
+                    size_t globalThreads[] = { size / RADICES };
+                    size_t localThreads[] = { workGroupSize };
                     queue->enqueueKernel(permuteKernel, 1, globalThreads, localThreads);
 
-                    //status = clFlush(commandQueue);
-                    //status = sampleCommon->waitForEventAndRelease(&ndrEvt);
-
-                    //queue->enqueueBarrier();
-
-                    // Enqueue the results to application pointe
-                    /*cl_event readEvt;
-                    status = clEnqueueReadBuffer(
-                                 commandQueue,
-                                 sortedDataBuf,
-                                 CL_FALSE,
-                                 0,
-                                 elementCount * sizeof(cl_uint),
-                                 dSortedData,
-                                 0,
-                                 NULL,
-                                 &readEvt);*/
                     queue->enqueueRead(sortedDataBuf, dSortedData);
-
-                    //status = clFlush(commandQueue);
-                    //status = sampleCommon->waitForEventAndRelease(&readEvt);
                 }
 
                 void download(CommandQueue* queue, T* result, size_t size) override
@@ -442,8 +257,6 @@ namespace gpu
 
             private:
                 size_t numGroups;
-                size_t groupSize;
-                size_t elementCount;
 
                 T* unsortedData;
                 T* dSortedData;
