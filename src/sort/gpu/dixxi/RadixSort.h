@@ -43,14 +43,14 @@ namespace gpu
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    src = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
+                    src = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * size);
                     queue->enqueueWrite(src, data);
-                    dest = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
+                    dest = context->createBuffer(CL_MEM_WRITE_ONLY, sizeof(T) * size);
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
-                    for(size_t bits = 0; bits < sizeof(T) * RADIX ; bits += RADIX)
+                    for(size_t bits = 0; bits < sizeof(T) * 8 ; bits += RADIX)
                     {
                         // zero histogram
                         size_t globalWorkSizes[] = { BUCKETS };
@@ -63,6 +63,9 @@ namespace gpu
                         unsigned int* lol = new unsigned int[size];
                         queue->enqueueRead(src, lol);
 
+                        cout << "Src mem" << endl;
+                        printArr(lol, size);
+
                         // calculate histogram
                         globalWorkSizes[0] = size;
                         localWorkSizes[0] = workGroupSize;
@@ -73,14 +76,18 @@ namespace gpu
                         queue->enqueueKernel(histogramKernel, 1, globalWorkSizes, localWorkSizes);
                         queue->enqueueBarrier();
 
-                        //queue->enqueueRead(histogram, lol);
+                        queue->enqueueRead(histogram, lol);
+                        cout << "Histogram" << endl;
+                        printArr(lol, BUCKETS);
 
                         // Scan the histogram (exclusive scan)
                         scanKernel->setArg(0, histogram);
                         queue->enqueueTask(scanKernel);
                         queue->enqueueBarrier();
 
-                        //queue->enqueueRead(histogram, lol);
+                        queue->enqueueRead(histogram, lol);
+                        cout << "Scanned Histogram" << endl;
+                        printArr(lol, BUCKETS);
 
                         // Rearrange the elements based on scaned histogram
                         globalWorkSizes[0] = size;
@@ -92,7 +99,14 @@ namespace gpu
                         queue->enqueueKernel(permuteKernel, 1, globalWorkSizes, localWorkSizes);
                         queue->enqueueBarrier();
 
-                        if(bits != 3 * RADIX)
+                        queue->enqueueRead(src, lol);
+                        cout << "Src after permute" << endl;
+                        printArr(lol, size);
+                        queue->enqueueRead(dest, lol);
+                        cout << "Dest after permute" << endl;
+                        printArr(lol, size);
+
+                        //if(bits != 3 * RADIX)
                             queue->enqueueCopy(dest, src);
                     }
                 }

@@ -181,7 +181,6 @@ void permute(__global const uint* unsortedData,
         uint index = sharedBuckets[localId * RADICES + value];
         sortedData[index] = unsortedData[globalId * RADICES + i];
         sharedBuckets[localId * RADICES + value] = index + 1;
-	barrier(CLK_LOCAL_MEM_FENCE);
-
+        barrier(CLK_LOCAL_MEM_FENCE);
     }
 }

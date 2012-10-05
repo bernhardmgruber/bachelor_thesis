@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <string>
 #include <typeinfo>
+#include <iterator>
+#include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -39,6 +42,13 @@ string getTypeName()
     if(typeid(T) == typeid(double))
         return "double";
     return "unknown";
+}
+
+template <typename T>
+void printArr(T* arr, size_t size)
+{
+    copy(arr, arr + size, ostream_iterator<T>(cout, ","));
+    cout << endl;
 }
 
 #endif // UTILS_H

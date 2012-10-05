@@ -34,12 +34,12 @@ int main()
 {
     try
     {
-        Runner<int, SortPlugin> runner;
+        Runner<int, SortPlugin> runner(false);
 
         //runner.printCLInfo();
 
         //size_t range[] = {1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24 };
-        size_t range[] = { 1<<10 };
+        size_t range[] = { 256 };
         size_t length = sizeof(range) / sizeof(size_t);
 
         //runner.printRange<cpu::Quicksort>(RunType::CPU, range, length);

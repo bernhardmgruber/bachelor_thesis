@@ -1,6 +1,10 @@
 
 #define RADIX_MASK (BUCKETS - 1)
 
+#pragma OPENCL EXTENSION cl_khr_local_int32_base_atomics : enable
+#pragma OPENCL EXTENSION cl_khr_global_int32_base_atomics : enable
+
+
 __kernel void ZeroHistogram(__global uint* histogram)
 {
     histogram[get_global_id(0)] = 0;

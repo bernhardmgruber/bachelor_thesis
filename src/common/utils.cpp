@@ -22,7 +22,7 @@ size_t pow2roundup(size_t x)
 
 size_t roundToMultiple(size_t x, size_t multiple)
 {
-    div_t result = div(x, multiple);
+    ldiv_t result = div((long)x, (long)multiple);
 
     if(result.rem == 0)
         return x;
