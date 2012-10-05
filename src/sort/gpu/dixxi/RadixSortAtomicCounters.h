@@ -1,5 +1,5 @@
-#ifndef GPUDIXXIRADIXSORT_H
-#define GPUDIXXIRADIXSORT_H
+#ifndef GPUDIXXIRADIXSORTATOMICCOUNTERS_H
+#define GPUDIXXIRADIXSORTATOMICCOUNTERS_H
 
 #include "../../../common/GPUAlgorithm.h"
 #include "../../SortAlgorithm.h"
@@ -9,15 +9,15 @@ namespace gpu
     namespace dixxi
     {
         template<typename T>
-        class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
+        class RadixSortAtomicCounters : public GPUAlgorithm<T>, public SortAlgorithm
         {
             public:
-                static const size_t RADIX = 4;
-                static const size_t BUCKETS = 1<<RADIX;
+                const static size_t RADIX = 3; // there must be at least 8 counters available
+                const static size_t BUCKETS = 1<<RADIX;
 
                 const string getName() override
                 {
-                    return "Radixsort (dixxi)";
+                    return "Radixsort Atomic Counters (dixxi)";
                 }
 
                 bool isInPlace() override
@@ -27,11 +27,9 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    cout << context->getInfo<cl_uint>(CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT) << endl;
-
                     stringstream ss;
                     ss << "-D T=" << getTypeName<T>() << " -D BUCKETS=" << BUCKETS;
-                    Program* program = context->createProgram("gpu/dixxi/RadixSort.cl", ss.str());
+                    Program* program = context->createProgram("gpu/dixxi/RadixSortAtomicCounters.cl", ss.str());
 
                     histogramKernel = program->createKernel("Histogram");
                     scanKernel = program->createKernel("Scan");
@@ -40,7 +38,10 @@ namespace gpu
 
                     delete program;
 
-                    histogram = context->createBuffer(CL_MEM_READ_WRITE, sizeof(cl_uint) * BUCKETS);
+                    histograms = new Buffer*[BUCKETS];
+                    for(size_t i = 0; i < BUCKETS; i++)
+                        histograms[i] = context->createBuffer(CL_MEM_READ_WRITE, sizeof(cl_uint));
+                    histogram = context->createBuffer(CL_MEM_READ_WRITE, BUCKETS * sizeof(cl_uint));
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
@@ -82,7 +83,7 @@ namespace gpu
                         cout << "Histogram" << endl;
                         printArr(lol, BUCKETS);
 
-                        // Scan the histogram (exclusive scan)
+                        // scan the histogram (exclusive scan)
                         scanKernel->setArg(0, histogram);
                         queue->enqueueTask(scanKernel);
                         queue->enqueueBarrier();
@@ -91,13 +92,18 @@ namespace gpu
                         cout << "Scanned Histogram" << endl;
                         printArr(lol, BUCKETS);
 
-                        // Rearrange the elements based on scaned histogram
+                        // copy histogram into counters
+                        for(size_t i = 0; i < BUCKETS; i++)
+                            queue->enqueueCopy(histogram, histograms[i], i * sizeof(cl_uint), 0, sizeof(cl_uint));
+
+                        // rearrange the elements based on scaned histogram
                         globalWorkSizes[0] = size;
                         localWorkSizes[0] = workGroupSize;
                         permuteKernel->setArg(0, src);
                         permuteKernel->setArg(1, dest);
-                        permuteKernel->setArg(2, histogram);
-                        permuteKernel->setArg(3, bits);
+                        permuteKernel->setArg(2, bits);
+                        for(size_t i = 0; i < BUCKETS; i++)
+                            permuteKernel->setArg(3 + i, histograms[i]);
                         queue->enqueueKernel(permuteKernel, 1, globalWorkSizes, localWorkSizes);
                         queue->enqueueBarrier();
 
@@ -124,10 +130,12 @@ namespace gpu
                     delete scanKernel;
                     delete permuteKernel;
                     delete zeroHistogramKernel;
-                    delete histogram;
+                    for(size_t i = 0; i < BUCKETS; i++)
+                        delete histograms[i];
+                    delete[] histograms;
                 }
 
-                virtual ~RadixSort() {}
+                virtual ~RadixSortAtomicCounters() {}
 
             private:
                 Kernel* histogramKernel;
@@ -137,8 +145,9 @@ namespace gpu
                 Buffer* src;
                 Buffer* dest;
                 Buffer* histogram;
+                Buffer** histograms;
         };
     }
 }
 
-#endif // GPUDIXXIRADIXSORT_H
+#endif // GPUDIXXIRADIXSORTATOMICCOUNTERS_H

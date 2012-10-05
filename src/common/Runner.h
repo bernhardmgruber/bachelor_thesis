@@ -746,6 +746,8 @@ class Runner
             os << "CL_DEVICE_VERSION" << sep << context->getInfo<string>(CL_DEVICE_VERSION) << endl;
             os << "CL_DRIVER_VERSION" << sep << context->getInfo<string>(CL_DRIVER_VERSION) << endl;
 
+            //os << "CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT" << sep << context->getInfo<cl_uint>(CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT) << endl;
+
             os.close();
 
             cout << "DONE" << endl;
