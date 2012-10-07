@@ -96,6 +96,15 @@ namespace gpu
                         for(size_t i = 0; i < BUCKETS; i++)
                             queue->enqueueCopy(histogram, histograms[i], i * sizeof(cl_uint), 0, sizeof(cl_uint));
 
+                        cout << "Histogram before permute" << endl;
+                        cl_uint h;
+                        for(size_t i = 0; i < BUCKETS; i++)
+                        {
+                            queue->enqueueRead(histograms[i], &h);
+                            cout << h << " ";
+                        }
+                        cout << endl;
+
                         // rearrange the elements based on scaned histogram
                         globalWorkSizes[0] = size;
                         localWorkSizes[0] = workGroupSize;
@@ -107,14 +116,23 @@ namespace gpu
                         queue->enqueueKernel(permuteKernel, 1, globalWorkSizes, localWorkSizes);
                         queue->enqueueBarrier();
 
-                        queue->enqueueRead(src, lol);
+                        /*queue->enqueueRead(src, lol);
                         cout << "Src after permute" << endl;
                         printArr(lol, size);
                         queue->enqueueRead(dest, lol);
                         cout << "Dest after permute" << endl;
-                        printArr(lol, size);
+                        printArr(lol, size);*/
+
+                        cout << "Histogram after permute" << endl;
+                        for(size_t i = 0; i < BUCKETS; i++)
+                        {
+                            queue->enqueueRead(histograms[i], &h);
+                            cout << h << " ";
+                        }
+                        cout << endl;
 
                         queue->enqueueCopy(dest, src);
+                        queue->enqueueBarrier();
                     }
                 }
 

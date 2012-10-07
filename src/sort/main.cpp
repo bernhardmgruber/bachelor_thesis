@@ -70,7 +70,7 @@ int main()
         //runner.printRange<gpu::amd::RadixSort>(RunType::CL_GPU, range, length, false); // crashes on large arrays
 
         //runner.printRange<gpu::dixxi::RadixSort>(RunType::CL_GPU, range, length, false);
-        runner.printRange<gpu::dixxi::RadixSortAtomicCounters>(RunType::CL_GPU, range, length, false);
+        //runner.printRange<gpu::dixxi::RadixSortAtomicCounters>(RunType::CL_GPU, range, length, false);
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");

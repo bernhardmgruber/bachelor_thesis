@@ -4,20 +4,19 @@
 
 #pragma OPENCL EXTENSION cl_khr_local_int32_base_atomics : enable
 #pragma OPENCL EXTENSION cl_khr_global_int32_base_atomics : enable
- #pragma OPENCL EXTENSION cl_ext_atomic_counters_32 : enable
-
+#pragma OPENCL EXTENSION cl_ext_atomic_counters_32 : enable
 
 __kernel void ZeroHistogram(__global uint* histogram)
 {
     histogram[get_global_id(0)] = 0;
 }
 
-__kernel void Histogram(__global const T* data, __global __write_only uint* histogram, __local uint* localHistogram, const uint bits)
+__kernel void Histogram(__global const T* data, __global uint* histogram, __local uint* localHistogram, const uint bits)
 {
     size_t id = get_global_id(0);
 
     // zero local histogram
-    if(id < BUCKETS)
+    /*if(id < BUCKETS)
         localHistogram[id] = 0;
 
     // process elements and update local histogram
@@ -26,7 +25,9 @@ __kernel void Histogram(__global const T* data, __global __write_only uint* hist
 
     // push local histogram to global
     if(id < BUCKETS)
-        atomic_add(&histogram[id], localHistogram[id]);
+        atomic_add(&histogram[id], localHistogram[id]);*/
+
+    atomic_inc(&histogram[((uint)data[id] >> bits) & (uint)RADIX_MASK]);
 }
 
 __kernel void Scan(__global uint* histogram)
@@ -46,8 +47,10 @@ __kernel void Permute(__global const T* data, __global __write_only T* result, c
     size_t id = get_global_id(0);
 
     T element = data[id];
+
+    uint bucket = ((uint)element >> bits) & (uint)RADIX_MASK;
     uint index;
-    switch((element >> bits) & RADIX_MASK)
+    switch(bucket)
     {
         case 0: index = atomic_inc(histogram0); break;
         case 1: index = atomic_inc(histogram1); break;
@@ -57,6 +60,11 @@ __kernel void Permute(__global const T* data, __global __write_only T* result, c
         case 5: index = atomic_inc(histogram5); break;
         case 6: index = atomic_inc(histogram6); break;
         case 7: index = atomic_inc(histogram7); break;
+        //default: printf("Error\n"); break;
     }
-    result[index] = element;
+
+    //printf("id %d el %d bits %d bucket %d index %d\n", id, element, bits, bucket, index);
+    //printf(" ");
+
+    result[id] = index;
 }
