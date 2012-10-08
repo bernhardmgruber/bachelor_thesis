@@ -40,7 +40,15 @@
 			<Add option="-fexceptions" />
 			<Add directory="..\common\libs\clpp" />
 		</Compiler>
+		<Unit filename="..\common\CPUAlgorithm.h" />
+		<Unit filename="..\common\GPUAlgorithm.h" />
+		<Unit filename="..\common\OpenCL.cpp" />
+		<Unit filename="..\common\OpenCL.h" />
 		<Unit filename="..\common\Runner.h" />
+		<Unit filename="..\common\Timer.cpp" />
+		<Unit filename="..\common\Timer.h" />
+		<Unit filename="..\common\utils.cpp" />
+		<Unit filename="..\common\utils.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
