@@ -22,6 +22,7 @@ namespace gpu
                 {
                     Program* program = context->createProgram("gpu/book/Mult.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("Mult");
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

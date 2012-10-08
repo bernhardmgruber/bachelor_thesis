@@ -124,9 +124,9 @@ namespace gpu
                 void init(Context* context) override
                 {
                     program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
-
                     histogramKernel = program->createKernel("histogram");
                     permuteKernel = program->createKernel("permute");
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

@@ -34,6 +34,7 @@ namespace gpu
                     upSweepKernel = program->createKernel("UpSweep");
                     setLastZeroKernel = program->createKernel("SetLastZeroSweep");
                     downSweepKernel = program->createKernel("DownSweep");
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

@@ -40,6 +40,7 @@ namespace gpu
                     kernel8 = program->createKernel("ParallelBitonicSortB8");
                     kernel16 = program->createKernel("ParallelBitonicSortB16");
                     kernelC4 = program->createKernel("ParallelBitonicSortC4");
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

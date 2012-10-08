@@ -34,6 +34,7 @@ namespace gpu
                     program = context->createProgram("gpu/bealto/ParallelBitonicSortB4.cl", "-D T=" + getTypeName<T>());
                     kernel2 = program->createKernel("ParallelBitonicSortB2");
                     kernel4 = program->createKernel("ParallelBitonicSortB4");
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

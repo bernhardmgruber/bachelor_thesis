@@ -44,6 +44,7 @@ namespace gpu
                     options << "-D BLOCK_FACTOR=" << blockFactor << " -D T=" << getTypeName<T>();
                     program = context->createProgram("gpu/bealto/ParallelSelectionSortBlocks.cl", options.str());
                     kernel = program->createKernel("ParallelSelectionSortBlocks");
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

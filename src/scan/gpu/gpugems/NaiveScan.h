@@ -31,6 +31,7 @@ namespace gpu
                 {
                     Program* program = context->createProgram("gpu/gpugems/NaiveScan.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("NaiveScan");
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

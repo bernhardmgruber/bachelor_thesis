@@ -399,6 +399,8 @@ namespace gpu
                         size_t wgSize = kernels[i]->getWorkGroupSize();
                         GROUP_SIZE = min( GROUP_SIZE, wgSize );
                     }
+
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

@@ -45,6 +45,7 @@ namespace gpu
                     Program* program = context->createProgram("gpu/gpugems/LocalScan.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel(useOptimizedKernel ? "LocalScanOptim" : "LocalScan");
                     addKernel = program->createKernel("AddSums");
+                    delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
