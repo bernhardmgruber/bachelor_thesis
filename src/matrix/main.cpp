@@ -15,7 +15,7 @@ int main()
 {
     try
     {
-        Runner<int, MatrixPlugin> runner(false);
+        Runner<int, MatrixPlugin> runner;
 
         //runner.printCLInfo();
 

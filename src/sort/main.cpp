@@ -35,7 +35,7 @@ int main()
 {
     try
     {
-        Runner<int, SortPlugin> runner(false);
+        Runner<int, SortPlugin> runner;
 
         //runner.printCLInfo();
 

@@ -18,7 +18,7 @@ int main()
 {
     try
     {
-        Runner<int, ScanPlugin> runner(false);
+        Runner<int, ScanPlugin> runner;
 
         //runner.printCLInfo();
 
