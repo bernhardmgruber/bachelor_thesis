@@ -97,20 +97,17 @@ jurisdiction and venue of these courts.
 #pragma OPENCL EXTENSION cl_khr_byte_addressable_store : enable
 
 #define RADIX 4
-#define RADICES (1 << RADIX)
+#define BUCKETS (1 << RADIX)
+#define RADIX_MASK (BUCKETS - 1)
 
 /**
  * @brief   Calculates block-histogram bin whose bin size is 256
  * @param   unsortedData    array of unsorted elements
  * @param   buckets         histogram buckets
- * @param   shiftCount      shift count
+ * @param   bits      shift count
  * @param   sharedArray     shared array for thread-histogram bins
   */
-__kernel
-void histogram(__global const uint* unsortedData,
-               __global uint* buckets,
-               uint shiftCount,
-               __local ushort* sharedArray)
+__kernel void histogram(__global const uint* unsortedData, __global uint* buckets, uint bits, __local ushort* sharedArray)
 {
     size_t localId = get_local_id(0);
     size_t globalId = get_global_id(0);
@@ -118,26 +115,26 @@ void histogram(__global const uint* unsortedData,
     size_t groupSize = get_local_size(0);
 
     /* Initialize shared array to zero */
-    for(int i = 0; i < RADICES; ++i)
-        sharedArray[localId * RADICES + i] = 0;
+    for(int i = 0; i < BUCKETS; ++i)
+        sharedArray[localId * BUCKETS + i] = 0;
 
     barrier(CLK_LOCAL_MEM_FENCE);
 
     /* Calculate thread-histograms */
-    for(int i = 0; i < RADICES; ++i)
+    for(int i = 0; i < BUCKETS; ++i)
     {
-        uint value = unsortedData[globalId * RADICES + i];
-        value = (value >> shiftCount) & 0xFFU;
-        sharedArray[localId * RADICES + value]++;
+        uint value = unsortedData[globalId * BUCKETS + i];
+        value = (value >> bits) & 0xFFU;
+        sharedArray[localId * BUCKETS + value]++;
     }
 
     barrier(CLK_LOCAL_MEM_FENCE);
 
     /* Copy calculated histogram bin to global memory */
-    for(int i = 0; i < RADICES; ++i)
+    for(int i = 0; i < BUCKETS; ++i)
     {
-        uint bucketPos = groupId * RADICES * groupSize + localId * RADICES + i;
-        buckets[bucketPos] = sharedArray[localId * RADICES + i];
+        uint bucketPos = groupId * BUCKETS * groupSize + localId * BUCKETS + i;
+        buckets[bucketPos] = sharedArray[localId * BUCKETS + i];
     }
 }
 
@@ -150,37 +147,30 @@ void histogram(__global const uint* unsortedData,
  * @param   sharedBuckets       shared array for scaned buckets
  * @param   sortedData          array for sorted elements
  */
-__kernel
-void permute(__global const uint* unsortedData,
-             __global const uint* scanedBuckets,
-             uint shiftCount,
-             __local ushort* sharedBuckets,
-             __global uint* sortedData)
+__kernel void permute(__global const uint* unsortedData, __global const uint* scanedBuckets, uint shiftCount, __local ushort* sharedBuckets, __global uint* sortedData)
 {
-
     size_t groupId = get_group_id(0);
     size_t localId = get_local_id(0);
     size_t globalId = get_global_id(0);
     size_t groupSize = get_local_size(0);
 
-
     /* Copy prescaned thread histograms to corresponding thread shared block */
-    for(int i = 0; i < RADICES; ++i)
+    for(int i = 0; i < BUCKETS; ++i)
     {
-        uint bucketPos = groupId * RADICES * groupSize + localId * RADICES + i;
-        sharedBuckets[localId * RADICES + i] = scanedBuckets[bucketPos];
+        uint bucketPos = groupId * BUCKETS * groupSize + localId * BUCKETS + i;
+        sharedBuckets[localId * BUCKETS + i] = scanedBuckets[bucketPos];
     }
 
     barrier(CLK_LOCAL_MEM_FENCE);
 
     /* Premute elements to appropriate location */
-    for(int i = 0; i < RADICES; ++i)
+    for(int i = 0; i < BUCKETS; ++i)
     {
-        uint value = unsortedData[globalId * RADICES + i];
+        uint value = unsortedData[globalId * BUCKETS + i];
         value = (value >> shiftCount) & 0xFFU;
-        uint index = sharedBuckets[localId * RADICES + value];
-        sortedData[index] = unsortedData[globalId * RADICES + i];
-        sharedBuckets[localId * RADICES + value] = index + 1;
+        uint index = sharedBuckets[localId * BUCKETS + value];
+        sortedData[index] = unsortedData[globalId * BUCKETS + i];
+        sharedBuckets[localId * BUCKETS + value] = index + 1;
         barrier(CLK_LOCAL_MEM_FENCE);
     }
 }

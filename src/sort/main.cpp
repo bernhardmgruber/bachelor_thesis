@@ -67,7 +67,7 @@ int main()
         //runner.printRange<gpu::libcl::RadixSort>(RunType::CL_GPU, range, length, true); // not working
 
         //runner.printRange<gpu::amd::BitonicSort>(RunType::CL_GPU, range, length, false);
-        //runner.printRange<gpu::amd::RadixSort>(RunType::CL_GPU, range, length, false); // crashes on large arrays
+        runner.printRange<gpu::amd::RadixSort>(RunType::CL_GPU, range, length, false); // crashes on large arrays
 
         //runner.printRange<gpu::dixxi::RadixSort>(RunType::CL_GPU, range, length, false);
         //runner.printRange<gpu::dixxi::RadixSortAtomicCounters>(RunType::CL_GPU, range, length, false);

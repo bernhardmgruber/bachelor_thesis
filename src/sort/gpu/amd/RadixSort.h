@@ -102,13 +102,13 @@ namespace gpu
     namespace amd
     {
         /**
-         * From: AMD
+         * From: http://developer.amd.com/tools/hc/AMDAPPSDK/samples/Pages/default.aspx
          */
         template<typename T>
         class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
         {
-            const unsigned int RADIX = 4;
-            const unsigned int RADICES = (1 << RADIX);
+            static const unsigned int RADIX = 4;
+            static const unsigned int BUCKETS = (1 << RADIX);
 
             public:
                 const string getName() override
@@ -131,8 +131,8 @@ namespace gpu
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    //element count must be multiple of GROUP_SIZE * RADICES
-                    size_t mulFactor = workGroupSize * RADICES;
+                    //element count must be multiple of workGroupSize * BUCKETS
+                    size_t mulFactor = workGroupSize * BUCKETS;
 
                     if(size < mulFactor)
                         size = mulFactor;
@@ -145,7 +145,8 @@ namespace gpu
 
                     hSortedData = new T[size]();
 
-                    size_t tempSize = numGroups * workGroupSize * RADICES * sizeof(T);
+                    // each workgroup has it's own histogram
+                    size_t tempSize = numGroups * workGroupSize * BUCKETS * sizeof(T);
                     histogramBins = new T[tempSize]();
 
                     // Output for histogram kernel
@@ -172,13 +173,13 @@ namespace gpu
 
                         // Scan the histogram
                         int sum = 0;
-                        for(size_t i = 0; i < RADICES; ++i)
+                        for(size_t b = 0; b < BUCKETS; ++b)
                         {
-                            for(size_t j = 0; j < numGroups; ++j)
+                            for(size_t g = 0; g < numGroups; ++g)
                             {
-                                for(size_t k = 0; k < workGroupSize; ++k)
+                                for(size_t i = 0; i < workGroupSize; ++i)
                                 {
-                                    int index = j * workGroupSize * RADICES + k * RADICES + i;
+                                    int index = g * workGroupSize * BUCKETS + i * BUCKETS + b;
                                     int value = histogramBins[index];
                                     histogramBins[index] = sum;
                                     sum += value;
@@ -198,14 +199,14 @@ namespace gpu
                 {
                     queue->enqueueWrite(unsortedDataBuf, unsortedData);
 
-                    size_t localSize = (workGroupSize * RADICES * sizeof(cl_ushort));
+                    size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_ushort));
 
                     histogramKernel->setArg(0, unsortedDataBuf);
                     histogramKernel->setArg(1, histogramBinsBuf);
                     histogramKernel->setArg(2, bits);
-                    histogramKernel->setArg(3, localSize, nullptr);
+                    histogramKernel->setArg(3, localSize, nullptr); // allocate local histogram
 
-                    size_t globalThreads[] = { size / RADICES };
+                    size_t globalThreads[] = { size / BUCKETS };
                     size_t localThreads[] = { workGroupSize };
 
                     queue->enqueueKernel(histogramKernel, 1, globalThreads, localThreads);
@@ -222,10 +223,10 @@ namespace gpu
                     permuteKernel->setArg(0, unsortedDataBuf);
                     permuteKernel->setArg(1, scanedHistogramBinsBuf);
                     permuteKernel->setArg(2, bits);
-                    permuteKernel->setArg(3, (workGroupSize * RADICES * sizeof(cl_ushort)), nullptr);
+                    permuteKernel->setArg(3, (workGroupSize * BUCKETS * sizeof(cl_ushort)), nullptr);
                     permuteKernel->setArg(4, sortedDataBuf);
 
-                    size_t globalThreads[] = { size / RADICES };
+                    size_t globalThreads[] = { size / BUCKETS };
                     size_t localThreads[] = { workGroupSize };
                     queue->enqueueKernel(permuteKernel, 1, globalThreads, localThreads);
 
