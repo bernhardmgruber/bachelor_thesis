@@ -62,6 +62,12 @@ class Context
         CommandQueue* createCommandQueue();
         Buffer* createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
 
+        /**
+         * Retrieves an OpenCL device information.
+         *
+         * @param info An enumeration constant that identifies the device information being queried. @see http://www.khronos.org/registry/cl/sdk/1.0/docs/man/xhtml/clGetDeviceInfo.html
+         * @throw OpenCLException If the info parameter is invalid or querying the requested value failed.
+         */
         template <typename T>
         T getInfo(cl_device_info info)
         {
@@ -73,9 +79,30 @@ class Context
         }
 
         /**
+         * Same as getInfo<T>() but returns the template argument's default value on error instread of throwing an exception.
+         */
+        template <typename T>
+        T getInfoWithDefaultOnError(cl_device_info info)
+        {
+            try
+            {
+                return getInfo<T>(info);
+            }
+            catch(...)
+            {
+                return T();
+            }
+        }
+
+        /**
          * Gets information about the requested property. The required size of the value is determined and allocated by this function. The user is responsible for freeing the returned buffer using the delete operator.
          */
         void* getInfo(cl_device_info);
+
+        /**
+         * Same as getInfo() but returns nullptr on error instread of throwing an exception.
+         */
+        void* getInfoWithDefaultOnError(cl_device_info);
 
     private:
         string readFile(string fileName);

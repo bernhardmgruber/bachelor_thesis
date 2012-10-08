@@ -37,16 +37,33 @@ class Runner
         /**
          * Constructor
          */
-        Runner(bool noCPU = true)
-            : noCPU(noCPU)
+        Runner()
         {
             OpenCL::init();
-            gpuContext = OpenCL::getGPUContext();
-            if(noCPU)
-                cpuContext = nullptr;
-            else
+
+
+            try
+            {
+                gpuContext = OpenCL::getGPUContext();
+            }
+            catch(OpenCLException& e)
+            {
+                cerr << "Failed to initialize GPU context!" << endl;
+                gpuContext = nullptr;
+            }
+
+            try
+            {
                 cpuContext = OpenCL::getCPUContext();
-            gpuQueue = gpuContext->createCommandQueue();
+            }
+            catch(OpenCLException& e)
+            {
+                cerr << "Failed to initialize CPU context!" << endl;
+                cpuContext = nullptr;
+            }
+
+            if(gpuContext)
+                gpuQueue = gpuContext->createCommandQueue();
             if(cpuContext)
                 cpuQueue = cpuContext->createCommandQueue();
 
@@ -58,8 +75,11 @@ class Runner
          */
         virtual ~Runner()
         {
-            delete gpuContext;
-            delete gpuQueue;
+            if(hasCLGPU())
+            {
+                delete gpuContext;
+                delete gpuQueue;
+            }
             if(hasCLCPU())
             {
                 delete cpuContext;
@@ -74,24 +94,14 @@ class Runner
         }
 
         /**
-         * Prints some information about the OpenCL devices used.
-         */
-        void printCLInfo()
-        {
-            cout << "Running on the following devices:" << endl;
-            if(cpuContext)
-                printDevice(cpuContext);
-            printDevice(gpuContext);
-            cout << endl;
-        }
-
-        /**
          * Runs an algorithm once with the given problem size.
          * The results of the run are printed to stdout.
          */
         template <template <typename> class Algorithm>
         void printOnce(RunType runType, size_t size, bool useMultipleWorkGroupSizes = true)
         {
+            checkRunTypeAvailable(runType);
+
             Range* r = runOnce<Algorithm>(size, runType, useMultipleWorkGroupSizes);
 
             printRange(r, runType);
@@ -104,6 +114,8 @@ class Runner
         template <template <typename> class Algorithm>
         void printRange(RunType runType, size_t* range, size_t count, bool useMultipleWorkGroupSizes = true)
         {
+            checkRunTypeAvailable(runType);
+
             Range* r = runRange<Algorithm>(range, count, runType, useMultipleWorkGroupSizes);
 
             printRange(r, runType);
@@ -171,7 +183,20 @@ class Runner
 
         void writeGPUDeviceInfo(string fileName)
         {
-            writeDeviceInfo(gpuContext, fileName, ';');
+            if(hasCLGPU())
+                writeDeviceInfo(gpuContext, fileName, ';');
+            else
+                throw OpenCLException("No GPU context initialized!");
+        }
+
+        bool hasCLCPU()
+        {
+            return cpuContext != nullptr;
+        }
+
+        bool hasCLGPU()
+        {
+            return gpuContext != nullptr;
         }
 
     private:
@@ -244,19 +269,6 @@ class Runner
                     delete s;
             }
         };
-
-        /**
-         * Prints information about a device.
-         */
-        void printDevice(Context* context)
-        {
-            cout << "" << context->getInfo<string>(CL_DEVICE_NAME) << endl;
-            cout << "   " << context->getInfo<string>(CL_DEVICE_VENDOR) << endl;
-            cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_COMPUTE_UNITS) << " compute units" << endl;
-            cout << "   " << context->getInfo<size_t>(CL_DEVICE_MAX_CLOCK_FREQUENCY) << " MHz frequency" << endl;
-            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_GLOBAL_MEM_SIZE)) << " global mem" << endl;
-            cout << "   " << fixed << setprecision(FLOAT_PRECISION) << sizeToString(context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE)) << " local mem" << endl;
-        }
 
         void printRange(Range* r, RunType runType)
         {
@@ -533,9 +545,15 @@ class Runner
             return "unkown";
         }
 
-        bool hasCLCPU()
+        /**
+         * Checks if the context necessary to run an algorithm is available.
+         */
+        void checkRunTypeAvailable(RunType runType)
         {
-            return cpuContext != nullptr;
+            if(runType == CL_GPU && !hasCLGPU())
+                throw OpenCLException("No GPU context initialized!");
+            if(runType == CL_CPU && !hasCLCPU())
+                throw OpenCLException("No CPU context initialized!");
         }
 
         void writeDeviceInfo(Context* context, string fileName, char sep)
@@ -544,13 +562,13 @@ class Runner
 
             ofstream os(fileName);
 
-            os << "CL_DEVICE_ADDRESS_BITS" << sep << context->getInfo<cl_uint>(CL_DEVICE_ADDRESS_BITS) << endl;
-            os << "CL_DEVICE_AVAILABLE" << sep << context->getInfo<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
-            os << "CL_DEVICE_COMPILER_AVAILABLE" << sep << context->getInfo<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
+            os << "CL_DEVICE_ADDRESS_BITS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_ADDRESS_BITS) << endl;
+            os << "CL_DEVICE_AVAILABLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
+            os << "CL_DEVICE_COMPILER_AVAILABLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
 
             {
                 os << "CL_DEVICE_DOUBLE_FP_CONFIG" << sep;
-                cl_device_fp_config flags = context->getInfo<cl_device_fp_config>(CL_DEVICE_DOUBLE_FP_CONFIG);
+                cl_device_fp_config flags = context->getInfoWithDefaultOnError<cl_device_fp_config>(CL_DEVICE_DOUBLE_FP_CONFIG);
                 if(flags & CL_FP_DENORM)
                     os << "CL_FP_DENORM ";
                 if(flags & CL_FP_INF_NAN)
@@ -566,12 +584,12 @@ class Runner
                 os << endl;
             }
 
-            os << "CL_DEVICE_ENDIAN_LITTLE" << sep << context->getInfo<cl_bool>(CL_DEVICE_ENDIAN_LITTLE) << endl;
-            os << "CL_DEVICE_ERROR_CORRECTION_SUPPORT" << sep << context->getInfo<cl_bool>(CL_DEVICE_ERROR_CORRECTION_SUPPORT) << endl;
+            os << "CL_DEVICE_ENDIAN_LITTLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_ENDIAN_LITTLE) << endl;
+            os << "CL_DEVICE_ERROR_CORRECTION_SUPPORT" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_ERROR_CORRECTION_SUPPORT) << endl;
 
             {
                 os << "CL_DEVICE_EXECUTION_CAPABILITIES" << sep;
-                cl_device_exec_capabilities flags = context->getInfo<cl_device_exec_capabilities>(CL_DEVICE_EXECUTION_CAPABILITIES);
+                cl_device_exec_capabilities flags = context->getInfoWithDefaultOnError<cl_device_exec_capabilities>(CL_DEVICE_EXECUTION_CAPABILITIES);
                 if(flags & CL_EXEC_KERNEL)
                     os << "CL_EXEC_KERNEL ";
                 if(flags & CL_EXEC_NATIVE_KERNEL)
@@ -579,12 +597,12 @@ class Runner
                 os << endl;
             }
 
-            os << "CL_DEVICE_EXTENSIONS" << sep << context->getInfo<string>(CL_DEVICE_EXTENSIONS) << endl;
-            os << "CL_DEVICE_GLOBAL_MEM_CACHE_SIZE" << sep << context->getInfo<cl_ulong>(CL_DEVICE_GLOBAL_MEM_CACHE_SIZE) << endl;
+            os << "CL_DEVICE_EXTENSIONS" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_EXTENSIONS) << endl;
+            os << "CL_DEVICE_GLOBAL_MEM_CACHE_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_GLOBAL_MEM_CACHE_SIZE) << endl;
 
             {
                 os << "CL_DEVICE_GLOBAL_MEM_CACHE_TYPE" << sep;
-                cl_device_mem_cache_type cacheType = context->getInfo<cl_device_mem_cache_type>(CL_DEVICE_GLOBAL_MEM_CACHE_TYPE);
+                cl_device_mem_cache_type cacheType = context->getInfoWithDefaultOnError<cl_device_mem_cache_type>(CL_DEVICE_GLOBAL_MEM_CACHE_TYPE);
                 switch(cacheType)
                 {
                     case CL_NONE:
@@ -600,12 +618,12 @@ class Runner
                 os << endl;
             }
 
-            os << "CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE" << sep << context->getInfo<cl_uint>(CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE) << endl;
-            os << "CL_DEVICE_GLOBAL_MEM_SIZE" << sep << context->getInfo<cl_ulong>(CL_DEVICE_GLOBAL_MEM_SIZE) << endl;
+            os << "CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE) << endl;
+            os << "CL_DEVICE_GLOBAL_MEM_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_GLOBAL_MEM_SIZE) << endl;
 
             {
                 os << "CL_DEVICE_HALF_FP_CONFIG" << sep;
-                cl_device_fp_config flags = context->getInfo<cl_device_fp_config>(CL_DEVICE_HALF_FP_CONFIG);
+                cl_device_fp_config flags = context->getInfoWithDefaultOnError<cl_device_fp_config>(CL_DEVICE_HALF_FP_CONFIG);
                 if(flags & CL_FP_DENORM)
                     os << "CL_FP_DENORM ";
                 if(flags & CL_FP_INF_NAN)
@@ -623,18 +641,18 @@ class Runner
                 os << endl;
             }
 
-            os << "CL_DEVICE_HOST_UNIFIED_MEMORY" << sep << context->getInfo<cl_bool>(CL_DEVICE_HOST_UNIFIED_MEMORY) << endl;
-            os << "CL_DEVICE_IMAGE_SUPPORT" << sep << context->getInfo<cl_bool>(CL_DEVICE_IMAGE_SUPPORT) << endl;
-            os << "CL_DEVICE_IMAGE2D_MAX_HEIGHT" << sep << context->getInfo<size_t>(CL_DEVICE_IMAGE2D_MAX_HEIGHT) << endl;
-            os << "CL_DEVICE_IMAGE2D_MAX_WIDTH" << sep << context->getInfo<size_t>(CL_DEVICE_IMAGE2D_MAX_WIDTH) << endl;
-            os << "CL_DEVICE_IMAGE3D_MAX_DEPTH" << sep << context->getInfo<size_t>(CL_DEVICE_IMAGE3D_MAX_DEPTH) << endl;
-            os << "CL_DEVICE_IMAGE3D_MAX_HEIGHT" << sep << context->getInfo<size_t>(CL_DEVICE_IMAGE3D_MAX_HEIGHT) << endl;
-            os << "CL_DEVICE_IMAGE3D_MAX_WIDTH" << sep << context->getInfo<size_t>(CL_DEVICE_IMAGE3D_MAX_WIDTH) << endl;
-            os << "CL_DEVICE_LOCAL_MEM_SIZE" << sep << context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE) << endl;
+            os << "CL_DEVICE_HOST_UNIFIED_MEMORY" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_HOST_UNIFIED_MEMORY) << endl;
+            os << "CL_DEVICE_IMAGE_SUPPORT" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_IMAGE_SUPPORT) << endl;
+            os << "CL_DEVICE_IMAGE2D_MAX_HEIGHT" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE2D_MAX_HEIGHT) << endl;
+            os << "CL_DEVICE_IMAGE2D_MAX_WIDTH" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE2D_MAX_WIDTH) << endl;
+            os << "CL_DEVICE_IMAGE3D_MAX_DEPTH" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_DEPTH) << endl;
+            os << "CL_DEVICE_IMAGE3D_MAX_HEIGHT" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_HEIGHT) << endl;
+            os << "CL_DEVICE_IMAGE3D_MAX_WIDTH" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_WIDTH) << endl;
+            os << "CL_DEVICE_LOCAL_MEM_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE) << endl;
 
             {
                 os << "CL_DEVICE_LOCAL_MEM_TYPE" << sep;
-                cl_device_local_mem_type memType = context->getInfo<cl_device_local_mem_type>(CL_DEVICE_LOCAL_MEM_TYPE);
+                cl_device_local_mem_type memType = context->getInfoWithDefaultOnError<cl_device_local_mem_type>(CL_DEVICE_LOCAL_MEM_TYPE);
                 switch(memType)
                 {
                     case CL_LOCAL:
@@ -647,52 +665,55 @@ class Runner
                 os << endl;
             }
 
-            os << "CL_DEVICE_MAX_CLOCK_FREQUENCY" << sep << context->getInfo<cl_uint>(CL_DEVICE_MAX_CLOCK_FREQUENCY) << endl;
-            os << "CL_DEVICE_MAX_COMPUTE_UNITS" << sep << context->getInfo<cl_uint>(CL_DEVICE_MAX_COMPUTE_UNITS) << endl;
-            os << "CL_DEVICE_MAX_CONSTANT_ARGS" << sep << context->getInfo<cl_uint>(CL_DEVICE_MAX_CONSTANT_ARGS) << endl;
-            os << "CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE" << sep << context->getInfo<cl_ulong>(CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE) << endl;
-            os << "CL_DEVICE_MAX_MEM_ALLOC_SIZE" << sep << context->getInfo<cl_ulong>(CL_DEVICE_MAX_MEM_ALLOC_SIZE) << endl;
-            os << "CL_DEVICE_MAX_PARAMETER_SIZE" << sep << context->getInfo<size_t>(CL_DEVICE_MAX_PARAMETER_SIZE) << endl;
-            os << "CL_DEVICE_MAX_READ_IMAGE_ARGS" << sep << context->getInfo<cl_uint>(CL_DEVICE_MAX_READ_IMAGE_ARGS) << endl;
-            os << "CL_DEVICE_MAX_SAMPLERS" << sep << context->getInfo<cl_uint>(CL_DEVICE_MAX_SAMPLERS) << endl;
-            os << "CL_DEVICE_MAX_WORK_GROUP_SIZE" << sep << context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE) << endl;
+            os << "CL_DEVICE_MAX_CLOCK_FREQUENCY" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_CLOCK_FREQUENCY) << endl;
+            os << "CL_DEVICE_MAX_COMPUTE_UNITS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_COMPUTE_UNITS) << endl;
+            os << "CL_DEVICE_MAX_CONSTANT_ARGS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_CONSTANT_ARGS) << endl;
+            os << "CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE) << endl;
+            os << "CL_DEVICE_MAX_MEM_ALLOC_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_MAX_MEM_ALLOC_SIZE) << endl;
+            os << "CL_DEVICE_MAX_PARAMETER_SIZE" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_MAX_PARAMETER_SIZE) << endl;
+            os << "CL_DEVICE_MAX_READ_IMAGE_ARGS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_READ_IMAGE_ARGS) << endl;
+            os << "CL_DEVICE_MAX_SAMPLERS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_SAMPLERS) << endl;
+            os << "CL_DEVICE_MAX_WORK_GROUP_SIZE" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE) << endl;
 
             {
-                cl_uint dimensions = context->getInfo<cl_uint>(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS);
+                cl_uint dimensions = context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS);
                 os << "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS" << sep << dimensions << endl;
 
                 os << "CL_DEVICE_MAX_WORK_ITEM_SIZES" << sep;
-                size_t* sizes = (size_t*)context->getInfo(CL_DEVICE_MAX_WORK_ITEM_SIZES);
-                copy(sizes, sizes + dimensions, ostream_iterator<size_t>(os, ","));
-                delete sizes;
+                size_t* sizes = (size_t*)context->getInfoWithDefaultOnError(CL_DEVICE_MAX_WORK_ITEM_SIZES);
+                if(sizes != nullptr)
+                {
+                    copy(sizes, sizes + dimensions, ostream_iterator<size_t>(os, ","));
+                    delete sizes;
+                }
                 os << endl;
             }
 
-            os << "CL_DEVICE_MAX_WRITE_IMAGE_ARGS" << sep << context->getInfo<cl_uint>(CL_DEVICE_MAX_WRITE_IMAGE_ARGS) << endl;
-            os << "CL_DEVICE_MEM_BASE_ADDR_ALIGN" << sep << context->getInfo<cl_uint>(CL_DEVICE_MEM_BASE_ADDR_ALIGN) << endl;
-            os << "CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE" << sep << context->getInfo<cl_uint>(CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE) << endl;
-            os << "CL_DEVICE_NAME" << sep << context->getInfo<string>(CL_DEVICE_NAME) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR" << sep << context->getInfo<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT" << sep << context->getInfo<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_INT" << sep << context->getInfo<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_INT) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG" << sep << context->getInfo<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT" << sep << context->getInfo<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE" << sep << context->getInfo<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF" << sep << context->getInfo<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF) << endl;
-            os << "CL_DEVICE_OPENCL_C_VERSION" << sep << context->getInfo<string>(CL_DEVICE_OPENCL_C_VERSION) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR" << sep << context->getInfo<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT" << sep << context->getInfo<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT" << sep << context->getInfo<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG" << sep << context->getInfo<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT" << sep << context->getInfo<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE" << sep << context->getInfo<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF" << sep << context->getInfo<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF) << endl;
-            os << "CL_DEVICE_PROFILE" << sep << context->getInfo<string>(CL_DEVICE_PROFILE) << endl;
-            os << "CL_DEVICE_PROFILING_TIMER_RESOLUTION" << sep << context->getInfo<size_t>(CL_DEVICE_PROFILING_TIMER_RESOLUTION) << endl;
+            os << "CL_DEVICE_MAX_WRITE_IMAGE_ARGS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_WRITE_IMAGE_ARGS) << endl;
+            os << "CL_DEVICE_MEM_BASE_ADDR_ALIGN" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MEM_BASE_ADDR_ALIGN) << endl;
+            os << "CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE) << endl;
+            os << "CL_DEVICE_NAME" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_NAME) << endl;
+            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR) << endl;
+            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT) << endl;
+            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_INT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_INT) << endl;
+            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG) << endl;
+            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT) << endl;
+            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE) << endl;
+            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF) << endl;
+            os << "CL_DEVICE_OPENCL_C_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_OPENCL_C_VERSION) << endl;
+            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR) << endl;
+            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT) << endl;
+            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT) << endl;
+            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG) << endl;
+            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT) << endl;
+            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE) << endl;
+            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF) << endl;
+            os << "CL_DEVICE_PROFILE" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_PROFILE) << endl;
+            os << "CL_DEVICE_PROFILING_TIMER_RESOLUTION" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_PROFILING_TIMER_RESOLUTION) << endl;
 
             {
                 os << "CL_DEVICE_QUEUE_PROPERTIES" << sep;
-                cl_command_queue_properties properties = context->getInfo<cl_command_queue_properties>(CL_DEVICE_QUEUE_PROPERTIES);
+                cl_command_queue_properties properties = context->getInfoWithDefaultOnError<cl_command_queue_properties>(CL_DEVICE_QUEUE_PROPERTIES);
                 if(properties & CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE)
                     os << "CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE ";
                 if(properties & CL_QUEUE_PROFILING_ENABLE)
@@ -702,7 +723,7 @@ class Runner
 
             {
                 os << "CL_DEVICE_SINGLE_FP_CONFIG" << sep;
-                cl_device_fp_config flags = context->getInfo<cl_device_fp_config>(CL_DEVICE_SINGLE_FP_CONFIG);
+                cl_device_fp_config flags = context->getInfoWithDefaultOnError<cl_device_fp_config>(CL_DEVICE_SINGLE_FP_CONFIG);
                 if(flags & CL_FP_DENORM)
                     os << "CL_FP_DENORM ";
                 if(flags & CL_FP_INF_NAN)
@@ -722,7 +743,7 @@ class Runner
 
             {
                 os << "CL_DEVICE_TYPE" << sep;
-                cl_device_type deviceType = context->getInfo<cl_device_type>(CL_DEVICE_TYPE);
+                cl_device_type deviceType = context->getInfoWithDefaultOnError<cl_device_type>(CL_DEVICE_TYPE);
                 switch(deviceType)
                 {
                     case CL_DEVICE_TYPE_CPU:
@@ -741,12 +762,12 @@ class Runner
                 os << endl;
             }
 
-            os << "CL_DEVICE_VENDOR" << sep << context->getInfo<string>(CL_DEVICE_VENDOR) << endl;
-            os << "CL_DEVICE_VENDOR_ID" << sep << context->getInfo<cl_uint>(CL_DEVICE_VENDOR_ID) << endl;
-            os << "CL_DEVICE_VERSION" << sep << context->getInfo<string>(CL_DEVICE_VERSION) << endl;
-            os << "CL_DRIVER_VERSION" << sep << context->getInfo<string>(CL_DRIVER_VERSION) << endl;
+            os << "CL_DEVICE_VENDOR" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_VENDOR) << endl;
+            os << "CL_DEVICE_VENDOR_ID" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_VENDOR_ID) << endl;
+            os << "CL_DEVICE_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_VERSION) << endl;
+            os << "CL_DRIVER_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DRIVER_VERSION) << endl;
 
-            //os << "CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT" << sep << context->getInfo<cl_uint>(CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT) << endl;
+            os << "CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT) << endl;
 
             os.close();
 
@@ -764,8 +785,6 @@ class Runner
 
         T* data;
         T* result;
-
-        bool noCPU;
 
         vector<Range*> ranges;
 };

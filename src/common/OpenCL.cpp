@@ -269,6 +269,18 @@ void* Context::getInfo(cl_device_info info)
     return value;
 }
 
+void* Context::getInfoWithDefaultOnError(cl_device_info info)
+{
+    try
+    {
+        return getInfo(info);
+    }
+    catch(...)
+    {
+        return nullptr;
+    }
+}
+
 string Context::readFile(string fileName)
 {
     ifstream file(fileName, ios::in);
