@@ -112,7 +112,8 @@
 								   uint4"/>
                         <!-- Secondary keywords and identifiers -->
                         <Set index="1"
-                            value="__global __local __private __constant __kernel
+                            value="__global global __local local __private private __constant constant __kernel
+								   __read_only read_only __write_only __write_only __read_write read_write
 								   get_global_id get_global_size get_local_size get_local_id get_num_groups get_group_id"/>
                         <!-- Documentation comment keywords -->
                         <Set index="2"
