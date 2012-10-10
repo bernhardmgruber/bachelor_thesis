@@ -123,7 +123,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
+                    Program* program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
                     histogramKernel = program->createKernel("histogram");
                     permuteKernel = program->createKernel("permute");
                     delete program;
@@ -249,7 +249,6 @@ namespace gpu
                     delete[] hSortedData;
                     delete[] histogramBins;
 
-                    delete program;
                     delete histogramKernel;
                     delete permuteKernel;
                 }
@@ -264,7 +263,6 @@ namespace gpu
                 T* hSortedData;
                 T* histogramBins;
 
-                Program* program;
                 Kernel* histogramKernel;
                 Kernel* permuteKernel;
                 Buffer* unsortedDataBuf;
