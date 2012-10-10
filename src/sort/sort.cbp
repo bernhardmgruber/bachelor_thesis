@@ -7,8 +7,8 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\sort" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/sort" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -22,8 +22,8 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\sort" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/sort" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -42,64 +42,64 @@
 			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add directory="..\common\libs\clpp" />
-			<Add directory="..\common\libs\libcl" />
+			<Add directory="../common/libs/clpp" />
+			<Add directory="../common/libs/libcl" />
 		</Compiler>
-		<Unit filename="..\common\CPUAlgorithm.h" />
-		<Unit filename="..\common\GPUAlgorithm.h" />
-		<Unit filename="..\common\OpenCL.cpp" />
-		<Unit filename="..\common\OpenCL.h" />
-		<Unit filename="..\common\Runner.h" />
-		<Unit filename="..\common\Timer.cpp" />
-		<Unit filename="..\common\Timer.h" />
-		<Unit filename="..\common\utils.cpp" />
-		<Unit filename="..\common\utils.h" />
+		<Unit filename="../common/CPUAlgorithm.h" />
+		<Unit filename="../common/GPUAlgorithm.h" />
+		<Unit filename="../common/OpenCL.cpp" />
+		<Unit filename="../common/OpenCL.h" />
+		<Unit filename="../common/Runner.h" />
+		<Unit filename="../common/Timer.cpp" />
+		<Unit filename="../common/Timer.h" />
+		<Unit filename="../common/utils.cpp" />
+		<Unit filename="../common/utils.h" />
 		<Unit filename="SortAlgorithm.h" />
 		<Unit filename="SortPlugin.h" />
-		<Unit filename="cpu\QSort.h" />
-		<Unit filename="cpu\Quicksort.h" />
-		<Unit filename="cpu\STLSort.h" />
-		<Unit filename="cpu\TimSort.h" />
-		<Unit filename="cpu\amd\RadixSort.h" />
-		<Unit filename="cpu\timsort.hpp" />
-		<Unit filename="gpu\amd\BitonicSort.cl" />
-		<Unit filename="gpu\amd\BitonicSort.h" />
-		<Unit filename="gpu\amd\RadixSort.cl" />
-		<Unit filename="gpu\amd\RadixSort.h" />
-		<Unit filename="gpu\amd_dixxi\LocalScan.cl" />
-		<Unit filename="gpu\amd_dixxi\RadixSort.cl" />
-		<Unit filename="gpu\amd_dixxi\RadixSort.h" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortA.cl" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortA.h" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortB16.cl" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortB16.h" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortB2.cl" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortB2.h" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortB4.cl" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortB4.h" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortB8.cl" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortB8.h" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortC.cl" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortC.h" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortLocal.cl" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortLocal.h" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortLocalOptim.cl" />
-		<Unit filename="gpu\bealto\ParallelBitonicSortLocalOptim.h" />
-		<Unit filename="gpu\bealto\ParallelMergeSort.cl" />
-		<Unit filename="gpu\bealto\ParallelMergeSort.h" />
-		<Unit filename="gpu\bealto\ParallelSelectionSort.cl" />
-		<Unit filename="gpu\bealto\ParallelSelectionSort.h" />
-		<Unit filename="gpu\bealto\ParallelSelectionSortBlocks.cl" />
-		<Unit filename="gpu\bealto\ParallelSelectionSortBlocks.h" />
-		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.cl" />
-		<Unit filename="gpu\bealto\ParallelSelectionSortLocal.h" />
-		<Unit filename="gpu\clpp\RadixSort.h" />
-		<Unit filename="gpu\dixxi\RadixSort.cl" />
-		<Unit filename="gpu\dixxi\RadixSort.h" />
-		<Unit filename="gpu\dixxi\RadixSortAtomicCounters.cl" />
-		<Unit filename="gpu\dixxi\RadixSortAtomicCounters.h" />
-		<Unit filename="gpu\libCL\RadixSort.cl" />
-		<Unit filename="gpu\libCL\RadixSort.h" />
+		<Unit filename="cpu/QSort.h" />
+		<Unit filename="cpu/Quicksort.h" />
+		<Unit filename="cpu/STLSort.h" />
+		<Unit filename="cpu/TimSort.h" />
+		<Unit filename="cpu/amd/RadixSort.h" />
+		<Unit filename="cpu/timsort.hpp" />
+		<Unit filename="gpu/amd/BitonicSort.cl" />
+		<Unit filename="gpu/amd/BitonicSort.h" />
+		<Unit filename="gpu/amd/RadixSort.cl" />
+		<Unit filename="gpu/amd/RadixSort.h" />
+		<Unit filename="gpu/amd_dixxi/LocalScan.cl" />
+		<Unit filename="gpu/amd_dixxi/RadixSort.cl" />
+		<Unit filename="gpu/amd_dixxi/RadixSort.h" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortA.cl" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortA.h" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortB16.cl" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortB16.h" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortB2.cl" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortB2.h" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortB4.cl" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortB4.h" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortB8.cl" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortB8.h" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortC.cl" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortC.h" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortLocal.cl" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortLocal.h" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortLocalOptim.cl" />
+		<Unit filename="gpu/bealto/ParallelBitonicSortLocalOptim.h" />
+		<Unit filename="gpu/bealto/ParallelMergeSort.cl" />
+		<Unit filename="gpu/bealto/ParallelMergeSort.h" />
+		<Unit filename="gpu/bealto/ParallelSelectionSort.cl" />
+		<Unit filename="gpu/bealto/ParallelSelectionSort.h" />
+		<Unit filename="gpu/bealto/ParallelSelectionSortBlocks.cl" />
+		<Unit filename="gpu/bealto/ParallelSelectionSortBlocks.h" />
+		<Unit filename="gpu/bealto/ParallelSelectionSortLocal.cl" />
+		<Unit filename="gpu/bealto/ParallelSelectionSortLocal.h" />
+		<Unit filename="gpu/clpp/RadixSort.h" />
+		<Unit filename="gpu/dixxi/RadixSort.cl" />
+		<Unit filename="gpu/dixxi/RadixSort.h" />
+		<Unit filename="gpu/dixxi/RadixSortAtomicCounters.cl" />
+		<Unit filename="gpu/dixxi/RadixSortAtomicCounters.h" />
+		<Unit filename="gpu/libCL/RadixSort.cl" />
+		<Unit filename="gpu/libCL/RadixSort.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
