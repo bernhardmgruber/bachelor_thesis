@@ -151,7 +151,14 @@ namespace gpu
                     histogramSize = numGroups * workGroupSize * BUCKETS * sizeof(cl_uint);
 
                     unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, adaptedSize * sizeof(T));
-                    queue->enqueueWrite(unsortedDataBuf, data, 0, size);
+                    queue->enqueueWrite(unsortedDataBuf, data, 0, size * sizeof(T));
+                    if(adaptedSize > size)
+                    {
+                        T* zero = new T[adaptedSize - size];
+                        memset(zero, 0, (adaptedSize - size) * sizeof(T));
+                        queue->enqueueWrite(unsortedDataBuf, zero, size * sizeof(T), (adaptedSize - size) * sizeof(T));
+                        delete zero;
+                    }
 
                     histogramBinsBuf = context->createBuffer(CL_MEM_READ_WRITE, histogramSize);
                     sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, adaptedSize * sizeof(T));
@@ -180,20 +187,20 @@ namespace gpu
                             }
                         }*/
                         cl_uint* lol = new cl_uint[histogramSize / sizeof(cl_uint)];
-                        queue->enqueueRead(histogramBinsBuf, lol);
+                        /*queue->enqueueRead(histogramBinsBuf, lol);
                         cout << "before" << endl;
                         for(int i = 0; i < numGroups; i++)
                             for(int j = 0; j < workGroupSize; j++)
-                                printArr(lol + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);
+                                printArr(lol + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);*/
 
                         scan_r(queue->getContext(), queue, workGroupSize, histogramBinsBuf, true);
                         queue->enqueueBarrier();
 
                         queue->enqueueRead(histogramBinsBuf, lol);
-                        cout << "after" << endl;
+                        /*cout << "after" << endl;
                         for(int i = 0; i < numGroups; i++)
                             for(int j = 0; j < workGroupSize; j++)
-                                printArr(lol + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);
+                                printArr(lol + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);*/
 
                         // Permute the element to appropriate place
                         runPermuteKernel(queue, bits, workGroupSize);

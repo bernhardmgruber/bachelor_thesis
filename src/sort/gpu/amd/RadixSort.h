@@ -120,7 +120,7 @@ namespace gpu
                 {
                     return false;
                 }
-size_t tempSize;
+
                 void init(Context* context) override
                 {
                     Program* program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
@@ -143,18 +143,16 @@ size_t tempSize;
 
                     dSortedData = new T[adaptedSize]();
 
-                    hSortedData = new T[adaptedSize]();
-
                     // each workgroup has it's own histogram
-                    tempSize = numGroups * workGroupSize * BUCKETS * sizeof(cl_uint);
-                    histogramBins = new T[tempSize]();
+                    histogramSize = numGroups * workGroupSize * BUCKETS * sizeof(cl_uint);
+                    histogramBins = new cl_uint[histogramSize]();
 
                     // Output for histogram kernel
                     unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, adaptedSize * sizeof(T));
-                    histogramBinsBuf = context->createBuffer(CL_MEM_WRITE_ONLY, tempSize);
+                    histogramBinsBuf = context->createBuffer(CL_MEM_WRITE_ONLY, histogramSize);
 
                     // Input for permute kernel
-                    scanedHistogramBinsBuf = context->createBuffer(CL_MEM_READ_ONLY, tempSize);
+                    scanedHistogramBinsBuf = context->createBuffer(CL_MEM_READ_ONLY, histogramSize);
 
                     // Final output
                     sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, adaptedSize * sizeof(T));
@@ -171,10 +169,10 @@ size_t tempSize;
                         // Calculate thread-histograms
                         runHistogramKernel(queue, bits, workGroupSize);
 
-                        cout << "before" << endl;
+                        /*cout << "before" << endl;
                         for(int i = 0; i < numGroups; i++)
                             for(int j = 0; j < workGroupSize; j++)
-                                printArr(histogramBins + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);
+                                printArr(histogramBins + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);*/
 
                         // Scan the histogram
                         int sum = 0;
@@ -192,10 +190,10 @@ size_t tempSize;
                             }
                         }
 
-                        cout << "after" << endl;
+                        /*cout << "after" << endl;
                         for(int i = 0; i < numGroups; i++)
                             for(int j = 0; j < workGroupSize; j++)
-                                printArr(histogramBins + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);
+                                printArr(histogramBins + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);*/
 
                         // Permute the element to appropriate place
                         runPermuteKernel(queue, bits, workGroupSize);
@@ -256,7 +254,6 @@ size_t tempSize;
                 {
                     delete[] unsortedData;
                     delete[] dSortedData;
-                    delete[] hSortedData;
                     delete[] histogramBins;
 
                     delete histogramKernel;
@@ -268,11 +265,11 @@ size_t tempSize;
             private:
                 size_t numGroups;
                 size_t adaptedSize;
+                size_t histogramSize;
 
                 T* unsortedData;
                 T* dSortedData;
-                T* hSortedData;
-                T* histogramBins;
+                cl_uint* histogramBins;
 
                 Kernel* histogramKernel;
                 Kernel* permuteKernel;
