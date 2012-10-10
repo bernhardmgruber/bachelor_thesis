@@ -28,6 +28,7 @@
 #include "gpu/amd/RadixSort.h"
 #include "gpu/dixxi/RadixSort.h"
 #include "gpu/dixxi/RadixSortAtomicCounters.h"
+#include "gpu/amd_dixxi/RadixSort.h"
 
 using namespace std;
 
@@ -40,7 +41,7 @@ int main()
         //runner.printCLInfo();
 
         //size_t range[] = {1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24 };
-        size_t range[] = { 512 };
+        size_t range[] = { 1<<10 };
         size_t length = sizeof(range) / sizeof(size_t);
 
         //runner.printRange<cpu::Quicksort>(RunType::CPU, range, length);
@@ -68,6 +69,8 @@ int main()
 
         //runner.printRange<gpu::amd::BitonicSort>(RunType::CL_GPU, range, length, false);
         runner.printRange<gpu::amd::RadixSort>(RunType::CL_GPU, range, length, false); // crashes on large arrays
+        //runner.printRange<gpu::amd_dixxi::RadixSortSmallHist>(RunType::CL_GPU, range, length, false);
+        //runner.printRange<gpu::amd_dixxi::RadixSort>(RunType::CL_GPU, range, length, false);
 
         //runner.printRange<gpu::dixxi::RadixSort>(RunType::CL_GPU, range, length, false);
         //runner.printRange<gpu::dixxi::RadixSortAtomicCounters>(RunType::CL_GPU, range, length, false);

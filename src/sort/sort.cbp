@@ -66,6 +66,9 @@
 		<Unit filename="gpu\amd\BitonicSort.h" />
 		<Unit filename="gpu\amd\RadixSort.cl" />
 		<Unit filename="gpu\amd\RadixSort.h" />
+		<Unit filename="gpu\amd_dixxi\LocalScan.cl" />
+		<Unit filename="gpu\amd_dixxi\RadixSort.cl" />
+		<Unit filename="gpu\amd_dixxi\RadixSort.h" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortA.cl" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortA.h" />
 		<Unit filename="gpu\bealto\ParallelBitonicSortB16.cl" />

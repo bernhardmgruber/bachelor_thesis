@@ -1,6 +1,6 @@
 /* ============================================================
 
-Copyright (c) 2009 Advanced Micro Devices, Inc.  All rights reserved.
+Copyright (c) 2009-2010 Advanced Micro Devices, Inc.  All rights reserved.
 
 Redistribution and use of this material is permitted under the following
 conditions:
@@ -89,88 +89,88 @@ jurisdiction and venue of these courts.
 
 ============================================================ */
 
-#ifndef AMDCPURADIXSORT_H
-#define AMDCPURADIXSORT_H
+/*
+ * For a description of the algorithm and the terms used, please see the
+ * documentation for this sample.
+ */
 
-#include <math.h>
+#pragma OPENCL EXTENSION cl_khr_byte_addressable_store : enable
 
-using namespace std;
+#define RADIX 4
+#define BUCKETS (1 << RADIX)
+#define RADIX_MASK (BUCKETS - 1)
 
-#include "../../../common/CPUAlgorithm.h"
-
-namespace cpu
+/**
+ * @brief   Calculates block-histogram bin whose bin size is 256
+ * @param   unsortedData    array of unsorted elements
+ * @param   buckets         histogram buckets
+ * @param   bits            shift count
+ * @param   sharedArray     shared array for thread-histogram bins
+  */
+__kernel void histogram(__global const uint* unsortedData, __global uint* buckets, uint bits, __local ushort* sharedArray)
 {
-    namespace amd
+    size_t localId = get_local_id(0);
+    size_t globalId = get_global_id(0);
+    size_t groupId = get_group_id(0);
+    size_t groupSize = get_local_size(0);
+
+    /* Initialize shared array to zero */
+    for(int i = 0; i < BUCKETS; ++i)
+        sharedArray[localId * BUCKETS + i] = 0;
+
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    /* Calculate thread-histograms */
+    for(int i = 0; i < BUCKETS; ++i)
     {
-        template<typename T>
-        class RadixSort : public CPUAlgorithm<T>, public SortAlgorithm
-        {
-            static const unsigned int RADIX = 4;
-            static const unsigned int BUCKETS = (1 << RADIX);
-            static const unsigned int RADIX_MASK = (BUCKETS - 1);
+        uint value = unsortedData[globalId * BUCKETS + i];
+        value = (value >> bits) & RADIX_MASK;
+        sharedArray[localId * BUCKETS + value]++;
+    }
 
-            public:
-                const string getName() override
-                {
-                    return "RadixSort (AMD)";
-                }
+    barrier(CLK_LOCAL_MEM_FENCE);
 
-                bool isInPlace() override
-                {
-                    return false;
-                }
-
-                void run(T* data, T* result, size_t size) override
-                {
-                    unsigned int* histogram = new unsigned int[BUCKETS];
-                    T* tempData = new T[size];
-
-                    memcpy(tempData, data, size * sizeof(T));
-                    for(size_t bits = 0; bits < sizeof(T) * RADIX ; bits += RADIX)
-                    {
-                        // Initialize histogram bucket to zeros
-                        memset(histogram, 0, BUCKETS * sizeof(T));
-
-                        // Calculate 256 histogram for all element
-                        for(size_t i = 0; i < size; ++i)
-                        {
-                            T element = tempData[i];
-                            T value = (element >> bits) & RADIX_MASK;
-                            histogram[value]++;
-                        }
-
-                        // Prescan the histogram bucket (exclusive scan)
-                        T sum = 0;
-                        for(size_t i = 0; i < BUCKETS; ++i)
-                        {
-                            T val = histogram[i];
-                            histogram[i] = sum;
-                            sum += val;
-                        }
-
-                        // Rearrange  the elements based on prescaned histogram
-                        for(size_t i = 0; i < size; ++i)
-                        {
-                            T element = tempData[i];
-                            T value = (element >> bits) & RADIX_MASK;
-                            unsigned int index = histogram[value];
-                            result[index] = tempData[i];
-                            histogram[value] = index + 1;
-                        }
-
-                        // Copy to tempData for further use
-                        if(bits != RADIX * 3)
-                            memcpy(tempData, result, size * sizeof(T));
-                    }
-
-                    delete[] tempData;
-                    delete[] histogram;
-                }
-
-                virtual ~RadixSort() {}
-        };
-
+    /* Copy calculated histogram bin to global memory */
+    for(int i = 0; i < BUCKETS; ++i)
+    {
+        uint bucketPos = groupId * groupSize * BUCKETS + localId * BUCKETS + i;
+        buckets[bucketPos] = sharedArray[localId * BUCKETS + i];
     }
 }
 
-#endif // AMDCPURADIXSORT_H
+/**
+ * @brief   Permutes the element to appropriate places based on
+ *          prescaned buckets values
+ * @param   unsortedData        array of unsorted elments
+ * @param   scanedBuckets       prescaned buckets for permuations
+ * @param   shiftCount          shift count
+ * @param   sharedBuckets       shared array for scaned buckets
+ * @param   sortedData          array for sorted elements
+ */
+__kernel void permute(__global const uint* unsortedData, __global const uint* scanedBuckets, uint shiftCount, __local ushort* sharedBuckets, __global uint* sortedData)
+{
+    size_t groupId = get_group_id(0);
+    size_t localId = get_local_id(0);
+    size_t globalId = get_global_id(0);
+    size_t groupSize = get_local_size(0);
+
+    /* Copy prescaned thread histograms to corresponding thread shared block */
+    for(int i = 0; i < BUCKETS; ++i)
+    {
+        uint bucketPos = groupId * BUCKETS * groupSize + localId * BUCKETS + i;
+        sharedBuckets[localId * BUCKETS + i] = scanedBuckets[bucketPos];
+    }
+
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    /* Premute elements to appropriate location */
+    for(int i = 0; i < BUCKETS; ++i)
+    {
+        uint value = unsortedData[globalId * BUCKETS + i];
+        value = (value >> shiftCount) & RADIX_MASK;
+        uint index = sharedBuckets[localId * BUCKETS + value];
+        sortedData[index] = unsortedData[globalId * BUCKETS + i];
+        sharedBuckets[localId * BUCKETS + value] = index + 1;
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+}
