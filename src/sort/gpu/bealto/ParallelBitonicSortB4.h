@@ -31,7 +31,7 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    program = context->createProgram("gpu/bealto/ParallelBitonicSortB4.cl", "-D T=" + getTypeName<T>());
+                    Program* program = context->createProgram("gpu/bealto/ParallelBitonicSortB4.cl", "-D T=" + getTypeName<T>());
                     kernel2 = program->createKernel("ParallelBitonicSortB2");
                     kernel4 = program->createKernel("ParallelBitonicSortB4");
                     delete program;
@@ -87,7 +87,6 @@ namespace gpu
 
                 void cleanup() override
                 {
-                    delete program;
                     delete kernel2;
                     delete kernel4;
                 }
@@ -95,7 +94,6 @@ namespace gpu
                 virtual ~ParallelBitonicSortB4() {}
 
             private:
-                Program* program;
                 Kernel* kernel2;
                 Kernel* kernel4;
                 Buffer* buffer;

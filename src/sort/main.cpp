@@ -44,9 +44,9 @@ int main()
         //size_t range[] = { 1<<20 };
         size_t length = sizeof(range) / sizeof(size_t);
 
-        //runner.printRange<cpu::Quicksort>(RunType::CPU, range, length);
-        //runner.printRange<cpu::QSort>(RunType::CPU, range, length);
-        //runner.printRange<cpu::STLSort>(RunType::CPU, range, length);
+        runner.printRange<cpu::Quicksort>(RunType::CPU, range, length);
+        runner.printRange<cpu::QSort>(RunType::CPU, range, length);
+        runner.printRange<cpu::STLSort>(RunType::CPU, range, length);
         //runner.printRange<cpu::TimSort>(RunType::CPU, range, length);
         runner.printRange<cpu::amd::RadixSort>(RunType::CPU, range, length);
 
@@ -59,7 +59,7 @@ int main()
         //runner.printRange<gpu::bealto::ParallelBitonicSortB2>(RunType::CL_GPU, range, length, true);
         //runner.printRange<gpu::bealto::ParallelBitonicSortB4>(RunType::CL_GPU, range, length, true);
         //runner.printRange<gpu::bealto::ParallelBitonicSortB8>(RunType::CL_GPU, range, length, true);
-        //runner.printRange<gpu::bealto::ParallelBitonicSortB16>(RunType::CL_GPU, range, length, false);
+        runner.printRange<gpu::bealto::ParallelBitonicSortB16>(RunType::CL_GPU, range, length, false);
         runner.printRange<gpu::bealto::ParallelBitonicSortC>(RunType::CL_GPU, range, length, false);
         //runner.printRange<gpu::bealto::ParallelMergeSort>(RunType::CL_GPU, range, length, true);
 

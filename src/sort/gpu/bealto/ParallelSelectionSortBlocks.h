@@ -42,7 +42,7 @@ namespace gpu
                 {
                     stringstream options;
                     options << "-D BLOCK_FACTOR=" << blockFactor << " -D T=" << getTypeName<T>();
-                    program = context->createProgram("gpu/bealto/ParallelSelectionSortBlocks.cl", options.str());
+                    Program* program = context->createProgram("gpu/bealto/ParallelSelectionSortBlocks.cl", options.str());
                     kernel = program->createKernel("ParallelSelectionSortBlocks");
                     delete program;
                 }
@@ -73,13 +73,11 @@ namespace gpu
 
                 void cleanup() override
                 {
-                    delete program;
                     delete kernel;
                 }
 
             private:
                 size_t blockFactor;
-                Program* program;
                 Kernel* kernel;
                 Buffer* in;
                 Buffer* out;

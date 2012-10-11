@@ -26,7 +26,7 @@ class SortPlugin
 
             generate(data, data + size, []()
             {
-                return 1;
+                return rand();
             });
 
             return data;
