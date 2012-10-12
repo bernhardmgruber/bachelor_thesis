@@ -6,37 +6,40 @@
 
 namespace cpu
 {
-    template<typename T>
-    class MultThreads : public CPUAlgorithm<T>, public MatrixAlgorithm
+    namespace dixxi
     {
-        public:
-            const string getName() override
-            {
-                return "Matrix multiplication (OpenMP)";
-            }
-
-            void run(T* data, T* result, size_t size) override
-            {
-                T* a = data;
-                T* b = a + size * size;
-                T* r = result;
-
-                #pragma omp parallel for
-                for(size_t i = 0; i < size; i++)
+        template<typename T>
+        class MultThreads : public CPUAlgorithm<T>, public MatrixAlgorithm
+        {
+            public:
+                const string getName() override
                 {
-                    for(size_t j = 0; j < size; j++)
+                    return "Matrix multiplication (OpenMP)";
+                }
+
+                void run(T* data, T* result, size_t size) override
+                {
+                    T* a = data;
+                    T* b = a + size * size;
+                    T* r = result;
+
+                    #pragma omp parallel for
+                    for(size_t i = 0; i < size; i++)
                     {
-                        r[i * size + j] = 0;
-                        for(size_t k = 0; k < size; k++)
-                            r[i * size + j] += a[i * size + k] * b[k * size + j];
+                        for(size_t j = 0; j < size; j++)
+                        {
+                            r[i * size + j] = 0;
+                            for(size_t k = 0; k < size; k++)
+                                r[i * size + j] += a[i * size + k] * b[k * size + j];
+                        }
                     }
                 }
-            }
 
-            virtual ~MultThreads() {}
+                virtual ~MultThreads() {}
 
-        private:
-    };
+            private:
+        };
+    }
 }
 
 #endif // CPUMULTTHREADS_H

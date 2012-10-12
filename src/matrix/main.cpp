@@ -5,8 +5,10 @@
 #include "../common/Runner.h"
 #include "MatrixPlugin.h"
 
-#include "cpu/Mult.h"
-#include "cpu/MultThreads.h"
+#include "cpu/dixxi/Mult.h"
+#include "cpu/dixxi/MultThreads.h"
+#include "cpu/cblas/Mult.h"
+
 #include "gpu/book/Mult.h"
 
 using namespace std;
@@ -15,7 +17,7 @@ int main()
 {
     try
     {
-        Runner<int, MatrixPlugin> runner;
+        Runner<float, MatrixPlugin> runner;
 
         //runner.printCLInfo();
 
@@ -23,8 +25,10 @@ int main()
         size_t range[] = {1, 25, 50, 75, 100, 150, 200, 250, 300, 400 };
         size_t length = sizeof(range) / sizeof(size_t);
 
-        runner.printRange<cpu::Mult>(RunType::CPU, range, length);
-        runner.printRange<cpu::MultThreads>(RunType::CPU, range, length);
+        runner.printRange<cpu::dixxi::Mult>(RunType::CPU, range, length);
+        runner.printRange<cpu::dixxi::MultThreads>(RunType::CPU, range, length);
+        runner.printRange<cpu::cblas::Mult>(RunType::CPU, range, length);
+
         runner.printRange<gpu::book::Mult>(RunType::CL_GPU, range, length, false);
         runner.printRange<gpu::book::Mult>(RunType::CL_CPU, range, length, false);
 
