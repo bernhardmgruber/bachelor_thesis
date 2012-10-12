@@ -1,8 +1,8 @@
 #ifndef CPUMULTTHREADS_H
 #define CPUMULTTHREADS_H
 
-#include "../../common/CPUAlgorithm.h"
-#include "../MatrixAlgorithm.h"
+#include "../../../common/CPUAlgorithm.h"
+#include "../../MatrixAlgorithm.h"
 
 namespace cpu
 {
