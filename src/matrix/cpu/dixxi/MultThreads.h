@@ -12,7 +12,7 @@ namespace cpu
         public:
             const string getName() override
             {
-                return "Matrix multiplication (Threads)";
+                return "Matrix multiplication (OpenMP)";
             }
 
             void run(T* data, T* result, size_t size) override
