@@ -294,6 +294,16 @@ string Context::readFile(string fileName)
     return buffer;
 }
 
+cl_context Context::getCLContext()
+{
+    return context;
+}
+
+cl_device_id Context::getCLDevice()
+{
+    return device;
+}
+
 //
 // class Program
 //
@@ -322,6 +332,11 @@ Kernel* Program::createKernel(string entry)
 //    kernels.push_back(kernelObj);
 
     return kernelObj;
+}
+
+cl_program Program::getCLProgram()
+{
+    return program;
 }
 
 //
@@ -357,6 +372,11 @@ size_t Kernel::getWorkGroupSize()
     error = clGetKernelWorkGroupInfo (kernel, context->device, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &size, nullptr);
     checkError(__LINE__);
     return size;
+}
+
+cl_kernel Kernel::getCLKernel()
+{
+    return kernel;
 }
 
 //
@@ -442,6 +462,11 @@ Context* CommandQueue::getContext()
     return context;
 }
 
+cl_command_queue CommandQueue::getCLCommandQueue()
+{
+    return queue;
+}
+
 //
 // class Bufffer
 //
@@ -460,4 +485,9 @@ Buffer::~Buffer()
 size_t Buffer::getSize()
 {
     return size;
+}
+
+cl_mem Buffer::getCLBuffer()
+{
+    return buffer;
 }

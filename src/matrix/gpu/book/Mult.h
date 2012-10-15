@@ -34,7 +34,7 @@ namespace gpu
                     queue->enqueueWrite(a, data, 0, elementCount * sizeof(T));
 
                     b = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * sizeof(T));
-                    queue->enqueueWrite(b, (T*)data + elementCount, 0, elementCount * sizeof(T));
+                    queue->enqueueWrite(b, data + elementCount, 0, elementCount * sizeof(T));
 
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * sizeof(T));
                 }

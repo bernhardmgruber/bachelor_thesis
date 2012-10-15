@@ -28,9 +28,9 @@ class MatrixPlugin
 
             T* data = new T[bufferSize]; // two size x size matrixes
 
-            generate(data, data + bufferSize, []()
+            generate(data, data + bufferSize, []() -> T
             {
-                return rand() % 100;
+                return rand() % 1000;
             });
 
             return data;

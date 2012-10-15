@@ -104,6 +104,9 @@ class Context
          */
         void* getInfoWithDefaultOnError(cl_device_info);
 
+        cl_device_id getCLDevice();
+        cl_context getCLContext();
+
     private:
         string readFile(string fileName);
 
@@ -132,6 +135,8 @@ class Program
 
         Kernel* createKernel(string entry);
 
+        cl_program getCLProgram();
+
     private:
         cl_program program;
 
@@ -156,6 +161,8 @@ class Kernel
         }
 
         size_t getWorkGroupSize();
+
+        cl_kernel getCLKernel();
 
     private:
         cl_kernel kernel;
@@ -187,6 +194,8 @@ class CommandQueue
 
         Context* getContext();
 
+        cl_command_queue getCLCommandQueue();
+
     private:
         cl_command_queue queue;
 
@@ -201,6 +210,8 @@ class Buffer
         virtual ~Buffer();
 
         size_t getSize();
+
+        cl_mem getCLBuffer();
 
     private:
         cl_mem buffer;

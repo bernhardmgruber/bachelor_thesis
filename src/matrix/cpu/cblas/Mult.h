@@ -31,7 +31,7 @@ namespace cpu
         template <>
         void Mult<float>::run(float* data, float* result, size_t size)
         {
-            cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, size,  size,  size, 1.0, data,size, data, size, 0.0, result, size);
+            cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, size,  size,  size, 1.0, data, size, data + size * size, size, 0.0, result, size);
         }
     }
 }
