@@ -7,7 +7,7 @@
 
 namespace gpu
 {
-    namespace book
+    namespace dixxi
     {
         template<typename T>
         class Mult : public GPUAlgorithm<T>, public MatrixAlgorithm

@@ -64,8 +64,8 @@
 		<Unit filename="cpu/dixxi/Mult.h" />
 		<Unit filename="cpu/dixxi/MultThreads.h" />
 		<Unit filename="gpu/amdblas/Mult.h" />
-		<Unit filename="gpu/book/Mult.cl" />
-		<Unit filename="gpu/book/Mult.h" />
+		<Unit filename="gpu/dixxi/Mult.cl" />
+		<Unit filename="gpu/dixxi/Mult.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
