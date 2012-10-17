@@ -30,7 +30,7 @@ class MatrixPlugin
 
             generate(data, data + bufferSize, []() -> T
             {
-                return rand() % 1000;
+                return rand() % 100;
             });
 
             return data;
@@ -57,11 +57,25 @@ class MatrixPlugin
             T* b = a + size * size;
             T* c = (T*) result;
 
-            //for(size_t i = 0; i < size * size; i++)
-            //    cout << c[i] << ((i + 1) % size == 0 ? "\n" : ", ");
-            //cout << endl;
+            bool success = true;
 
+            #pragma omp parallel for
             for(size_t i = 0; i < size; i++)
+            {
+                if(success)
+                    for(size_t j = 0; j < size; j++)
+                    {
+                        T sum = 0;
+                        for(size_t k = 0; k < size; k++)
+                            sum += a[i * size + k] * b[k * size + j];
+                        if(c[i * size + j] != sum)
+                            success = false;
+                    }
+            }
+
+            return success;
+
+            /*for(size_t i = 0; i < size; i++)
             {
                 for(size_t j = 0; j < size; j++)
                 {
@@ -69,11 +83,14 @@ class MatrixPlugin
                     for(size_t k = 0; k < size; k++)
                         sum += a[i * size + k] * b[k * size + j];
                     if(c[i * size + j] != sum)
+                    {
+                        printArr(c, size * size);
                         return false;
+                    }
                 }
             }
 
-            return true;
+            return true;*/
         }
 };
 

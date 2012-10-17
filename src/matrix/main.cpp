@@ -36,7 +36,8 @@ int main()
         runner.printRange<gpu::dixxi::Mult>(RunType::CL_GPU, range, length, false);
         runner.printRange<gpu::dixxi::MultImage>(RunType::CL_GPU, range, length, false);
         runner.printRange<gpu::dixxi::MultHybrid>(RunType::CL_GPU, range, length, false);
-        //runner.printRange<gpu::amdblas::Mult>(RunType::CL_GPU, range, length, false);
+
+        runner.printRange<gpu::amdblas::Mult>(RunType::CL_GPU, range, length, false);
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");
