@@ -1,7 +1,6 @@
 #ifndef OPENCL_H
 #define OPENCL_H
 
-#define CL_USE_DEPRECATED_OPENCL_1_1_APIS
 #include <CL/cl.h>
 #include <CL/cl_ext.h>
 #include <string>
@@ -10,13 +9,14 @@
 
 using namespace std;
 
-void checkError(cl_int error, int line);
+void checkError(cl_int error, int line, string name);
 
 class Context;
 class CommandQueue;
 class Program;
 class Kernel;
 class Buffer;
+class Image;
 
 class OpenCLException : public exception
 {
@@ -61,6 +61,7 @@ class Context
         Program* createProgram(string source, string options = "");
         CommandQueue* createCommandQueue();
         Buffer* createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
+        Image* createImage(cl_mem_flags flags, const cl_image_format& format, const cl_image_desc& descriptor, void* ptr = nullptr);
 
         /**
          * Retrieves an OpenCL device information.
@@ -73,7 +74,7 @@ class Context
         {
             T value = 0;
             cl_int error = clGetDeviceInfo(device, info, sizeof(T), (void*) &value, nullptr);
-            checkError(error, __LINE__);
+            checkError(error, __LINE__, __FUNCTION__);
 
             return value;
         }
@@ -151,13 +152,14 @@ class Kernel
         ~Kernel();
 
         void setArg(cl_uint index, Buffer* buffer);
+        void setArg(cl_uint index, Image* image);
         void setArg(cl_uint index, size_t size, const void* value);
 
         template <typename T>
         void setArg(cl_uint index, T value)
         {
             cl_int error = clSetKernelArg(kernel, index, sizeof(T), &value);
-            checkError(error, __LINE__);
+            checkError(error, __LINE__, __FUNCTION__);
         }
 
         size_t getWorkGroupSize();
@@ -183,8 +185,12 @@ class CommandQueue
         void enqueueTask(Kernel* kernel);
         void enqueueRead(Buffer* buffer, void* destination, bool blocking = true);
         void enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking = true);
+        void enqueueRead(Image* image, void* destination, bool blocking = true);
         void enqueueWrite(Buffer* buffer, const void* source, bool blocking = true);
         void enqueueWrite(Buffer* buffer, const void* source, size_t offset, size_t size, bool blocking = true);
+        void enqueueWrite(Image* image, const void* source, bool blocking = true);
+        void* enqueueMap(Image* image, cl_map_flags flags, bool blocking = true);
+        void enqueueUnmap(Image* image, void* ptr);
         void enqueueCopy(Buffer* src, Buffer* dest);
         void enqueueCopy(Buffer* src, Buffer* dest, size_t srcOffset, size_t destOffset, size_t size);
         void enqueueBarrier();
@@ -221,4 +227,23 @@ class Buffer
     friend CommandQueue;
 };
 
+class Image
+{
+    public:
+        Image(cl_mem buffer, const cl_image_format& format, const cl_image_desc& descriptor);
+        virtual ~Image();
+
+        cl_image_format getFormat();
+        cl_image_desc getDescriptor();
+
+        cl_mem getCLBuffer();
+
+    private:
+        cl_mem buffer;
+        const cl_image_format format;
+        const cl_image_desc descriptor;
+
+    friend Kernel;
+    friend CommandQueue;
+};
 #endif // OPENCL_H

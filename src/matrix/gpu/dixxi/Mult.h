@@ -1,5 +1,5 @@
-#ifndef GPUBOOKMULT_H
-#define GPUBOOKMULT_H
+#ifndef GPUDIXXIMULT_H
+#define GPUDIXXIMULT_H
 
 #include "../../../common/utils.h"
 #include "../../../common/GPUAlgorithm.h"
@@ -15,12 +15,12 @@ namespace gpu
             public:
                 const string getName() override
                 {
-                    return "Matrix multiplication (Book)";
+                    return "Matrix multiplication";
                 }
 
                 void init(Context* context) override
                 {
-                    Program* program = context->createProgram("gpu/book/Mult.cl", "-D T=" + getTypeName<T>());
+                    Program* program = context->createProgram("gpu/dixxi/Mult.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("Mult");
                     delete program;
                 }
@@ -77,5 +77,4 @@ namespace gpu
     }
 }
 
-
-#endif
+#endif // GPUDIXXIMULT_H

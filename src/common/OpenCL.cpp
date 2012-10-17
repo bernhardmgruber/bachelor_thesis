@@ -65,17 +65,17 @@ static const char* errorCodes[errorCodesCount] = {
 
 static cl_int error;
 
-void checkError(int line)
+void checkError(int line, string name)
 {
-    checkError(error, line);
+    checkError(error, line, name);
 }
 
-void checkError(cl_int error, int line)
+void checkError(cl_int error, int line, string name)
 {
     if(error != CL_SUCCESS)
     {
         stringstream ss;
-        ss << "Error at line " << line << ": ";
+        ss << "Error in function " << name << " at line " << line << ": ";
         if(-error < errorCodesCount)
             ss << errorCodes[-error] << " (" << error << ")";
         else
@@ -106,7 +106,7 @@ void OpenCL::init()
 {
     // get the first available platform
     error = clGetPlatformIDs(1, &platform, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void OpenCL::cleanup()
@@ -121,11 +121,11 @@ Context* OpenCL::getGPUContext()
     // get a GPU from this platform
     cl_device_id device;
     error = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 
     // create a context to work with OpenCL
     cl_context context = clCreateContext(nullptr, 1, &device, nullptr, nullptr, &error);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 
     // create Context object
     Context* contextObj = new Context(context, device);
@@ -139,11 +139,11 @@ Context* OpenCL::getCPUContext()
     // get a GPU from this platform
     cl_device_id device;
     error = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &device, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 
     // create a context to work with OpenCL
     cl_context context = clCreateContext(nullptr, 1, &device, nullptr, nullptr, &error);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 
     // create Context object
     Context* contextObj = new Context(context, device);
@@ -182,7 +182,7 @@ Program* Context::createProgram(string sourceFile, string options)
     string sourceString = readFile(sourceFile);
     const char* source = sourceString.c_str();
     cl_program program = clCreateProgramWithSource(context, 1, &source, nullptr, &error);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 
     // build the program
     error = clBuildProgram(program, 1, &device, ("-w " + options).c_str(), nullptr, nullptr);
@@ -191,12 +191,12 @@ Program* Context::createProgram(string sourceFile, string options)
         // get the error log size
         size_t logSize;
         error = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, 0, nullptr, &logSize);
-        checkError(__LINE__);
+        checkError(__LINE__, __FUNCTION__);
 
         // allocate enough space and get the log
         char* log = new char[logSize + 1];
         error = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, logSize, log, nullptr);
-        checkError(__LINE__);
+        checkError(__LINE__, __FUNCTION__);
         log[logSize] = '\0';
 
         string logStr = string(log);
@@ -219,7 +219,7 @@ CommandQueue* Context::createCommandQueue()
 {
     // create a new command queue, where kernels can be executed
     cl_command_queue cmdqueue = clCreateCommandQueue(context, device, 0, &error);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 
     // create CommandQueue object
     CommandQueue* queueObj = new CommandQueue(cmdqueue, this);
@@ -231,14 +231,17 @@ CommandQueue* Context::createCommandQueue()
 Buffer* Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
 {
     cl_mem buffer = clCreateBuffer(context, flags, size, ptr, &error);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 
+    return new Buffer(buffer, size);
+}
 
-    // create CommandQueue object
-    Buffer* bufferObj = new Buffer(buffer, size);
-    //buffers.push_back(bufferObj);
+Image* Context::createImage(cl_mem_flags flags, const cl_image_format& format, const cl_image_desc& descriptor, void* ptr)
+{
+    cl_mem image = clCreateImage(context, flags, &format, &descriptor, ptr, &error);
+    checkError(__LINE__, __FUNCTION__);
 
-    return bufferObj;
+    return new Image(image, format, descriptor);
 }
 
 template <>
@@ -246,11 +249,11 @@ string Context::getInfo<string>(cl_device_info info)
 {
     size_t size = 0;
     cl_int error = clGetDeviceInfo(device, info, 0, nullptr, &size);
-    checkError(error, __LINE__);
+    checkError(error, __LINE__, __FUNCTION__);
 
     char* buffer = new char[size + 1];
     error = clGetDeviceInfo(device, info, size + 1, buffer, nullptr);
-    checkError(error, __LINE__);
+    checkError(error, __LINE__, __FUNCTION__);
     buffer[size + 1] = 0;
 
     return string(buffer);
@@ -260,11 +263,11 @@ void* Context::getInfo(cl_device_info info)
 {
     size_t neededSize;
     cl_int error = clGetDeviceInfo(device, info, 0, nullptr, &neededSize);
-    checkError(error, __LINE__);
+    checkError(error, __LINE__, __FUNCTION__);
 
     void* value = operator new(neededSize);
     error = clGetDeviceInfo(device, info, neededSize, value, nullptr);
-    checkError(error, __LINE__);
+    checkError(error, __LINE__, __FUNCTION__);
 
     return value;
 }
@@ -325,7 +328,7 @@ Program::~Program()
 Kernel* Program::createKernel(string entry)
 {
     cl_kernel kernel = clCreateKernel(program, entry.c_str(), &error);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 
     // create Kernel object
     Kernel* kernelObj = new Kernel(kernel, context);
@@ -351,26 +354,32 @@ Kernel::Kernel(cl_kernel kernel, Context* context)
 Kernel::~Kernel()
 {
     error = clReleaseKernel(kernel);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void Kernel::setArg(cl_uint index, Buffer* buffer)
 {
     error = clSetKernelArg(kernel, index, sizeof(cl_mem), (const void*)&buffer->buffer);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
+}
+
+void Kernel::setArg(cl_uint index, Image* image)
+{
+    error = clSetKernelArg(kernel, index, sizeof(cl_mem), (const void*)&image->buffer);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void Kernel::setArg(cl_uint index, size_t size, const void* value)
 {
     error = clSetKernelArg(kernel, index, size, value);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 size_t Kernel::getWorkGroupSize()
 {
     size_t size;
     error = clGetKernelWorkGroupInfo (kernel, context->device, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &size, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
     return size;
 }
 
@@ -396,13 +405,13 @@ CommandQueue::~CommandQueue()
 void CommandQueue::enqueueKernel(Kernel* kernel, cl_uint dimension, const size_t* globalWorkSizes, const size_t* localWorkSizes, const size_t* globalWorkOffsets)
 {
     error = clEnqueueNDRangeKernel(queue, kernel->kernel, dimension, globalWorkOffsets, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void CommandQueue::enqueueTask(Kernel* kernel)
 {
     error = clEnqueueTask(queue, kernel->kernel, 0, nullptr, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void CommandQueue::enqueueRead(Buffer* buffer, void* destination, bool blocking)
@@ -413,19 +422,52 @@ void CommandQueue::enqueueRead(Buffer* buffer, void* destination, bool blocking)
 void CommandQueue::enqueueRead(Buffer* buffer, void* destination, size_t offset, size_t size, bool blocking)
 {
     error = clEnqueueReadBuffer(queue, buffer->buffer, blocking, offset, size, destination, 0, nullptr, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
+}
+
+void CommandQueue::enqueueRead(Image* image, void* destination, bool blocking)
+{
+    size_t origin[] = {0, 0, 0};
+    size_t region[] = {image->descriptor.image_width, image->descriptor.image_height, image->descriptor.image_depth};
+    error = clEnqueueReadImage(queue, image->buffer, blocking, origin, region, 0, 0, destination, 0, nullptr, nullptr);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, bool blocking)
 {
     error = clEnqueueWriteBuffer(queue, buffer->buffer, blocking, 0, buffer->size, source, 0, nullptr, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, size_t offset, size_t size, bool blocking)
 {
     error = clEnqueueWriteBuffer(queue, buffer->buffer, blocking, offset, size, source, 0, nullptr, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
+}
+
+void CommandQueue::enqueueWrite(Image* image, const void* source, bool blocking)
+{
+    size_t origin[] = {0, 0, 0};
+    size_t region[] = {image->descriptor.image_width, image->descriptor.image_height, image->descriptor.image_depth};
+    error = clEnqueueWriteImage(queue, image->buffer, blocking, origin, region, 0, 0, nullptr, 0, nullptr, nullptr);
+    checkError(__LINE__, __FUNCTION__);
+}
+
+void* CommandQueue::enqueueMap(Image* image, cl_map_flags flags, bool blocking)
+{
+    size_t origin[] = {0, 0, 0};
+    size_t region[] = {image->descriptor.image_width, image->descriptor.image_height, image->descriptor.image_depth};
+    size_t rowPitch;
+    size_t slicePitch;
+    void* ptr = clEnqueueMapImage(queue, image->buffer, blocking, flags, origin, region, &rowPitch, &slicePitch, 0, nullptr, nullptr, &error);
+    checkError(__LINE__, __FUNCTION__);
+    return ptr;
+}
+
+void CommandQueue::enqueueUnmap(Image* image, void* ptr)
+{
+    error = clEnqueueUnmapMemObject(queue, image->buffer, ptr, 0, nullptr, nullptr);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void CommandQueue::enqueueCopy(Buffer* src, Buffer* dest)
@@ -436,25 +478,25 @@ void CommandQueue::enqueueCopy(Buffer* src, Buffer* dest)
 void CommandQueue::enqueueCopy(Buffer* src, Buffer* dest, size_t srcOffset, size_t destOffset, size_t size)
 {
     error = clEnqueueCopyBuffer(queue, src->buffer, dest->buffer, srcOffset, destOffset, size, 0, nullptr, nullptr);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void CommandQueue::enqueueBarrier()
 {
-    error = clEnqueueBarrier(queue);
-    checkError(__LINE__);
+    error = clEnqueueBarrierWithWaitList(queue, 0, nullptr, nullptr);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void CommandQueue::flush()
 {
     error = clFlush(queue);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 void CommandQueue::finish()
 {
     error = clFinish(queue);
-    checkError(__LINE__);
+    checkError(__LINE__, __FUNCTION__);
 }
 
 Context* CommandQueue::getContext()
@@ -488,6 +530,36 @@ size_t Buffer::getSize()
 }
 
 cl_mem Buffer::getCLBuffer()
+{
+    return buffer;
+}
+
+//
+// class Image
+//
+
+Image::Image(cl_mem buffer, const cl_image_format& format, const cl_image_desc& descriptor)
+    : buffer(buffer), format(format), descriptor(descriptor)
+{
+
+}
+
+Image::~Image()
+{
+    clReleaseMemObject(buffer);
+}
+
+cl_image_format Image::getFormat()
+{
+    return format;
+}
+
+cl_image_desc Image::getDescriptor()
+{
+    return descriptor;
+}
+
+cl_mem Image::getCLBuffer()
 {
     return buffer;
 }
