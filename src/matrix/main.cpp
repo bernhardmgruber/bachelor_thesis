@@ -11,6 +11,7 @@
 
 #include "gpu/dixxi/Mult.h"
 #include "gpu/dixxi/MultImage.h"
+#include "gpu/dixxi/MultHybrid.h"
 #include "gpu/amdblas/Mult.h"
 
 using namespace std;
@@ -23,8 +24,8 @@ int main()
 
         //runner.printCLInfo();
 
-        //size_t range[] = {1, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000 };
-        size_t range[] = { 800 };
+        size_t range[] = {1, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000};
+        //size_t range[] = { 400 };
         //size_t range[] = {3};
         size_t length = sizeof(range) / sizeof(size_t);
 
@@ -34,6 +35,7 @@ int main()
 
         runner.printRange<gpu::dixxi::Mult>(RunType::CL_GPU, range, length, false);
         runner.printRange<gpu::dixxi::MultImage>(RunType::CL_GPU, range, length, false);
+        runner.printRange<gpu::dixxi::MultHybrid>(RunType::CL_GPU, range, length, false);
         //runner.printRange<gpu::amdblas::Mult>(RunType::CL_GPU, range, length, false);
 
         runner.writeStats("stats.csv");
