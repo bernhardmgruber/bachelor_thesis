@@ -5,14 +5,23 @@
 #include "../common/Runner.h"
 #include "MeshTransformPlugin.h"
 
+#include "cpu/dixxi/Transform.h"
+#include "gpu/dixxi/Transform.h"
+
 using namespace std;
 
 int main()
 {
     try
     {
-        Runner<int, MeshTransformPlugin> runner;
+        Runner<float, MeshTransformPlugin> runner;
 
+        size_t range[] = { 1<<15, 1<<18, 1<<20 };
+        size_t count = sizeof(range) / sizeof(size_t);
+
+        runner.printRange<cpu::dixxi::Transform>(RunType::CPU, range, count);
+
+        runner.printRange<gpu::dixxi::Transform>(RunType::CL_GPU, range, count, false);
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");

@@ -3,7 +3,8 @@
 
 class MeshTransformAlgorithm
 {
-
+    public:
+        static const size_t MATRIX_SIZE = 16;
 };
 
 #endif // MESHTRANSFORMALGORITHM_H

@@ -51,6 +51,8 @@
 		<Unit filename="../common/utils.h" />
 		<Unit filename="MeshTransformAlgorithm.h" />
 		<Unit filename="MeshTransformPlugin.h" />
+		<Unit filename="cpu/dixxi/Transform.h" />
+		<Unit filename="gpu/dixxi/Transform.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
