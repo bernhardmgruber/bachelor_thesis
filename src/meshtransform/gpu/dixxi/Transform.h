@@ -3,6 +3,7 @@
 
 #include "../../../common/GPUAlgorithm.h"
 #include "../../MeshTransformAlgorithm.h"
+#include "../../../common/utils.h"
 
 namespace gpu
 {
@@ -28,18 +29,20 @@ namespace gpu
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
+                    adaptedSize = roundToMultiple(size, workGroupSize);
+
                     matrixBuffer = context->createBuffer(CL_MEM_READ_ONLY, MATRIX_SIZE * sizeof(T));
                     queue->enqueueWrite(matrixBuffer, data);
 
-                    vertexBuffer = context->createBuffer(CL_MEM_READ_WRITE, size * 3 * sizeof(T));
-                    queue->enqueueWrite(vertexBuffer, data + MATRIX_SIZE);
+                    vertexBuffer = context->createBuffer(CL_MEM_READ_WRITE, adaptedSize * 3 * sizeof(T));
+                    queue->enqueueWrite(vertexBuffer, data + MATRIX_SIZE, 0, size * 3 * sizeof(T));
                 }
                 void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
                     kernel->setArg(0, matrixBuffer);
                     kernel->setArg(1, vertexBuffer);
 
-                    size_t globalWorkSizes[] = { size };
+                    size_t globalWorkSizes[] = { adaptedSize };
                     size_t localWorkSizes[] = { workGroupSize };
 
                     queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
@@ -47,9 +50,11 @@ namespace gpu
 
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
-                    queue->enqueueWrite(vertexBuffer, result);
+                    queue->enqueueRead(vertexBuffer, result, 0, size * 3 * sizeof(T));
                     delete matrixBuffer;
                     delete vertexBuffer;
+
+                    //printArr(result, size);
                 }
 
                 void cleanup() override
@@ -63,6 +68,7 @@ namespace gpu
                 Kernel* kernel;
                 Buffer* matrixBuffer;
                 Buffer* vertexBuffer;
+                size_t adaptedSize;
         };
     }
 }

@@ -38,8 +38,12 @@
 			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add option="-fopenmp" />
 			<Add directory="../common/libs/clpp" />
 		</Compiler>
+		<Linker>
+			<Add library="gomp" />
+		</Linker>
 		<Unit filename="../common/CPUAlgorithm.h" />
 		<Unit filename="../common/GPUAlgorithm.h" />
 		<Unit filename="../common/OpenCL.cpp" />
@@ -52,6 +56,7 @@
 		<Unit filename="MeshTransformAlgorithm.h" />
 		<Unit filename="MeshTransformPlugin.h" />
 		<Unit filename="cpu/dixxi/Transform.h" />
+		<Unit filename="cpu/dixxi/TransformMulti.h" />
 		<Unit filename="gpu/dixxi/Transform.cl" />
 		<Unit filename="gpu/dixxi/Transform.h" />
 		<Unit filename="main.cpp" />

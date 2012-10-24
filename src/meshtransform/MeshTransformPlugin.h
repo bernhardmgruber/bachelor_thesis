@@ -26,9 +26,16 @@ class MeshTransformPlugin
         {
             T* data = new T[MATRIX_SIZE + size * 3];
 
+            /*T matrix[] = {1, 0, 0, 0,
+                          0, 1, 0, 0,
+                          0, 0, 1, 0,
+                          0, 0, 0, 1};
+
+            memcpy(data, matrix, MATRIX_SIZE * sizeof(T));*/
+
             generate(data, data + MATRIX_SIZE + size * 3, []()
             {
-                return rand() / 1000.0;
+                return rand() % 10;
             });
 
             return data;
