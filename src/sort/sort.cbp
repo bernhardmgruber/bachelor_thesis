@@ -98,6 +98,8 @@
 		<Unit filename="gpu/dixxi/RadixSort.h" />
 		<Unit filename="gpu/dixxi/RadixSortAtomicCounters.cl" />
 		<Unit filename="gpu/dixxi/RadixSortAtomicCounters.h" />
+		<Unit filename="gpu/gpugems/OddEvenTransition.cl" />
+		<Unit filename="gpu/gpugems/OddEvenTransition.h" />
 		<Unit filename="gpu/libCL/RadixSort.cl" />
 		<Unit filename="gpu/libCL/RadixSort.h" />
 		<Unit filename="main.cpp" />

@@ -155,7 +155,7 @@ namespace cpu
                             T value = (element >> bits) & RADIX_MASK;
                             unsigned int index = histogram[value];
                             result[index] = tempData[i];
-                            histogram[value] = index + 1;
+                            histogram[value]++;
                         }
 
                         // Copy to tempData for further use
