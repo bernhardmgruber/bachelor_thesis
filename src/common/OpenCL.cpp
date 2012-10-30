@@ -70,7 +70,7 @@ void checkError(int line, string name)
     checkError(error, line, name);
 }
 
-void checkError(cl_int error, int line, string name)
+void checkError(cl_int error, int line, string name) throw(OpenCLException)
 {
     if(error != CL_SUCCESS)
     {
@@ -111,9 +111,7 @@ void OpenCL::init()
 
 void OpenCL::cleanup()
 {
-    //for(Context* c : contexts)
-    //    delete c;
-    //contexts.clear();
+
 }
 
 Context* OpenCL::getGPUContext()
@@ -163,18 +161,7 @@ Context::Context(cl_context context, cl_device_id device)
 
 Context::~Context()
 {
-    //for(Program* p : programs)
-    //    delete p;
-    //programs.clear();
-    //for(CommandQueue* q : queues)
-    //    delete q;
-    //queues.clear();
-    //for(Buffer* b : buffers)
-    //    delete b;
-    //buffers.clear();
-
     clReleaseContext(context);
-    //clReleaseDevice(device);
 }
 
 Program* Context::createProgram(string sourceFile, string options)
@@ -378,7 +365,7 @@ void Kernel::setArg(cl_uint index, size_t size, const void* value)
 size_t Kernel::getWorkGroupSize()
 {
     size_t size;
-    error = clGetKernelWorkGroupInfo (kernel, context->device, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &size, nullptr);
+    error = clGetKernelWorkGroupInfo(kernel, context->device, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &size, nullptr);
     checkError(__LINE__, __FUNCTION__);
     return size;
 }
