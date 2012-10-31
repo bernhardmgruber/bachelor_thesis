@@ -1,6 +1,13 @@
 #ifndef OPENCL_H
 #define OPENCL_H
 
+// the target OpenCL version
+#define OPENCL_VERSION 110 // OpenCL 1.1
+//#define OPENCL_VERSION 120 // OpenCL 1.2
+
+#if OPENCL_VERSION < 120
+#define CL_USE_DEPRECATED_OPENCL_1_1_APIS
+#endif
 #include <CL/cl.h>
 #include <CL/cl_ext.h>
 #include <string>

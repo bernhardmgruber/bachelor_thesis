@@ -225,7 +225,24 @@ Buffer* Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
 
 Image* Context::createImage(cl_mem_flags flags, const cl_image_format& format, const cl_image_desc& descriptor, void* ptr)
 {
+    #if OPENCL_VERSION >= 120
     cl_mem image = clCreateImage(context, flags, &format, &descriptor, ptr, &error);
+    #else
+    cl_mem image;
+    switch(descriptor.image_type)
+    {
+        case CL_MEM_OBJECT_IMAGE2D:
+            image = clCreateImage2D(context, flags, &format, descriptor.image_width, descriptor.image_height, descriptor.image_row_pitch, ptr, &error);
+            break;
+        case CL_MEM_OBJECT_IMAGE3D:
+            image = clCreateImage3D(context, flags, &format, descriptor.image_width, descriptor.image_height, descriptor.image_depth, descriptor.image_row_pitch, descriptor.image_slice_pitch, ptr, &error);
+            break;
+        default:
+            stringstream ss;
+            ss << "Image type " << descriptor.image_type << " is not supported until OpenCL 1.2";
+            throw OpenCLException(ss.str());
+    }
+    #endif
     checkError(__LINE__, __FUNCTION__);
 
     return new Image(image, format, descriptor);
@@ -470,7 +487,11 @@ void CommandQueue::enqueueCopy(Buffer* src, Buffer* dest, size_t srcOffset, size
 
 void CommandQueue::enqueueBarrier()
 {
+    #if OPENCL_VERSION >= 120
     error = clEnqueueBarrierWithWaitList(queue, 0, nullptr, nullptr);
+    #else
+    error = clEnqueueBarrier(queue);
+    #endif
     checkError(__LINE__, __FUNCTION__);
 }
 
