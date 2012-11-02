@@ -1,6 +1,8 @@
 #ifndef GPUDIXXIMULTIMAGE_H
 #define GPUDIXXIMULTIMAGE_H
 
+#include <string.h>
+
 #include "../../../common/utils.h"
 #include "../../../common/GPUAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
