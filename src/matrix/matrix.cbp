@@ -6,7 +6,7 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
+			<Target title="Debug Win32">
 				<Option output="bin/Debug/matrix" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
@@ -15,11 +15,12 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="..\common\libs\clpp\bin\Debug\libclpp.a" />
-					<Add library="opencl" />
+					<Add library="../common/libs/clpp/bin/Debug/libclpp.a" />
+					<Add library="OpenCL" />
+					<Add library="../common/libs/clAmdBlas/lib32/import/clAmdBlas.lib" />
 				</Linker>
 			</Target>
-			<Target title="Release">
+			<Target title="Release Win32">
 				<Option output="bin/Release/matrix" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
@@ -29,8 +30,37 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
-					<Add library="opencl" />
+					<Add library="../common/libs/clpp/bin/Release/libclpp.a" />
+					<Add library="OpenCL" />
+					<Add library="../common/libs/clAmdBlas/lib32/import/clAmdBlas.lib" />
+				</Linker>
+			</Target>
+			<Target title="Debug Linux">
+				<Option output="bin/Debug/matrix" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add library="../common/libs/clpp/bin/Debug/libclpp.a" />
+					<Add library="OpenCL" />
+				</Linker>
+			</Target>
+			<Target title="Release Linux">
+				<Option output="bin/Release/matrix" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="../common/libs/clpp/bin/Release/libclpp.a" />
+					<Add library="OpenCL" />
+					<Add library="./libclAmdBlas.so.1" />
 				</Linker>
 			</Target>
 		</Build>
@@ -44,10 +74,9 @@
 		</Compiler>
 		<Linker>
 			<Add library="gomp" />
-			<Add library="..\common\libs\cblas\lib\cblas_LINUX.a" />
-			<Add library="..\common\libs\blas\blas_LINUX.a" />
+			<Add library="../common/libs/cblas/lib/cblas_LINUX.a" />
+			<Add library="../common/libs/blas/blas_LINUX.a" />
 			<Add library="gfortran" />
-			<Add library="..\common\libs\clAmdBlas\lib32\import\clAmdBlas.lib" />
 		</Linker>
 		<Unit filename="../common/CPUAlgorithm.h" />
 		<Unit filename="../common/GPUAlgorithm.h" />
