@@ -94,6 +94,8 @@
 		<Unit filename="cpu/dixxi/MultThreads.h" />
 		<Unit filename="gpu/amd/MultTile.cl" />
 		<Unit filename="gpu/amd/MultTile.h" />
+		<Unit filename="gpu/amd/MultTileLocal.cl" />
+		<Unit filename="gpu/amd/MultTileLocal.h" />
 		<Unit filename="gpu/amdblas/Mult.h" />
 		<Unit filename="gpu/dixxi/Mult.cl" />
 		<Unit filename="gpu/dixxi/Mult.h" />

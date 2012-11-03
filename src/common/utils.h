@@ -54,7 +54,7 @@ void printArr(T* arr, size_t size)
 template <typename T>
 void printArr2D(T* arr, size_t size, size_t rowLength)
 {
-    for(int i = 0; i < size; i++)
+    for(size_t i = 0; i < size; i++)
     {
         cout << arr[i] << ",";
         if((i + 1) % rowLength == 0)
