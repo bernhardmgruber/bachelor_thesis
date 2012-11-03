@@ -51,4 +51,16 @@ void printArr(T* arr, size_t size)
     cout << endl;
 }
 
+template <typename T>
+void printArr2D(T* arr, size_t size, size_t rowLength)
+{
+    for(int i = 0; i < size; i++)
+    {
+        cout << arr[i] << ",";
+        if((i + 1) % rowLength == 0)
+            cout << endl;
+    }
+    cout << endl;
+}
+
 #endif // UTILS_H

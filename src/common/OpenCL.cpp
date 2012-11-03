@@ -437,6 +437,12 @@ void CommandQueue::enqueueRead(Image* image, void* destination, bool blocking)
     checkError(__LINE__, __FUNCTION__);
 }
 
+void CommandQueue::enqueueReadRect(Buffer* buffer, void* destination, const size_t bufferOffset[3], const size_t hostOffset[3], const size_t sizes[3], size_t bufferRowLength, size_t bufferSliceLength, size_t hostRowLength, size_t hostSliceLength, bool blocking)
+{
+    error = clEnqueueReadBufferRect(queue, buffer->buffer, blocking, bufferOffset, hostOffset, sizes, bufferRowLength, bufferSliceLength, hostRowLength, hostSliceLength, destination, 0, nullptr, nullptr);
+    checkError(__LINE__, __FUNCTION__);
+}
+
 void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, bool blocking)
 {
     error = clEnqueueWriteBuffer(queue, buffer->buffer, blocking, 0, buffer->size, source, 0, nullptr, nullptr);
@@ -454,6 +460,12 @@ void CommandQueue::enqueueWrite(Image* image, const void* source, bool blocking)
     size_t origin[] = {0, 0, 0};
     size_t region[] = {image->descriptor.image_width, image->descriptor.image_height, image->descriptor.image_depth};
     error = clEnqueueWriteImage(queue, image->buffer, blocking, origin, region, 0, 0, nullptr, 0, nullptr, nullptr);
+    checkError(__LINE__, __FUNCTION__);
+}
+
+void CommandQueue::enqueueWriteRect(Buffer* buffer, const void* source, const size_t bufferOffset[3], const size_t hostOffset[3], const size_t sizes[3], size_t bufferRowLength, size_t bufferSliceLength, size_t hostRowLength, size_t hostSliceLength, bool blocking)
+{
+    error = clEnqueueWriteBufferRect(queue, buffer->buffer, blocking, bufferOffset, hostOffset, sizes, bufferRowLength, bufferSliceLength, hostRowLength, hostSliceLength, source, 0, nullptr, nullptr);
     checkError(__LINE__, __FUNCTION__);
 }
 

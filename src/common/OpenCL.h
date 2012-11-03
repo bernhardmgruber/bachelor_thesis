@@ -413,6 +413,22 @@ class CommandQueue
         void enqueueRead(Image* image, void* destination, bool blocking = true);
 
         /**
+         * Enqueues a buffer reading operation in this command queue.
+         *
+         * @param buffer The buffer where data is read from.
+         * @param destination A pointer to memory where data is written to.
+         * @param bufferOffset The offsets into the buffer where the data rectancle or data cube should be read from.
+         * @param hostOffset The offsets into the host's memory where the data rectancle or data cube should be written to.
+         * @param sizes The sizes of the data rectangle or data cube.
+         * @param bufferRowLength The length in bytes of a row in the buffer. If set to zero this value defaults to size[0].
+         * @param bufferSliceLength The length in bytes of a slice in the buffer. If set to zero this value defaults to size[1] * bufferRowLength.
+         * @param hostRowLength The length in bytes of a row in the host's memory. If set to zero this value defaults to size[0].
+         * @param hostSliceLength The length in bytes of a slice in the host's memory. If set to zero this value defaults to size[1] * bufferRowLength.
+         * @param blocking If set to true (default) the read operation blocks until it has finished.
+         */
+        void enqueueReadRect(Buffer* buffer, void* destination, const size_t bufferOffset[3], const size_t hostOffset[3], const size_t sizes[3], size_t bufferRowLength, size_t bufferSliceLength, size_t hostRowLength, size_t hostSliceLength, bool blocking = true);
+
+        /**
          * Enqueues a buffer writing operation in this command queue.
          * The size of the written memory in bytes is equal to the buffer size.
          *
@@ -432,6 +448,22 @@ class CommandQueue
          * @param blocking If set to true (default) the write operation blocks until it has finished.
          */
         void enqueueWrite(Buffer* buffer, const void* source, size_t offset, size_t size, bool blocking = true);
+
+        /**
+         * Enqueues a buffer writing operation in this command queue.
+         *
+         * @param buffer The buffer where data is written to.
+         * @param source A pointer to memory where data is read from.
+         * @param bufferOffset The offsets into the buffer where the data rectancle or data cube should be written.
+         * @param hostOffset The offsets into the host's memory where the data rectancle or data cube should be read from.
+         * @param sizes The sizes of the data rectangle or data cube.
+         * @param bufferRowLength The length in bytes of a row in the buffer. If set to zero this value defaults to size[0].
+         * @param bufferSliceLength The length in bytes of a slice in the buffer. If set to zero this value defaults to size[1] * bufferRowLength.
+         * @param hostRowLength The length in bytes of a row in the host's memory. If set to zero this value defaults to size[0].
+         * @param hostSliceLength The length in bytes of a slice in the host's memory. If set to zero this value defaults to size[1] * bufferRowLength.
+         * @param blocking If set to true (default) the write operation blocks until it has finished.
+         */
+        void enqueueWriteRect(Buffer* buffer, const void* source, const size_t bufferOffset[3], const size_t hostOffset[3], const size_t sizes[3], size_t bufferRowLength, size_t bufferSliceLength, size_t hostRowLength, size_t hostSliceLength, bool blocking = true);
 
         /**
          * Enqueues a image writing operation in this command queue.
@@ -480,6 +512,15 @@ class CommandQueue
          * @param size The number of bytes to copy.
          */
         void enqueueCopy(Buffer* src, Buffer* dest, size_t srcOffset, size_t destOffset, size_t size);
+
+        /**
+         * Enqueues a fill buffer operation.
+         *
+         * @param buffer The buffer to fill.
+         * @param val The value to fill the buffer with.
+         */
+        template <typename T>
+        void enqueueFill(Buffer* buffer, T val);
 
         /**
          * Enqueues a barrier operation in this command queue.
@@ -608,5 +649,16 @@ class Image
     friend Kernel;
     friend CommandQueue;
 };
+
+//
+// TEMPLATE METHODS
+//
+
+template <typename T>
+void CommandQueue::enqueueFill(Buffer* buffer, T val)
+{
+    cl_int error = clEnqueueFillBuffer(queue, buffer->buffer, &val, sizeof(T), 0, buffer->size, 0, nullptr, nullptr);
+    checkError(error, __LINE__, __FUNCTION__);
+}
 
 #endif // OPENCL_H

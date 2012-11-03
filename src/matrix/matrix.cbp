@@ -15,9 +15,9 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="../common/libs/clpp/bin/Debug/libclpp.a" />
+					<Add library="..\common\libs\clpp\bin\Debug\libclpp.a" />
 					<Add library="OpenCL" />
-					<Add library="../common/libs/clAmdBlas/lib32/import/clAmdBlas.lib" />
+					<Add library="..\common\libs\clAmdBlas\lib32\import\clAmdBlas.lib" />
 				</Linker>
 			</Target>
 			<Target title="Release Win32">
@@ -30,9 +30,9 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="../common/libs/clpp/bin/Release/libclpp.a" />
+					<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
 					<Add library="OpenCL" />
-					<Add library="../common/libs/clAmdBlas/lib32/import/clAmdBlas.lib" />
+					<Add library="..\common\libs\clAmdBlas\lib32\import\clAmdBlas.lib" />
 				</Linker>
 			</Target>
 			<Target title="Debug Linux">
@@ -44,7 +44,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="../common/libs/clpp/bin/Debug/libclpp.a" />
+					<Add library="..\common\libs\clpp\bin\Debug\libclpp.a" />
 					<Add library="OpenCL" />
 				</Linker>
 			</Target>
@@ -58,9 +58,9 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="../common/libs/clpp/bin/Release/libclpp.a" />
+					<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
 					<Add library="OpenCL" />
-					<Add library="./libclAmdBlas.so.1" />
+					<Add library=".\libclAmdBlas.so.1" />
 				</Linker>
 			</Target>
 		</Build>
@@ -74,8 +74,8 @@
 		</Compiler>
 		<Linker>
 			<Add library="gomp" />
-			<Add library="../common/libs/cblas/lib/cblas_LINUX.a" />
-			<Add library="../common/libs/blas/blas_LINUX.a" />
+			<Add library="..\common\libs\cblas\lib\cblas_LINUX.a" />
+			<Add library="..\common\libs\blas\blas_LINUX.a" />
 			<Add library="gfortran" />
 		</Linker>
 		<Unit filename="../common/CPUAlgorithm.h" />
@@ -92,6 +92,8 @@
 		<Unit filename="cpu/cblas/Mult.h" />
 		<Unit filename="cpu/dixxi/Mult.h" />
 		<Unit filename="cpu/dixxi/MultThreads.h" />
+		<Unit filename="gpu/amd/MultTile.cl" />
+		<Unit filename="gpu/amd/MultTile.h" />
 		<Unit filename="gpu/amdblas/Mult.h" />
 		<Unit filename="gpu/dixxi/Mult.cl" />
 		<Unit filename="gpu/dixxi/Mult.h" />
