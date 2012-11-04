@@ -4,37 +4,31 @@
 	<Project>
 		<Option title="sort" />
 		<Option pch_mode="2" />
-		<Option compiler="gcc" />
+		<Option compiler="gnu_gcc_compiler_x64" />
 		<Build>
-			<Target title="Debug">
+			<Target title="Debug Win64">
 				<Option output="bin/Debug/sort" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="gnu_gcc_compiler_x64" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="..\common\libs\clpp\bin\Debug\libclpp.a" />
-					<Add library="..\common\libs\libcl\bin\Debug\libcl.a" />
-					<Add library="opencl" />
-					<Add library="opengl32" />
+					<Add library="OpenGL32" />
 				</Linker>
 			</Target>
-			<Target title="Release">
+			<Target title="Release Win64">
 				<Option output="bin/Release/sort" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="gnu_gcc_compiler_x64" />
 				<Compiler>
 					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
-					<Add library="..\common\libs\libcl\bin\Release\libcl.a" />
-					<Add library="opencl" />
-					<Add library="opengl32" />
+					<Add library="OpenGL32" />
 				</Linker>
 			</Target>
 		</Build>
@@ -45,6 +39,11 @@
 			<Add directory="../common/libs/clpp" />
 			<Add directory="../common/libs/libcl" />
 		</Compiler>
+		<Linker>
+			<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
+			<Add library="..\common\libs\libcl\bin\Release\libcl.a" />
+			<Add library="OpenCL" />
+		</Linker>
 		<Unit filename="../common/CPUAlgorithm.h" />
 		<Unit filename="../common/GPUAlgorithm.h" />
 		<Unit filename="../common/OpenCL.cpp" />

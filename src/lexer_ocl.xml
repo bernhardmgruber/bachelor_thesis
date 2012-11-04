@@ -301,18 +301,27 @@
 									ptrdiff_t
 									intptr_t
 									uintptr_t
+									
+									counter32_t
                                    "/>
                         <!-- Secondary keywords and identifiers -->
                         <Set index="1"
                             value="
 									__kernel
+									kernel
 									__attribute__
 									__global
+									global
 									__constant
+									constant
 									__local
+									local
 									__private
+									private
 									__read_only
+									read_only
 									__write_only
+									writ_only
 									write_imagef
 									write_imagei
 									write_imageui
