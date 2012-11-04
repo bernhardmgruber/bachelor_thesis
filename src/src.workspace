@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="deviceinfo/deviceinfo.cbp" />
+		<Project filename="matrix/matrix.cbp" />
+		<Project filename="meshtransform/meshtransform.cbp" />
+		<Project filename="scan/scan.cbp" />
+		<Project filename="sort/sort.cbp" />
+		<Project filename="common/libs/blas/blas.cbp" />
+		<Project filename="common/libs/cblas/cblas.cbp" />
+		<Project filename="common/libs/clpp/clpp.cbp" />
+		<Project filename="common/libs/libCL/libCL.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>
