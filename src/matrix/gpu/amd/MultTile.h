@@ -35,15 +35,21 @@ namespace gpu
 
                     a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                     if(adjustedSize != size)
+                    {
                         queue->enqueueFill(a, (cl_float)0);
-                    queue->enqueueWriteRect(a, data, (size_t[]){0, 0, 0}, (size_t[]){0, 0, 0}, (size_t[]){size * sizeof(T), size, 1}, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
-                    //queue->enqueueWrite(a, data, size * size * sizeof(T));
+                        queue->enqueueWriteRect(a, data, (size_t[]){0, 0, 0}, (size_t[]){0, 0, 0}, (size_t[]){size * sizeof(T), size, 1}, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                    }
+                    else
+                        queue->enqueueWrite(a, data, size * size * sizeof(T));
 
                     b = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                     if(adjustedSize != size)
+                    {
                         queue->enqueueFill(b, (cl_float)0);
-                    queue->enqueueWriteRect(b, data + size * size, (size_t[]){0, 0, 0}, (size_t[]){0, 0, 0}, (size_t[]){size * sizeof(T), size, 1}, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
-                    //queue->enqueueWrite(b, data, size * size * sizeof(T));
+                        queue->enqueueWriteRect(b, data + size * size, (size_t[]){0, 0, 0}, (size_t[]){0, 0, 0}, (size_t[]){size * sizeof(T), size, 1}, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                    }
+                    else
+                        queue->enqueueWrite(b, data + size * size, size * size * sizeof(T));
 
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 }
