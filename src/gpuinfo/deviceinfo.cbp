@@ -6,22 +6,18 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
-				<Option output="bin\Debug\deviceinfo" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+			<Target title="Debug Win32">
+				<Option output="bin/Debug/deviceinfo" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
-				<Linker>
-					<Add library="..\common\libs\clpp\bin\Debug\libclpp.a" />
-					<Add library="opencl" />
-				</Linker>
 			</Target>
-			<Target title="Release">
-				<Option output="bin\Release\deviceinfo" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+			<Target title="Release Win32">
+				<Option output="bin/Release/deviceinfo" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -29,8 +25,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="..\common\libs\clpp\bin\Release\libclpp.a" />
-					<Add library="opencl" />
 				</Linker>
 			</Target>
 		</Build>
@@ -38,17 +32,20 @@
 			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add directory="..\common\libs\clpp" />
+			<Add directory="../common/libs/clpp" />
 		</Compiler>
-		<Unit filename="..\common\CPUAlgorithm.h" />
-		<Unit filename="..\common\GPUAlgorithm.h" />
-		<Unit filename="..\common\OpenCL.cpp" />
-		<Unit filename="..\common\OpenCL.h" />
-		<Unit filename="..\common\Runner.h" />
-		<Unit filename="..\common\Timer.cpp" />
-		<Unit filename="..\common\Timer.h" />
-		<Unit filename="..\common\utils.cpp" />
-		<Unit filename="..\common\utils.h" />
+		<Linker>
+			<Add library="OpenCL" />
+		</Linker>
+		<Unit filename="../common/CPUAlgorithm.h" />
+		<Unit filename="../common/GPUAlgorithm.h" />
+		<Unit filename="../common/OpenCL.cpp" />
+		<Unit filename="../common/OpenCL.h" />
+		<Unit filename="../common/Runner.h" />
+		<Unit filename="../common/Timer.cpp" />
+		<Unit filename="../common/Timer.h" />
+		<Unit filename="../common/utils.cpp" />
+		<Unit filename="../common/utils.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
