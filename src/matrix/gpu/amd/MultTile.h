@@ -37,7 +37,10 @@ namespace gpu
                     if(adjustedSize != size)
                     {
                         queue->enqueueFill(a, (cl_float)0);
-                        queue->enqueueWriteRect(a, data, (size_t[]){0, 0, 0}, (size_t[]){0, 0, 0}, (size_t[]){size * sizeof(T), size, 1}, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                        size_t bufferOffset[] = {0, 0, 0};
+                        size_t hostOffset[] = {0, 0, 0};
+                        size_t sizes[] = {size * sizeof(T), size, 1};
+                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                     }
                     else
                         queue->enqueueWrite(a, data, size * size * sizeof(T));
@@ -46,7 +49,10 @@ namespace gpu
                     if(adjustedSize != size)
                     {
                         queue->enqueueFill(b, (cl_float)0);
-                        queue->enqueueWriteRect(b, data + size * size, (size_t[]){0, 0, 0}, (size_t[]){0, 0, 0}, (size_t[]){size * sizeof(T), size, 1}, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                        size_t bufferOffset[] = {0, 0, 0};
+                        size_t hostOffset[] = {0, 0, 0};
+                        size_t sizes[] = {size * sizeof(T), size, 1};
+                        queue->enqueueWriteRect(b, data + size * size, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                     }
                     else
                         queue->enqueueWrite(b, data + size * size, size * size * sizeof(T));
@@ -73,8 +79,15 @@ namespace gpu
 
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
-                    queue->enqueueReadRect(c, result, (size_t[]){0, 0, 0}, (size_t[]){0, 0, 0}, (size_t[]){size * sizeof(T), size, 1}, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
-                    //queue->enqueueRead(c, result, 0, size * size * sizeof(T));
+                    if(adjustedSize != size)
+                    {
+                        size_t bufferOffset[] = {0, 0, 0};
+                        size_t hostOffset[] = {0, 0, 0};
+                        size_t sizes[] = {size * sizeof(T), size, 1};
+                        queue->enqueueReadRect(c, result, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                    }
+                    else
+                        queue->enqueueRead(c, result, 0, size * size * sizeof(T));
 
                     //printArr2D(result, size * size, size);
                 }
