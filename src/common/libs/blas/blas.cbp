@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="blas" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Win64/Lin64">
+				<Option output="bin/blas" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="caxpy.f" />
+		<Unit filename="ccopy.f" />
+		<Unit filename="cdotc.f" />
+		<Unit filename="cdotu.f" />
+		<Unit filename="cgbmv.f" />
+		<Unit filename="cgemm.f" />
+		<Unit filename="cgemv.f" />
+		<Unit filename="cgerc.f" />
+		<Unit filename="cgeru.f" />
+		<Unit filename="chbmv.f" />
+		<Unit filename="chemm.f" />
+		<Unit filename="chemv.f" />
+		<Unit filename="cher.f" />
+		<Unit filename="cher2.f" />
+		<Unit filename="cher2k.f" />
+		<Unit filename="cherk.f" />
+		<Unit filename="chpmv.f" />
+		<Unit filename="chpr.f" />
+		<Unit filename="chpr2.f" />
+		<Unit filename="crotg.f" />
+		<Unit filename="cscal.f" />
+		<Unit filename="csrot.f" />
+		<Unit filename="csscal.f" />
+		<Unit filename="cswap.f" />
+		<Unit filename="csymm.f" />
+		<Unit filename="csyr2k.f" />
+		<Unit filename="csyrk.f" />
+		<Unit filename="ctbmv.f" />
+		<Unit filename="ctbsv.f" />
+		<Unit filename="ctpmv.f" />
+		<Unit filename="ctpsv.f" />
+		<Unit filename="ctrmm.f" />
+		<Unit filename="ctrmv.f" />
+		<Unit filename="ctrsm.f" />
+		<Unit filename="ctrsv.f" />
+		<Unit filename="dasum.f" />
+		<Unit filename="daxpy.f" />
+		<Unit filename="dcabs1.f" />
+		<Unit filename="dcopy.f" />
+		<Unit filename="ddot.f" />
+		<Unit filename="dgbmv.f" />
+		<Unit filename="dgemm.f" />
+		<Unit filename="dgemv.f" />
+		<Unit filename="dger.f" />
+		<Unit filename="dnrm2.f" />
+		<Unit filename="drot.f" />
+		<Unit filename="drotg.f" />
+		<Unit filename="drotm.f" />
+		<Unit filename="drotmg.f" />
+		<Unit filename="dsbmv.f" />
+		<Unit filename="dscal.f" />
+		<Unit filename="dsdot.f" />
+		<Unit filename="dspmv.f" />
+		<Unit filename="dspr.f" />
+		<Unit filename="dspr2.f" />
+		<Unit filename="dswap.f" />
+		<Unit filename="dsymm.f" />
+		<Unit filename="dsymv.f" />
+		<Unit filename="dsyr.f" />
+		<Unit filename="dsyr2.f" />
+		<Unit filename="dsyr2k.f" />
+		<Unit filename="dsyrk.f" />
+		<Unit filename="dtbmv.f" />
+		<Unit filename="dtbsv.f" />
+		<Unit filename="dtpmv.f" />
+		<Unit filename="dtpsv.f" />
+		<Unit filename="dtrmm.f" />
+		<Unit filename="dtrmv.f" />
+		<Unit filename="dtrsm.f" />
+		<Unit filename="dtrsv.f" />
+		<Unit filename="dzasum.f" />
+		<Unit filename="dznrm2.f" />
+		<Unit filename="icamax.f" />
+		<Unit filename="idamax.f" />
+		<Unit filename="isamax.f" />
+		<Unit filename="izamax.f" />
+		<Unit filename="lsame.f" />
+		<Unit filename="sasum.f" />
+		<Unit filename="saxpy.f" />
+		<Unit filename="scabs1.f" />
+		<Unit filename="scasum.f" />
+		<Unit filename="scnrm2.f" />
+		<Unit filename="scopy.f" />
+		<Unit filename="sdot.f" />
+		<Unit filename="sdsdot.f" />
+		<Unit filename="sgbmv.f" />
+		<Unit filename="sgemm.f" />
+		<Unit filename="sgemv.f" />
+		<Unit filename="sger.f" />
+		<Unit filename="snrm2.f" />
+		<Unit filename="srot.f" />
+		<Unit filename="srotg.f" />
+		<Unit filename="srotm.f" />
+		<Unit filename="srotmg.f" />
+		<Unit filename="ssbmv.f" />
+		<Unit filename="sscal.f" />
+		<Unit filename="sspmv.f" />
+		<Unit filename="sspr.f" />
+		<Unit filename="sspr2.f" />
+		<Unit filename="sswap.f" />
+		<Unit filename="ssymm.f" />
+		<Unit filename="ssymv.f" />
+		<Unit filename="ssyr.f" />
+		<Unit filename="ssyr2.f" />
+		<Unit filename="ssyr2k.f" />
+		<Unit filename="ssyrk.f" />
+		<Unit filename="stbmv.f" />
+		<Unit filename="stbsv.f" />
+		<Unit filename="stpmv.f" />
+		<Unit filename="stpsv.f" />
+		<Unit filename="strmm.f" />
+		<Unit filename="strmv.f" />
+		<Unit filename="strsm.f" />
+		<Unit filename="strsv.f" />
+		<Unit filename="xerbla.f" />
+		<Unit filename="zaxpy.f" />
+		<Unit filename="zcopy.f" />
+		<Unit filename="zdotc.f" />
+		<Unit filename="zdotu.f" />
+		<Unit filename="zdrot.f" />
+		<Unit filename="zdscal.f" />
+		<Unit filename="zgbmv.f" />
+		<Unit filename="zgemm.f" />
+		<Unit filename="zgemv.f" />
+		<Unit filename="zgerc.f" />
+		<Unit filename="zgeru.f" />
+		<Unit filename="zhbmv.f" />
+		<Unit filename="zhemm.f" />
+		<Unit filename="zhemv.f" />
+		<Unit filename="zher.f" />
+		<Unit filename="zher2.f" />
+		<Unit filename="zher2k.f" />
+		<Unit filename="zherk.f" />
+		<Unit filename="zhpmv.f" />
+		<Unit filename="zhpr.f" />
+		<Unit filename="zhpr2.f" />
+		<Unit filename="zrotg.f" />
+		<Unit filename="zscal.f" />
+		<Unit filename="zswap.f" />
+		<Unit filename="zsymm.f" />
+		<Unit filename="zsyr2k.f" />
+		<Unit filename="zsyrk.f" />
+		<Unit filename="ztbmv.f" />
+		<Unit filename="ztbsv.f" />
+		<Unit filename="ztpmv.f" />
+		<Unit filename="ztpsv.f" />
+		<Unit filename="ztrmm.f" />
+		<Unit filename="ztrmv.f" />
+		<Unit filename="ztrsm.f" />
+		<Unit filename="ztrsv.f" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

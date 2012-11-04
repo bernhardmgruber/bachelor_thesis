@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="cblas" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Win64/Lin64">
+				<Option output="lib/cblas" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DADD_" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="include" />
+		</Compiler>
+		<Unit filename="include/cblas.h" />
+		<Unit filename="include/cblas_f77.h" />
+		<Unit filename="src/cblas_caxpy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ccopy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cdotc_sub.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cdotu_sub.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cgbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cgemm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cgemv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cgerc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cgeru.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_chbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_chemm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_chemv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cher.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cher2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cher2k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cherk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_chpmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_chpr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_chpr2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cscal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_csscal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_cswap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_csymm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_csyr2k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_csyrk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ctbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ctbsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ctpmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ctpsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ctrmm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ctrmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ctrsm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ctrsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dasum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_daxpy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dcopy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ddot.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dgbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dgemm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dgemv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dger.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dnrm2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_drot.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_drotg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_drotm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_drotmg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dsbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dscal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dsdot.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dspmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dspr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dspr2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dswap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dsymm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dsymv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dsyr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dsyr2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dsyr2k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dsyrk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dtbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dtbsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dtpmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dtpsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dtrmm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dtrmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dtrsm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dtrsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dzasum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_dznrm2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_globals.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_icamax.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_idamax.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_isamax.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_izamax.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sasum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_saxpy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_scasum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_scnrm2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_scopy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sdot.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sdsdot.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sgbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sgemm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sgemv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sger.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_snrm2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_srot.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_srotg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_srotm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_srotmg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ssbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sscal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sspmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sspr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sspr2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_sswap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ssymm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ssymv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ssyr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ssyr2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ssyr2k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ssyrk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_stbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_stbsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_stpmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_stpsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_strmm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_strmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_strsm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_strsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_xerbla.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zaxpy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zcopy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zdotc_sub.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zdotu_sub.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zdscal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zgbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zgemm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zgemv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zgerc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zgeru.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zhbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zhemm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zhemv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zher.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zher2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zher2k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zherk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zhpmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zhpr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zhpr2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zscal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zswap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zsymm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zsyr2k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_zsyrk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ztbmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ztbsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ztpmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ztpsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ztrmm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ztrmv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ztrsm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cblas_ztrsv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/cdotcsub.f" />
+		<Unit filename="src/cdotusub.f" />
+		<Unit filename="src/dasumsub.f" />
+		<Unit filename="src/ddotsub.f" />
+		<Unit filename="src/dnrm2sub.f" />
+		<Unit filename="src/dsdotsub.f" />
+		<Unit filename="src/dzasumsub.f" />
+		<Unit filename="src/dznrm2sub.f" />
+		<Unit filename="src/icamaxsub.f" />
+		<Unit filename="src/idamaxsub.f" />
+		<Unit filename="src/isamaxsub.f" />
+		<Unit filename="src/izamaxsub.f" />
+		<Unit filename="src/sasumsub.f" />
+		<Unit filename="src/scasumsub.f" />
+		<Unit filename="src/scnrm2sub.f" />
+		<Unit filename="src/sdotsub.f" />
+		<Unit filename="src/sdsdotsub.f" />
+		<Unit filename="src/snrm2sub.f" />
+		<Unit filename="src/xerbla.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/zdotcsub.f" />
+		<Unit filename="src/zdotusub.f" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
