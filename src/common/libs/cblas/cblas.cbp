@@ -25,6 +25,9 @@
 			<Add option="-Wall" />
 			<Add directory="include" />
 		</Compiler>
+		<Linker>
+			<Add library="..\blas\bin\libblas.a" />
+		</Linker>
 		<Unit filename="include/cblas.h" />
 		<Unit filename="include/cblas_f77.h" />
 		<Unit filename="src/cblas_caxpy.c">
