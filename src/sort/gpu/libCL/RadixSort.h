@@ -15,9 +15,9 @@
 #ifndef LibCLRadixSort
 #define LibCLRadixSort
 
-#include "../../../common/libs/libcl/oclContext.h"
-#include "../../../common/libs/libcl/oclBuffer.h"
-#include "../../../common/libs/libcl/sort/oclRadixSort.h"
+#include "../../../common/libs/libCL/oclContext.h"
+#include "../../../common/libs/libCL/oclBuffer.h"
+#include "../../../common/libs/libCL/sort/oclRadixSort.h"
 
 #include "../../../common/GPUAlgorithm.h"
 #include "../../SortAlgorithm.h"

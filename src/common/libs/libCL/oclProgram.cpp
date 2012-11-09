@@ -15,8 +15,10 @@
 
 #include <stdio.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <direct.h>
+#else
+#include <unistd.h>
 #endif
 
 oclProgram::oclProgram(oclContext& iContext, char* iName)
@@ -46,8 +48,8 @@ oclContext& oclProgram::getContext()
 };
 
 oclProgram::operator cl_program ()
-{ 
-    return mProgram; 
+{
+    return mProgram;
 }
 
 int oclProgram::compile()
@@ -80,11 +82,11 @@ int oclProgram::compile()
     {
         static char sBuffer[MAX_BUILD_LOG];
         size_t lSize = MAX_BUILD_LOG;
-        sStatusCL = clGetProgramBuildInfo (mProgram, 
-                                           mContext.getDevice(0), 
-                                           CL_PROGRAM_BUILD_LOG, 
-                                           lSize, 
-                                           sBuffer, 
+        sStatusCL = clGetProgramBuildInfo (mProgram,
+                                           mContext.getDevice(0),
+                                           CL_PROGRAM_BUILD_LOG,
+                                           lSize,
+                                           sBuffer,
                                            &lSize);
         Log(KERNEL, this) << sBuffer;
         return false;
@@ -134,14 +136,14 @@ void oclProgram::addSourceCode(char* iText)
 void oclProgram::addSourceFile(char* iPath)
 {
     char lPath[400];
-#ifdef WIN32
+#ifdef _WIN32
     _getcwd(lPath, 400);
     _chdir(sRootPath);
 #else
     getcwd(lPath, 400);
     chdir(sRootPath);
 #endif
-    
+
     FILE* lFile = fopen(iPath, "rb");
     if (lFile)
     {
@@ -161,7 +163,7 @@ void oclProgram::addSourceFile(char* iPath)
         mSource.push_back(lSource);
     }
     else Log(ERR, this) << "Unable to open source file " << iPath;
-#ifdef WIN32
+#ifdef _WIN32
     _chdir(lPath);
 #else
     chdir(lPath);

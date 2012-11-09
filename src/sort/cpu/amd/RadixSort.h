@@ -93,6 +93,7 @@ jurisdiction and venue of these courts.
 #define AMDCPURADIXSORT_H
 
 #include <math.h>
+#include <string.h>
 
 using namespace std;
 

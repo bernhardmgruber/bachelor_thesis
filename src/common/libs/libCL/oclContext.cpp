@@ -11,15 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <GL/glx.h>
 #include <GL/gl.h>
 #endif
 
-#include "oclContext.h" 
-#include "oclDevice.h" 
+#include "oclContext.h"
+#include "oclDevice.h"
 
 char* oclContext::VENDOR_NVIDIA = "NVIDIA Corporation";
 char* oclContext::VENDOR_AMD = "Advanced Micro Devices, Inc.";
@@ -59,9 +59,9 @@ oclContext::oclContext(cl_context iContext, char* iVendor)
     delete [] lDevice;
 };
 
-oclContext::operator cl_context()  
-{  
-    return mContext;  
+oclContext::operator cl_context()
+{
+    return mContext;
 }
 
 vector<oclDevice*>& oclContext::getDevices()
@@ -92,11 +92,11 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
     cl_platform_id platform = NULL;
     status = clGetPlatformIDs(0, NULL, &numPlatforms);
 
-    if (0 < numPlatforms) 
+    if (0 < numPlatforms)
     {
         cl_platform_id* platforms = new cl_platform_id[numPlatforms];
         status = clGetPlatformIDs(numPlatforms, platforms, NULL);
-        for (unsigned i = 0; i < numPlatforms; ++i) 
+        for (unsigned i = 0; i < numPlatforms; ++i)
         {
             char pbuf[100];
             status = clGetPlatformInfo(platforms[i],
@@ -105,7 +105,7 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
                                        pbuf,
                                        NULL);
             platform = platforms[i];
-            if (!strcmp(pbuf, "Advanced Micro Devices, Inc.")) 
+            if (!strcmp(pbuf, "Advanced Micro Devices, Inc."))
             {
                 break;
             }
@@ -118,7 +118,7 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
 #else //!_WIN32
     GLXContext glCtx = glXGetCurrentContext();
 #endif //!_WIN32
-    
+
     cl_context_properties cpsGL[] = { CL_CONTEXT_PLATFORM, (cl_context_properties)platform,
 #ifdef _WIN32
                                       CL_WGL_HDC_KHR, (intptr_t) wglGetCurrentDC(),
@@ -137,7 +137,7 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
     return  new oclContext(context, "Advanced Micro Devices, Inc.");
 */
 
-    
+
     cl_uint lPlatformCount = 0;
     sStatusCL = clGetPlatformIDs(0, NULL, &lPlatformCount);
     oclSuccess("clGetPlatformIDs");
@@ -149,7 +149,7 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
     oclSuccess("clGetPlatformIDs");
 
     char lBuffer[200];
-    for (cl_uint i=0; i < lPlatformCount; i++) 
+    for (cl_uint i=0; i < lPlatformCount; i++)
     {
         sStatusCL = clGetPlatformInfo(lPlatform[i],
                                        CL_PLATFORM_VENDOR,
@@ -158,22 +158,22 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
                                        NULL);
         oclSuccess("clGetPlatformInfo");
 
-        cl_context_properties GL_PROPS[] = 
+        cl_context_properties GL_PROPS[] =
         {
-#ifdef WIN32
+#ifdef _WIN32
             CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
             CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
 #else
             CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
             CL_GLX_DISPLAY_KHR, (intptr_t) glXGetCurrentDisplay(),
 #endif
-            CL_CONTEXT_PLATFORM, (cl_context_properties)lPlatform[i], 
+            CL_CONTEXT_PLATFORM, (cl_context_properties)lPlatform[i],
             0
         };
 
-        cl_context_properties CL_PROPS[] = 
+        cl_context_properties CL_PROPS[] =
         {
-            CL_CONTEXT_PLATFORM, (cl_context_properties)lPlatform[i], 
+            CL_CONTEXT_PLATFORM, (cl_context_properties)lPlatform[i],
             0
         };
 
@@ -194,7 +194,7 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
                 if (lDeviceCount)
                 {
                     size_t lDeviceGLCount = 0;
-                    cl_device_id lDeviceGL; 
+                    cl_device_id lDeviceGL;
                     sStatusCL = _clGetGLContextInfoKHR(GL_PROPS, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id), &lDeviceGL, &lDeviceGLCount);
                     if (!oclSuccess("clGetDeviceIDs"))
                     {
@@ -236,7 +236,7 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
             }
         }
     }
-    
+
     return 0;
 }
 

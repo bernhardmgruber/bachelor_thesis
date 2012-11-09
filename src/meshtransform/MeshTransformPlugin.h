@@ -1,6 +1,7 @@
 #ifndef MESHTRANSFORMPLUGIN_H
 #define MESHTRANSFORMPLUGIN_H
 
+#include <string.h>
 #include <sstream>
 
 #include "MeshTransformAlgorithm.h"
