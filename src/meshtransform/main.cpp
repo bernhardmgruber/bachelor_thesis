@@ -15,16 +15,12 @@ int main()
 {
     try
     {
-        Runner<float, MeshTransformPlugin> runner;
+        Runner<float, MeshTransformPlugin> runner(5, { 1<<15, 1<<18, 1<<20, 1<<23 });
 
-        size_t range[] = { 1<<15, 1<<18, 1<<20, 1<<23 };
-        //size_t range[] = { 10 };
-        size_t count = sizeof(range) / sizeof(size_t);
+        runner.run<cpu::dixxi::Transform>(RunType::CPU);
+        runner.run<cpu::dixxi::TransformMulti>(RunType::CPU);
 
-        runner.printRange<cpu::dixxi::Transform>(RunType::CPU, range, count);
-        runner.printRange<cpu::dixxi::TransformMulti>(RunType::CPU, range, count);
-
-        runner.printRange<gpu::dixxi::Transform>(RunType::CL_GPU, range, count, false);
+        runner.run<gpu::dixxi::Transform>(RunType::CL_GPU, false);
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");

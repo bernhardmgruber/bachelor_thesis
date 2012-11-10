@@ -14,7 +14,7 @@ class DummyPlugin
 
 int main()
 {
-    Runner<int, DummyPlugin> runner;
+    Runner<int, DummyPlugin> runner(1, {0});
 
     try
     {

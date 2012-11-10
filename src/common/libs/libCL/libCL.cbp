@@ -11,15 +11,15 @@
 				<Option working_dir="" />
 				<Option object_output="obj/Debug" />
 				<Option type="2" />
-				<Option compiler="gnu_gcc_compiler_x64" />
+				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-O0" />
 					<Add option="-DWIN32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-D_WINDOWS" />
 					<Add option="-D_CRT_SECURE_NO_WARNINGS" />
-					<Add option="-Wall" />
-					<Add option="-O0" />
 					<Add directory="." />
 				</Compiler>
 				<ResourceCompiler>
@@ -31,15 +31,15 @@
 				<Option working_dir="" />
 				<Option object_output="obj/Release" />
 				<Option type="2" />
-				<Option compiler="gnu_gcc_compiler_x64" />
+				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
+					<Add option="-O2" />
+					<Add option="-W" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_WINDOWS" />
 					<Add option="-D_CRT_SECURE_NO_WARNINGS" />
-					<Add option="-W" />
-					<Add option="-O2" />
 					<Add directory="." />
 				</Compiler>
 				<ResourceCompiler>

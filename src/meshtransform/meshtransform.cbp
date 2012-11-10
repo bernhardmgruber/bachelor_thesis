@@ -10,7 +10,7 @@
 				<Option output="bin/Debug/meshtransform" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="gnu_gcc_compiler_x64" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -19,7 +19,7 @@
 				<Option output="bin/Release/meshtransform" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
-				<Option compiler="gnu_gcc_compiler_x64" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -55,7 +55,6 @@
 		</Compiler>
 		<Linker>
 			<Add library="gomp" />
-			<Add library="../common/libs/clpp/bin/Release/libclpp.a" />
 			<Add library="OpenCL" />
 		</Linker>
 		<Unit filename="../common/CPUAlgorithm.h" />
