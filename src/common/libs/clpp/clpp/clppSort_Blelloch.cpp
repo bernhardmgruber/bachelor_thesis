@@ -18,7 +18,7 @@ clppSort_Blelloch::clppSort_Blelloch(clppContext* context, unsigned int maxEleme
 
 	_kernel_Histogram = clCreateKernel(_clProgram, "kernel_Histogram", &clStatus);
 	checkCLStatus(clStatus);
-	
+
 	_kernel_ScanHistogram = clCreateKernel(_clProgram, "kernel_ScanHistograms", &clStatus);
 	checkCLStatus(clStatus);
 
@@ -116,7 +116,7 @@ void clppSort_Blelloch::resize(int nn)
         // pad the vector with big values
         assert(nkeys_rounded <= _N);
         clStatus = clEnqueueWriteBuffer(_context->clQueue, _clBuffer_dataSet, CL_TRUE, sizeof(int) * nkeys, sizeof(int) * (_GROUPS * _ITEMS - remainder), pad, 0, NULL, NULL);
-        
+
         checkCLStatus(clStatus);
     }
 }
@@ -430,7 +430,7 @@ void clppSort_Blelloch::pushCLDatas(cl_mem clBuffer_dataSet, size_t datasetSize)
 	_clBuffer_temp  = clCreateBuffer(_context->clContext, CL_MEM_READ_WRITE, sizeof(int) * _HISTOSPLIT, NULL, &clStatus);
 	checkCLStatus(clStatus);
 
-	
+
 	resize(datasetSize);
 	//cout <<"nkeys="<<nkeys<<" "<<nkeys_rounded<<endl;
 

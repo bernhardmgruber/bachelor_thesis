@@ -6,6 +6,7 @@
 #include "GPUAlgorithm.h"
 #include "Timer.h"
 #include "utils.h"
+#include "StatsWriter.h"
 
 #include <typeinfo>
 #include <iomanip>
@@ -37,10 +38,10 @@ class Runner
         /**
          * Constructor
          */
-        Runner()
+        Runner(size_t iterations, initializer_list<size_t> sizes)
+            : iterations(iterations), sizes(sizes)
         {
             OpenCL::init();
-
 
             try
             {
@@ -68,6 +69,15 @@ class Runner
                 cpuQueue = cpuContext->createCommandQueue();
 
             plugin = new Plugin<T>();
+
+            cout << "##### Initialized Runner #####" << endl;
+            cout << "Running " << iterations << " iterations " << endl;
+            cout << "Sizes: ";
+            copy(sizes.begin(), sizes.end(), ostream_iterator<size_t>(cout, ", "));
+            cout << endl;
+            cout << endl;
+
+            globalTimer.start();
         }
 
         /**
@@ -94,29 +104,39 @@ class Runner
         }
 
         /**
-         * Runs an algorithm once with the given problem size.
-         * The results of the run are printed to stdout.
-         */
-        template <template <typename> class Algorithm>
-        void printOnce(RunType runType, size_t size, bool useMultipleWorkGroupSizes = true)
-        {
-            checkRunTypeAvailable(runType);
-
-            Range* r = runOnce<Algorithm>(size, runType, useMultipleWorkGroupSizes);
-
-            printRange(r, runType);
-        }
-
-        /**
          * Runs the given algorithm once for every provided problem size.
          * The results of the runs are printed to stdout.
          */
         template <template <typename> class Algorithm>
-        void printRange(RunType runType, size_t* range, size_t count, bool useMultipleWorkGroupSizes = true)
+        void run(RunType runType, bool useMultipleWorkGroupSizes = true)
         {
             checkRunTypeAvailable(runType);
 
-            Range* r = runRange<Algorithm>(range, count, runType, useMultipleWorkGroupSizes);
+            Algorithm<T>* alg = new Algorithm<T>();
+            Range* r = new Range(runType, alg->getName());
+
+            for(size_t size : sizes)
+            {
+                Stats* s;
+                switch(runType)
+                {
+                    case CPU:
+                        s = runCPU(alg, size);
+                        break;
+                    case CL_CPU:
+                        if(!hasCLCPU())
+                            throw OpenCLException("No CPU context initialized!");
+                        s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
+                        break;
+                    case CL_GPU:
+                        s = runCL(alg, gpuContext, gpuQueue, useMultipleWorkGroupSizes, size);
+                        break;
+                }
+                r->stats.push_back(s);
+            }
+            ranges.push_back(r);
+
+            delete alg;
 
             printRange(r, runType);
         }
@@ -126,6 +146,8 @@ class Runner
          */
         void writeStats(string fileName)
         {
+            double seconds = globalTimer.stop();
+
             cout << "Writing stats file to " << fileName << " ... ";
 
             const char sep = ';';
@@ -133,9 +155,9 @@ class Runner
             ofstream os(fileName);
             os.setf(ios::fixed);
 
-            os << "Runner" << endl;
+            os << "Runner " << __DATE__ << " " << __TIME__ << endl;
             os << "Bernhard Manfred Gruber" << endl;
-            os << __DATE__ << " " << __TIME__ << endl;
+            os << "Duration: " << timeToString(seconds) << endl;
             os << endl;
             os << endl;
 
@@ -146,22 +168,22 @@ class Runner
 
                 if(r->runType == RunType::CPU)
                 {
-                    os << "size" << sep << "run time" << sep << "result" << endl;
+                    os << "size" << sep << "run time mean" << sep << "run time deviation" << sep << "result" << endl;
 
                     for(Stats* s : r->stats)
                     {
                         CPURun* run = static_cast<CPURun*>(s);
-                        os << run->size << sep << run->runTime << sep << (run->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                        os << run->size << sep << run->runTimeMean << sep << run->runTimeDeviation << sep << (run->verificationResult ? "SUCCESS" : "FAILED") << endl;
                     }
                 }
                 else
                 {
-                    os << "size" << sep << "init time" << sep << "upload time" << sep << "run time" << sep << "download time " << sep << "cleanup time" << sep << "wg size" << sep << "up run down sum" << sep << "result" << endl;
+                    os << "size" << sep << "init time" << sep << "upload time mean " << sep << "upload time deviation" << sep << "run time mean" << sep << "run time deviation" << sep << "download time mean" << sep << "download time deviation" << sep << "cleanup time" << sep << "wg size" << sep << "up run down sum" << sep << "result" << endl;
 
                     for(Stats* s : r->stats)
                     {
                         CLBatch* batch = static_cast<CLBatch*>(s);
-                        os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTime << sep << batch->fastest->runTime << sep << batch->fastest->downloadTime << sep << batch->cleanupTime << sep << batch->fastest->wgSize << sep << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << sep << (batch->fastest->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                        os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTimeMean << sep << batch->fastest->uploadTimeDeviation << sep << batch->fastest->runTimeMean << sep << batch->fastest->runTimeDeviation << sep << batch->fastest->downloadTimeMean << sep << batch->fastest->downloadTimeDeviation << sep << batch->cleanupTime << sep << batch->fastest->wgSize << sep << (batch->fastest->uploadTimeMean + batch->fastest->runTimeMean + batch->fastest->downloadTimeMean) << sep << (batch->fastest->verificationResult ? "SUCCESS" : "FAILED") << endl;
                     }
                 }
 
@@ -211,9 +233,16 @@ class Runner
             }
         };
 
-        struct CPURun : public Stats
+        struct CPUIteration
         {
             double runTime;
+        };
+
+        struct CPURun : public Stats
+        {
+            vector<CPUIteration> iterations;
+            double runTimeMean;
+            double runTimeDeviation;
             bool verificationResult;
             bool exceptionOccured = false;
             string exceptionMsg;
@@ -224,12 +253,23 @@ class Runner
             }
         };
 
-        struct CLRun
+        struct CLIteration
         {
-            size_t wgSize;
             double uploadTime;
             double runTime;
             double downloadTime;
+        };
+
+        struct CLRun
+        {
+            size_t wgSize;
+            vector<CLIteration> iterations;
+            double uploadTimeMean;
+            double uploadTimeDeviation;
+            double runTimeMean;
+            double runTimeDeviation;
+            double downloadTimeMean;
+            double downloadTimeDeviation;
             bool verificationResult;
             bool exceptionOccured = false;
             string exceptionMsg;
@@ -285,7 +325,7 @@ class Runner
                     if(run->exceptionOccured)
                         cout << "#  CPU       " << "EXCEPTION: " << run->exceptionMsg << endl;
                     else
-                        cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << run->runTime << "s " << (run->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                        cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << run->runTimeMean << " (sigma " << run->runTimeDeviation << "s) " << (run->verificationResult ? "SUCCESS" : "FAILED") << endl;
                 }
 
                 cout << "###############################################################################" << endl;
@@ -309,11 +349,11 @@ class Runner
                         if(r.exceptionOccured)
                             cout << "#  " << (runType == RunType::CL_CPU ? "C" : "G") << "PU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
                         else
-                            cout << "#  " << (runType == RunType::CL_CPU ? "C" : "G") << "PU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTime << "s " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
+                            cout << "#  " << (runType == RunType::CL_CPU ? "C" : "G") << "PU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTimeMean << "s (sigma " << r.runTimeDeviation << "s) " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
 
                     cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << batch->avgDownloadTime << "s" << endl;
                     cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << batch->cleanupTime << "s" << endl;
-                    cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTime + batch->fastest->runTime + batch->fastest->downloadTime) << "s " << "(WG: " << batch->fastest->wgSize << ") " << endl;
+                    cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTimeMean + batch->fastest->runTimeMean + batch->fastest->downloadTimeMean) << "s " << "(WG: " << batch->fastest->wgSize << ") " << endl;
                 }
 
                 cout << "###############################################################################" << endl;
@@ -321,75 +361,7 @@ class Runner
             }
         }
 
-        /**
-         * Runs the given algorithm once for the given problem size.
-         * The resulting Range object is stored internally.
-         */
-        template <template <typename> class Algorithm>
-        Range* runOnce(size_t size, RunType runType, bool useMultipleWorkGroupSizes)
-        {
-            Algorithm<T>* alg = new Algorithm<T>();
-            Range* r = new Range(runType, alg->getName());
-
-            Stats* s;
-
-            switch(runType)
-            {
-                case CPU:
-                    s = run(alg, size);
-                    break;
-                case CL_CPU:
-                    s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
-                    break;
-                case CL_GPU:
-                    s = runCL(alg, gpuContext, gpuQueue, useMultipleWorkGroupSizes, size);
-                    break;
-            }
-            r->stats.push_back(s);
-            ranges.push_back(r);
-
-            delete alg;
-
-            return r;
-        }
-
-        /**
-         * Runs the given algorithm once for every provided problem size.
-         * The resulting Range object is stored internally.
-         */
-        template <template <typename> class Algorithm>
-        Range* runRange(size_t* range, size_t count, RunType runType, bool useMultipleWorkGroupSizes)
-        {
-            Algorithm<T>* alg = new Algorithm<T>();
-            Range* r = new Range(runType, alg->getName());
-
-            for(size_t i = 0; i < count; i++)
-            {
-                Stats* s;
-                switch(runType)
-                {
-                    case CPU:
-                        s = run(alg, range[i]);
-                        break;
-                    case CL_CPU:
-                        if(!hasCLCPU())
-                            throw OpenCLException("No CPU context initialized!");
-                        s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, range[i]);
-                        break;
-                    case CL_GPU:
-                        s = runCL(alg, gpuContext, gpuQueue, useMultipleWorkGroupSizes, range[i]);
-                        break;
-                }
-                r->stats.push_back(s);
-            }
-            ranges.push_back(r);
-
-            delete alg;
-
-            return r;
-        }
-
-        CPURun* run(GPUAlgorithm<T>* alg, size_t size)
+        CPURun* runCPU(GPUAlgorithm<T>* alg, size_t size)
         {
             throw runtime_error(string(__FUNCTION__) + " should never be called!");
         }
@@ -397,25 +369,49 @@ class Runner
         /**
          * Runs an algorithm on the CPU with the given problem size.
          */
-        CPURun* run(CPUAlgorithm<T>* alg, size_t size)
+        CPURun* runCPU(CPUAlgorithm<T>* alg, size_t size)
         {
             // create run stats and prepare input
             CPURun* run = new CPURun(plugin->getTaskDescription(size), size);
 
-            data = plugin->genInput(size);
-            result = plugin->genResult(size);
+            run->verificationResult = true;
 
-            // run algorithm
-            timer.start();
-            alg->run(data, result, size);
-            run->runTime = timer.stop();
+            for(size_t i = 0; i < iterations; i++)
+            {
+                CPUIteration iteration;
 
-            // verfiy result
-            run->verificationResult = plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size);
+                data = plugin->genInput(size);
+                result = plugin->genResult(size);
 
-            // cleanup
-            plugin->freeInput(data);
-            plugin->freeResult(result);
+                // run algorithm
+                timer.start();
+                alg->run(data, result, size);
+                iteration.runTime = timer.stop();
+
+                // verfiy result
+                run->verificationResult = run->verificationResult && plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size);
+
+                // cleanup
+                plugin->freeInput(data);
+                plugin->freeResult(result);
+
+                run->iterations.push_back(iteration);
+            }
+
+            // compute mean
+            double sum = 0;
+            for(CPUIteration& i : run->iterations)
+                sum += i.runTime;
+            run->runTimeMean = sum / (double)iterations;
+
+            // compute standard deviation
+            sum = 0;
+            for(CPUIteration& i : run->iterations)
+            {
+                double diff = i.runTime - run->runTimeMean;
+                sum += diff * diff;
+            }
+            run->runTimeDeviation = sqrt(sum / (double) iterations);
 
             return run;
         }
@@ -462,7 +458,7 @@ class Runner
                     return false;
                 if(b.exceptionOccured || !b.verificationResult)
                     return true;
-                return a.uploadTime + a.runTime + a.downloadTime < b.uploadTime + b.runTime + b.downloadTime;
+                return a.uploadTimeMean + a.runTimeMean + a.downloadTimeMean < b.uploadTimeMean + b.runTimeMean + b.downloadTimeMean;
             });
 
             // calculate averages
@@ -472,9 +468,9 @@ class Runner
             for(auto r : batch->runs)
                 if(!r.exceptionOccured)
                 {
-                    batch->avgUploadTime += r.uploadTime;
-                    batch->avgRunTime += r.runTime;
-                    batch->avgDownloadTime += r.downloadTime;
+                    batch->avgUploadTime += r.uploadTimeMean;
+                    batch->avgRunTime += r.runTimeMean;
+                    batch->avgDownloadTime += r.downloadTimeMean;
                 }
 
             batch->avgUploadTime /= batch->runs.size();
@@ -495,26 +491,33 @@ class Runner
 
             try
             {
-                // upload data
-                timer.start();
-                alg->upload(context, queue, workGroupSize, data, size);
-                queue->finish();
-                run.uploadTime = timer.stop();
+                for(size_t i = 0; i < iterations; i++)
+                {
+                    CLIteration iteration;
 
-                // run algorithm
-                timer.start();
-                alg->run(queue, workGroupSize, size);
-                queue->finish();
-                run.runTime = timer.stop();
+                    // upload data
+                    timer.start();
+                    alg->upload(context, queue, workGroupSize, data, size);
+                    queue->finish();
+                    iteration.uploadTime = timer.stop();
 
-                // download data
-                timer.start();
-                alg->download(queue, result, size);
-                queue->finish();
-                run.downloadTime = timer.stop();
+                    // run algorithm
+                    timer.start();
+                    alg->run(queue, workGroupSize, size);
+                    queue->finish();
+                    iteration.runTime = timer.stop();
 
-                // verify
-                run.verificationResult = plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size);
+                    // download data
+                    timer.start();
+                    alg->download(queue, result, size);
+                    queue->finish();
+                    iteration.downloadTime = timer.stop();
+
+                    // verify
+                    run.verificationResult = run.verificationResult && plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size);
+
+                    run.iterations.push_back(iteration);
+                }
             }
             catch(OpenCLException& e)
             {
@@ -526,6 +529,38 @@ class Runner
                 run.exceptionOccured = true;
                 run.exceptionMsg = "unkown";
             }
+
+            // compute means
+            double uploadSum = 0;
+            double runSum = 0;
+            double downloadSum = 0;
+            for(CLIteration& i : run.iterations)
+            {
+                uploadSum += i.uploadTime;
+                runSum += i.runTime;
+                downloadSum += i.downloadTime;
+            }
+            run.uploadTimeMean = uploadSum / (double)iterations;
+            run.runTimeMean = runSum / (double)iterations;
+            run.downloadTimeMean = downloadSum / (double)iterations;
+
+            // compute standard deviation
+            uploadSum = 0;
+            runSum = 0;
+            downloadSum = 0;
+            for(CLIteration& i : run.iterations)
+            {
+                double diff;
+                diff = i.uploadTime - run.uploadTimeMean;
+                uploadSum += diff * diff;
+                diff = i.runTime - run.runTimeMean;
+                runSum += diff * diff;
+                diff = i.downloadTime - run.downloadTimeMean;
+                downloadSum += diff * diff;
+            }
+            run.uploadTimeDeviation = sqrt(uploadSum / (double) iterations);
+            run.runTimeDeviation = sqrt(runSum / (double) iterations);
+            run.downloadTimeDeviation = sqrt(downloadSum / (double) iterations);
 
             return run;
         }
@@ -558,220 +593,7 @@ class Runner
 
         void writeDeviceInfo(Context* context, string fileName, char sep)
         {
-            cout << "Writing device info file to " << fileName << " ... ";
-
-            ofstream os(fileName);
-
-            os << "CL_DEVICE_ADDRESS_BITS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_ADDRESS_BITS) << endl;
-            os << "CL_DEVICE_AVAILABLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
-            os << "CL_DEVICE_COMPILER_AVAILABLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
-
-            {
-                os << "CL_DEVICE_DOUBLE_FP_CONFIG" << sep;
-                cl_device_fp_config flags = context->getInfoWithDefaultOnError<cl_device_fp_config>(CL_DEVICE_DOUBLE_FP_CONFIG);
-                if(flags & CL_FP_DENORM)
-                    os << "CL_FP_DENORM ";
-                if(flags & CL_FP_INF_NAN)
-                    os << "CL_FP_INF_NAN ";
-                if(flags & CL_FP_ROUND_TO_NEAREST)
-                    os << "CL_FP_ROUND_TO_NEAREST ";
-                if(flags & CL_FP_ROUND_TO_ZERO)
-                    os << "CL_FP_ROUND_TO_ZERO ";
-                if(flags & CL_FP_ROUND_TO_INF)
-                    os << "CL_FP_ROUND_TO_INF ";
-                if(flags & CL_FP_FMA)
-                    os << "CL_FP_FMA ";
-                os << endl;
-            }
-
-            os << "CL_DEVICE_ENDIAN_LITTLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_ENDIAN_LITTLE) << endl;
-            os << "CL_DEVICE_ERROR_CORRECTION_SUPPORT" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_ERROR_CORRECTION_SUPPORT) << endl;
-
-            {
-                os << "CL_DEVICE_EXECUTION_CAPABILITIES" << sep;
-                cl_device_exec_capabilities flags = context->getInfoWithDefaultOnError<cl_device_exec_capabilities>(CL_DEVICE_EXECUTION_CAPABILITIES);
-                if(flags & CL_EXEC_KERNEL)
-                    os << "CL_EXEC_KERNEL ";
-                if(flags & CL_EXEC_NATIVE_KERNEL)
-                    os << "CL_EXEC_NATIVE_KERNEL ";
-                os << endl;
-            }
-
-            os << "CL_DEVICE_EXTENSIONS" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_EXTENSIONS) << endl;
-            os << "CL_DEVICE_GLOBAL_MEM_CACHE_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_GLOBAL_MEM_CACHE_SIZE) << endl;
-
-            {
-                os << "CL_DEVICE_GLOBAL_MEM_CACHE_TYPE" << sep;
-                cl_device_mem_cache_type cacheType = context->getInfoWithDefaultOnError<cl_device_mem_cache_type>(CL_DEVICE_GLOBAL_MEM_CACHE_TYPE);
-                switch(cacheType)
-                {
-                    case CL_NONE:
-                        os << "CL_NONE";
-                        break;
-                    case CL_READ_ONLY_CACHE:
-                        os << "CL_READ_ONLY_CACHE";
-                        break;
-                    case CL_READ_WRITE_CACHE:
-                        os << "CL_READ_WRITE_CACHE";
-                        break;
-                }
-                os << endl;
-            }
-
-            os << "CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE) << endl;
-            os << "CL_DEVICE_GLOBAL_MEM_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_GLOBAL_MEM_SIZE) << endl;
-
-            {
-                os << "CL_DEVICE_HALF_FP_CONFIG" << sep;
-                cl_device_fp_config flags = context->getInfoWithDefaultOnError<cl_device_fp_config>(CL_DEVICE_HALF_FP_CONFIG);
-                if(flags & CL_FP_DENORM)
-                    os << "CL_FP_DENORM ";
-                if(flags & CL_FP_INF_NAN)
-                    os << "CL_FP_INF_NAN ";
-                if(flags & CL_FP_ROUND_TO_NEAREST)
-                    os << "CL_FP_ROUND_TO_NEAREST ";
-                if(flags & CL_FP_ROUND_TO_ZERO)
-                    os << "CL_FP_ROUND_TO_ZERO ";
-                if(flags & CL_FP_ROUND_TO_INF)
-                    os << "CL_FP_ROUND_TO_INF ";
-                if(flags & CL_FP_FMA)
-                    os << "CL_FP_FMA ";
-                if(flags & CL_FP_SOFT_FLOAT)
-                    os << "CL_FP_SOFT_FLOAT ";
-                os << endl;
-            }
-
-            os << "CL_DEVICE_HOST_UNIFIED_MEMORY" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_HOST_UNIFIED_MEMORY) << endl;
-            os << "CL_DEVICE_IMAGE_SUPPORT" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_IMAGE_SUPPORT) << endl;
-            os << "CL_DEVICE_IMAGE2D_MAX_HEIGHT" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE2D_MAX_HEIGHT) << endl;
-            os << "CL_DEVICE_IMAGE2D_MAX_WIDTH" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE2D_MAX_WIDTH) << endl;
-            os << "CL_DEVICE_IMAGE3D_MAX_DEPTH" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_DEPTH) << endl;
-            os << "CL_DEVICE_IMAGE3D_MAX_HEIGHT" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_HEIGHT) << endl;
-            os << "CL_DEVICE_IMAGE3D_MAX_WIDTH" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_WIDTH) << endl;
-            os << "CL_DEVICE_LOCAL_MEM_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE) << endl;
-
-            {
-                os << "CL_DEVICE_LOCAL_MEM_TYPE" << sep;
-                cl_device_local_mem_type memType = context->getInfoWithDefaultOnError<cl_device_local_mem_type>(CL_DEVICE_LOCAL_MEM_TYPE);
-                switch(memType)
-                {
-                    case CL_LOCAL:
-                        os << "CL_LOCAL";
-                        break;
-                    case CL_GLOBAL:
-                        os << "CL_GLOBAL";
-                        break;
-                }
-                os << endl;
-            }
-
-            os << "CL_DEVICE_MAX_CLOCK_FREQUENCY" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_CLOCK_FREQUENCY) << endl;
-            os << "CL_DEVICE_MAX_COMPUTE_UNITS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_COMPUTE_UNITS) << endl;
-            os << "CL_DEVICE_MAX_CONSTANT_ARGS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_CONSTANT_ARGS) << endl;
-            os << "CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE) << endl;
-            os << "CL_DEVICE_MAX_MEM_ALLOC_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_MAX_MEM_ALLOC_SIZE) << endl;
-            os << "CL_DEVICE_MAX_PARAMETER_SIZE" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_MAX_PARAMETER_SIZE) << endl;
-            os << "CL_DEVICE_MAX_READ_IMAGE_ARGS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_READ_IMAGE_ARGS) << endl;
-            os << "CL_DEVICE_MAX_SAMPLERS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_SAMPLERS) << endl;
-            os << "CL_DEVICE_MAX_WORK_GROUP_SIZE" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE) << endl;
-
-            {
-                cl_uint dimensions = context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS);
-                os << "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS" << sep << dimensions << endl;
-
-                os << "CL_DEVICE_MAX_WORK_ITEM_SIZES" << sep;
-                size_t* sizes = (size_t*)context->getInfoWithDefaultOnError(CL_DEVICE_MAX_WORK_ITEM_SIZES);
-                if(sizes != nullptr)
-                {
-                    copy(sizes, sizes + dimensions, ostream_iterator<size_t>(os, ","));
-                    delete sizes;
-                }
-                os << endl;
-            }
-
-            os << "CL_DEVICE_MAX_WRITE_IMAGE_ARGS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_WRITE_IMAGE_ARGS) << endl;
-            os << "CL_DEVICE_MEM_BASE_ADDR_ALIGN" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MEM_BASE_ADDR_ALIGN) << endl;
-            os << "CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE) << endl;
-            os << "CL_DEVICE_NAME" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_NAME) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_INT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_INT) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE) << endl;
-            os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF) << endl;
-            os << "CL_DEVICE_OPENCL_C_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_OPENCL_C_VERSION) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE) << endl;
-            os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF) << endl;
-            os << "CL_DEVICE_PROFILE" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_PROFILE) << endl;
-            os << "CL_DEVICE_PROFILING_TIMER_RESOLUTION" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_PROFILING_TIMER_RESOLUTION) << endl;
-
-            {
-                os << "CL_DEVICE_QUEUE_PROPERTIES" << sep;
-                cl_command_queue_properties properties = context->getInfoWithDefaultOnError<cl_command_queue_properties>(CL_DEVICE_QUEUE_PROPERTIES);
-                if(properties & CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE)
-                    os << "CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE ";
-                if(properties & CL_QUEUE_PROFILING_ENABLE)
-                    os << "CL_QUEUE_PROFILING_ENABLE ";
-                os << endl;
-            }
-
-            {
-                os << "CL_DEVICE_SINGLE_FP_CONFIG" << sep;
-                cl_device_fp_config flags = context->getInfoWithDefaultOnError<cl_device_fp_config>(CL_DEVICE_SINGLE_FP_CONFIG);
-                if(flags & CL_FP_DENORM)
-                    os << "CL_FP_DENORM ";
-                if(flags & CL_FP_INF_NAN)
-                    os << "CL_FP_INF_NAN ";
-                if(flags & CL_FP_ROUND_TO_NEAREST)
-                    os << "CL_FP_ROUND_TO_NEAREST ";
-                if(flags & CL_FP_ROUND_TO_ZERO)
-                    os << "CL_FP_ROUND_TO_ZERO ";
-                if(flags & CL_FP_ROUND_TO_INF)
-                    os << "CL_FP_ROUND_TO_INF ";
-                if(flags & CL_FP_FMA)
-                    os << "CP_FP_FMA ";
-                if(flags & CL_FP_SOFT_FLOAT)
-                    os << "CL_FP_SOFT_FLOAT ";
-                os << endl;
-            }
-
-            {
-                os << "CL_DEVICE_TYPE" << sep;
-                cl_device_type deviceType = context->getInfoWithDefaultOnError<cl_device_type>(CL_DEVICE_TYPE);
-                switch(deviceType)
-                {
-                    case CL_DEVICE_TYPE_CPU:
-                        os << "CL_DEVICE_TYPE_CPU";
-                        break;
-                    case CL_DEVICE_TYPE_GPU:
-                        os << "CL_DEVICE_TYPE_GPU";
-                        break;
-                    case CL_DEVICE_TYPE_ACCELERATOR:
-                        os << "CL_DEVICE_TYPE_ACCELERATOR";
-                        break;
-                    case CL_DEVICE_TYPE_DEFAULT:
-                        os << "CL_DEVICE_TYPE_DEFAULT";
-                        break;
-                }
-                os << endl;
-            }
-
-            os << "CL_DEVICE_VENDOR" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_VENDOR) << endl;
-            os << "CL_DEVICE_VENDOR_ID" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_VENDOR_ID) << endl;
-            os << "CL_DEVICE_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_VERSION) << endl;
-            os << "CL_DRIVER_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DRIVER_VERSION) << endl;
-
-            os << "CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT) << endl;
-
-            os.close();
-
-            cout << "DONE" << endl;
+            StatsWriter::Write(context, fileName, sep);
         }
 
         Context* gpuContext;
@@ -782,11 +604,15 @@ class Runner
         Plugin<T>* plugin;
 
         Timer timer;
+        Timer globalTimer;
 
         T* data;
         T* result;
 
         vector<Range*> ranges;
+
+        size_t iterations;
+        vector<size_t> sizes;
 };
 
 #endif // RUNNER_H

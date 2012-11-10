@@ -5,7 +5,6 @@
 		<Project filename="matrix/matrix.cbp">
 			<Depends filename="common/libs/blas/blas.cbp" />
 			<Depends filename="common/libs/cblas/cblas.cbp" />
-			<Depends filename="common/libs/clpp/clpp.cbp" />
 		</Project>
 		<Project filename="meshtransform/meshtransform.cbp" />
 		<Project filename="scan/scan.cbp">

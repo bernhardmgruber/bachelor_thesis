@@ -146,7 +146,7 @@ void clppSort_RadixSort::sort()
 		//**********
 		//clEnqueueReadBuffer(_context->clQueue, dataA, CL_TRUE, 0, sizeof(int) * _datasetSize, _dataSetOut, 0, NULL, NULL);
 		//**********
-		
+
 		// 3) Scan the p*2^b = p*(16) entry histogram table. Stored in column-major order, computes global digit offsets.
 		sw.StartTimer();
 #endif
@@ -158,7 +158,7 @@ void clppSort_RadixSort::sort()
 		_scan->waitCompletion();
 		sw.StopTimer();
 		cout << "Global scan      " << sw.GetElapsedTime() << endl;
-        
+
 		// 4) Prefix sum results are used to scatter each work-group's elements to their correct position.
 		sw.StartTimer();
 #endif
@@ -202,7 +202,7 @@ void clppSort_RadixSort::localHistogram(const size_t* global, const size_t* loca
 	clStatus |= clSetKernelArg(_kernel_LocalHistogram, 2, sizeof(cl_mem), (const void*)&hist);
 	clStatus |= clSetKernelArg(_kernel_LocalHistogram, 3, sizeof(cl_mem), (const void*)&blockHists);
 	clStatus |= clSetKernelArg(_kernel_LocalHistogram, 4, sizeof(unsigned int), (const void*)&_datasetSize);
-	clStatus |= clEnqueueNDRangeKernel(_context->clQueue, _kernel_LocalHistogram, 1, NULL, global, local, 0, NULL, NULL);	
+	clStatus |= clEnqueueNDRangeKernel(_context->clQueue, _kernel_LocalHistogram, 1, NULL, global, local, 0, NULL, NULL);
 
 #ifdef BENCHMARK
     clStatus |= clFinish(_context->clQueue);
@@ -256,7 +256,7 @@ void clppSort_RadixSort::pushDatas(void* dataSet, size_t datasetSize)
 
 		//---- Allocate
 		unsigned int numBlocks = roundUpDiv(_datasetSize, _workgroupSize * 4);
-	    
+
 		_clBuffer_radixHist1 = clCreateBuffer(_context->clContext, CL_MEM_READ_WRITE, _keySize * 16 * numBlocks, NULL, &clStatus);
 		checkCLStatus(clStatus);
 
@@ -312,7 +312,7 @@ void clppSort_RadixSort::pushCLDatas(cl_mem clBuffer_dataSet, size_t datasetSize
 
 		//---- Allocate
 		unsigned int numBlocks = roundUpDiv(_datasetSize, _workgroupSize * 4);
-	    
+
 		// column size = 2^b = 16
 		// row size = numblocks
 		_clBuffer_radixHist1 = clCreateBuffer(_context->clContext, CL_MEM_READ_WRITE, sizeof(int) * 16 * numBlocks, NULL, &clStatus);

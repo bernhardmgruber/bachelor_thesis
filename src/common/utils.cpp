@@ -45,3 +45,28 @@ string sizeToString(size_t size)
 
     return ss.str();
 }
+
+string timeToString(double time)
+{
+    stringstream ss;
+
+    size_t hours = time / 3600;
+    if(hours > 0)
+        ss << hours << "h ";
+    time = fmod(time, 3600);
+
+    size_t minutes = time / 60;
+    if(minutes > 0)
+        ss << minutes << "h ";
+    time = fmod(time, 60);
+
+    size_t seconds = (size_t) seconds;
+    if(seconds > 0)
+        ss << seconds << "s ";
+    time = fmod(time, 1);
+
+    size_t millis = (size_t)(time * 1000.0);
+    ss << millis << "ms";
+
+    return ss.str();
+}

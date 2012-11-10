@@ -32,6 +32,14 @@ size_t roundToMultiple(size_t x, size_t multiple);
  */
 string sizeToString(size_t size);
 
+/**
+ * Creates a string representation of the given time.
+ *
+ * @param time The time to convert in seconds.
+ * @return The created string representation in the format of xxh xxm xxs xxxms.
+ */
+string timeToString(double time);
+
 template <typename T>
 string getTypeName()
 {

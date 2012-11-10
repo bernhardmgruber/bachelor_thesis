@@ -15,7 +15,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="../common/libs/clAmdBlas/lib64/import/clAmdBlas.lib" />
+					<Add library="..\common\libs\clAmdBlas\lib64\import\clAmdBlas.lib" />
 				</Linker>
 			</Target>
 			<Target title="Release Win64">
@@ -28,7 +28,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="../common/libs/clAmdBlas/lib64/import/clAmdBlas.lib" />
+					<Add library="..\common\libs\clAmdBlas\lib64\import\clAmdBlas.lib" />
 				</Linker>
 			</Target>
 			<Target title="Debug Lin64">
@@ -40,7 +40,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="../common/libs/clAmdBlas/lib64/libclAmdBlas.so.1" />
+					<Add library="..\common\libs\clAmdBlas\lib64\libclAmdBlas.so.1" />
 				</Linker>
 			</Target>
 			<Target title="Release Lin64">
@@ -53,7 +53,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="../common/libs/clAmdBlas/lib64/libclAmdBlas.so.1" />
+					<Add library="..\common\libs\clAmdBlas\lib64\libclAmdBlas.so.1" />
 				</Linker>
 			</Target>
 		</Build>
@@ -68,16 +68,16 @@
 		<Linker>
 			<Add library="OpenCL" />
 			<Add library="gomp" />
-			<Add library="../common/libs/cblas/lib/cblas_LINUX.a" />
-			<Add library="../common/libs/blas/blas_LINUX.a" />
+			<Add library="..\common\libs\cblas\lib\libcblas.a" />
+			<Add library="..\common\libs\blas\lib\libblas.a" />
 			<Add library="gfortran" />
-			<Add library="../common/libs/clpp/bin/Release/libclpp.a" />
 		</Linker>
 		<Unit filename="../common/CPUAlgorithm.h" />
 		<Unit filename="../common/GPUAlgorithm.h" />
 		<Unit filename="../common/OpenCL.cpp" />
 		<Unit filename="../common/OpenCL.h" />
 		<Unit filename="../common/Runner.h" />
+		<Unit filename="../common/StatsWriter.h" />
 		<Unit filename="../common/Timer.cpp" />
 		<Unit filename="../common/Timer.h" />
 		<Unit filename="../common/utils.cpp" />
@@ -113,6 +113,12 @@
 				<doxyfile_dot />
 				<general />
 			</DoxyBlocks>
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" update_manifest="0" do_auto_increment="0" ask_to_increment="0" language="C++" svn="1" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

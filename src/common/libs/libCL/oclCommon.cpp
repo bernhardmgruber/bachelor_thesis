@@ -26,7 +26,7 @@ const char* oclError()
 {
     if (-sStatusCL < CL_ERRORS)
     {
-        return clErrors[-sStatusCL]; 
+        return clErrors[-sStatusCL];
     }
     else
     {
@@ -40,7 +40,7 @@ bool oclSuccess(char* iFunction, oclObject* iObject)
 {
     if (sStatusCL != CL_SUCCESS)
     {
-        Log(ERR, iObject) << "Failure in call to " << iFunction << " : " << oclError(); 
+        Log(ERR, iObject) << "Failure in call to " << iFunction << " : " << oclError();
     }
     return sStatusCL == CL_SUCCESS;
 };
@@ -51,7 +51,7 @@ void info(const char* iValue, oclObject* iObject)
     {
         cout << iObject->getName() << ":" << iValue << "\n";
     }
-    else 
+    else
     {
         cout << iValue << "\n";
     }
@@ -62,7 +62,7 @@ void warn(const char* iValue, oclObject* iObject)
     {
         cout << "(warning):" << iObject->getName() << ":" << iValue << "\n";
     }
-    else 
+    else
     {
         cout << "(warning):" << iValue << "\n";
     }
@@ -73,7 +73,7 @@ void error(const char* iValue, oclObject* iObject)
     {
         cout << "(error):" << iObject->getName() << ":" << iValue << "\n";
     }
-    else 
+    else
     {
         cout << "(error):" << iValue << "\n";
     }
@@ -166,55 +166,55 @@ Log::~Log()
     }
 }
 
-Log& Log::operator<< (int iValue) 
+Log& Log::operator<< (int iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (unsigned int iValue) 
+Log& Log::operator<< (unsigned int iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (cl_long iValue) 
+Log& Log::operator<< (cl_long iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (cl_ulong iValue) 
+Log& Log::operator<< (cl_ulong iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (float iValue) 
+Log& Log::operator<< (float iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (char* iValue) 
+Log& Log::operator<< (char* iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (const char* iValue) 
+Log& Log::operator<< (const char* iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (void* iValue) 
+Log& Log::operator<< (void* iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (char iValue) 
+Log& Log::operator<< (char iValue)
 {
     mStream << iValue;
     return *this;
@@ -226,13 +226,13 @@ Log& Log::operator<< (unsigned char iValue)
     return *this;
 }
 
-Log& Log::operator<< (double iValue) 
+Log& Log::operator<< (double iValue)
 {
     mStream << iValue;
     return *this;
 }
 
-Log& Log::operator<< (cl_float4& iValue) 
+Log& Log::operator<< (cl_float4& iValue)
 {
     mStream << "( " << iValue.s[0] << "," << iValue.s[1] << "," << iValue.s[2] << "," << iValue.s[3] << ")";
     return *this;
