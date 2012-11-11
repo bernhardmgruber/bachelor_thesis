@@ -1,5 +1,5 @@
-#ifndef GPUDIXXITRANSFORM_H
-#define GPUDIXXITRANSFORM_H
+#ifndef GPUDIXXITRANSFORMBUILTIN_H
+#define GPUDIXXITRANSFORMBUILTIN_H
 
 #include "../../../common/GPUAlgorithm.h"
 #include "../../MeshTransformAlgorithm.h"
@@ -10,26 +10,28 @@ namespace gpu
     namespace dixxi
     {
         template <typename T>
-        class Transform : public GPUAlgorithm<T>, public MeshTransformAlgorithm
+        class TransformBuiltIn : public GPUAlgorithm<T>, public MeshTransformAlgorithm
         {
             public:
+                static const size_t BLOCK_SIZE = 4;
+
                 const string getName() override
                 {
-                    return "Transform";
+                    return "Transform built in";
                 }
 
                 void init(Context* context) override
                 {
                     stringstream ss;
-                    ss << "-D T=" << getTypeName<T>() << " -D MATRIX_SIZE=" << MATRIX_SIZE;
-                    Program* program = context->createProgram("gpu/dixxi/Transform.cl", ss.str());
-                    kernel = program->createKernel("Transform");
+                    ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE;
+                    Program* program = context->createProgram("gpu/dixxi/TransformBuiltIn.cl", ss.str());
+                    kernel = program->createKernel("TransformBuiltIn");
                     delete program;
                 }
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    adaptedSize = roundToMultiple(size, workGroupSize);
+                    adaptedSize = roundToMultiple(size, workGroupSize * BLOCK_SIZE);
 
                     matrixBuffer = context->createBuffer(CL_MEM_READ_ONLY, MATRIX_SIZE * sizeof(T));
                     queue->enqueueWrite(matrixBuffer, data);
@@ -61,7 +63,7 @@ namespace gpu
                     delete kernel;
                 }
 
-                virtual ~Transform() {}
+                virtual ~TransformBuiltIn() {}
 
             private:
                 Kernel* kernel;
@@ -72,4 +74,4 @@ namespace gpu
     }
 }
 
-#endif // CPUDIXXITRANSFORM_H
+#endif // GPUDIXXITRANSFORMBUILTIN_H
