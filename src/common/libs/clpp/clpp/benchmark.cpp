@@ -54,10 +54,10 @@ int main(int argc, const char** argv)
 	context.setup(0, 0);
 
 	// Scan
-	//test_Scan(&context);
+	test_Scan(&context);
 
 	// Sorting : key
-	test_Sort(&context);
+	//test_Sort(&context);
 
 	// Sorting : key + value
 	//test_Sort_KV(&context);
