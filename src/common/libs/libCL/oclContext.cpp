@@ -195,10 +195,13 @@ oclContext* oclContext::create(const char* iVendor, int iDeviceType)
                 {
                     size_t lDeviceGLCount = 0;
                     cl_device_id lDeviceGL;
-                    sStatusCL = _clGetGLContextInfoKHR(GL_PROPS, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id), &lDeviceGL, &lDeviceGLCount);
-                    if (!oclSuccess("clGetDeviceIDs"))
+                    if(iVendor != VENDOR_AMD) // dixxi
                     {
-                        //continue; AMD drivers produce an error here if not OpenGL context is present
+                        sStatusCL = _clGetGLContextInfoKHR(GL_PROPS, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id), &lDeviceGL, &lDeviceGLCount);
+                        if (!oclSuccess("clGetDeviceIDs"))
+                        {
+                            //continue; AMD drivers produce an error here if not OpenGL context is present
+                        }
                     }
 
                     if (lDeviceGLCount)

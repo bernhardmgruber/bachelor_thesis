@@ -39,7 +39,7 @@ int main()
     {
         Runner<int, SortPlugin> runner(5, { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24 });
 
-        runner.run<cpu::Quicksort>(RunType::CPU);
+        /*runner.run<cpu::Quicksort>(RunType::CPU);
         runner.run<cpu::QSort>(RunType::CPU);
         runner.run<cpu::STLSort>(RunType::CPU);
         runner.run<cpu::TimSort>(RunType::CPU);
@@ -56,20 +56,20 @@ int main()
         runner.run<gpu::bealto::ParallelBitonicSortB8>(RunType::CL_GPU, true);
         runner.run<gpu::bealto::ParallelBitonicSortB16>(RunType::CL_GPU, false);
         runner.run<gpu::bealto::ParallelBitonicSortC>(RunType::CL_GPU, false);
-        runner.run<gpu::bealto::ParallelMergeSort>(RunType::CL_GPU, true);
+        runner.run<gpu::bealto::ParallelMergeSort>(RunType::CL_GPU, true);*/
 
         //runner.run<gpu::clpp::RadixSort>(RunType::CL_GPU, true); // not working
 
-        //runner.run<gpu::libcl::RadixSort>(RunType::CL_GPU, true); // not working
+        runner.run<gpu::libcl::RadixSort>(RunType::CL_GPU, true); // not working
 
-        runner.run<gpu::amd::BitonicSort>(RunType::CL_GPU, false);
+        /*runner.run<gpu::amd::BitonicSort>(RunType::CL_GPU, false);
         runner.run<gpu::amd::RadixSort>(RunType::CL_GPU, false); // crashes on large arrays
         runner.run<gpu::amd_dixxi::RadixSort>(RunType::CL_GPU, false);
 
         runner.run<gpu::dixxi::RadixSort>(RunType::CL_GPU, false);
         runner.run<gpu::dixxi::RadixSortAtomicCounters>(RunType::CL_GPU, false);
 
-        runner.run<gpu::gpugems::OddEvenTransition>(RunType::CL_GPU, false);
+        runner.run<gpu::gpugems::OddEvenTransition>(RunType::CL_GPU, false);*/
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");

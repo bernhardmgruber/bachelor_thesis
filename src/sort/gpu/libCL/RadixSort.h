@@ -46,9 +46,11 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    ctx = oclContext::create(oclContext::VENDOR_NVIDIA, CL_DEVICE_TYPE_GPU);
+                    oclInit("../common/libs/libCL");
+
+                    ctx = oclContext::create(oclContext::VENDOR_AMD, CL_DEVICE_TYPE_GPU);
                     if (!ctx)
-                        ctx = oclContext::create(oclContext::VENDOR_AMD, CL_DEVICE_TYPE_GPU);
+                        ctx = oclContext::create(oclContext::VENDOR_NVIDIA, CL_DEVICE_TYPE_GPU);
 
                     if (!ctx)
                         throw OpenCLException("no OpenCL capable platform detected");
@@ -71,12 +73,12 @@ namespace gpu
                     //if (!bfVal.map(CL_MAP_READ | CL_MAP_WRITE))
                     //    throw OpenCLException("map failed!");
 
-                    T* keyPtr = bfKey->ptr<T>();
+                    keyPtr = bfKey->ptr<T>();
                     //T* ptrVal = bfVal.ptr<T>();
                     memcpy(keyPtr, data, sizeof(T) * size);
 
-                    bfVal->write();
-                    //bfKey.write();
+                    //bfVal->write();
+                    bfKey->write();
                 }
 
                 void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
@@ -86,8 +88,8 @@ namespace gpu
 
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
-                    bfVal->read();
-                    //bfKey.read();
+                    //bfVal->read();
+                    bfKey->read();
 
                     memcpy(result, keyPtr, sizeof(T) * size);
 

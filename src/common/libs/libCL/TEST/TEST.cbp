@@ -12,22 +12,23 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-g" />
+					<Add option="-W" />
+					<Add option="-O0" />
 					<Add option="-DWIN32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-D_CONSOLE" />
-					<Add option="-W" />
-					<Add option="-g" />
-					<Add option="-O0" />
 					<Add directory=".." />
 				</Compiler>
 				<ResourceCompiler>
 					<Add directory=".." />
 				</ResourceCompiler>
 				<Linker>
+					<Add library="..\bin\Debug\libcl.a" />
 					<Add library="OpenCL" />
 					<Add library="OpenGL32" />
 					<Add directory=".." />
-					<Add directory="..\CL\x86" />
+					<Add directory="../CL/x86" />
 				</Linker>
 			</Target>
 			<Target title="Release Win32">
@@ -36,21 +37,22 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-O2" />
+					<Add option="-W" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
-					<Add option="-W" />
-					<Add option="-O2" />
 					<Add directory=".." />
 				</Compiler>
 				<ResourceCompiler>
 					<Add directory=".." />
 				</ResourceCompiler>
 				<Linker>
+					<Add library="..\bin\Release\libcl.a" />
 					<Add library="OpenCL" />
 					<Add library="OpenGL32" />
 					<Add directory=".." />
-					<Add directory="..\CL\x86" />
+					<Add directory="../CL/x86" />
 				</Linker>
 			</Target>
 		</Build>
