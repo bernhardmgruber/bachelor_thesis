@@ -47,7 +47,6 @@
 				</ResourceCompiler>
 			</Target>
 		</Build>
-		<Unit filename="ReadMe.txt" />
 		<Unit filename="color/oclColor.cl" />
 		<Unit filename="color/oclColor.cpp" />
 		<Unit filename="color/oclColor.h" />

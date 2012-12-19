@@ -107,7 +107,10 @@ string clppProgram::loadSource(string path)
 	ifstream infile(path.c_str(), ios_base::in | ios_base::binary);
 
 	if (!infile)
+    {
+        fprintf(stderr, "Could not load file %s.\n", path.c_str());
         return "";
+    }
 
 	while(!infile.eof())
 	{
