@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <CL/cl.h>
+
 #include <stdint.h>
 #include <string>
 #include <typeinfo>
@@ -43,12 +45,14 @@ string timeToString(double time);
 template <typename T>
 string getTypeName()
 {
-    if(typeid(T) == typeid(int))
+    if(typeid(T) == typeid(int) || typeid(T) == typeid(cl_int))
         return "int";
-    if(typeid(T) == typeid(float))
+    if(typeid(T) == typeid(float) || typeid(T) == typeid(cl_float))
         return "float";
-    if(typeid(T) == typeid(double))
+    if(typeid(T) == typeid(double) || typeid(T) == typeid(cl_double))
         return "double";
+    if(typeid(T) == typeid(unsigned int) || typeid(T) == typeid(cl_uint))
+        return "uint";
     return "unknown";
 }
 

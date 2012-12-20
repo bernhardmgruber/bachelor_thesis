@@ -42,7 +42,6 @@ namespace gpu
                 void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
                     s->sort();
-                    s->waitCompletion();
                 }
 
                 void download(CommandQueue* queue, T* result, size_t size) override
