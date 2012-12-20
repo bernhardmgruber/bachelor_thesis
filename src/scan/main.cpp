@@ -24,7 +24,7 @@ int main()
 
         runner.run<cpu::Scan>(RunType::CPU);
 
-        runner.printOnce<gpu::clpp::Scan>(RunType::CL_GPU, size, false); // not working
+        //runner.run<gpu::clpp::Scan>(RunType::CL_GPU, false); // not working
         runner.run<gpu::gpugems::NaiveScan>(RunType::CL_GPU, false);
         runner.run<gpu::gpugems::WorkEfficientScan>(RunType::CL_GPU, false);
         runner.run<gpu::gpugems::LocalScan>(RunType::CL_GPU, false);

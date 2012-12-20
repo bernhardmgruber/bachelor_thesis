@@ -104,11 +104,11 @@ namespace gpu
 
                     //Check supported size range
                     if((arrayLength < MIN_LARGE_ARRAY_SIZE) || (arrayLength > MAX_LARGE_ARRAY_SIZE))
-                        throw OpenCLException("Out of range");
+                        throw OpenCLException("Element count is out of supported size");
 
                     //Check total batch size limit
                     if(batchSize * arrayLength > MAX_BATCH_ELEMENTS)
-                        throw OpenCLException("bach elements out of range");
+                        throw OpenCLException("Batch element count is out of supported size");
 
                     scanExclusiveLocal1(queue, (batchSize * arrayLength) / (4 * WORKGROUP_SIZE), 4 * WORKGROUP_SIZE);
 
