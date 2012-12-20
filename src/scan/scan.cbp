@@ -86,6 +86,8 @@
 		<Unit filename="gpu/gpugems/NaiveScan.h" />
 		<Unit filename="gpu/gpugems/WorkEfficientScan.cl" />
 		<Unit filename="gpu/gpugems/WorkEfficientScan.h" />
+		<Unit filename="gpu/nvidia/Scan.cl" />
+		<Unit filename="gpu/nvidia/Scan.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
