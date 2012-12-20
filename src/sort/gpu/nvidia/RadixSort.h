@@ -65,14 +65,14 @@ namespace gpu
                     size_t numBlocks = ((maxElements % (CTA_SIZE * 4)) == 0) ? (maxElements / (CTA_SIZE * 4)) : (maxElements / (CTA_SIZE * 4) + 1);
 
                     d_tempKeys = context->createBuffer(CL_MEM_READ_WRITE, sizeof(cl_uint) * maxElements);
-                    mCounters = context->createBuffer(CL_MEM_READ_WRITE, WARP_SIZE * numBlocks * sizeof(unsigned int));
-                    mCountersSum = context->createBuffer(CL_MEM_READ_WRITE, WARP_SIZE * numBlocks * sizeof(unsigned int));
-                    mBlockOffsets = context->createBuffer(CL_MEM_READ_WRITE, WARP_SIZE * numBlocks * sizeof(unsigned int));
+                    mCounters = context->createBuffer(CL_MEM_READ_WRITE, WARP_SIZE * numBlocks * sizeof(T));
+                    mCountersSum = context->createBuffer(CL_MEM_READ_WRITE, WARP_SIZE * numBlocks * sizeof(T));
+                    mBlockOffsets = context->createBuffer(CL_MEM_READ_WRITE, WARP_SIZE * numBlocks * sizeof(T));
 
                     size_t numElementsForScan = maxElements/2/CTA_SIZE*16;
-                    d_Buffer = context->createBuffer(CL_MEM_READ_WRITE, numElementsForScan / MAX_WORKGROUP_INCLUSIVE_SCAN_SIZE * sizeof(cl_uint));
+                    d_Buffer = context->createBuffer(CL_MEM_READ_WRITE, numElementsForScan / MAX_WORKGROUP_INCLUSIVE_SCAN_SIZE * sizeof(T));
 
-                    d_keys = context->createBuffer(CL_MEM_READ_WRITE, sizeof(cl_uint) * bufferSize);
+                    d_keys = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * bufferSize);
                     queue->enqueueWrite(d_keys, data, 0, size);
                 }
 
@@ -88,7 +88,7 @@ namespace gpu
                     ckRadixSortBlocksKeysOnly->setArg(3, (cl_uint)startbit);
                     ckRadixSortBlocksKeysOnly->setArg(4, (cl_uint)numElements);
                     ckRadixSortBlocksKeysOnly->setArg(5, (cl_uint)totalBlocks);
-                    ckRadixSortBlocksKeysOnly->setArg(6, 4*CTA_SIZE*sizeof(cl_uint), nullptr);
+                    ckRadixSortBlocksKeysOnly->setArg(6, 4*CTA_SIZE*sizeof(T), nullptr);
 
                     queue->enqueueKernel(ckRadixSortBlocksKeysOnly, 1, globalWorkSize, localWorkSize);
                 }
@@ -106,7 +106,7 @@ namespace gpu
                     ckFindRadixOffsets->setArg(3, (cl_uint)startbit);
                     ckFindRadixOffsets->setArg(4, (cl_uint)numElements);
                     ckFindRadixOffsets->setArg(5, (cl_uint)totalBlocks);
-                    ckFindRadixOffsets->setArg(6, 2 * CTA_SIZE *sizeof(cl_uint), nullptr);
+                    ckFindRadixOffsets->setArg(6, 2 * CTA_SIZE *sizeof(T), nullptr);
 
                     queue->enqueueKernel(ckFindRadixOffsets, 1, globalWorkSize, localWorkSize);
                 }
@@ -142,7 +142,7 @@ namespace gpu
                     ckReorderDataKeysOnly->setArg(5, (cl_uint)startbit);
                     ckReorderDataKeysOnly->setArg(6, (cl_uint)numElements);
                     ckReorderDataKeysOnly->setArg(7, (cl_uint)totalBlocks);
-                    ckReorderDataKeysOnly->setArg(8, 2 * CTA_SIZE * sizeof(cl_uint), nullptr);
+                    ckReorderDataKeysOnly->setArg(8, 2 * CTA_SIZE * sizeof(T), nullptr);
 
                     queue->enqueueKernel(ckReorderDataKeysOnly, 1, globalWorkSize, localWorkSize);
                 }
@@ -172,6 +172,8 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(d_keys, result, 0, size);
+
+                    printArr(result, size);
 
                     delete d_tempKeys;
                     delete mCounters;
@@ -215,7 +217,7 @@ namespace gpu
                 {
                     ckScanExclusiveLocal1->setArg(0, d_Dst);
                     ckScanExclusiveLocal1->setArg(1, d_Src);
-                    ckScanExclusiveLocal1->setArg(2, 2 * WORKGROUP_SIZE * sizeof(cl_uint), nullptr);
+                    ckScanExclusiveLocal1->setArg(2, 2 * WORKGROUP_SIZE * sizeof(T), nullptr);
                     ckScanExclusiveLocal1->setArg(3, (cl_uint)size);
 
                     size_t localWorkSize[] = { WORKGROUP_SIZE };
@@ -231,7 +233,7 @@ namespace gpu
                     ckScanExclusiveLocal2->setArg(0, d_Buffer);
                     ckScanExclusiveLocal2->setArg(1, d_Dst);
                     ckScanExclusiveLocal2->setArg(2, d_Src);
-                    ckScanExclusiveLocal2->setArg(3, 2 * WORKGROUP_SIZE * sizeof(cl_uint), nullptr);
+                    ckScanExclusiveLocal2->setArg(3, 2 * WORKGROUP_SIZE * sizeof(T), nullptr);
                     ckScanExclusiveLocal2->setArg(4, (cl_uint)elements);
                     ckScanExclusiveLocal2->setArg(5, (cl_uint)size);
 

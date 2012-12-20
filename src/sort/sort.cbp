@@ -135,6 +135,9 @@
 		<Unit filename="gpu/gpugems/OddEvenTransition.h" />
 		<Unit filename="gpu/libCL/RadixSort.cl" />
 		<Unit filename="gpu/libCL/RadixSort.h" />
+		<Unit filename="gpu/nvidia/RadixSort.cl" />
+		<Unit filename="gpu/nvidia/RadixSort.h" />
+		<Unit filename="gpu/nvidia/Scan_b.cl" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

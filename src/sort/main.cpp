@@ -38,9 +38,10 @@ int main()
 {
     try
     {
-        Runner<int, SortPlugin> runner(1, { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24 });
+        //Runner<cl_uint, SortPlugin> runner(1, { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24 });
+        Runner<cl_uint, SortPlugin> runner(1, { 1<<15 });
 
-        runner.run<cpu::Quicksort>(RunType::CPU);
+        /*runner.run<cpu::Quicksort>(RunType::CPU);
         runner.run<cpu::QSort>(RunType::CPU);
         runner.run<cpu::STLSort>(RunType::CPU);
         //runner.run<cpu::TimSort>(RunType::CPU);
@@ -72,8 +73,8 @@ int main()
         //runner.run<gpu::dixxi::RadixSort>(RunType::CL_GPU, false);
         //runner.run<gpu::dixxi::RadixSortAtomicCounters>(RunType::CL_GPU, false);
 
-        runner.run<gpu::gpugems::OddEvenTransition>(RunType::CL_GPU, false);
-
+        runner.run<gpu::gpugems::OddEvenTransition>(RunType::CL_GPU, false);*/
+runner.run<gpu::nvidia::RadixSort>(RunType::CL_GPU, false);
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");
     }
