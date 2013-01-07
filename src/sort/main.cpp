@@ -69,7 +69,7 @@ int main()
         runner.run<gpu::amd::RadixSort>(RunType::CL_GPU, false); // crashes on large arrays
         runner.run<gpu::amd_dixxi::RadixSort>(RunType::CL_GPU, false);*/
 
-        runner.run<gpu::nvidia::RadixSort>(RunType::CL_GPU, false); // not working
+        //runner.run<gpu::nvidia::RadixSort>(RunType::CL_GPU, false);
         runner.run<gpu::nvidia::BitonicSort>(RunType::CL_GPU, false);
 
         //runner.run<gpu::dixxi::RadixSort>(RunType::CL_GPU, false);

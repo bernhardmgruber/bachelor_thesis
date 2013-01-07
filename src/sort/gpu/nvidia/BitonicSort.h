@@ -53,9 +53,9 @@ namespace gpu
                     bufferSize = pow2roundup(size);
 
                     d_InputKey  = context->createBuffer(CL_MEM_READ_ONLY, bufferSize * sizeof(T));
-                    d_InputVal  = context->createBuffer(CL_MEM_READ_ONLY, bufferSize * sizeof(T));
+                    //d_InputVal  = context->createBuffer(CL_MEM_READ_ONLY, bufferSize * sizeof(T));
                     d_OutputKey = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
-                    d_OutputVal = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+                    //d_OutputVal = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
 
                     queue->enqueueWrite(d_InputKey, data, 0, size * sizeof(T));
                 }
@@ -68,9 +68,9 @@ namespace gpu
 
                     //Launch bitonicSortLocal1
                     ckBitonicSortLocal1->setArg(0, d_OutputKey);
-                    ckBitonicSortLocal1->setArg(1, d_OutputVal);
-                    ckBitonicSortLocal1->setArg(2, d_InputKey);
-                    ckBitonicSortLocal1->setArg(3, d_InputVal);
+                    //ckBitonicSortLocal1->setArg(1, d_OutputVal);
+                    ckBitonicSortLocal1->setArg(1, d_InputKey);
+                    //ckBitonicSortLocal1->setArg(3, d_InputVal);
 
                     size_t localWorkSize = LOCAL_SIZE_LIMIT / 2;
                     size_t globalWorkSize = batch * arrayLength / 2;
@@ -84,13 +84,13 @@ namespace gpu
                             {
                                 //Launch bitonicMergeGlobal
                                 ckBitonicMergeGlobal->setArg(0, d_OutputKey);
-                                ckBitonicMergeGlobal->setArg(1, d_OutputVal);
-                                ckBitonicMergeGlobal->setArg(2, d_OutputKey);
-                                ckBitonicMergeGlobal->setArg(3, d_OutputVal);
-                                ckBitonicMergeGlobal->setArg(4, (cl_uint)arrayLength);
-                                ckBitonicMergeGlobal->setArg(5, (cl_uint)size);
-                                ckBitonicMergeGlobal->setArg(6, (cl_uint)stride);
-                                ckBitonicMergeGlobal->setArg(7, (cl_uint)dir);
+                                //ckBitonicMergeGlobal->setArg(1, d_OutputVal);
+                                ckBitonicMergeGlobal->setArg(1, d_OutputKey);
+                                //ckBitonicMergeGlobal->setArg(3, d_OutputVal);
+                                ckBitonicMergeGlobal->setArg(2, (cl_uint)arrayLength);
+                                ckBitonicMergeGlobal->setArg(3, (cl_uint)size);
+                                ckBitonicMergeGlobal->setArg(4, (cl_uint)stride);
+                                ckBitonicMergeGlobal->setArg(5, (cl_uint)dir);
 
                                 globalWorkSize = batch * arrayLength / 2;
                                 queue->enqueueKernel(ckBitonicMergeGlobal, 1, &globalWorkSize, nullptr); // no local worksize
@@ -99,13 +99,13 @@ namespace gpu
                             {
                                 //Launch bitonicMergeLocal
                                 ckBitonicMergeLocal->setArg(0, d_OutputKey);
-                                ckBitonicMergeLocal->setArg(1, d_OutputVal);
-                                ckBitonicMergeLocal->setArg(2, d_OutputKey);
-                                ckBitonicMergeLocal->setArg(3, d_OutputVal);
-                                ckBitonicMergeLocal->setArg(4, (cl_uint)arrayLength);
-                                ckBitonicMergeLocal->setArg(5, (cl_uint)stride);
-                                ckBitonicMergeLocal->setArg(6, (cl_uint)size);
-                                ckBitonicMergeLocal->setArg(7, (cl_uint)dir);
+                                //ckBitonicMergeLocal->setArg(1, d_OutputVal);
+                                ckBitonicMergeLocal->setArg(1, d_OutputKey);
+                                //ckBitonicMergeLocal->setArg(3, d_OutputVal);
+                                ckBitonicMergeLocal->setArg(2, (cl_uint)arrayLength);
+                                ckBitonicMergeLocal->setArg(3, (cl_uint)stride);
+                                ckBitonicMergeLocal->setArg(4, (cl_uint)size);
+                                ckBitonicMergeLocal->setArg(5, (cl_uint)dir);
 
                                 localWorkSize  = LOCAL_SIZE_LIMIT / 2;
                                 globalWorkSize = batch * arrayLength / 2;
@@ -122,9 +122,9 @@ namespace gpu
                     queue->enqueueRead(d_OutputKey, result, 0, size * sizeof(T));
 
                     delete d_InputKey;
-                    delete d_InputVal;
+                    //delete d_InputVal;
                     delete d_OutputKey;
-                    delete d_OutputVal;
+                    //delete d_OutputVal;
                 }
 
                 void cleanup() override
@@ -144,9 +144,9 @@ namespace gpu
                 Kernel* ckBitonicMergeLocal;
 
                 Buffer* d_InputKey;
-                Buffer* d_InputVal;
+                //Buffer* d_InputVal;
                 Buffer* d_OutputKey;
-                Buffer* d_OutputVal;
+                //Buffer* d_OutputVal;
 
                 size_t bufferSize;
         };
