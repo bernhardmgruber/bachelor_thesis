@@ -74,7 +74,8 @@ class Runner
             cout << "Running " << iterations << " iterations " << endl;
             cout << "Sizes: ";
             copy(sizes.begin(), sizes.end(), ostream_iterator<size_t>(cout, ", "));
-            cout << endl;
+            cout << "\b\b " << endl;
+            cout << "Type: " << getTypeName<T>() << endl;
             cout << endl;
 
             globalTimer.start();

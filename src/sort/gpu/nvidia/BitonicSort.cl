@@ -17,16 +17,16 @@
 
 
 inline void ComparatorPrivate(
-    uint *keyA,
+    T *keyA,
 //    uint *valA,
-    uint *keyB,
+    T *keyB,
 //    uint *valB,
     uint arrowDir
 )
 {
     if( (*keyA > *keyB) == arrowDir )
     {
-        uint t;
+        T t;
         t = *keyA;
         *keyA = *keyB;
         *keyB = t;
@@ -37,16 +37,16 @@ inline void ComparatorPrivate(
 }
 
 inline void ComparatorLocal(
-    __local uint *keyA,
+    __local T *keyA,
 //    __local uint *valA,
-    __local uint *keyB,
+    __local T *keyB,
 //    __local uint *valB,
     uint arrowDir
 )
 {
     if( (*keyA > *keyB) == arrowDir )
     {
-        uint t;
+        T t;
         t = *keyA;
         *keyA = *keyB;
         *keyB = t;
@@ -61,15 +61,15 @@ inline void ComparatorLocal(
 ////////////////////////////////////////////////////////////////////////////////
 __kernel __attribute__((reqd_work_group_size(LOCAL_SIZE_LIMIT / 2, 1, 1)))
 void bitonicSortLocal(
-    __global uint *d_DstKey,
+    __global T *d_DstKey,
 //    __global uint *d_DstVal,
-    __global uint *d_SrcKey,
+    __global T *d_SrcKey,
 //    __global uint *d_SrcVal,
     uint arrayLength,
     uint sortDir
 )
 {
-    __local  uint l_key[LOCAL_SIZE_LIMIT];
+    __local  T l_key[LOCAL_SIZE_LIMIT];
 //    __local  uint l_val[LOCAL_SIZE_LIMIT];
 
     //Offset to the beginning of subbatch and load data
@@ -128,13 +128,13 @@ void bitonicSortLocal(
 //sorted in opposite directions
 __kernel __attribute__((reqd_work_group_size(LOCAL_SIZE_LIMIT / 2, 1, 1)))
 void bitonicSortLocal1(
-    __global uint *d_DstKey,
+    __global T *d_DstKey,
 //    __global uint *d_DstVal,
-    __global uint *d_SrcKey
+    __global T *d_SrcKey
 //    __global uint *d_SrcVal
 )
 {
-    __local uint l_key[LOCAL_SIZE_LIMIT];
+    __local T l_key[LOCAL_SIZE_LIMIT];
 //    __local uint l_val[LOCAL_SIZE_LIMIT];
 
     //Offset to the beginning of subarray and load data
@@ -190,9 +190,9 @@ void bitonicSortLocal1(
 
 //Bitonic merge iteration for 'stride' >= LOCAL_SIZE_LIMIT
 __kernel void bitonicMergeGlobal(
-    __global uint *d_DstKey,
+    __global T *d_DstKey,
 //    __global uint *d_DstVal,
-    __global uint *d_SrcKey,
+    __global T *d_SrcKey,
 //    __global uint *d_SrcVal,
     uint arrayLength,
     uint size,
@@ -207,9 +207,9 @@ __kernel void bitonicMergeGlobal(
     uint dir = sortDir ^ ( (comparatorI & (size / 2)) != 0 );
     uint pos = 2 * global_comparatorI - (global_comparatorI & (stride - 1));
 
-    uint keyA = d_SrcKey[pos +      0];
+    T keyA = d_SrcKey[pos +      0];
 //    uint valA = d_SrcVal[pos +      0];
-    uint keyB = d_SrcKey[pos + stride];
+    T keyB = d_SrcKey[pos + stride];
 //    uint valB = d_SrcVal[pos + stride];
 
     ComparatorPrivate(
@@ -228,9 +228,9 @@ __kernel void bitonicMergeGlobal(
 //'size' > LOCAL_SIZE_LIMIT and 'stride' = [1 .. LOCAL_SIZE_LIMIT / 2]
 __kernel __attribute__((reqd_work_group_size(LOCAL_SIZE_LIMIT / 2, 1, 1)))
 void bitonicMergeLocal(
-    __global uint *d_DstKey,
+    __global T *d_DstKey,
 //    __global uint *d_DstVal,
-    __global uint *d_SrcKey,
+    __global T *d_SrcKey,
 //    __global uint *d_SrcVal,
     uint arrayLength,
     uint stride,
@@ -238,8 +238,8 @@ void bitonicMergeLocal(
     uint sortDir
 )
 {
-    __local uint l_key[LOCAL_SIZE_LIMIT];
-    __local uint l_val[LOCAL_SIZE_LIMIT];
+    __local T l_key[LOCAL_SIZE_LIMIT];
+    __local T l_val[LOCAL_SIZE_LIMIT];
 
     d_SrcKey += get_group_id(0) * LOCAL_SIZE_LIMIT + get_local_id(0);
 //    d_SrcVal += get_group_id(0) * LOCAL_SIZE_LIMIT + get_local_id(0);
