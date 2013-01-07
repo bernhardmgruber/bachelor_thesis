@@ -73,7 +73,7 @@ namespace gpu
                     d_Buffer = context->createBuffer(CL_MEM_READ_WRITE, numElementsForScan / MAX_WORKGROUP_INCLUSIVE_SCAN_SIZE * sizeof(T));
 
                     d_keys = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * bufferSize);
-                    queue->enqueueWrite(d_keys, data, 0, size);
+                    queue->enqueueWrite(d_keys, data, 0, size * sizeof(T));
                 }
 
                 void radixSortBlocksKeysOnlyOCL(CommandQueue* queue, Buffer* d_keys, unsigned int nbits, unsigned int startbit, unsigned int numElements)
@@ -171,9 +171,7 @@ namespace gpu
 
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
-                    queue->enqueueRead(d_keys, result, 0, size);
-
-                    printArr(result, size);
+                    queue->enqueueRead(d_keys, result, 0, size * sizeof(T));
 
                     delete d_tempKeys;
                     delete mCounters;

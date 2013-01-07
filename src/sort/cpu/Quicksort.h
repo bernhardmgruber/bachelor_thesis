@@ -46,7 +46,7 @@ namespace cpu
                 int right = end;
 
                 // select pivot
-                int pivot = data[(left + right) / 2];
+                T pivot = data[(left + right) / 2];
 
                 // partition array
                 while (left <= right)
