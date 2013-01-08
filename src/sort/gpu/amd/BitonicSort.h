@@ -94,7 +94,7 @@ namespace gpu
 
                     // length - i.e number of elements in the array
                     //status = clSetKernelArg(kernel, 3, sizeof(cl_uint), (void *)&size);
-                    kernel->setArg(3, size);
+                    kernel->setArg(3, (cl_uint)size);
 
                     // whether sort is to be in increasing order. CL_TRUE implies increasing
                     cl_bool sortDescending = CL_TRUE;
@@ -167,7 +167,6 @@ namespace gpu
 
                 void cleanup() override
                 {
-                    delete program;
                     delete kernel;
                 }
 

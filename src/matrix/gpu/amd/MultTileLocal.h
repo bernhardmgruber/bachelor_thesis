@@ -58,7 +58,6 @@ namespace gpu
                     if(adjustedSize != size)
                     {
                         queue->enqueueFill(b, (cl_float)0);
-                        queue->enqueueFill(a, (cl_float)0);
                         size_t bufferOffset[] = {0, 0, 0};
                         size_t hostOffset[] = {0, 0, 0};
                         size_t sizes[] = {size * sizeof(T), size, 1};

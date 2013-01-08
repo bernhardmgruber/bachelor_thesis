@@ -16,7 +16,7 @@ int main()
 {
     try
     {
-        Runner<float, MeshTransformPlugin> runner(5, { 1<<23, 1<<25 });
+        Runner<float, MeshTransformPlugin> runner(3, { 1<<18, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25 });
 
         runner.run<cpu::dixxi::Transform>(RunType::CPU);
         runner.run<cpu::dixxi::TransformMulti>(RunType::CPU);

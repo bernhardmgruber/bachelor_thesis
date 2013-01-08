@@ -56,8 +56,8 @@ namespace gpu
                         size_t stride = 2 * offset;
 
                         upSweepKernel->setArg(0, buffer);
-                        upSweepKernel->setArg(1, offset);
-                        upSweepKernel->setArg(2, stride);
+                        upSweepKernel->setArg(1, (cl_uint)offset);
+                        upSweepKernel->setArg(2, (cl_uint)stride);
 
                         queue->enqueueKernel(upSweepKernel, 1, globalWorkSizes, localWorkSizes);
                         queue->enqueueBarrier();
@@ -65,7 +65,7 @@ namespace gpu
 
                     // set last element to zero
                     setLastZeroKernel->setArg(0, buffer);
-                    setLastZeroKernel->setArg(1, bufferSize - 1);
+                    setLastZeroKernel->setArg(1, (cl_uint)(bufferSize - 1));
                     queue->enqueueTask(setLastZeroKernel);
 
                     // downsweep
@@ -74,8 +74,8 @@ namespace gpu
                         size_t stride = 2 * offset;
 
                         downSweepKernel->setArg(0, buffer);
-                        downSweepKernel->setArg(1, offset);
-                        downSweepKernel->setArg(2, stride);
+                        downSweepKernel->setArg(1, (cl_uint)offset);
+                        downSweepKernel->setArg(2, (cl_uint)stride);
 
                         queue->enqueueKernel(downSweepKernel, 1, globalWorkSizes, localWorkSizes);
                         queue->enqueueBarrier();

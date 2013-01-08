@@ -57,7 +57,7 @@ string timeToString(double time)
 
     size_t minutes = time / 60;
     if(minutes > 0)
-        ss << minutes << "h ";
+        ss << minutes << "min ";
     time = fmod(time, 60);
 
     size_t seconds = (size_t) seconds;

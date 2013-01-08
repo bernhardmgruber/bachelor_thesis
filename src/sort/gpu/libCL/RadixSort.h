@@ -34,6 +34,8 @@ namespace gpu
         class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
         {
             public:
+                const static size_t MAX = 4194304;
+
                 const string getName() override
                 {
                     return "Radix sort (LibCL)";
@@ -62,6 +64,13 @@ namespace gpu
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
+                    if(size >= MAX)
+                    {
+                        stringstream ss;
+                        ss << "libCL does not support array equal to or larget than " << MAX << " elements";
+                        throw OpenCLException(ss.str());
+                    }
+
                     bfKey = new oclBuffer(*ctx, "bfKey");
                     bfVal = new oclBuffer(*ctx, "bfVal");
 
@@ -93,8 +102,8 @@ namespace gpu
 
                     memcpy(result, keyPtr, sizeof(T) * size);
 
-                    bfVal->unmap();
-                    //bfKey.unmap();
+                    bfKey->unmap();
+                    //bfVal->unmap();
 
                     delete bfKey;
                     delete bfVal;

@@ -38,7 +38,7 @@ class Runner
         /**
          * Constructor
          */
-        Runner(size_t iterations, initializer_list<size_t> sizes)
+        Runner(size_t iterations, initializer_list<size_t> sizes, bool validate = true)
             : iterations(iterations), sizes(sizes)
         {
             OpenCL::init();
@@ -174,7 +174,7 @@ class Runner
                     for(Stats* s : r->stats)
                     {
                         CPURun* run = static_cast<CPURun*>(s);
-                        os << run->size << sep << run->runTimeMean << sep << run->runTimeDeviation << sep << (run->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                        os << run->size << sep << run->runTimeMean << sep << run->runTimeDeviation << sep << (run->exceptionOccured ? "EXCEPTION" : (run->verificationResult ? "SUCCESS" : "FAILED")) << endl;
                     }
                 }
                 else
@@ -184,7 +184,7 @@ class Runner
                     for(Stats* s : r->stats)
                     {
                         CLBatch* batch = static_cast<CLBatch*>(s);
-                        os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTimeMean << sep << batch->fastest->uploadTimeDeviation << sep << batch->fastest->runTimeMean << sep << batch->fastest->runTimeDeviation << sep << batch->fastest->downloadTimeMean << sep << batch->fastest->downloadTimeDeviation << sep << batch->cleanupTime << sep << batch->fastest->wgSize << sep << (batch->fastest->uploadTimeMean + batch->fastest->runTimeMean + batch->fastest->downloadTimeMean) << sep << (batch->fastest->verificationResult ? "SUCCESS" : "FAILED") << endl;
+                        os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTimeMean << sep << batch->fastest->uploadTimeDeviation << sep << batch->fastest->runTimeMean << sep << batch->fastest->runTimeDeviation << sep << batch->fastest->downloadTimeMean << sep << batch->fastest->downloadTimeDeviation << sep << batch->cleanupTime << sep << batch->fastest->wgSize << sep << (batch->fastest->uploadTimeMean + batch->fastest->runTimeMean + batch->fastest->downloadTimeMean) << sep << (batch->fastest->exceptionOccured ? "EXCEPTION" : (batch->fastest->verificationResult ? "SUCCESS" : "FAILED")) << endl;
                     }
                 }
 
@@ -390,7 +390,7 @@ class Runner
                 iteration.runTime = timer.stop();
 
                 // verfiy result
-                run->verificationResult = run->verificationResult && plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size);
+                run->verificationResult = run->verificationResult && (validate ? plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size) : true);
 
                 // cleanup
                 plugin->freeInput(data);
@@ -517,7 +517,7 @@ class Runner
                     iteration.downloadTime = timer.stop();
 
                     // verify
-                    run.verificationResult = run.verificationResult && plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size);
+                    run.verificationResult = run.verificationResult && (validate ? plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size) : true);
 
                     run.iterations.push_back(iteration);
                 }
@@ -616,6 +616,8 @@ class Runner
 
         size_t iterations;
         vector<size_t> sizes;
+
+        bool validate;
 };
 
 #endif // RUNNER_H

@@ -51,7 +51,7 @@ namespace gpu
                     {
                         kernel->setArg(0, source);
                         kernel->setArg(1, destination);
-                        kernel->setArg(2, dpower);
+                        kernel->setArg(2, (cl_uint)dpower);
 
                         size_t globalWorkSizes[] = { size };
                         size_t localWorkSizes[] = { workGroupSize };

@@ -244,6 +244,11 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     memcpy(result, dSortedData, size * sizeof(T));
+
+                    delete[] unsortedData;
+                    delete[] dSortedData;
+                    delete[] histogramBins;
+
                     delete unsortedDataBuf;
                     delete histogramBinsBuf;
                     delete scanedHistogramBinsBuf;
@@ -252,10 +257,6 @@ namespace gpu
 
                 void cleanup() override
                 {
-                    delete[] unsortedData;
-                    delete[] dSortedData;
-                    delete[] histogramBins;
-
                     delete histogramKernel;
                     delete permuteKernel;
                 }
@@ -273,6 +274,7 @@ namespace gpu
 
                 Kernel* histogramKernel;
                 Kernel* permuteKernel;
+
                 Buffer* unsortedDataBuf;
                 Buffer* histogramBinsBuf;
                 Buffer* scanedHistogramBinsBuf;

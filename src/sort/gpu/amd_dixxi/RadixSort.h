@@ -186,21 +186,9 @@ namespace gpu
                                 }
                             }
                         }*/
-                        cl_uint* lol = new cl_uint[histogramSize / sizeof(cl_uint)];
-                        /*queue->enqueueRead(histogramBinsBuf, lol);
-                        cout << "before" << endl;
-                        for(int i = 0; i < numGroups; i++)
-                            for(int j = 0; j < workGroupSize; j++)
-                                printArr(lol + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);*/
 
                         scan_r(queue->getContext(), queue, workGroupSize, histogramBinsBuf, true);
                         queue->enqueueBarrier();
-
-                        queue->enqueueRead(histogramBinsBuf, lol);
-                        /*cout << "after" << endl;
-                        for(int i = 0; i < numGroups; i++)
-                            for(int j = 0; j < workGroupSize; j++)
-                                printArr(lol + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);*/
 
                         // Permute the element to appropriate place
                         runPermuteKernel(queue, bits, workGroupSize);
