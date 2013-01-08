@@ -98,6 +98,8 @@
 		<Unit filename="gpu/dixxi/MultHybrid.h" />
 		<Unit filename="gpu/dixxi/MultImage.cl" />
 		<Unit filename="gpu/dixxi/MultImage.h" />
+		<Unit filename="gpu/nvidia/Mult.cl" />
+		<Unit filename="gpu/nvidia/Mult.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
