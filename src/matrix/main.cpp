@@ -15,6 +15,7 @@
 #include "gpu/amdblas/Mult.h"
 #include "gpu/amd/MultTile.h"
 #include "gpu/amd/MultTileLocal.h"
+#include "gpu/nvidia/Mult.h"
 
 using namespace std;
 
@@ -22,7 +23,8 @@ int main()
 {
     try
     {
-        Runner<float, MatrixPlugin> runner(5, { 1, 25, 50, 75, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000 });
+        //Runner<float, MatrixPlugin> runner(5, { 1, 25, 50, 75, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000 });
+        Runner<float, MatrixPlugin> runner(1, { 512 });
 
         runner.run<cpu::dixxi::Mult>(RunType::CPU);
         runner.run<cpu::dixxi::MultThreads>(RunType::CPU);
@@ -36,6 +38,8 @@ int main()
 
         runner.run<gpu::amd::MultTile>(RunType::CL_GPU, false);
         runner.run<gpu::amd::MultTileLocal>(RunType::CL_GPU, false);
+
+        runner.run<gpu::nvidia::Mult>(RunType::CL_GPU, false);
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");

@@ -492,6 +492,8 @@ class Runner
 
             try
             {
+                run.verificationResult = true;
+
                 for(size_t i = 0; i < iterations; i++)
                 {
                     CLIteration iteration;

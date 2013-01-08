@@ -68,30 +68,28 @@ class MatrixPlugin
                         T sum = 0;
                         for(size_t k = 0; k < size; k++)
                             sum += a[i * size + k] * b[k * size + j];
-                        if(c[i * size + j] != sum)
+                        if(!compare(c[i * size + j], sum))
+                        {
                             success = false;
+                            //cout << "Value " << c[i * size + j] << " vs " << sum << endl;
+                        }
                     }
             }
 
             return success;
+        }
 
-            /*for(size_t i = 0; i < size; i++)
-            {
-                for(size_t j = 0; j < size; j++)
-                {
-                    T sum = 0;
-                    for(size_t k = 0; k < size; k++)
-                        sum += a[i * size + k] * b[k * size + j];
-                    if(c[i * size + j] != sum)
-                    {
-                        printArr(c, size * size);
-                        return false;
-                    }
-                }
-            }
-
-            return true;*/
+    private:
+        inline bool compare(T a, T b)
+        {
+            return a == b;
         }
 };
+
+template<>
+inline bool MatrixPlugin<float>::compare(float a, float b)
+{
+    return fabs(a - b) < 0.001;
+}
 
 #endif // MATRIXPLUGIN_H
