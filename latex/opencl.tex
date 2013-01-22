@@ -1,0 +1,67 @@
+\section{OpenCL}
+
+\subsection{History of GPGPU Computing}
+The development of graphics hardware
+
+shader programming (as first possibility to program for GPUs, focus on graphic calculations, hence the name shader)
+
+Using shaders for GPGPU programming ()
+
+GPGPU Technologies
+Cg, CUDA, OpenCL, DirectCompute
+
+\subsection{What is OpenCL?}
+open industry standard
+Khronos
+Vendors
+Components (API, OpenCL C Language, Compiler, ...)
+
+\subsection{Areas of application}
+OpenCL
+GPGPU computing
+WebCL
+
+\subsection{Requirements}
+GPU and CPU Hardware
+Drivers
+SDK (Header and Libraries)
+Bindings for other programming languages
+
+\subsection{Hardware architectures}
+
+GPU /CPU hardware
+similarities/differences
+
+\subsection{Hardware abstraction}
+platforms, devices, command queues, programs, kernels, buffers, ...
+
+\subsection{Memory model}
+
+\subsubsection{Types of memory}
+different types of memory on the GPU
+global local constant private
+performance
+how do we access them?
+
+\subsubsection{General design considerations}
+coalesced memory access
+local memory as programmable cache (and method of sync)
+bench conflicts
+
+\subsubsection{Data transfer}
+read, write buffers
+sync, async
+
+\subsection{Kernel execution}
+what is a kernel?
+
+how are kernels executed?
+work groups, work items
+hardware threads (synchronization)
+
+choosing the right work group size
+
+\subsection{Structure of an OpenCL program}
+
+with pseudocode example
+
