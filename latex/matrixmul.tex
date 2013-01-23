@@ -1,3 +1,41 @@
 \section{Matrix multiplication}
 
+\subsection{Problem}
+description of the matrix multiplication
+motivation
 
+\subsection{CPU Implementation}
+code
+runtime (diagram)
+
+\subsection{Naive GPU implementation}
+approach (how are the elements distributed in work items/groups)
+kernel code with explanation
+runtime (diagram)
+
+\subsection{Optimized GPU implementation}
+options for performance improvement
+multiple elements per work item
+caching in local memory (blocks)
+texture unit
+vector instructions
+
+maybe kernel code with explanation
+
+advantages/disadvantages
+
+runtime (diagram)
+comparison with CPU and naive GPU implementation
+
+\subsection{Existing implementations}
+clAmdBlas
+cuBlas
+Intel Math Kernel Library (MKL)
+AMD COre Math Library (ACML)
+(NVIDIA OpenCL Samples)
+
+\subsection{Conclusion}
+Which implementation is when better?
+commmon diagram
+Which problem size?
+Which hardware?
