@@ -1,9 +1,13 @@
 \documentclass[10pt,a4paper,oneside]{scrartcl}
 
+\usepackage{graphicx}
+
 \title{GPGPU Computing with OpenCL}
 \subtitle{Comparing GPU accelerated standard algorithms with traditonal CPU implementations}
 \author{Bernhard Manfred Gruber}
 \date{\today}
+
+\graphicspath{ {./images/} }
 
 \begin{document}
 
@@ -30,6 +34,8 @@
 \include{benchmarks}
 
 \include{conclusion}
+
+\listoffigures
 
 \bibliographystyle{plain}
 \bibliography{references}
