@@ -39,18 +39,60 @@ The allow OpenCL to support many different hardware platforms it consists of the
 
 \subsection{Hardware architectures}
 
-GPU /CPU hardware
-similarities/differences
+One of the greatest advantages of OpenCL and also one of the biggest influences on its design is OpenCL's ability to support devices of many different hardware architectures. These devices can be used through OpenCL by the same common API and may even be used together in a single application or computation, which is sometimes referred to as heterogeneous computing.
+A closer look into the architectures of the two most common hardware devices, namely a CPU and a GPU, may aid the reader to better understand design decisions made by the Khronos Group when OpenCL was conceived. Furthermore, a deeper understanding of graphics hardware will be needed for the implementation chapters of this thesis.
 
-\subsection{Hardware abstraction}
+\subsubsection{The Central Processing Unit (CPU)}
+
+\begin{figure} % http://www.bakesi.com/2012/12/intel-core-processors-may-soon-get-less.html
+\centering
+\includegraphics[width=0.9\linewidth]{ivy_bridge}
+\caption{Architectural overview of an Intel Ivy Bridge Processor \cite{}}
+\label{fig:ivy_bridge}
+\end{figure}
+
+The CPU is the kind of processors developers are mostly used to. Software written in common languages like C++, Java or C# is directly or indirectly (using a Virtual Machine) executed on this kind of hardware.
+In figure \ref{fig:ivy_bridge} you can see the design of a modern processor by the example of an Intel Ivy Bridge quad-core. One can clearly see the four physical cores of the processor. 
+
+
+\subsubsection{The Graphics Processing Unit (GPU)}
+
+When we think of a GPU 
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{kepler_arch}
+\caption{Full chip block diagram of NVIDIA's Kepler GK110 architecture containing 15 Streaming Multiprocessors (SMX) \cite{kepler_arch}.}
+\label{fig:kepler_arch}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{kepler_arch_smx}
+\caption{Architecture of a Streaming Multiprocessor (SMX) of NVIDIA's Kepler GK110 architecture containing 192 single‐precision CUDA cores, 64 double‐precision units, 32 special function units (SFU), and 32 load/store units (LD/ST) \cite{kepler_arch}.}
+\label{fig:kepler_arch_smx}
+\end{figure}
+
+
+\subsection{Platform model}
 platforms, devices, command queues, programs, kernels, buffers, ...
 
 \begin{figure} % from http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter01.html
 \centering
-\includegraphics[width=0.7\linewidth]{opencl_uml}
+\includegraphics[width=0.9\linewidth]{opencl_uml}
 \caption{OpenCL class diagram \cite{opencl_spec}}
 \label{fig:opencl_uml}
 \end{figure}
+
+\subsection{Execution model}
+what is a kernel?
+
+how are kernels executed?
+work groups, work items
+hardware threads (synchronization)
+
+choosing the right work group size
+
 
 \subsection{Memory model}
 
@@ -70,14 +112,7 @@ bench conflicts
 read, write buffers
 sync, async
 
-\subsection{Kernel execution}
-what is a kernel?
 
-how are kernels executed?
-work groups, work items
-hardware threads (synchronization)
-
-choosing the right work group size
 
 \subsection{Structure of an OpenCL program}
 
