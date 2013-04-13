@@ -44,29 +44,35 @@ A closer look into the architectures of the two most common hardware devices, na
 
 \subsubsection{The Central Processing Unit (CPU)}
 
-\begin{figure} % http://www.bakesi.com/2012/12/intel-core-processors-may-soon-get-less.html
+\begin{figure}[h] % http://www.bakesi.com/2012/12/intel-core-processors-may-soon-get-less.html and cache hierarchy: http://hothardware.com/Reviews/Intel-Core-i7-Mobile-Processor-Launch-Review/?page=2
 \centering
 \includegraphics[width=0.9\linewidth]{ivy_bridge}
 \caption{Architectural overview of an Intel Ivy Bridge Processor \cite{}}
 \label{fig:ivy_bridge}
 \end{figure}
 
-The CPU is the kind of processors developers are mostly used to. Software written in common languages like C++, Java or C# is directly or indirectly (using a Virtual Machine) executed on this kind of hardware.
-In figure \ref{fig:ivy_bridge} you can see the design of a modern processor by the example of an Intel Ivy Bridge quad-core. One can clearly see the four physical cores of the processor. 
+The CPU is the kind of processors developers are mostly used to. Software written in common languages like C++, Java or C\# is directly or indirectly (using a Virtual Machine) executed on this kind of hardware.
+In figure \ref{fig:ivy_bridge} you can see the design of a modern processor by the example of an Intel Ivy Bridge quad-core. One can clearly see the four physical cores of the processor. Thanks to hardware multithreading (Hyper-threading in Intel terms) each physical core can process a pair of threads which are seen as two virtual CPUs by the operation system resulting in 8 available cores for an application.
+
+When it comes down to calculative throughput and the problem offers some degree of data parallelism (several chunks of data are processed equally), SIMD (Single Instruction Multiple Data) features of the CPU can be used to multiply the number of input elements an instruction can process. Intel's Ivy Bridge for example allows the parallel execution (vectorization) of up to four (SSE4 - Streaming SIMD Extensions 4) or eight (AVX - Advanced Vector Extensions) single precision floating point operations.
+
+Considering memory access, the CPU uses the standard data bus to communicate with the external main memory. As this communication usually takes a while (up to hundreds or even thousands of CPU cycles  \cite[p. 54]{opencl_book}) the CPU uses a hierarchical cache system. Each core has it's own level one and level two cache, which have to be kept synchronized. All cores share a common level three cache that is then connected to the memory controller.
+
+From a performance concerned developer's perspective, all we have to pay attention to is to have enough parallelism in our application to utilize all cores of our CPU (which is a number around 2, 4, or 8). If our application has to process large amounts of data using the same operations on elements of the input (e.g. multimedia applications like image or video processing), vector instructions may be used to speed up execution. Regarding memory, beside small tips to improve cache effects the developer has only limited power to optimize, as the entire cache system is controlled by the CPU and operation system. 
 
 
 \subsubsection{The Graphics Processing Unit (GPU)}
 
 When we think of a GPU 
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{kepler_arch}
 \caption{Full chip block diagram of NVIDIA's Kepler GK110 architecture containing 15 Streaming Multiprocessors (SMX) \cite{kepler_arch}.}
 \label{fig:kepler_arch}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{kepler_arch_smx}
 \caption{Architecture of a Streaming Multiprocessor (SMX) of NVIDIA's Kepler GK110 architecture containing 192 single‐precision CUDA cores, 64 double‐precision units, 32 special function units (SFU), and 32 load/store units (LD/ST) \cite{kepler_arch}.}
