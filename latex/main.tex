@@ -1,13 +1,18 @@
 \documentclass[10pt,a4paper,oneside]{scrartcl}
+
+% packages
 \usepackage{fullpage}
 \usepackage{graphicx}
+\usepackage[style=numeric,backend=bibtex8]{biblatex}
+
+\addbibresource{references.bib}
+\graphicspath{ {./images/} }
+
 
 \title{GPGPU Computing with OpenCL}
 \subtitle{Comparing GPU accelerated standard algorithms with traditonal CPU implementations}
 \author{Bernhard Manfred Gruber}
 \date{\today}
-
-\graphicspath{ {./images/} }
 
 \begin{document}
 
@@ -35,9 +40,10 @@
 
 \include{conclusion}
 
+\addcontentsline{toc}{chapter}{List of figures}
 \listoffigures
 
-\bibliographystyle{plain}
-\bibliography{references}
+\addcontentsline{toc}{chapter}{References}
+\printbibliography[title=References]
 
 \end{document}

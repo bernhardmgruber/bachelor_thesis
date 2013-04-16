@@ -99,10 +99,13 @@ The actual work is then performed in the cores itself. The major number of cores
 
 Finally, beside the way of executing threads on its cores, the memory system is the second aspect of a GPU that shows significant differences when compared with a CPU. Although also using a hierarchical cache system, the GPU lacks caches for each individual core. The first level cache resides within the SM and is used by all cores inside the SM. A specialty of the GPU is the shared memory (also scratch pad memory or local memory) which can be seen as a programmer controllable cache. An OpenCL kernel may use this small block of memory to cache data from the global memory and to limitedly share data with other threads (more on this in chapter \ref{sec:workgroups}). Outside the SM (figure \ref{fig:kepler_arch}) the GPU offers a larger level two cache which is then connected to multiple memory controllers to access the global memory. The global memory resides on the graphics card outside the GPU (such as the RAM is outside a CPU) and has a larger size of up to one or two GiB. An important difference of the global memory when compared with the RAM on the mainboard is that RAM can be accessed in almost any pattern without significant performance penalties. This is very different for a GPU where memory request should be coalesced \footnote{A coalesced memory access occurs when all threads of a Warp request data on consecutive memory addresses resulting in a fast memory block transfer instead of individual transfers of small chunks.} and blocked across the threads of a warp to achieve optimal memory bus utilization.
 
-Concerning the performance of a GPGPU accelerated application there are a huge amount of concerns to worry about. Two of them have already been discussed, namely choosing the right number of warps concurrently executing on the SMs and paying attention to memory access. For the latter, the memory access pattern should be coalesced and frequently needed or shared data should be cached in shared memory. Further optimizations exist but would exceed the scope of this thesis. For further reading, NVIDIA has a highly interesting paper on this subject \cite{gpu_optimizations}.
+Concerning the performance of a GPGPU accelerated application there are a huge amount of concerns to worry about. Two of them have already been discussed, namely choosing the right number of warps concurrently executing on the SMs and paying attention to memory access. For the latter, the memory access pattern should be coalesced and frequently needed or shared data should be cached in shared memory. Further optimizations exist but would exceed the scope of this thesis. For further reading, NVIDIA has a detailed paper on this subject \cite{gpu_optimizations}.
 
-\subsection{Platform model}
-platforms, devices, command queues, programs, kernels, buffers, ...
+\subsection{API Overview}
+
+OpenCL is specified using the C programming language. The Khronos Group defines a set of C functions, types and constants that make up the API a developer can use to write applications using OpenCL. These declarations are cumulated into the cl.h C header file, which can be downloaded from the website of the Khronos Group and can typically also be found in the include directory of any OpenCL SDK. Although specified in C OpenCL has an object orientated design. The UML class diagram in figure \ref{fig:opencl_uml} shows the objects which can be created, queried and manipulated using corresponding API calls. The Khronos Group also specifies a C++ Wrapper with OpenCL 1.1 built atop the C API which will not be used in this thesis.
+
+The following chapters will give the reader a brief introduction into OpenCL's design and relevant API functions. 
 
 \begin{figure} % from http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter01.html
 \centering
@@ -111,8 +114,14 @@ platforms, devices, command queues, programs, kernels, buffers, ...
 \label{fig:opencl_uml}
 \end{figure}
 
+\subsection{Platform model}
+platforms, devices
+
+
+
 \subsection{Execution model}
 \label{sec:execution_model}
+ command queues, programs, kernels
 what is a kernel?
 
 how are kernels executed?
@@ -123,6 +132,7 @@ choosing the right work group size
 
 
 \subsection{Memory model}
+buffers and images
 
 \subsubsection{Types of memory}
 different types of memory on the GPU
@@ -139,10 +149,4 @@ bench conflicts
 \subsubsection{Data transfer}
 read, write buffers
 sync, async
-
-
-
-\subsection{Structure of an OpenCL program}
-
-with pseudocode example
 
