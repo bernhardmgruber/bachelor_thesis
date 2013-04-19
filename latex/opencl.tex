@@ -30,7 +30,7 @@ The allow OpenCL to support many different hardware platforms it consists of the
 	\item[SDK] \hfill \\
 	The software developing kit is the main collection of tools and resources a software developer needs to write applications using OpenCL. An SDK is usually provided by a vendor, an implementor of OpenCL. Examples of such SDKs are the NVIDIA CUDA Toolkit and AMD's Accelerated Parallel Processing (APP) SDK. These SDKs typically contain header files to be included by a C/C++ program and static libraries for the C/C++ linker which are responsible for binding to the OpenCL driver at runtime. Furthermore, code examples, tutorials, documentation, developing tools etc. may be additionally provided depending on the vendor. With headers and static libraries an SDK contains all resources necessary to write and compile an OpenCL application.
 	\item[OpenCL C language] \hfill \\
-	Kernels are typically written in separate source files using the OpenCL C language. An OpenCL application reads these source files at run time and sends them to the OpenCL compiler to create a binary for one or more available hardware devices where it may be executed. A source file written in the OpenCL C language may consist of several functions, variable definitions, control flow statements, comments, etc. but has to have at least one function prefixed with the \_\_kernel attribute, which may be called by the host application through the OpenCL API and serves as an entry point into a kernel.
+	Kernels are typically written in separate source files using the OpenCL C language. An OpenCL application reads these source files at run time and sends them to the OpenCL compiler to create a binary for one or more available hardware devices where it may be executed. A source file written in the OpenCL C language may consist of several functions, variable definitions, control flow statements, comments, etc. but has to have at least one function prefixed with the \lstinline!__kernel! attribute, which may be called by the host application through the OpenCL API and serves as an entry point into a kernel.
 	\item[OpenCL C Compiler] \hfill \\
 	OpenCL kernels must be compiled for a specific platform before they can be executed. This compilation process is initiated and controlled by the host application through the API. This separate compilation at run time is required to retain OpenCL's portability as an OpenCL application may be deployed on any kind of machine with a suitable driver. As a result the available OpenCL implementation (providing the compiler) and the used hardware device (affecting the compiler's output) may only be determined at runtime.
 	\item[Driver] \hfill \\
@@ -109,24 +109,39 @@ The following chapters will give the reader a brief introduction into OpenCL's d
 
 \begin{figure} % from http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter01.html
 \centering
-\includegraphics[width=0.9\linewidth]{opencl_uml}
+\includegraphics[width=0.6\linewidth]{opencl_uml}
 \caption{OpenCL class diagram \cite{opencl_spec}}
 \label{fig:opencl_uml}
 \end{figure}
 
 \subsection{Platform model}
-platforms, devices
+As OpenCL is an open standard it can be adopted by any hardware vendor manufacturing powerful enough processors to support the features specified by the Khronos Group. Many computers contain more than one of such processors; typically at least a CPU and a graphics card which are both very suitable to be used by OpenCL. However, these devices do not have to share the same OpenCL implementation. On the one hand someone may have an NVIDIA graphics card using NVIDIA's driver and on the other hand have an Intel Core using their OpenCL CPU driver. And then, if somebody has an AMD Radeon graphics card with the Catalysts driver, the CPU can also be accessed using the same driver.
+This situation of multiple available OpenCL implementations on the same machine is handled by the platform model. Each OpenCL implementation on the system (a vendor specific driver) represents a platform. The available platforms on the system, which in this context is often called the host, can be queried using the \lstinline!clGetPlatformIDs()! function (for a source code sample see chapter \ref{sec:code_sample}).
+Each platform supports one or more devices (the hardware supported by the driver). Reconsidering the previous scenario, the Intel platform would support one device which is the CPU, whereas the AMD platform would support both the GPU and the CPU. The available devices of a platform can be retrieved by calling \lstinline!clGetDeviceIDs()! with the desired platform. Devices available on the same platform (e.g. CPU and AMD GPU using the AMD platform) can be used together which is referred to as heterogeneous computing. 
+A device itself consists of multiple compute units being functionally independent from each other (cf. the SMs of a GPU). Each compute unit itself is then eventually subdivided into processing elements (cf. the cores inside a SM). The number of available compute units on a device and much other information like memory sizes can be queried using \lstinline!clGetDeviceInfo()!.
+Figure \ref{fig:platform_model} shows the relation of platforms, devices, compute units and processing elements. \cite[p.19ff]{opencl_book}
 
-
+\begin{figure} 
+\centering
+\includegraphics[width=0.6\linewidth]{platform_model}
+\caption{Platform model}
+\label{fig:platform_model}
+\end{figure}
 
 \subsection{Execution model}
 \label{sec:execution_model}
- command queues, programs, kernels
-what is a kernel?
+The central point of OpenCLs execution model are kernels. But before a kernel can be executed on a device, a number of additional resources have to be set up.
+After a device has been selected a context has to be created that manages objects like memory buffers or kernels associated with the device. A context is created by calling \lstinline!clCreateContext()! with one or more devices of the same platform as argument. Additionally, properties may be passed to \lstinline!clCreateContext()! like a platform to restrict the context to this platform allowing multiple contexts to different platforms to coexist or a handle to an OpenGL (Open Graphics Library, a 3D API) context to enable graphics interoperability. \cite[p.22]{opencl_book}
 
-how are kernels executed?
+While a context holds static objects shared between the host and one or more devices, OpenCL offers an additional mechanism for host device communication. To request action from a device, a command queue needs to be created within a context and associated with this device. This is done by calling \lstinline!clCreateCommandQueue()! with the context and device as arguments. Once a command queue created, the host can request actions from the device by enqueueing operations like memory buffer writes/reads or kernel executions. Per default these operations are executed asynchronosly to the host application, although explicit synchronization can be enforced by calling \lstinline!clFinish()! on the command queue, which blocks until all pending operations have been completed. \cite[p.22, 23, 26]{opencl_book}
+
+\subsubsection{Kernels}
+After the OpenCL execution environment has been successfully prepared, all that is left is the actual piece of code to execute. OpenCL C code is written into text files just as every other code. But in contrast to the host application, OpenCL C code is not compiled before an OpenCL application is deployed. OpenCL C code is compiled at runtime via corresponding API functions. This peculiarity is required as different vendors use individual binary codes that may be executed on their devices.
+Therefore, an application has to read the OpenCL C code from the shipped source files at runtime and pass it to the \lstinline!clCreateProgramWithSource()! functions which return a program object representing the given piece of code. This program can be compiled and linked for one or more devices by calling \lstinline!clBuildProgram()!. As compile errors can occur (return value is not equal to \lstinline!CL_SUCCESS!) the compile log may be retrieved by a subsequent call to \lstinline!clGetProgramInfo()!. After the program has been successfully built, kernels can be extracted (a program may contain multiple kernels). This is done by calling \lstinline!clCreateKernel()! with the compiled program and the name of a function with the \lstinline!__kernel! attribute which will be used as entry point into the kernel. The obtained kernel is ready for being enqueued on a command queue to a device the kernel was compiled for. \cite[p.26, 27]{opencl_book}
+
+\subsubsection{Kernel execution}
+kernel arguments
 work groups, work items
-hardware threads (synchronization)
 
 choosing the right work group size
 
@@ -150,3 +165,5 @@ bench conflicts
 read, write buffers
 sync, async
 
+\subsection{Code sample}
+\label{sec:code_sample}
