@@ -143,6 +143,7 @@
 									cl_kernel
 									cl_bool
 									cl_bitfield
+									cl_buffer_region
 									cl_char
 									cl_char2
 									cl_char4
@@ -321,7 +322,6 @@
 									__read_only
 									read_only
 									__write_only
-									writ_only
 									write_imagef
 									write_imagei
 									write_imageui
@@ -368,13 +368,12 @@
 									bitselect
 									select
 									async_work_group_copy
-									async_work_group_copy
 									wait_group_events
 									prefetch
 									barrier
 									mem_fence
 									read_mem_fence
-									void write_mem_fence
+									write_mem_fence
 									acos
 									acosh
 									acospi
@@ -484,9 +483,6 @@
 									max
 									min
 									upsample
-									clCreateUserEvent
-									clSetUserEventStatus
-									clSetEventCallback
 									get_global_offset
 									minmag
 									maxmag
@@ -495,8 +491,6 @@
 									vec_step
 									shuffle
 									shuffle2
-									clCreateSubBuffer
-									cl_buffer_region
 								   "/>
                         <!-- Documentation comment keywords -->
                         <Set index="2"
