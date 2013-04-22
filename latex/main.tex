@@ -30,10 +30,12 @@
 	morestring=[b]",
 }
 
-\lstset{
+\lstset
+{
 	tabsize=4,
-% captionpos=b,
-	basicstyle=\ttfamily{}, %\scriptsize{},
+	captionpos=b,
+	basicstyle=\ttfamily{},
+	aboveskip=\parskip,
 % keywordstyle=\color{blue}\bfseries,
 % commentstyle=\color{commentgreen},
 % stringstyle=\color{red},
@@ -72,12 +74,13 @@
 
 \include{sorting}
 
-\include{benchmarks}
-
 \include{conclusion}
 
 \addcontentsline{toc}{section}{List of figures}
 \listoffigures
+
+\addcontentsline{toc}{section}{List of listings}
+\lstlistoflistings
 
 \addcontentsline{toc}{section}{References}
 \printbibliography[title=References]

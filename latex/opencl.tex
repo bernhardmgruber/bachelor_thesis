@@ -43,18 +43,18 @@ The allow OpenCL to support many different hardware platforms it consists of the
 One of the greatest advantages of OpenCL and also one of the biggest influences on its design is OpenCL's ability to support devices of many different hardware architectures. These devices can be used through OpenCL by the same common API and may even be used together in a single application or computation, which is sometimes referred to as heterogeneous computing.
 A closer look into the architectures of the two most common hardware devices, namely a CPU and a GPU, may aid the reader to better understand design decisions made by the Khronos Group when OpenCL was conceived. Furthermore, a deeper understanding of graphics hardware will be needed for the implementation chapters of this thesis.
 
-\subsubsection{The Central Processing Unit (CPU)}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.9\linewidth]{ivy_bridge}
-\caption{Architectural overview of an Intel Ivy Bridge Processor \cite{ivy_bridge}}
-\label{fig:ivy_bridge}
-\end{figure}
+\subsubsection{Central Processing Unit (CPU)}
 
 The CPU is the kind of processors developers are mostly used to. Software written in common languages like C++, Java or C\# is directly or indirectly (using a Virtual Machine) executed on this kind of hardware.
 In figure \ref{fig:ivy_bridge} we can see the design of a modern processor by the example of an Intel Ivy Bridge quad-core. One can clearly see the four physical cores of the processor. Thanks to hardware multithreading (Hyper-threading in Intel terms) each physical core can process a pair of threads which are seen as two virtual CPUs by the operation system resulting in 8 available cores for an application.
 Note the on-chip graphics processor in the Ivy Bridge architecture which can be used as a replacement for a graphics card but is not used as general processing device such as the CPU's cores.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ivy_bridge}
+\caption{Architectural overview of an Intel Ivy Bridge processor. \cite{ivy_bridge}}
+\label{fig:ivy_bridge}
+\end{figure}
 
 When it comes down to calculative throughput and the tackled problem offers some degree of data parallelism (several chunks of data are processed equally), SIMD (Single Instruction Multiple Data) features of the CPU can be used to multiply the number of input elements an instruction can process. Intel's Ivy Bridge for example allows the parallel execution (vectorization) of up to four (SSE4 - Streaming SIMD Extensions 4) or eight (AVX - Advanced Vector Extensions) single precision floating point operations.
 
@@ -63,14 +63,14 @@ Considering memory access, the CPU uses the standard data bus to communicate wit
 From a performance concerned developer's perspective, all we have to pay attention to is to have enough parallelism in our application to utilize all cores of our CPU (which is a number around 2, 4, or 8). If our application has to process large amounts of data using the same operations on elements of the input (e.g. multimedia applications like image or video processing), vector instructions may be used to speed up execution. Regarding memory, beside small tips to improve cache effects the developer has only limited power to optimize, as the entire cache system is controlled by the CPU and operation system. 
 
 
-\subsubsection{The Graphics Processing Unit (GPU)}
+\subsubsection{Graphics Processing Unit (GPU)}
 
 When we think of a GPU we think of a highly parallel graphics orientated processing device. From its introduction with OpenCL in 1989 till the creation of the first GPGPU languages in 2004 (See section \ref{sec:history} for more details about the history of GPUs) the architecture of a GPU's hardware followed the principles of the graphics pipeline. To fit this purpose GPUs developed from original desktop processors to (as written in \cite{opencl_book}) heavily multithreaded devices employing sophisticated task management directly in hardware. This was needed to cope with complex task graphs processing vertices, geometry and pixels. This tasks and the data they process are highly parallel representing an extensive amount of independent work which is therefore most suitably handled by a device with a great amount of cores employing latency tolerant multithreading \footnote{Latency tolerant processing units are characterized by being insensitive to longer lasting memory requests.}.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{kepler_arch}
-\caption{Full chip block diagram of NVIDIA's Kepler GK110 architecture containing 15 Streaming Multiprocessors (SMX) \cite{kepler_arch}.}
+\caption{Full chip block diagram of NVIDIA's Kepler GK110 architecture containing 15 Streaming Multiprocessors (SMX). \cite{kepler_arch}}
 \label{fig:kepler_arch}
 \end{figure}
 
@@ -87,8 +87,8 @@ Figure \ref{fig:kepler_arch_smx} shows a detailed view of the structure of a str
 
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth]{warp_scheduler}
-\caption{Closer look on a Warp Scheduler. Each Warp Scheduler has two dispatcher units allowing the execution of two independent instructions of a Warp in parallel.}
+\includegraphics[width=0.5\linewidth]{warp_scheduler}
+\caption{Closer look on a Warp Scheduler. Each Warp Scheduler has two dispatcher units allowing the execution of two independent instructions of a Warp in parallel. \cite{kepler_arch}}
 \label{fig:warp_scheduler}
 \end{figure}
 
@@ -109,7 +109,7 @@ The following chapters will give the reader a brief introduction into OpenCL's d
 \begin{figure}
 \centering
 \includegraphics[width=0.6\linewidth]{opencl_uml}
-\caption{OpenCL class diagram \cite{opencl_spec}}
+\caption{OpenCL class diagram from the OpenCL 1.2 specification. \cite{opencl_spec}}
 \label{fig:opencl_uml}
 \end{figure}
 
@@ -157,15 +157,17 @@ To closer adapt to GPU hardware architectures, the NDRange can be equally divide
 
 A kernel is executed on a command queue by calling \lstinline!clEnqueueNDRangeKernel()!. Additional important arguments beside the kernel and the command queue are the NDRange's dimensions, the global work size and the local work size. The local work size is optional. Before a kernel is executed, arguments may be specified for the \lstinline!__kernel! function according to the function's signature. These arguments are passed to the device when the kernel executes and can be accessed via the \lstinline!__kernel! function's parameters. Arguments are set by calling \lstinline!clSetKernelArg()! with the argument's index in the kernel function's signature as well as the size and value of the argument.
 
-\subsubsection{The kernel function}
-The language kernels are written in is OpenCL C, which is derived from C99 and extended by OpenCL specifics like vector data types, built in functions and additional key words. A kernel function must have the \lstinline!__kernel! attribute and must have void as it's return type. The function's name identifies the kernel. A kernel may have parameters which are declared in the function's signature. An example kernel function for a matrix multiplication may look like this:
+\subsubsection{Kernel code}
+The language kernels are written in is OpenCL C, which is derived from C99 and extended by OpenCL specifics like vector data types, built in functions and additional key words. A kernel function must have the \lstinline!__kernel! attribute and must have void as it's return type. The function's name identifies the kernel. A kernel may have parameters which are declared in the function's signature. An example kernel function for a matrix multiplication is given in listing \ref{lst:kernel_example}.
 
-\begin{lstlisting}
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\begin{lstlisting}[caption={An example of a \lstinline!__kernel! function's signature.},label={lst:kernel_example}]
 __kernel void matrixMultiplication(int n, int m, const __global float* matrixA, const __global float* matrixB, __global float* output)
 {
-    // kernel code ...
+// kernel code ...
 }
 \end{lstlisting}
+\lstset{basicstyle=\ttfamily{}}
 
 
 \subsection{Memory}
@@ -212,6 +214,8 @@ OpenCL defines four different types of memory which are shown in figure \ref{fig
 \subsection{Code sample}
 \label{sec:code_sample}
 
-The following piece of code shows a minimal OpenCL application with a kernel that calculates the sum of two input vectors. To keep the code simple no error handling is performed.
+The following piece of code in listing \ref{lst:opencl_example} shows a minimal OpenCL application with a kernel that calculates the sum of two input vectors. To keep the code simple no error handling is performed.
 
-\lstinputlisting[language=C++]{code/sample/main.cpp}
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++,caption=A minimalistic working OpenCL application to calculate the sum of two input vectors.,label=lst:opencl_example]{code/sample/main.cpp}
+\lstset{basicstyle=\ttfamily{}}

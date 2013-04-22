@@ -19,7 +19,7 @@ Eventually, the results of benchmarking the chosen algorithms should give the re
 
 \subsection{History of GPGPU Computing} 
 \label{sec:history}
-Before I start into details about OpenCL and several GPU implementations, I want to provide the reader with some background information about how GPUs have evolved. This may help understanding the design and peculiarities of graphics hardware. The following information is taken from a paper survey in 2010 \cite{gpu_history}.
+Before we start into details about OpenCL and several GPU implementations, some background information about how GPUs have evolved is provided which may help understanding the design and peculiarities of graphics hardware. The following information is taken from a paper survey in 2010 \cite{gpu_history}.
 
 In the early 1980's a "GPU" was nothing more than an integrated frame buffer, an additional chip that relied on the CPU for drawing drawing.
 
@@ -31,10 +31,10 @@ In the mid 1990's NVIDIA, ATI and Matrox started to provide graphic controllers 
 
 NVIDIA's release of the GeForce 3 in 2001 marked an important step in the evolution of GPUs by loosening the restrictions of the fixed function pipeline. With the ability of writing small programs for the GPU that could operate on the vertices traveling through the pipeline, programmers were given a tool to make limited changes to the behavior of the pipeline. These programs were called vertex shaders and were written in an assembly-like language. One year later, the pixel shader followed running on a separate part of the GPU hardware.
 
-\begin{figure} % from http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter01.html
+\begin{figure} % from http://wiki.ega.org.pl/images/b/b4/Pipeline.png
 \centering
 \includegraphics[width=0.7\linewidth]{pipeline2}
-\caption{The graphics pipeline with programmable vertex and fragment processor.}
+\caption{The graphics pipeline with programmable vertex and fragment processor. \cite{cg_book}}
 \label{fig:pipeline2}
 \end{figure}
 
