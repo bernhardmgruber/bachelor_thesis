@@ -94,6 +94,8 @@
 		<Unit filename="gpu/amdblas/Mult.h" />
 		<Unit filename="gpu/dixxi/Mult.cl" />
 		<Unit filename="gpu/dixxi/Mult.h" />
+		<Unit filename="gpu/dixxi/MultBlock.cl" />
+		<Unit filename="gpu/dixxi/MultBlock.h" />
 		<Unit filename="gpu/dixxi/MultHybrid.cl" />
 		<Unit filename="gpu/dixxi/MultHybrid.h" />
 		<Unit filename="gpu/dixxi/MultImage.cl" />
