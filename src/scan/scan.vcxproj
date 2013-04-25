@@ -18,46 +18,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\common\OpenCL.cpp" />
-    <ClCompile Include="..\common\Timer.cpp" />
-    <ClCompile Include="..\common\utils.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\common\CPUAlgorithm.h" />
-    <ClInclude Include="..\common\GPUAlgorithm.h" />
-    <ClInclude Include="..\common\OpenCL.h" />
-    <ClInclude Include="..\common\Runner.h" />
-    <ClInclude Include="..\common\StatsWriter.h" />
-    <ClInclude Include="..\common\Timer.h" />
-    <ClInclude Include="..\common\utils.h" />
-    <ClInclude Include="cpu\cblas\Mult.h" />
-    <ClInclude Include="cpu\dixxi\Mult.h" />
-    <ClInclude Include="cpu\dixxi\MultThreads.h" />
-    <ClInclude Include="gpu\amdblas\Mult.h" />
-    <ClInclude Include="gpu\amd\MultTile.h" />
-    <ClInclude Include="gpu\amd\MultTileLocal.h" />
-    <ClInclude Include="gpu\dixxi\Mult.h" />
-    <ClInclude Include="gpu\dixxi\MultBlock.h" />
-    <ClInclude Include="gpu\dixxi\MultHybrid.h" />
-    <ClInclude Include="gpu\dixxi\MultImage.h" />
-    <ClInclude Include="gpu\nvidia\Mult.h" />
-    <ClInclude Include="MatrixAlgorithm.h" />
-    <ClInclude Include="MatrixPlugin.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="gpu\amd\MultTile.cl" />
-    <None Include="gpu\amd\MultTileLocal.cl" />
-    <None Include="gpu\dixxi\Mult.cl" />
-    <None Include="gpu\dixxi\MultBlock.cl" />
-    <None Include="gpu\dixxi\MultHybrid.cl" />
-    <None Include="gpu\dixxi\MultImage.cl" />
-    <None Include="gpu\nvidia\Mult.cl" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{60EE09EB-97A4-4C7A-BF4C-2BA98A8121E8}</ProjectGuid>
-    <RootNamespace>matrix</RootNamespace>
+    <ProjectGuid>{8459D721-40EA-4D26-94F8-D00F0C39454C}</ProjectGuid>
+    <RootNamespace>scan</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -102,15 +65,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -118,28 +77,32 @@
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;C:\Program Files (x86)\AMD\clAmdBlas\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86;C:\Program Files (x86)\AMD\clAmdBlas\lib32\import</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenCL.lib;clAmdBlas.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;C:\Program Files (x86)\AMD\clAmdBlas\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86_64;C:\Program Files (x86)\AMD\clAmdBlas\lib64\import;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenCL.lib;clAmdBlas.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86_64;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,14 +111,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;C:\Program Files (x86)\AMD\clAmdBlas\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86;C:\Program Files (x86)\AMD\clAmdBlas\lib32\import</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenCL.lib;clAmdBlas.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,16 +127,39 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;C:\Program Files (x86)\AMD\clAmdBlas\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86_64;C:\Program Files (x86)\AMD\clAmdBlas\lib64\import;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenCL.lib;clAmdBlas.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86_64;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cpu\Scan.h" />
+    <ClInclude Include="gpu\apple\Scan.h" />
+    <ClInclude Include="gpu\clpp\Scan.h" />
+    <ClInclude Include="gpu\dixxi\ScanTask.h" />
+    <ClInclude Include="gpu\gpugems\LocalScan.h" />
+    <ClInclude Include="gpu\gpugems\NaiveScan.h" />
+    <ClInclude Include="gpu\gpugems\WorkEfficientScan.h" />
+    <ClInclude Include="gpu\nvidia\Scan.h" />
+    <ClInclude Include="ScanAlgorithm.h" />
+    <ClInclude Include="ScanPlugin.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gpu\apple\Scan.cl" />
+    <None Include="gpu\dixxi\ScanTask.cl" />
+    <None Include="gpu\gpugems\LocalScan.cl" />
+    <None Include="gpu\gpugems\NaiveScan.cl" />
+    <None Include="gpu\gpugems\WorkEfficientScan.cl" />
+    <None Include="gpu\nvidia\Scan.cl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

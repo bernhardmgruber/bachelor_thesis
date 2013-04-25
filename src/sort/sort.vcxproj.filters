@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SortAlgorithm.h" />
+    <ClInclude Include="SortPlugin.h" />
+    <ClInclude Include="cpu\QSort.h">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu\Quicksort.h">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu\STLSort.h">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu\TimSort.h">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu\timsort.hpp">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\amd\BitonicSort.h">
+      <Filter>gpu\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\nvidia\BitonicSort.h">
+      <Filter>gpu\nvidia</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\gpugems\OddEvenTransition.h">
+      <Filter>gpu\gpugems</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelBitonicSortA.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelBitonicSortB16.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelBitonicSortB2.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelBitonicSortB4.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelBitonicSortB8.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelBitonicSortC.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelBitonicSortLocal.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelBitonicSortLocalOptim.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelMergeSort.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelSelectionSort.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelSelectionSortBlocks.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\bealto\ParallelSelectionSortLocal.h">
+      <Filter>gpu\bealto</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\clpp\RadixSort.h">
+      <Filter>gpu\clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\nvidia\RadixSort.h">
+      <Filter>gpu\nvidia</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\RadixSort.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\libCL\RadixSort.h">
+      <Filter>gpu\libCL</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\amd_dixxi\RadixSort.h">
+      <Filter>gpu\amd_dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\amd\RadixSort.h">
+      <Filter>gpu\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu\amd\RadixSort.h">
+      <Filter>cpu\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\RadixSortAtomicCounters.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gpu\gpugems\OddEvenTransition.cl">
+      <Filter>gpu\gpugems</Filter>
+    </None>
+    <None Include="gpu\nvidia\BitonicSort.cl">
+      <Filter>gpu\nvidia</Filter>
+    </None>
+    <None Include="gpu\amd\BitonicSort.cl">
+      <Filter>gpu\amd</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelBitonicSortA.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelBitonicSortB16.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelBitonicSortB2.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelBitonicSortB4.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelBitonicSortB8.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelBitonicSortC.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelBitonicSortLocal.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelBitonicSortLocalOptim.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelMergeSort.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelSelectionSort.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelSelectionSortBlocks.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\bealto\ParallelSelectionSortLocal.cl">
+      <Filter>gpu\bealto</Filter>
+    </None>
+    <None Include="gpu\amd\RadixSort.cl">
+      <Filter>gpu\amd</Filter>
+    </None>
+    <None Include="gpu\nvidia\RadixSort.cl">
+      <Filter>gpu\nvidia</Filter>
+    </None>
+    <None Include="gpu\dixxi\RadixSortAtomicCounters.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\amd_dixxi\LocalScan.cl">
+      <Filter>gpu\amd_dixxi</Filter>
+    </None>
+    <None Include="gpu\amd_dixxi\RadixSort.cl">
+      <Filter>gpu\amd_dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\RadixSort.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\nvidia\Scan_b.cl">
+      <Filter>gpu\nvidia</Filter>
+    </None>
+    <None Include="gpu\libCL\RadixSort.cl">
+      <Filter>gpu\libCL</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="cpu">
+      <UniqueIdentifier>{68b9f13c-282b-4732-bbc9-fdc32d8b047f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu">
+      <UniqueIdentifier>{be90a73c-6de0-4ff4-932e-2714c39131ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu\amd">
+      <UniqueIdentifier>{66e635be-a410-49e1-999c-96b0e0fff893}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\amd">
+      <UniqueIdentifier>{33815c12-bfad-4f0c-b8b0-809ffdbd8182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\amd_dixxi">
+      <UniqueIdentifier>{415981d0-ff61-46df-a967-be741bb6d8bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\bealto">
+      <UniqueIdentifier>{8f027484-fef2-46b3-9be7-1d3789e5a8af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\clpp">
+      <UniqueIdentifier>{d443274c-06eb-47b7-b4c9-f141b5d4162a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\dixxi">
+      <UniqueIdentifier>{754cbc64-c45c-47e4-a9e1-006d0092ac80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\gpugems">
+      <UniqueIdentifier>{3c931758-bd14-42c9-801a-2e4b905b23b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\libCL">
+      <UniqueIdentifier>{f27924b0-724a-4f6e-bcd7-216ffee0a362}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\nvidia">
+      <UniqueIdentifier>{a951aa35-4b57-4538-8d44-c619985c86cc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

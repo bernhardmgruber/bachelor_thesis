@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ScanAlgorithm.h" />
+    <ClInclude Include="ScanPlugin.h" />
+    <ClInclude Include="gpu\gpugems\NaiveScan.h">
+      <Filter>gpu\gpugems</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\apple\Scan.h">
+      <Filter>gpu\apple</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\clpp\Scan.h">
+      <Filter>gpu\clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\nvidia\Scan.h">
+      <Filter>gpu\nvidia</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\ScanTask.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\gpugems\WorkEfficientScan.h">
+      <Filter>gpu\gpugems</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu\Scan.h">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\gpugems\LocalScan.h">
+      <Filter>gpu\gpugems</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gpu\gpugems\NaiveScan.cl">
+      <Filter>gpu\gpugems</Filter>
+    </None>
+    <None Include="gpu\gpugems\WorkEfficientScan.cl">
+      <Filter>gpu\gpugems</Filter>
+    </None>
+    <None Include="gpu\dixxi\ScanTask.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\apple\Scan.cl">
+      <Filter>gpu\apple</Filter>
+    </None>
+    <None Include="gpu\nvidia\Scan.cl">
+      <Filter>gpu\nvidia</Filter>
+    </None>
+    <None Include="gpu\gpugems\LocalScan.cl">
+      <Filter>gpu\gpugems</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="cpu">
+      <UniqueIdentifier>{69d26342-30f1-4f2b-bb20-4c0ad944070f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu">
+      <UniqueIdentifier>{2eed0c88-90ec-4466-ab71-068eac7cb3a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\apple">
+      <UniqueIdentifier>{aa882f0b-0499-4d4a-a3d2-24b49dd61f2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\clpp">
+      <UniqueIdentifier>{87b6bdfd-0ec8-4fc1-a2ca-b5e8d8a0665a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\dixxi">
+      <UniqueIdentifier>{04920929-1e44-43c4-b32f-4c847a28db34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\gpugems">
+      <UniqueIdentifier>{2008f581-c359-499b-ac01-ea3174724d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\nvidia">
+      <UniqueIdentifier>{64d0b867-aa43-4f6e-9293-33b168b21617}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
