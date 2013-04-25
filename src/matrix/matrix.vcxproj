@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\common\OpenCL.cpp" />
+    <ClCompile Include="..\common\Timer.cpp" />
+    <ClCompile Include="..\common\utils.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\CPUAlgorithm.h" />
+    <ClInclude Include="..\common\GPUAlgorithm.h" />
+    <ClInclude Include="..\common\OpenCL.h" />
+    <ClInclude Include="..\common\Runner.h" />
+    <ClInclude Include="..\common\StatsWriter.h" />
+    <ClInclude Include="..\common\Timer.h" />
+    <ClInclude Include="..\common\utils.h" />
+    <ClInclude Include="cpu\cblas\Mult.h" />
+    <ClInclude Include="cpu\dixxi\Mult.h" />
+    <ClInclude Include="cpu\dixxi\MultThreads.h" />
+    <ClInclude Include="gpu\amdblas\Mult.h" />
+    <ClInclude Include="gpu\amd\MultTile.h" />
+    <ClInclude Include="gpu\amd\MultTileLocal.h" />
+    <ClInclude Include="gpu\dixxi\Mult.h" />
+    <ClInclude Include="gpu\dixxi\MultBlock.h" />
+    <ClInclude Include="gpu\dixxi\MultHybrid.h" />
+    <ClInclude Include="gpu\dixxi\MultImage.h" />
+    <ClInclude Include="gpu\nvidia\Mult.h" />
+    <ClInclude Include="MatrixAlgorithm.h" />
+    <ClInclude Include="MatrixPlugin.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gpu\amd\MultTile.cl" />
+    <None Include="gpu\amd\MultTileLocal.cl" />
+    <None Include="gpu\dixxi\Mult.cl" />
+    <None Include="gpu\dixxi\MultBlock.cl" />
+    <None Include="gpu\dixxi\MultHybrid.cl" />
+    <None Include="gpu\dixxi\MultImage.cl" />
+    <None Include="gpu\nvidia\Mult.cl" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{60EE09EB-97A4-4C7A-BF4C-2BA98A8121E8}</ProjectGuid>
+    <RootNamespace>matrix</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
