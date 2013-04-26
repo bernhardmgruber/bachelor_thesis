@@ -5,7 +5,7 @@ FORTRAN := gfortran
 ARCH      = ar
 ARCHFLAGS = cr
 RANLIB    = ranlib
-BLASLIB   = bin/blas.a
+BLASLIB   = bin/libblas.a
 
 all: $(BLASLIB)
 
@@ -14,8 +14,8 @@ $(BLASLIB): dirs $(OBJ_FILES)
 	$(RANLIB) $@
 	
 dirs:
-	mkdir bin
-	mkdir obj
+	mkdir -p bin
+	mkdir -p obj
 
 clean:
 	rm -r bin

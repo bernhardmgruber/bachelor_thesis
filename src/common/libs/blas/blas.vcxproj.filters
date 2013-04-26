@@ -1,460 +1,461 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <None Include="src\caxpy.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ccopy.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cdotc.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cdotu.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cgbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cgemm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cgemv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cgerc.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cgeru.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\chbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\chemm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\chemv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cher.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cher2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cher2k.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cherk.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\chpmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\chpr.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\chpr2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\crotg.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cscal.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\csrot.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\csscal.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\cswap.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\csymm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\csyr2k.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\csyrk.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ctbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ctbsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ctpmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ctpsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ctrmm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ctrmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ctrsm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ctrsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dasum.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\daxpy.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dcabs1.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dcopy.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ddot.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dgbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dgemm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dgemv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dger.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dnrm2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\drot.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\drotg.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\drotm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\drotmg.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dsbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dscal.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dsdot.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dspmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dspr.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dspr2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dswap.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dsymm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dsymv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dsyr.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dsyr2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dsyr2k.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dsyrk.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dtbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dtbsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dtpmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dtpsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dtrmm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dtrmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dtrsm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dtrsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dzasum.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\dznrm2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\icamax.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\idamax.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\isamax.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\izamax.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\lsame.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sasum.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\saxpy.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\scabs1.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\scasum.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\scnrm2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\scopy.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sdot.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sdsdot.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sgbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sgemm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sgemv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sger.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\snrm2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\srot.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\srotg.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\srotm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\srotmg.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ssbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sscal.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sspmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sspr.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sspr2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\sswap.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ssymm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ssymv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ssyr.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ssyr2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ssyr2k.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ssyrk.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\stbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\stbsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\stpmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\stpsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\strmm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\strmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\strsm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\strsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\xerbla.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zaxpy.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zcopy.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zdotc.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zdotu.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zdrot.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zdscal.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zgbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zgemm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zgemv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zgerc.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zgeru.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zhbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zhemm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zhemv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zher.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zher2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zher2k.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zherk.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zhpmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zhpr.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zhpr2.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zrotg.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zscal.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zswap.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zsymm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zsyr2k.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\zsyrk.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ztbmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ztbsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ztpmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ztpsv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ztrmm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ztrmv.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ztrsm.f">
-      <Filter>blas</Filter>
-    </None>
-    <None Include="src\ztrsv.f">
-      <Filter>blas</Filter>
-    </None>
+    <Filter Include="src">
+      <UniqueIdentifier>{f6382221-7bc7-428f-bc60-768fbe011da8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="blas">
-      <UniqueIdentifier>{f92db562-0431-4d9f-9221-ed631dc0a8d5}</UniqueIdentifier>
-    </Filter>
+    <None Include="Makefile" />
+    <None Include="src\caxpy.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ccopy.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cdotc.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cdotu.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cgbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cgemm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cgemv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cgerc.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cgeru.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\chbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\chemm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\chemv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cher.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cher2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cher2k.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cherk.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\chpmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\chpr.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\chpr2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\crotg.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cscal.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\csrot.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\csscal.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\cswap.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\csymm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\csyr2k.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\csyrk.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ctbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ctbsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ctpmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ctpsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ctrmm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ctrmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ctrsm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ctrsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dasum.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\daxpy.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dcabs1.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dcopy.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ddot.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dgbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dgemm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dgemv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dger.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dnrm2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\drot.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\drotg.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\drotm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\drotmg.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dsbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dscal.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dsdot.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dspmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dspr.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dspr2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dswap.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dsymm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dsymv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dsyr.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dsyr2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dsyr2k.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dsyrk.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dtbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dtbsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dtpmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dtpsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dtrmm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dtrmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dtrsm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dtrsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dzasum.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\dznrm2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\icamax.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\idamax.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\isamax.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\izamax.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\lsame.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sasum.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\saxpy.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\scabs1.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\scasum.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\scnrm2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\scopy.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sdot.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sdsdot.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sgbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sgemm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sgemv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sger.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\snrm2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\srot.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\srotg.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\srotm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\srotmg.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ssbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sscal.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sspmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sspr.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sspr2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\sswap.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ssymm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ssymv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ssyr.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ssyr2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ssyr2k.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ssyrk.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\stbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\stbsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\stpmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\stpsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\strmm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\strmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\strsm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\strsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\xerbla.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zaxpy.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zcopy.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zdotc.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zdotu.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zdrot.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zdscal.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zgbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zgemm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zgemv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zgerc.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zgeru.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zhbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zhemm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zhemv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zher.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zher2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zher2k.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zherk.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zhpmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zhpr.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zhpr2.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zrotg.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zscal.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zswap.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zsymm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zsyr2k.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\zsyrk.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ztbmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ztbsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ztpmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ztpsv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ztrmm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ztrmv.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ztrsm.f">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\ztrsv.f">
+      <Filter>src</Filter>
+    </None>
   </ItemGroup>
 </Project>
