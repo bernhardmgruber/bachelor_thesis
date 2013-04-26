@@ -9,10 +9,13 @@ BLASLIB   = bin/blas.a
 
 all: $(BLASLIB)
 
-$(BLASLIB): $(OBJ_FILES)
-	mkdir bin
+$(BLASLIB): dirs $(OBJ_FILES)
 	$(ARCH) $(ARCHFLAGS) $@ $(OBJ_FILES)
 	$(RANLIB) $@
+	
+dirs:
+	mkdir bin
+	mkdir obj
 
 clean:
 	rm -r bin
