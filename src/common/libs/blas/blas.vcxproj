@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BCB2FD29-2F5D-415D-9989-6374DF817489}</ProjectGuid>
+    <RootNamespace>blas</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="src\caxpy.f" />
+    <None Include="src\ccopy.f" />
+    <None Include="src\cdotc.f" />
+    <None Include="src\cdotu.f" />
+    <None Include="src\cgbmv.f" />
+    <None Include="src\cgemm.f" />
+    <None Include="src\cgemv.f" />
+    <None Include="src\cgerc.f" />
+    <None Include="src\cgeru.f" />
+    <None Include="src\chbmv.f" />
+    <None Include="src\chemm.f" />
+    <None Include="src\chemv.f" />
+    <None Include="src\cher.f" />
+    <None Include="src\cher2.f" />
+    <None Include="src\cher2k.f" />
+    <None Include="src\cherk.f" />
+    <None Include="src\chpmv.f" />
+    <None Include="src\chpr.f" />
+    <None Include="src\chpr2.f" />
+    <None Include="src\crotg.f" />
+    <None Include="src\cscal.f" />
+    <None Include="src\csrot.f" />
+    <None Include="src\csscal.f" />
+    <None Include="src\cswap.f" />
+    <None Include="src\csymm.f" />
+    <None Include="src\csyr2k.f" />
+    <None Include="src\csyrk.f" />
+    <None Include="src\ctbmv.f" />
+    <None Include="src\ctbsv.f" />
+    <None Include="src\ctpmv.f" />
+    <None Include="src\ctpsv.f" />
+    <None Include="src\ctrmm.f" />
+    <None Include="src\ctrmv.f" />
+    <None Include="src\ctrsm.f" />
+    <None Include="src\ctrsv.f" />
+    <None Include="src\dasum.f" />
+    <None Include="src\daxpy.f" />
+    <None Include="src\dcabs1.f" />
+    <None Include="src\dcopy.f" />
+    <None Include="src\ddot.f" />
+    <None Include="src\dgbmv.f" />
+    <None Include="src\dgemm.f" />
+    <None Include="src\dgemv.f" />
+    <None Include="src\dger.f" />
+    <None Include="src\dnrm2.f" />
+    <None Include="src\drot.f" />
+    <None Include="src\drotg.f" />
+    <None Include="src\drotm.f" />
+    <None Include="src\drotmg.f" />
+    <None Include="src\dsbmv.f" />
+    <None Include="src\dscal.f" />
+    <None Include="src\dsdot.f" />
+    <None Include="src\dspmv.f" />
+    <None Include="src\dspr.f" />
+    <None Include="src\dspr2.f" />
+    <None Include="src\dswap.f" />
+    <None Include="src\dsymm.f" />
+    <None Include="src\dsymv.f" />
+    <None Include="src\dsyr.f" />
+    <None Include="src\dsyr2.f" />
+    <None Include="src\dsyr2k.f" />
+    <None Include="src\dsyrk.f" />
+    <None Include="src\dtbmv.f" />
+    <None Include="src\dtbsv.f" />
+    <None Include="src\dtpmv.f" />
+    <None Include="src\dtpsv.f" />
+    <None Include="src\dtrmm.f" />
+    <None Include="src\dtrmv.f" />
+    <None Include="src\dtrsm.f" />
+    <None Include="src\dtrsv.f" />
+    <None Include="src\dzasum.f" />
+    <None Include="src\dznrm2.f" />
+    <None Include="src\icamax.f" />
+    <None Include="src\idamax.f" />
+    <None Include="src\isamax.f" />
+    <None Include="src\izamax.f" />
+    <None Include="src\lsame.f" />
+    <None Include="src\sasum.f" />
+    <None Include="src\saxpy.f" />
+    <None Include="src\scabs1.f" />
+    <None Include="src\scasum.f" />
+    <None Include="src\scnrm2.f" />
+    <None Include="src\scopy.f" />
+    <None Include="src\sdot.f" />
+    <None Include="src\sdsdot.f" />
+    <None Include="src\sgbmv.f" />
+    <None Include="src\sgemm.f" />
+    <None Include="src\sgemv.f" />
+    <None Include="src\sger.f" />
+    <None Include="src\snrm2.f" />
+    <None Include="src\srot.f" />
+    <None Include="src\srotg.f" />
+    <None Include="src\srotm.f" />
+    <None Include="src\srotmg.f" />
+    <None Include="src\ssbmv.f" />
+    <None Include="src\sscal.f" />
+    <None Include="src\sspmv.f" />
+    <None Include="src\sspr.f" />
+    <None Include="src\sspr2.f" />
+    <None Include="src\sswap.f" />
+    <None Include="src\ssymm.f" />
+    <None Include="src\ssymv.f" />
+    <None Include="src\ssyr.f" />
+    <None Include="src\ssyr2.f" />
+    <None Include="src\ssyr2k.f" />
+    <None Include="src\ssyrk.f" />
+    <None Include="src\stbmv.f" />
+    <None Include="src\stbsv.f" />
+    <None Include="src\stpmv.f" />
+    <None Include="src\stpsv.f" />
+    <None Include="src\strmm.f" />
+    <None Include="src\strmv.f" />
+    <None Include="src\strsm.f" />
+    <None Include="src\strsv.f" />
+    <None Include="src\xerbla.f" />
+    <None Include="src\zaxpy.f" />
+    <None Include="src\zcopy.f" />
+    <None Include="src\zdotc.f" />
+    <None Include="src\zdotu.f" />
+    <None Include="src\zdrot.f" />
+    <None Include="src\zdscal.f" />
+    <None Include="src\zgbmv.f" />
+    <None Include="src\zgemm.f" />
+    <None Include="src\zgemv.f" />
+    <None Include="src\zgerc.f" />
+    <None Include="src\zgeru.f" />
+    <None Include="src\zhbmv.f" />
+    <None Include="src\zhemm.f" />
+    <None Include="src\zhemv.f" />
+    <None Include="src\zher.f" />
+    <None Include="src\zher2.f" />
+    <None Include="src\zher2k.f" />
+    <None Include="src\zherk.f" />
+    <None Include="src\zhpmv.f" />
+    <None Include="src\zhpr.f" />
+    <None Include="src\zhpr2.f" />
+    <None Include="src\zrotg.f" />
+    <None Include="src\zscal.f" />
+    <None Include="src\zswap.f" />
+    <None Include="src\zsymm.f" />
+    <None Include="src\zsyr2k.f" />
+    <None Include="src\zsyrk.f" />
+    <None Include="src\ztbmv.f" />
+    <None Include="src\ztbsv.f" />
+    <None Include="src\ztpmv.f" />
+    <None Include="src\ztpsv.f" />
+    <None Include="src\ztrmm.f" />
+    <None Include="src\ztrmv.f" />
+    <None Include="src\ztrsm.f" />
+    <None Include="src\ztrsv.f" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
