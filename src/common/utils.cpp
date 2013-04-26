@@ -50,17 +50,17 @@ string timeToString(double time)
 {
     stringstream ss;
 
-    size_t hours = time / 3600;
+    size_t hours = (size_t)(time / 3600.0);
     if(hours > 0)
         ss << hours << "h ";
     time = fmod(time, 3600);
 
-    size_t minutes = time / 60;
+    size_t minutes = (size_t)(time / 60.0);
     if(minutes > 0)
         ss << minutes << "min ";
     time = fmod(time, 60);
 
-    size_t seconds = (size_t) seconds;
+    size_t seconds = (size_t) time;
     if(seconds > 0)
         ss << seconds << "s ";
     time = fmod(time, 1);

@@ -2,6 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\common\OpenCL.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Timer.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\utils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SortAlgorithm.h" />
@@ -89,6 +98,27 @@
     </ClInclude>
     <ClInclude Include="gpu\dixxi\RadixSortAtomicCounters.h">
       <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\CPUAlgorithm.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\GPUAlgorithm.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\OpenCL.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Runner.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\StatsWriter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Timer.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\utils.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +225,9 @@
     </Filter>
     <Filter Include="gpu\nvidia">
       <UniqueIdentifier>{a951aa35-4b57-4538-8d44-c619985c86cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{89950676-5300-44c3-afaf-dcbab0a148a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

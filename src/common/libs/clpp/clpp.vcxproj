@@ -19,31 +19,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8459D721-40EA-4D26-94F8-D00F0C39454C}</ProjectGuid>
-    <RootNamespace>scan</RootNamespace>
+    <ProjectGuid>{01A7CE88-A633-4C84-A158-80FDAAD68289}</ProjectGuid>
+    <RootNamespace>clpp</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -69,11 +69,11 @@
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -85,25 +85,33 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;..\common\libs\clpp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;.</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;..\common\libs\clpp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;.</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86_64;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86_64;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -111,15 +119,19 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;..\common\libs\clpp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;.</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -127,53 +139,55 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;..\common\libs\clpp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;.</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86_64;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(AMDAPPSDKROOT)lib\x86_64;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\OpenCL.cpp" />
-    <ClCompile Include="..\common\Timer.cpp" />
-    <ClCompile Include="..\common\utils.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="clpp\benchmark.cpp" />
+    <ClCompile Include="clpp\clpp.cpp" />
+    <ClCompile Include="clpp\clppContext.cpp" />
+    <ClCompile Include="clpp\clppProgram.cpp" />
+    <ClCompile Include="clpp\clppScan_Default.cpp" />
+    <ClCompile Include="clpp\clppScan_GPU.cpp" />
+    <ClCompile Include="clpp\clppSort.cpp" />
+    <ClCompile Include="clpp\clppSort_Blelloch.cpp" />
+    <ClCompile Include="clpp\clppSort_CPU.cpp" />
+    <ClCompile Include="clpp\clppSort_RadixSort.cpp" />
+    <ClCompile Include="clpp\clppSort_RadixSortGPU.cpp" />
+    <ClCompile Include="clpp\StopWatch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\CPUAlgorithm.h" />
-    <ClInclude Include="..\common\GPUAlgorithm.h" />
-    <ClInclude Include="..\common\OpenCL.h" />
-    <ClInclude Include="..\common\Runner.h" />
-    <ClInclude Include="..\common\StatsWriter.h" />
-    <ClInclude Include="..\common\Timer.h" />
-    <ClInclude Include="..\common\utils.h" />
-    <ClInclude Include="cpu\Scan.h" />
-    <ClInclude Include="gpu\apple\Scan.h" />
-    <ClInclude Include="gpu\clpp\Scan.h" />
-    <ClInclude Include="gpu\dixxi\ScanTask.h" />
-    <ClInclude Include="gpu\gpugems\LocalScan.h" />
-    <ClInclude Include="gpu\gpugems\NaiveScan.h" />
-    <ClInclude Include="gpu\gpugems\WorkEfficientScan.h" />
-    <ClInclude Include="gpu\nvidia\Scan.h" />
-    <ClInclude Include="ScanAlgorithm.h" />
-    <ClInclude Include="ScanPlugin.h" />
+    <ClInclude Include="clpp\benchmark.h" />
+    <ClInclude Include="clpp\clpp.h" />
+    <ClInclude Include="clpp\clppContext.h" />
+    <ClInclude Include="clpp\clppProgram.h" />
+    <ClInclude Include="clpp\clppScan.h" />
+    <ClInclude Include="clpp\clppScan_Default.h" />
+    <ClInclude Include="clpp\clppScan_GPU.h" />
+    <ClInclude Include="clpp\clppSort.h" />
+    <ClInclude Include="clpp\clppSort_Blelloch.h" />
+    <ClInclude Include="clpp\clppSort_CPU.h" />
+    <ClInclude Include="clpp\clppSort_RadixSort.h" />
+    <ClInclude Include="clpp\clppSort_RadixSortGPU.h" />
+    <ClInclude Include="clpp\StopWatch.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="gpu\apple\Scan.cl" />
-    <None Include="gpu\dixxi\ScanTask.cl" />
-    <None Include="gpu\gpugems\LocalScan.cl" />
-    <None Include="gpu\gpugems\NaiveScan.cl" />
-    <None Include="gpu\gpugems\WorkEfficientScan.cl" />
-    <None Include="gpu\nvidia\Scan.cl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\common\libs\clpp\clpp.vcxproj">
-      <Project>{01a7ce88-a633-4c84-a158-80fdaad68289}</Project>
-    </ProjectReference>
+    <None Include="clpp\clppScan_Default.cl" />
+    <None Include="clpp\clppScan_GPU.cl" />
+    <None Include="clpp\clppSort_Blelloch.cl" />
+    <None Include="clpp\clppSort_RadixSort.cl" />
+    <None Include="clpp\clppSort_RadixSortGPU.cl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

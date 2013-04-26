@@ -2,6 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\common\OpenCL.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Timer.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\utils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ScanAlgorithm.h" />
@@ -29,6 +38,27 @@
     </ClInclude>
     <ClInclude Include="gpu\gpugems\LocalScan.h">
       <Filter>gpu\gpugems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\OpenCL.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Runner.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\StatsWriter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Timer.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\utils.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\CPUAlgorithm.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\GPUAlgorithm.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +102,9 @@
     </Filter>
     <Filter Include="gpu\nvidia">
       <UniqueIdentifier>{64d0b867-aa43-4f6e-9293-33b168b21617}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{e1241011-7254-4c4b-9a78-e214e1c53920}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

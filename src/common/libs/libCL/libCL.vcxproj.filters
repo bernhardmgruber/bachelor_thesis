@@ -1,0 +1,264 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\sort">
+      <UniqueIdentifier>{28fd0552-770c-49d6-b13a-687439d3d728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\phys">
+      <UniqueIdentifier>{04c17e67-36ce-4be2-94bb-7781ad61443a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\geom">
+      <UniqueIdentifier>{460f99b1-ded5-47a2-a7ee-bbb1708d856b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\image">
+      <UniqueIdentifier>{e06d67c5-c2fd-4e08-87b6-3c13c607f822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\color">
+      <UniqueIdentifier>{6a13f6db-9a3a-404a-9819-07c072c0f0a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\math">
+      <UniqueIdentifier>{9ba123c0-fed1-447b-acf0-c3931a62c9ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{8b2efda5-6744-4f3a-b8c4-fa238b499761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\filter">
+      <UniqueIdentifier>{fa3cbeed-7724-467e-96c9-90850e890e53}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="oclBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclCommon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclImage2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclImage3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclKernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclMem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oclProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sort\oclRadixSort.cpp">
+      <Filter>Source Files\sort</Filter>
+    </ClCompile>
+    <ClCompile Include="phys\oclFluid3D.cpp">
+      <Filter>Source Files\phys</Filter>
+    </ClCompile>
+    <ClCompile Include="phys\oclFluid3Dnext.cpp">
+      <Filter>Source Files\phys</Filter>
+    </ClCompile>
+    <ClCompile Include="geom\oclBvhTrimesh.cpp">
+      <Filter>Source Files\geom</Filter>
+    </ClCompile>
+    <ClCompile Include="image\oclAmbientOcclusion.cpp">
+      <Filter>Source Files\image</Filter>
+    </ClCompile>
+    <ClCompile Include="image\oclBloom.cpp">
+      <Filter>Source Files\image</Filter>
+    </ClCompile>
+    <ClCompile Include="image\oclToneMapping.cpp">
+      <Filter>Source Files\image</Filter>
+    </ClCompile>
+    <ClCompile Include="color\oclColor.cpp">
+      <Filter>Source Files\color</Filter>
+    </ClCompile>
+    <ClCompile Include="color\oclQuantize.cpp">
+      <Filter>Source Files\color</Filter>
+    </ClCompile>
+    <ClCompile Include="math\oclVector.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="util\oclMemory.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="filter\oclBilateral.cpp">
+      <Filter>Source Files\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="filter\oclBilateralGrid.cpp">
+      <Filter>Source Files\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="filter\oclBilinearPyramid.cpp">
+      <Filter>Source Files\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="filter\oclConvolute.cpp">
+      <Filter>Source Files\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="filter\oclRecursiveGaussian.cpp">
+      <Filter>Source Files\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="filter\oclSobel.cpp">
+      <Filter>Source Files\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="filter\oclTangent.cpp">
+      <Filter>Source Files\filter</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="oclBuffer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclCommon.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclContext.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclDevice.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclImage2D.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclImage3D.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclKernel.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclMem.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclObject.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oclProgram.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sort\oclRadixSort.h">
+      <Filter>Source Files\sort</Filter>
+    </ClInclude>
+    <ClInclude Include="phys\oclFluid3D.h">
+      <Filter>Source Files\phys</Filter>
+    </ClInclude>
+    <ClInclude Include="phys\oclFluid3Dnext.h">
+      <Filter>Source Files\phys</Filter>
+    </ClInclude>
+    <ClInclude Include="geom\oclBvhTrimesh.h">
+      <Filter>Source Files\geom</Filter>
+    </ClInclude>
+    <ClInclude Include="image\oclAmbientOcclusion.h">
+      <Filter>Source Files\image</Filter>
+    </ClInclude>
+    <ClInclude Include="image\oclBloom.h">
+      <Filter>Source Files\image</Filter>
+    </ClInclude>
+    <ClInclude Include="image\oclToneMapping.h">
+      <Filter>Source Files\image</Filter>
+    </ClInclude>
+    <ClInclude Include="color\oclColor.h">
+      <Filter>Source Files\color</Filter>
+    </ClInclude>
+    <ClInclude Include="color\oclQuantize.h">
+      <Filter>Source Files\color</Filter>
+    </ClInclude>
+    <ClInclude Include="math\oclVector.h">
+      <Filter>Source Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="util\oclMemory.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="filter\oclBilateral.h">
+      <Filter>Source Files\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="filter\oclBilateralGrid.h">
+      <Filter>Source Files\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="filter\oclBilinearPyramid.h">
+      <Filter>Source Files\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="filter\oclConvolute.h">
+      <Filter>Source Files\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="filter\oclRecursiveGaussian.h">
+      <Filter>Source Files\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="filter\oclSobel.h">
+      <Filter>Source Files\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="filter\oclTangent.h">
+      <Filter>Source Files\filter</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sort\oclRadixSort.cl">
+      <Filter>Source Files\sort</Filter>
+    </None>
+    <None Include="phys\oclFluid3D.cl">
+      <Filter>Source Files\phys</Filter>
+    </None>
+    <None Include="phys\oclFluid3Dnext.cl">
+      <Filter>Source Files\phys</Filter>
+    </None>
+    <None Include="geom\oclBvhTrimesh.cl">
+      <Filter>Source Files\geom</Filter>
+    </None>
+    <None Include="image\oclAmbientOcclusion.cl">
+      <Filter>Source Files\image</Filter>
+    </None>
+    <None Include="image\oclBloom.cl">
+      <Filter>Source Files\image</Filter>
+    </None>
+    <None Include="image\oclToneMapping.cl">
+      <Filter>Source Files\image</Filter>
+    </None>
+    <None Include="color\oclColor.cl">
+      <Filter>Source Files\color</Filter>
+    </None>
+    <None Include="color\oclQuantize.cl">
+      <Filter>Source Files\color</Filter>
+    </None>
+    <None Include="math\oclVector.cl">
+      <Filter>Source Files\math</Filter>
+    </None>
+    <None Include="util\oclMemory.cl">
+      <Filter>Source Files\util</Filter>
+    </None>
+    <None Include="filter\oclBilateral.cl">
+      <Filter>Source Files\filter</Filter>
+    </None>
+    <None Include="filter\oclBilateralGrid.cl">
+      <Filter>Source Files\filter</Filter>
+    </None>
+    <None Include="filter\oclBilinearPyramid.cl">
+      <Filter>Source Files\filter</Filter>
+    </None>
+    <None Include="filter\oclConvolute.cl">
+      <Filter>Source Files\filter</Filter>
+    </None>
+    <None Include="filter\oclRecursiveGaussian.cl">
+      <Filter>Source Files\filter</Filter>
+    </None>
+    <None Include="filter\oclSobel.cl">
+      <Filter>Source Files\filter</Filter>
+    </None>
+    <None Include="filter\oclTangent.cl">
+      <Filter>Source Files\filter</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>

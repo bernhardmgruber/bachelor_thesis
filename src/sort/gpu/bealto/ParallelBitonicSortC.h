@@ -127,7 +127,7 @@ namespace gpu
                                     break;
                             }
                             size_t wg = workGroupSize;
-                            wg = std::min(wg, nThreads);
+                            wg = min(wg, nThreads);
                             kernel->setArg(0, buffer);
                             kernel->setArg(1, inc); // INC passed to kernel
                             kernel->setArg(2, (int)(length << 1)); // DIR passed to kernel

@@ -57,7 +57,7 @@ protected:
 
 	static size_t toMultipleOf(size_t N, size_t base)
 	{
-		return (ceil((double)N / (double)base) * base);
+		return (size_t)(ceil((double)N / (double)base) * base);
 	}
 };
 

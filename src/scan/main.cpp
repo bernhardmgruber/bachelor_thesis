@@ -1,6 +1,7 @@
 #include <CL/cl.h>
 #include <iostream>
 #include <fstream>
+#include <array>
 
 #include "../common/Runner.h"
 #include "ScanPlugin.h"
@@ -20,7 +21,9 @@ int main()
 {
     try
     {
-        Runner<cl_uint, ScanPlugin> runner(3, { 2<<10, 2<<11, 2<<12, 2<<13, 2<<14, 2<<15, 2<<16, 2<<17, 2<<18, 2<<19, 2<<20, 2<<21, 2<<22, 2<<23, 2<<24 });
+        array<int, 5> sizes = { 2<<10, 2<<11, 2<<12, 2<<13, 2<<14, /*2<<15, 2<<16, 2<<17, 2<<18, 2<<19, 2<<20, 2<<21, 2<<22, 2<<23, 2<<24*/ };
+        Runner<cl_uint, ScanPlugin> runner(3, sizes.begin(), sizes.end());
+
 
         runner.run<cpu::Scan>(RunType::CPU);
 

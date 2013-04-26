@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="clpp\benchmark.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clpp.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppContext.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppProgram.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppScan_Default.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppScan_GPU.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppSort.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppSort_Blelloch.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppSort_CPU.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppSort_RadixSort.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\clppSort_RadixSortGPU.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clpp\StopWatch.cpp">
+      <Filter>clpp</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="clpp\benchmark.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clpp.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppContext.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppProgram.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppScan.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppScan_Default.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppScan_GPU.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppSort.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppSort_Blelloch.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppSort_CPU.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppSort_RadixSort.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\clppSort_RadixSortGPU.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+    <ClInclude Include="clpp\StopWatch.h">
+      <Filter>clpp</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="clpp\clppScan_Default.cl">
+      <Filter>clpp</Filter>
+    </None>
+    <None Include="clpp\clppScan_GPU.cl">
+      <Filter>clpp</Filter>
+    </None>
+    <None Include="clpp\clppSort_Blelloch.cl">
+      <Filter>clpp</Filter>
+    </None>
+    <None Include="clpp\clppSort_RadixSort.cl">
+      <Filter>clpp</Filter>
+    </None>
+    <None Include="clpp\clppSort_RadixSortGPU.cl">
+      <Filter>clpp</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="clpp">
+      <UniqueIdentifier>{e349449b-d2ca-4009-ac1d-222b71e5b510}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
