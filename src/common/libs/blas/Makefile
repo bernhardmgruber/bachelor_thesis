@@ -1,11 +1,11 @@
 F_FILES := $(wildcard src/*.f)
 OBJ_FILES := $(addprefix obj/,$(notdir $(F_FILES:.f=.o)))
-F_FLAGS := -O3
+F_FLAGS := -static-libgfortran -O3
 FORTRAN := gfortran
 ARCH      = ar
 ARCHFLAGS = cr
 RANLIB    = ranlib
-BLASLIB   = bin/libblas.a
+BLASLIB   = bin/blas.lib
 
 all: $(BLASLIB)
 

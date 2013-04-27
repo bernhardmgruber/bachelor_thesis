@@ -178,7 +178,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeBuildCommandLine>cmd /c make</NMakeBuildCommandLine>
-    <NMakeOutput>libblas.a</NMakeOutput>
+    <NMakeOutput>bin\blas.lib</NMakeOutput>
     <NMakeCleanCommandLine>cmd /c make clean</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(ProjectDir)bin\</OutDir>

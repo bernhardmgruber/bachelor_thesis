@@ -434,9 +434,6 @@
     <ClCompile Include="src\cblas_ztrsv.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\xerbla.c">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\zdotusub.f">
