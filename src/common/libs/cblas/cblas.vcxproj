@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0B5FFBC1-E095-447F-B9C4-421CFEECBD7C}</ProjectGuid>
+    <RootNamespace>cblas</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(ProjectDir)bin\</OutDir>
+    <IntDir>$(ProjectDir)obj\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <CustomBuild>
+      <Command>gfortran -O3 -c %(FullPath) -o $(BaseIntermediateOutputPath)%(Filename).obj</Command>
+      <Outputs>$(BaseIntermediateOutputPath)%(Filename).obj;</Outputs>
+    </CustomBuild>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="include\cblas.h" />
+    <ClInclude Include="include\cblas_f77.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\cblas_cgemm.c" />
+    <ClCompile Include="src\cblas_cgemv.c" />
+    <ClCompile Include="src\cblas_cgerc.c" />
+    <ClCompile Include="src\cblas_cgeru.c" />
+    <ClCompile Include="src\cblas_chbmv.c" />
+    <ClCompile Include="src\cblas_chemm.c" />
+    <ClCompile Include="src\cblas_chemv.c" />
+    <ClCompile Include="src\cblas_cher.c" />
+    <ClCompile Include="src\cblas_cher2.c" />
+    <ClCompile Include="src\cblas_cher2k.c" />
+    <ClCompile Include="src\cblas_cherk.c" />
+    <ClCompile Include="src\cblas_chpmv.c" />
+    <ClCompile Include="src\cblas_chpr.c" />
+    <ClCompile Include="src\cblas_chpr2.c" />
+    <ClCompile Include="src\cblas_cscal.c" />
+    <ClCompile Include="src\cblas_csscal.c" />
+    <ClCompile Include="src\cblas_cswap.c" />
+    <ClCompile Include="src\cblas_csymm.c" />
+    <ClCompile Include="src\cblas_csyr2k.c" />
+    <ClCompile Include="src\cblas_csyrk.c" />
+    <ClCompile Include="src\cblas_ctbmv.c" />
+    <ClCompile Include="src\cblas_ctbsv.c" />
+    <ClCompile Include="src\cblas_ctpmv.c" />
+    <ClCompile Include="src\cblas_ctpsv.c" />
+    <ClCompile Include="src\cblas_ctrmm.c" />
+    <ClCompile Include="src\cblas_ctrmv.c" />
+    <ClCompile Include="src\cblas_ctrsm.c" />
+    <ClCompile Include="src\cblas_ctrsv.c" />
+    <ClCompile Include="src\cblas_dasum.c" />
+    <ClCompile Include="src\cblas_daxpy.c" />
+    <ClCompile Include="src\cblas_dcopy.c" />
+    <ClCompile Include="src\cblas_ddot.c" />
+    <ClCompile Include="src\cblas_dgbmv.c" />
+    <ClCompile Include="src\cblas_dgemm.c" />
+    <ClCompile Include="src\cblas_dgemv.c" />
+    <ClCompile Include="src\cblas_dger.c" />
+    <ClCompile Include="src\cblas_dnrm2.c" />
+    <ClCompile Include="src\cblas_drot.c" />
+    <ClCompile Include="src\cblas_drotg.c" />
+    <ClCompile Include="src\cblas_drotm.c" />
+    <ClCompile Include="src\cblas_drotmg.c" />
+    <ClCompile Include="src\cblas_dsbmv.c" />
+    <ClCompile Include="src\cblas_dscal.c" />
+    <ClCompile Include="src\cblas_dsdot.c" />
+    <ClCompile Include="src\cblas_dspmv.c" />
+    <ClCompile Include="src\cblas_dspr.c" />
+    <ClCompile Include="src\cblas_dspr2.c" />
+    <ClCompile Include="src\cblas_dswap.c" />
+    <ClCompile Include="src\cblas_dsymm.c" />
+    <ClCompile Include="src\cblas_dsymv.c" />
+    <ClCompile Include="src\cblas_dsyr.c" />
+    <ClCompile Include="src\cblas_dsyr2.c" />
+    <ClCompile Include="src\cblas_dsyr2k.c" />
+    <ClCompile Include="src\cblas_dsyrk.c" />
+    <ClCompile Include="src\cblas_dtbmv.c" />
+    <ClCompile Include="src\cblas_dtbsv.c" />
+    <ClCompile Include="src\cblas_dtpmv.c" />
+    <ClCompile Include="src\cblas_dtpsv.c" />
+    <ClCompile Include="src\cblas_dtrmm.c" />
+    <ClCompile Include="src\cblas_dtrmv.c" />
+    <ClCompile Include="src\cblas_dtrsm.c" />
+    <ClCompile Include="src\cblas_dtrsv.c" />
+    <ClCompile Include="src\cblas_dzasum.c" />
+    <ClCompile Include="src\cblas_dznrm2.c" />
+    <ClCompile Include="src\cblas_globals.c" />
+    <ClCompile Include="src\cblas_icamax.c" />
+    <ClCompile Include="src\cblas_idamax.c" />
+    <ClCompile Include="src\cblas_isamax.c" />
+    <ClCompile Include="src\cblas_izamax.c" />
+    <ClCompile Include="src\cblas_sasum.c" />
+    <ClCompile Include="src\cblas_saxpy.c" />
+    <ClCompile Include="src\cblas_scasum.c" />
+    <ClCompile Include="src\cblas_scnrm2.c" />
+    <ClCompile Include="src\cblas_scopy.c" />
+    <ClCompile Include="src\cblas_sdot.c" />
+    <ClCompile Include="src\cblas_sdsdot.c" />
+    <ClCompile Include="src\cblas_sgbmv.c" />
+    <ClCompile Include="src\cblas_sgemm.c" />
+    <ClCompile Include="src\cblas_sgemv.c" />
+    <ClCompile Include="src\cblas_sger.c" />
+    <ClCompile Include="src\cblas_snrm2.c" />
+    <ClCompile Include="src\cblas_srot.c" />
+    <ClCompile Include="src\cblas_srotg.c" />
+    <ClCompile Include="src\cblas_srotm.c" />
+    <ClCompile Include="src\cblas_srotmg.c" />
+    <ClCompile Include="src\cblas_ssbmv.c" />
+    <ClCompile Include="src\cblas_sscal.c" />
+    <ClCompile Include="src\cblas_sspmv.c" />
+    <ClCompile Include="src\cblas_sspr.c" />
+    <ClCompile Include="src\cblas_sspr2.c" />
+    <ClCompile Include="src\cblas_sswap.c" />
+    <ClCompile Include="src\cblas_ssymm.c" />
+    <ClCompile Include="src\cblas_ssymv.c" />
+    <ClCompile Include="src\cblas_ssyr.c" />
+    <ClCompile Include="src\cblas_ssyr2.c" />
+    <ClCompile Include="src\cblas_ssyr2k.c" />
+    <ClCompile Include="src\cblas_ssyrk.c" />
+    <ClCompile Include="src\cblas_stbmv.c" />
+    <ClCompile Include="src\cblas_stbsv.c" />
+    <ClCompile Include="src\cblas_stpmv.c" />
+    <ClCompile Include="src\cblas_stpsv.c" />
+    <ClCompile Include="src\cblas_strmm.c" />
+    <ClCompile Include="src\cblas_strmv.c" />
+    <ClCompile Include="src\cblas_strsm.c" />
+    <ClCompile Include="src\cblas_strsv.c" />
+    <ClCompile Include="src\cblas_xerbla.c" />
+    <ClCompile Include="src\cblas_zaxpy.c" />
+    <ClCompile Include="src\cblas_zcopy.c" />
+    <ClCompile Include="src\cblas_zdotc_sub.c" />
+    <ClCompile Include="src\cblas_zdotu_sub.c" />
+    <ClCompile Include="src\cblas_zdscal.c" />
+    <ClCompile Include="src\cblas_zgbmv.c" />
+    <ClCompile Include="src\cblas_zgemm.c" />
+    <ClCompile Include="src\cblas_zgemv.c" />
+    <ClCompile Include="src\cblas_zgerc.c" />
+    <ClCompile Include="src\cblas_zgeru.c" />
+    <ClCompile Include="src\cblas_zhbmv.c" />
+    <ClCompile Include="src\cblas_zhemm.c" />
+    <ClCompile Include="src\cblas_zhemv.c" />
+    <ClCompile Include="src\cblas_zher.c" />
+    <ClCompile Include="src\cblas_zher2.c" />
+    <ClCompile Include="src\cblas_zher2k.c" />
+    <ClCompile Include="src\cblas_zherk.c" />
+    <ClCompile Include="src\cblas_zhpmv.c" />
+    <ClCompile Include="src\cblas_zhpr.c" />
+    <ClCompile Include="src\cblas_zhpr2.c" />
+    <ClCompile Include="src\cblas_zscal.c" />
+    <ClCompile Include="src\cblas_zswap.c" />
+    <ClCompile Include="src\cblas_zsymm.c" />
+    <ClCompile Include="src\cblas_zsyr2k.c" />
+    <ClCompile Include="src\cblas_zsyrk.c" />
+    <ClCompile Include="src\cblas_ztbmv.c" />
+    <ClCompile Include="src\cblas_ztbsv.c" />
+    <ClCompile Include="src\cblas_ztpmv.c" />
+    <ClCompile Include="src\cblas_ztpsv.c" />
+    <ClCompile Include="src\cblas_ztrmm.c" />
+    <ClCompile Include="src\cblas_ztrmv.c" />
+    <ClCompile Include="src\cblas_ztrsm.c" />
+    <ClCompile Include="src\cblas_ztrsv.c" />
+    <ClCompile Include="src\xerbla.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\cdotcsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\cdotcsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\cdotusub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\dasumsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\ddotsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\dnrm2sub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\dsdotsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\dzasumsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\dznrm2sub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\icamaxsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\idamaxsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\isamaxsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\izamaxsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\sasumsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\scasumsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\scnrm2sub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\sdotsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\sdsdotsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\snrm2sub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\zdotcsub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="src\zdotusub.f">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\blas\blas.vcxproj">
+      <Project>{c520d840-6dd2-4f75-b690-42d4fc57fa94}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
