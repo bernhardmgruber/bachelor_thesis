@@ -11,7 +11,7 @@ Nonetheless, modern computing systems can take advantage of one important aspect
 \end{figure}
 
 This chapter will take a look at different implementations of the matrix multiplication for both, the CPU and the GPU. For simplicity, square matrices are used and stored as one dimensional arrays in row major order.
-
+w3
 \subsection{CPU Implementation}
 
 Although several optimized implementations exist we will first have a detailed look at a simple naive implementation as given in listing \ref{lst:matrix_cpu}.
@@ -20,16 +20,14 @@ Although several optimized implementations exist we will first have a detailed l
 \lstinputlisting[language=C++, caption=A simple C++ implementation of a square matrix multiplication for the CPU., label=lst:matrix_cpu, firstline=15, lastline=26]{code/matrix/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
+The \lstinline!matrixMul! function takes two pointers to the memory where the two input matrices are stored, another pointer to already allocated memory where the output is written to and a final \lstinline!size! parameter giving the edge length of the input and output matrices.
+The algorithm itself is simple. Every element of the output matrix has to be calculated, therefore the outer two \lstinline!for! loops run through all of these elements. For each output element the dot product of the \lstinline!row! in matrix \lstinline!a! and the \lstinline!col! in matrix \lstinline!b! are calculated.
 
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{matrix_cpu}
-\caption{Benchmark of the CPU implementation of a square matrix multiplication in listing \ref{lst:matrix_cpu}.}
-\label{chart:matrix_cpu}
-\end{figure}
+The performance of this implementation is conceivably slow as one can see in \ref{fig:matrix_chart}. Multiplying matrices with an edge length of up to 700 elements can be done in a short time (below one second), but larger matrices require a huge period of time which is unsatisfying in most cases.
 
 \subsection{Naive GPU implementation}
+
+
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=C++, caption=Host code for a matrix multiplication implementation using OpenCL., label=lst:matrix_cl_naive, firstline=28, lastline=54]{code/matrix/main.cpp}
@@ -58,14 +56,24 @@ runtime (diagram)
 comparison with CPU and naive GPU implementation
 
 \subsection{Existing implementations}
+
+Beside the presented implementations, several libraries exist supporting 
+
 clAmdBlas
 cuBlas
 Intel Math Kernel Library (MKL)
-AMD COre Math Library (ACML)
-(NVIDIA OpenCL Samples)
+AMD Core Math Library (ACML)
 
-\subsection{Conclusion}
+\subsection{Benchmarks and conclusion}
 Which implementation is when better?
-commmon diagram
+
+\begin{figure}
+\centering
+\includegraphics[width=1.0\linewidth]{matrix_chart}
+\caption{Benchmark of the CPU implementation of a square matrix multiplication in listing \ref{lst:matrix_cpu}.}
+\label{fig:matrix_chart}
+\end{figure}
+
 Which problem size?
 Which hardware?
+
