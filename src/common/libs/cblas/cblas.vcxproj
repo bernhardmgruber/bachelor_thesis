@@ -204,9 +204,6 @@
     <CustomBuild Include="src\cdotcsub.f">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CustomBuild>
-    <CustomBuild Include="src\cdotcsub.f">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </CustomBuild>
     <CustomBuild Include="src\cdotusub.f">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CustomBuild>
