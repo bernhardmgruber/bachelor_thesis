@@ -50,7 +50,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;..\common\libs\libCL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;..\common\libs\libCL;..\common\libs\clpp</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -65,6 +65,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(AMDAPPSDKROOT)include;..\common\libs\libCL;..\common\libs\clpp</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -91,6 +92,7 @@
     <ClInclude Include="cpu\amd\RadixSort.h" />
     <ClInclude Include="cpu\QSort.h" />
     <ClInclude Include="cpu\Quicksort.h" />
+    <ClInclude Include="cpu\stereopsis\radixsort.h" />
     <ClInclude Include="cpu\STLSort.h" />
     <ClInclude Include="cpu\TimSort.h" />
     <ClInclude Include="cpu\timsort.hpp" />

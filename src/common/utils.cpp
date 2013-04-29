@@ -22,12 +22,10 @@ size_t pow2roundup(size_t x)
 
 size_t roundToMultiple(size_t x, size_t multiple)
 {
-    ldiv_t result = div((long)x, (long)multiple);
-
-    if(result.rem == 0)
+    if(x % multiple == 0)
         return x;
     else
-        return (result.quot + 1) * multiple;
+        return (x / multiple + 1) * multiple;
 }
 
 string sizeToString(size_t size)

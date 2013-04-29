@@ -37,13 +37,13 @@ namespace cpu
              * @param end
              *            End index.
              */
-            void sort_r(int start, int end)
+            void sort_r(size_t start, size_t end)
             {
                 if (start >= end)
                     return;
 
-                int left = start;
-                int right = end;
+                size_t left = start;
+                size_t right = end;
 
                 // select pivot
                 T pivot = data[(left + right) / 2];

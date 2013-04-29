@@ -10,6 +10,7 @@
 #include "cpu/STLSort.h"
 #include "cpu/TimSort.h"
 #include "cpu/amd/RadixSort.h"
+#include "cpu/stereopsis/radixsort.h"
 
 #include "gpu/bealto/ParallelSelectionSort.h"
 #include "gpu/bealto/ParallelSelectionSortLocal.h"
@@ -40,15 +41,17 @@ int main()
 {
     try
     {
-        array<size_t, 9> sizes = { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24 };
-        Runner<cl_uint, SortPlugin> runner(3, sizes.begin(), sizes.end());
+        array<size_t, 13> sizes = { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25, 1<<26, 1<<27, 1<<28 };
+        //array<size_t, 1> sizes = { 1<<25 };
+        Runner<cl_uint, SortPlugin> runner(5, sizes.begin(), sizes.end());
         //Runner<cl_uint, SortPlugin> runner(1, { 1<<17 });
 
-        runner.run<cpu::Quicksort>(RunType::CPU);
+        //runner.run<cpu::Quicksort>(RunType::CPU);
         runner.run<cpu::QSort>(RunType::CPU);
         runner.run<cpu::STLSort>(RunType::CPU);
-        //runner.run<cpu::TimSort>(RunType::CPU);
-        runner.run<cpu::amd::RadixSort>(RunType::CPU);
+        ////runner.run<cpu::TimSort>(RunType::CPU);
+        //runner.run<cpu::amd::RadixSort>(RunType::CPU);
+        runner.run<cpu::stereopsis::RadixSort>(RunType::CPU);
 
         //runner.run<gpu::bealto::ParallelSelectionSort>(RunType::CL_GPU, true);
         //runner.run<gpu::bealto::ParallelSelectionSortLocal>(RunType::CL_GPU, true);
@@ -60,19 +63,19 @@ int main()
         //runner.run<gpu::bealto::ParallelBitonicSortB4>(RunType::CL_GPU, true);
         //runner.run<gpu::bealto::ParallelBitonicSortB8>(RunType::CL_GPU, true);
         //runner.run<gpu::bealto::ParallelBitonicSortB16>(RunType::CL_GPU, false);
-        runner.run<gpu::bealto::ParallelBitonicSortC>(RunType::CL_GPU, false);
+        //runner.run<gpu::bealto::ParallelBitonicSortC>(RunType::CL_GPU, false);
         //runner.run<gpu::bealto::ParallelMergeSort>(RunType::CL_GPU, true);
 
         //runner.run<gpu::clpp::RadixSort>(RunType::CL_GPU, true); // not working
 
-        runner.run<gpu::libcl::RadixSort>(RunType::CL_GPU, false);
+        //runner.run<gpu::libcl::RadixSort>(RunType::CL_GPU, false);
 
-        runner.run<gpu::amd::BitonicSort>(RunType::CL_GPU, false);
-        runner.run<gpu::amd::RadixSort>(RunType::CL_GPU, false); // crashes on large arrays
-        runner.run<gpu::amd_dixxi::RadixSort>(RunType::CL_GPU, false);
+        //runner.run<gpu::amd::BitonicSort>(RunType::CL_GPU, false);
+        //runner.run<gpu::amd::RadixSort>(RunType::CL_GPU, false); // crashes on large arrays
+        //runner.run<gpu::amd_dixxi::RadixSort>(RunType::CL_GPU, false);
 
-        runner.run<gpu::nvidia::RadixSort>(RunType::CL_GPU, false);
-        runner.run<gpu::nvidia::BitonicSort>(RunType::CL_GPU, false);
+        //runner.run<gpu::nvidia::RadixSort>(RunType::CL_GPU, false);
+        //runner.run<gpu::nvidia::BitonicSort>(RunType::CL_GPU, false);
 
         //runner.run<gpu::dixxi::RadixSort>(RunType::CL_GPU, false);
         //runner.run<gpu::dixxi::RadixSortAtomicCounters>(RunType::CL_GPU, false);
@@ -80,7 +83,9 @@ int main()
         //runner.run<gpu::gpugems::OddEvenTransition>(RunType::CL_GPU, false);
 
         runner.writeStats("stats.csv");
-        runner.writeGPUDeviceInfo("gpuinfo.csv");
+        //runner.writeGPUDeviceInfo("gpuinfo.csv");
+
+        getchar();
     }
     catch(OpenCLException& e)
     {
