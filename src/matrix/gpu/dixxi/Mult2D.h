@@ -18,6 +18,11 @@ namespace gpu
                     return "Matrix multiplication 2D";
                 }
 
+                const cl_uint getWorkDimensions() const override
+                {
+                    return 2;
+                }
+
                 void init(Context* context) override
                 {
                     Program* program = context->createProgram("gpu/dixxi/Mult2D.cl", "-D T=" + getTypeName<T>());
@@ -30,10 +35,10 @@ namespace gpu
                     size_t elementCount = size * size;
 
                     a = context->createBuffer(CL_MEM_READ_ONLY, elementCount * sizeof(T));
-                    queue->enqueueWrite(a, data, 0, elementCount * sizeof(T));
+                    queue->enqueueWrite(a, data, 0, elementCount * sizeof(T), false);
 
                     b = context->createBuffer(CL_MEM_READ_ONLY, elementCount * sizeof(T));
-                    queue->enqueueWrite(b, data + elementCount, 0, elementCount * sizeof(T));
+                    queue->enqueueWrite(b, data + elementCount, 0, elementCount * sizeof(T), false);
 
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, elementCount * sizeof(T));
                 }

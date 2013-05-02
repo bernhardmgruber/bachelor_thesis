@@ -15,6 +15,10 @@ class GPUAlgorithm
         virtual void run(CommandQueue* queue, size_t workGroupSize, size_t size) = 0;
         virtual void download(CommandQueue* queue, T* result, size_t size) = 0;
         virtual void cleanup() = 0;
+
+        virtual const cl_uint getWorkDimensions() const {
+            return 1;
+        }
 };
 
 #endif // GPUALGORITHM_H

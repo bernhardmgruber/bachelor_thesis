@@ -15,12 +15,17 @@ namespace gpu
             public:
                 const string getName() override
                 {
-                    return "Matrix multiplication 2D";
+                    return "Matrix multiplication 2D Coalesced";
+                }
+
+                const cl_uint getWorkDimensions() const override
+                {
+                    return 2;
                 }
 
                 void init(Context* context) override
                 {
-                    Program* program = context->createProgram("gpu/dixxi/Mult2D.cl", "-D T=" + getTypeName<T>());
+                    Program* program = context->createProgram("gpu/dixxi/Mult2DCoalesced.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("Mult");
                     delete program;
                 }
@@ -38,10 +43,10 @@ namespace gpu
                         size_t bufferOffset[] = {0, 0, 0};
                         size_t hostOffset[] = {0, 0, 0};
                         size_t sizes[] = {size * sizeof(T), size, 1};
-                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
                     }
                     else
-                        queue->enqueueWrite(a, data, elementCount * sizeof(T));
+                        queue->enqueueWrite(a, data, 0, elementCount * sizeof(T), false);
 
                     b = context->createBuffer(CL_MEM_READ_ONLY, adjustedElementCount * sizeof(T));
                     if(adjustedSize != size)
@@ -50,10 +55,10 @@ namespace gpu
                         size_t bufferOffset[] = {0, 0, 0};
                         size_t hostOffset[] = {0, 0, 0};
                         size_t sizes[] = {size * sizeof(T), size, 1};
-                        queue->enqueueWriteRect(b, data + elementCount, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                        queue->enqueueWriteRect(b, data + elementCount, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
                     }
                     else
-                        queue->enqueueWrite(b, data, elementCount * sizeof(T));
+                        queue->enqueueWrite(b, data, 0, elementCount * sizeof(T), false);
 
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedElementCount * sizeof(T));
                 }

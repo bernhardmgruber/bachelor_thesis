@@ -30,7 +30,7 @@ class MatrixPlugin
 
             generate(data, data + bufferSize, []() -> T
             {
-                return rand() % 100;
+                return (T) (rand() % 100);
             });
 
             return data;

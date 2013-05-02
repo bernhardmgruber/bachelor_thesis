@@ -18,6 +18,11 @@ namespace gpu
                     return "Matrix multiplication (blocked)";
                 }
 
+                const cl_uint getWorkDimensions() override
+                {
+                    return 2;
+                }
+
                 void init(Context* context) override
                 {
                     Program* program = context->createProgram("gpu/dixxi/MultBlock.cl", "-D T=" + getTypeName<T>());
@@ -27,6 +32,9 @@ namespace gpu
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
+                    if(workGroupSize > 8)
+                        workGroupSize = 8;
+
                     adjustedSize = roundToMultiple(size, workGroupSize);
 
                     a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
@@ -36,10 +44,10 @@ namespace gpu
                         size_t bufferOffset[] = {0, 0, 0};
                         size_t hostOffset[] = {0, 0, 0};
                         size_t sizes[] = {size * sizeof(T), size, 1};
-                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
                     }
                     else
-                        queue->enqueueWrite(a, data, size * size * sizeof(T));
+                        queue->enqueueWrite(a, data, 0, size * size * sizeof(T), false);
 
 
                     b = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
@@ -49,10 +57,10 @@ namespace gpu
                         size_t bufferOffset[] = {0, 0, 0};
                         size_t hostOffset[] = {0, 0, 0};
                         size_t sizes[] = {size * sizeof(T), size, 1};
-                        queue->enqueueWriteRect(b, data + size * size, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                        queue->enqueueWriteRect(b, data + size * size, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
                     }
                     else
-                        queue->enqueueWrite(b, data, size * size * sizeof(T));
+                        queue->enqueueWrite(b, data, 0, size * size * sizeof(T), false);
 
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 }

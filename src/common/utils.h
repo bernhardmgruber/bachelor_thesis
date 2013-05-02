@@ -75,4 +75,6 @@ void printArr2D(T* arr, size_t size, size_t rowLength)
     cout << endl;
 }
 
+unsigned int ctz(unsigned int);
+
 #endif // UTILS_H

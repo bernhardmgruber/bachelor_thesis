@@ -464,6 +464,9 @@ private:
 
         //size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), size);
         size_t maxWorkGroupSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
+
+        maxWorkGroupSize = (size_t)1 << (ctz((unsigned int)maxWorkGroupSize) / alg->getWorkDimensions());
+
         if(!useMultipleWorkGroupSizes)
             batch->runs.push_back(uploadRunDownload(alg, context, queue, maxWorkGroupSize, size));
         else

@@ -1,6 +1,7 @@
 #include <sstream>
 #include <iomanip>
 #include <stdlib.h>
+#include <intrin.h>
 
 #include "utils.h"
 
@@ -67,4 +68,15 @@ string timeToString(double time)
     ss << millis << "ms";
 
     return ss.str();
+}
+
+unsigned int ctz(unsigned int x)
+{
+#ifdef __GNUG__
+    return __builtin_ctz(x);
+#else
+    unsigned long r;
+    _BitScanForward(&r, x);
+    return r;
+#endif
 }

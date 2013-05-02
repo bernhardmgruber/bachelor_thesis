@@ -11,5 +11,5 @@ __kernel void Mult(__global T* a, __global T* b, __global T* c, uint size)
     for(size_t i = 0; i < size; i++)
         sum += a[row * size + i] * b[i * size + col];
 
-    c[get_global_id(0)] = sum;
+    c[row * size + col] = sum;
 }

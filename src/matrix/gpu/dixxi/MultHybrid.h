@@ -18,6 +18,11 @@ namespace gpu
                     return "Matrix multiplication (hybrid)";
                 }
 
+                const cl_uint getWorkDimensions() override
+                {
+                    return 2;
+                }
+
                 void init(Context* context) override
                 {
                     if(context->getInfo<cl_bool>(CL_DEVICE_IMAGE_SUPPORT) == false)
