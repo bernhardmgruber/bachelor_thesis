@@ -30,7 +30,9 @@
     <ClInclude Include="gpu\amdblas\Mult.h" />
     <ClInclude Include="gpu\amd\MultTile.h" />
     <ClInclude Include="gpu\amd\MultTileLocal.h" />
-    <ClInclude Include="gpu\dixxi\Mult.h" />
+    <ClInclude Include="gpu\dixxi\Mult1D.h" />
+    <ClInclude Include="gpu\dixxi\Mult2D.h" />
+    <ClInclude Include="gpu\dixxi\Mult2DCoalesced.h" />
     <ClInclude Include="gpu\dixxi\MultBlock.h" />
     <ClInclude Include="gpu\dixxi\MultHybrid.h" />
     <ClInclude Include="gpu\dixxi\MultImage.h" />
@@ -41,7 +43,9 @@
   <ItemGroup>
     <None Include="gpu\amd\MultTile.cl" />
     <None Include="gpu\amd\MultTileLocal.cl" />
-    <None Include="gpu\dixxi\Mult.cl" />
+    <None Include="gpu\dixxi\Mult1D.cl" />
+    <None Include="gpu\dixxi\Mult2D.cl" />
+    <None Include="gpu\dixxi\Mult2DCoalesced.cl" />
     <None Include="gpu\dixxi\MultBlock.cl" />
     <None Include="gpu\dixxi\MultHybrid.cl" />
     <None Include="gpu\dixxi\MultImage.cl" />

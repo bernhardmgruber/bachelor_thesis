@@ -1,0 +1,108 @@
+#ifndef GPUDIXXIMULT2DCOALESCED_H
+#define GPUDIXXIMULT2DCOALESCED_H
+
+#include "../../../common/utils.h"
+#include "../../../common/GPUAlgorithm.h"
+#include "../../MatrixAlgorithm.h"
+
+namespace gpu
+{
+    namespace dixxi
+    {
+        template<typename T>
+        class Mult2DCoalesced : public GPUAlgorithm<T>, public MatrixAlgorithm
+        {
+            public:
+                const string getName() override
+                {
+                    return "Matrix multiplication 2D";
+                }
+
+                void init(Context* context) override
+                {
+                    Program* program = context->createProgram("gpu/dixxi/Mult2D.cl", "-D T=" + getTypeName<T>());
+                    kernel = program->createKernel("Mult");
+                    delete program;
+                }
+
+                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                {
+                    elementCount = size * size;
+                    adjustedSize = roundToMultiple(size, workGroupSize);
+                    size_t adjustedElementCount = adjustedSize * adjustedSize;
+
+                    a = context->createBuffer(CL_MEM_READ_ONLY, adjustedElementCount * sizeof(T));
+                    if(adjustedSize != size)
+                    {
+                        queue->enqueueFill(a, (cl_float)0);
+                        size_t bufferOffset[] = {0, 0, 0};
+                        size_t hostOffset[] = {0, 0, 0};
+                        size_t sizes[] = {size * sizeof(T), size, 1};
+                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                    }
+                    else
+                        queue->enqueueWrite(a, data, elementCount * sizeof(T));
+
+                    b = context->createBuffer(CL_MEM_READ_ONLY, adjustedElementCount * sizeof(T));
+                    if(adjustedSize != size)
+                    {
+                        queue->enqueueFill(b, (cl_float)0);
+                        size_t bufferOffset[] = {0, 0, 0};
+                        size_t hostOffset[] = {0, 0, 0};
+                        size_t sizes[] = {size * sizeof(T), size, 1};
+                        queue->enqueueWriteRect(b, data + elementCount, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                    }
+                    else
+                        queue->enqueueWrite(b, data, elementCount * sizeof(T));
+
+                    c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedElementCount * sizeof(T));
+                }
+
+                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                {
+                    kernel->setArg(0, a);
+                    kernel->setArg(1, b);
+                    kernel->setArg(2, c);
+                    kernel->setArg(3, (cl_uint)size);
+
+                    size_t globalWorkSizes[] = { adjustedSize, adjustedSize };
+                    size_t localWorkSizes[] = { workGroupSize, workGroupSize };
+
+                    queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
+                }
+
+                void download(CommandQueue* queue, T* result, size_t size) override
+                {
+                    if(adjustedSize != size)
+                    {
+                        size_t bufferOffset[] = {0, 0, 0};
+                        size_t hostOffset[] = {0, 0, 0};
+                        size_t sizes[] = {size * sizeof(T), size, 1};
+                        queue->enqueueReadRect(c, result, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                    }
+                    else
+                        queue->enqueueRead(c, result, 0, elementCount * sizeof(T));
+                }
+
+                void cleanup() override
+                {
+                    delete kernel;
+                    delete a;
+                    delete b;
+                    delete c;
+                }
+
+                virtual ~Mult2DCoalesced() {}
+
+            private:
+                Kernel* kernel;
+                Buffer* a;
+                Buffer* b;
+                Buffer* c;
+                size_t adjustedSize;
+                size_t elementCount;
+        };
+    }
+}
+
+#endif // GPUDIXXIMULT2DCOALESCED_H

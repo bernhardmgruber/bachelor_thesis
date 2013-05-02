@@ -42,9 +42,6 @@
     <ClInclude Include="cpu\cblas\Mult.h">
       <Filter>cpu\cblas</Filter>
     </ClInclude>
-    <ClInclude Include="gpu\dixxi\Mult.h">
-      <Filter>gpu\dixxi</Filter>
-    </ClInclude>
     <ClInclude Include="gpu\nvidia\Mult.h">
       <Filter>gpu\nvidia</Filter>
     </ClInclude>
@@ -69,6 +66,15 @@
     <ClInclude Include="gpu\amd\MultTile.h">
       <Filter>gpu\amd</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\dixxi\Mult1D.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\Mult2D.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\Mult2DCoalesced.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\dixxi\MultHybrid.cl">
@@ -89,7 +95,13 @@
     <None Include="gpu\nvidia\Mult.cl">
       <Filter>gpu\nvidia</Filter>
     </None>
-    <None Include="gpu\dixxi\Mult.cl">
+    <None Include="gpu\dixxi\Mult1D.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\Mult2D.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\Mult2DCoalesced.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
   </ItemGroup>
