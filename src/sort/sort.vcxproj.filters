@@ -121,7 +121,7 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="cpu\stereopsis\radixsort.h">
-      <Filter>cpu\sterepsis</Filter>
+      <Filter>cpu\stereopsis</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -232,8 +232,8 @@
     <Filter Include="common">
       <UniqueIdentifier>{89950676-5300-44c3-afaf-dcbab0a148a2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="cpu\sterepsis">
-      <UniqueIdentifier>{301fa031-55f0-422d-89d8-9f22c90ae24e}</UniqueIdentifier>
+    <Filter Include="cpu\stereopsis">
+      <UniqueIdentifier>{cb561845-27bd-442d-831d-52ce166ad954}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
