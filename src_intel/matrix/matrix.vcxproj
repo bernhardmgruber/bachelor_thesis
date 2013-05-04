@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\common\OpenCL.cpp" />
+    <ClCompile Include="..\..\src\common\Timer.cpp" />
+    <ClCompile Include="..\..\src\common\utils.cpp" />
+    <ClCompile Include="..\..\src\matrix\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\common\CPUAlgorithm.h" />
+    <ClInclude Include="..\..\src\common\GPUAlgorithm.h" />
+    <ClInclude Include="..\..\src\common\OpenCL.h" />
+    <ClInclude Include="..\..\src\common\Runner.h" />
+    <ClInclude Include="..\..\src\common\StatsWriter.h" />
+    <ClInclude Include="..\..\src\common\Timer.h" />
+    <ClInclude Include="..\..\src\common\utils.h" />
+    <ClInclude Include="..\..\src\matrix\cpu\cblas\Mult.h" />
+    <ClInclude Include="..\..\src\matrix\cpu\dixxi\Mult.h" />
+    <ClInclude Include="..\..\src\matrix\cpu\dixxi\MultThreads.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\amdblas\Mult.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\amd\MultTile.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\amd\MultTileLocal.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\Mult1D.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\Mult2D.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\Mult2DCoalesced.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\MultBlock.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\MultHybrid.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\MultImage.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\nvidia\Mult.h" />
+    <ClInclude Include="..\..\src\matrix\MatrixAlgorithm.h" />
+    <ClInclude Include="..\..\src\matrix\MatrixPlugin.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\matrix\gpu\amd\MultTile.cl" />
+    <None Include="..\..\src\matrix\gpu\amd\MultTileLocal.cl" />
+    <None Include="..\..\src\matrix\gpu\dixxi\Mult1D.cl" />
+    <None Include="..\..\src\matrix\gpu\dixxi\Mult2D.cl" />
+    <None Include="..\..\src\matrix\gpu\dixxi\Mult2DCoalesced.cl" />
+    <None Include="..\..\src\matrix\gpu\dixxi\MultBlock.cl" />
+    <None Include="..\..\src\matrix\gpu\dixxi\MultHybrid.cl" />
+    <None Include="..\..\src\matrix\gpu\dixxi\MultImage.cl" />
+    <None Include="..\..\src\matrix\gpu\nvidia\Mult.cl" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{60EE09EB-97A4-4C7A-BF4C-2BA98A8121E8}</ProjectGuid>
+    <RootNamespace>matrix</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Intel C++ Compiler XE 13.0</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(CUDA_PATH)include;..\..\src\matrix;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Cpp0xSupport>true</Cpp0xSupport>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <OpenMP>GenerateParallelCode</OpenMP>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64;$(SolutionDir)cblas_f\x64\Release;$(SolutionDir)cblas_c\x64\Release;$(SolutionDir)blas\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;cblas_c.lib;cblas_f.lib;blas.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions> /VERBOSE:LIB %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

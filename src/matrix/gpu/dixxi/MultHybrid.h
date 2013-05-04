@@ -82,14 +82,14 @@ namespace gpu
                     queue->enqueueRead(c, result);
 
                     //printArr(result, size * size);
+                    delete a;
+                    delete b;
+                    delete c;
                 }
 
                 void cleanup() override
                 {
                     delete kernel;
-                    delete a;
-                    delete b;
-                    delete c;
                 }
 
                 virtual ~MultHybrid() {}

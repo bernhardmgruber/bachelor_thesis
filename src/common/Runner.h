@@ -43,7 +43,7 @@ public:
     * Constructor
     */
     Runner(size_t iterations, initializer_list<size_t> sizes, bool validate = true)
-        : iterations(iterations), sizes(sizes)
+        : iterations(iterations), sizes(sizes), validate(validate)
     {
         init();
     }
@@ -51,7 +51,7 @@ public:
 
     template <typename I>
     Runner(size_t iterations, const I begin, const I end, bool validate = true)
-        : iterations(iterations)
+        : iterations(iterations), validate(validate)
     {
         copy(begin, end, back_inserter(sizes));
         init();
@@ -479,7 +479,7 @@ private:
         batch->cleanupTime = timer.stop();
 
         // calculate fastest run
-        batch->fastest = min_element(batch->runs.begin(), batch->runs.end(), [](CLRun& a, CLRun& b)
+        batch->fastest = min_element(batch->runs.begin(), batch->runs.end(), [](CLRun& a, CLRun& b) -> double
         {
             if(a.exceptionOccured || !a.verificationResult)
                 return false;

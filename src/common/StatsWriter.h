@@ -14,7 +14,9 @@ class StatsWriter
 
             os << "CL_DEVICE_ADDRESS_BITS" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_ADDRESS_BITS) << endl;
             os << "CL_DEVICE_AVAILABLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
+#ifdef CL_VERSION_1_2
 			os << "CL_DEVICE_BUILT_IN_KERNELS" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_BUILT_IN_KERNELS) << endl;
+#endif
             os << "CL_DEVICE_COMPILER_AVAILABLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_AVAILABLE) << endl;
 
             {
@@ -101,9 +103,11 @@ class StatsWriter
             os << "CL_DEVICE_IMAGE3D_MAX_DEPTH" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_DEPTH) << endl;
             os << "CL_DEVICE_IMAGE3D_MAX_HEIGHT" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_HEIGHT) << endl;
             os << "CL_DEVICE_IMAGE3D_MAX_WIDTH" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE3D_MAX_WIDTH) << endl;
+#ifdef CL_VERSION_1_2
             os << "CL_DEVICE_IMAGE_MAX_BUFFER_SIZE" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE_MAX_BUFFER_SIZE) << endl;
             os << "CL_DEVICE_IMAGE_MAX_ARRAY_SIZE" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_IMAGE_MAX_ARRAY_SIZE) << endl;
             os << "CL_DEVICE_LINKER_AVAILABLE" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_LINKER_AVAILABLE) << endl;
+#endif
             os << "CL_DEVICE_LOCAL_MEM_SIZE" << sep << context->getInfoWithDefaultOnError<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE) << endl;
 
             {
@@ -157,27 +161,28 @@ class StatsWriter
             os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE) << endl;
             os << "CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF) << endl;
             os << "CL_DEVICE_OPENCL_C_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_OPENCL_C_VERSION) << endl;
+			#ifdef CL_VERSION_1_2
             os << "CL_DEVICE_PARENT_DEVICE" << sep << context->getInfoWithDefaultOnError<cl_device_id>(CL_DEVICE_PARENT_DEVICE) << endl;
             os << "CL_DEVICE_PARTITION_MAX_SUB_DEVICES" << sep << context->getInfoWithDefaultOnError<cl_device_id>(CL_DEVICE_PARTITION_MAX_SUB_DEVICES) << endl;
 
-//			{
-//			os << "CL_DEVICE_PARTITION_AFFINITY_DOMAIN" << sep;
-//                cl_device_partition_property properties[] = context->getInfoWithDefaultOnError<cl_device_partition_property[]>(CL_DEVICE_PARTITION_PROPERTIES);
-//				while(*properties != 0) {
-//					switch(*properties) {
-//					case CL_DEVICE_PARTITION_EQUALLY:
-//					    os << "CL_DEVICE_PARTITION_EQUALLY";
-//					    break;
-//					case CL_DEVICE_PARTITION_BY_COUNTS:
-//					    os << "CL_DEVICE_PARTITION_BY_COUNTS";
-//					    break;
-//					case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN:
-//					    os << "CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN";
-//					    break;
-//					}
-//					properties++;
-//				}
-//            }
+			{
+			os << "CL_DEVICE_PARTITION_PROPERTIES" << sep;
+                cl_device_partition_property properties[] = context->getInfoWithDefaultOnError<cl_device_partition_property[]>(CL_DEVICE_PARTITION_PROPERTIES);
+				while(*properties != 0) {
+					switch(*properties) {
+					case CL_DEVICE_PARTITION_EQUALLY:
+					    os << "CL_DEVICE_PARTITION_EQUALLY";
+					    break;
+					case CL_DEVICE_PARTITION_BY_COUNTS:
+					    os << "CL_DEVICE_PARTITION_BY_COUNTS";
+					    break;
+					case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN:
+					    os << "CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN";
+					    break;
+					}
+					properties++;
+				}
+            }
 
             {
                 os << "CL_DEVICE_PARTITION_AFFINITY_DOMAIN" << sep;
@@ -194,27 +199,29 @@ class StatsWriter
                     os << "CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE ";
                 if(flags & CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE)
                     os << "CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE ";
+
                 os << endl;
             }
 
-//			{
-//				os << "CL_DEVICE_PARTITION_TYPE" << sep;
-//                cl_device_partition_property properties[] = context->getInfoWithDefaultOnError<cl_device_partition_property[]>(CL_DEVICE_PARTITION_TYPE);
-//				while(*properties != 0) {
-//					switch(*properties) {
-//					case CL_DEVICE_PARTITION_EQUALLY:
-//					    os << "CL_DEVICE_PARTITION_EQUALLY";
-//					    break;
-//					case CL_DEVICE_PARTITION_BY_COUNTS:
-//					    os << "CL_DEVICE_PARTITION_BY_COUNTS";
-//					    break;
-//					case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN:
-//					    os << "CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN";
-//					    break;
-//					}
-//					properties++;
-//				}
-//            }
+			{
+				os << "CL_DEVICE_PARTITION_TYPE" << sep;
+                cl_device_partition_property properties[] = context->getInfoWithDefaultOnError<cl_device_partition_property[]>(CL_DEVICE_PARTITION_TYPE);
+				while(*properties != 0) {
+					switch(*properties) {
+					case CL_DEVICE_PARTITION_EQUALLY:
+					    os << "CL_DEVICE_PARTITION_EQUALLY";
+					    break;
+					case CL_DEVICE_PARTITION_BY_COUNTS:
+					    os << "CL_DEVICE_PARTITION_BY_COUNTS";
+					    break;
+					case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN:
+					    os << "CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN";
+					    break;
+					}
+					properties++;
+				}
+            }
+#endif
 
             os << "CL_DEVICE_PLATFORM" << sep << context->getInfoWithDefaultOnError<cl_platform_id>(CL_DEVICE_PLATFORM) << endl;
             os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR) << endl;
@@ -224,9 +231,11 @@ class StatsWriter
             os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT) << endl;
             os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE) << endl;
             os << "CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF) << endl;
+#ifdef CL_VERSION_1_2
             os << "CL_DEVICE_PRINTF_BUFFER_SIZE" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_PRINTF_BUFFER_SIZE) << endl;
-            os << "CL_DEVICE_PREFERRED_INTEROP_USER_SYNC" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_PREFERRED_INTEROP_USER_SYNC) << endl;
 
+            os << "CL_DEVICE_PREFERRED_INTEROP_USER_SYNC" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_PREFERRED_INTEROP_USER_SYNC) << endl;
+#endif
             os << "CL_DEVICE_PROFILE" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_PROFILE) << endl;
             os << "CL_DEVICE_PROFILING_TIMER_RESOLUTION" << sep << context->getInfoWithDefaultOnError<size_t>(CL_DEVICE_PROFILING_TIMER_RESOLUTION) << endl;
 
@@ -239,9 +248,9 @@ class StatsWriter
                     os << "CL_QUEUE_PROFILING_ENABLE ";
                 os << endl;
             }
-
+#ifdef CL_VERSION_1_2
 			os << "CL_DEVICE_REFERENCE_COUNT" << sep << context->getInfoWithDefaultOnError<cl_bool>(CL_DEVICE_REFERENCE_COUNT) << endl;
-
+#endif
             {
                 os << "CL_DEVICE_SINGLE_FP_CONFIG" << sep;
                 cl_device_fp_config flags = context->getInfoWithDefaultOnError<cl_device_fp_config>(CL_DEVICE_SINGLE_FP_CONFIG);
@@ -255,8 +264,10 @@ class StatsWriter
                     os << "CL_FP_ROUND_TO_ZERO ";
                 if(flags & CL_FP_ROUND_TO_INF)
                     os << "CL_FP_ROUND_TO_INF ";
+#ifdef CL_VERSION_1_2
 				if(flags & CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT)
 					os << "CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT ";
+#endif
                 if(flags & CL_FP_FMA)
                     os << "CP_FP_FMA ";
                 if(flags & CL_FP_SOFT_FLOAT)
@@ -281,9 +292,11 @@ class StatsWriter
                     case CL_DEVICE_TYPE_DEFAULT:
                         os << "CL_DEVICE_TYPE_DEFAULT";
                         break;
+#ifdef CL_VERSION_1_2
 					case CL_DEVICE_TYPE_CUSTOM:
                         os << "CL_DEVICE_TYPE_CUSTOM";
                         break;
+#endif
                 }
                 os << endl;
             }
@@ -292,9 +305,9 @@ class StatsWriter
             os << "CL_DEVICE_VENDOR_ID" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_VENDOR_ID) << endl;
             os << "CL_DEVICE_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_VERSION) << endl;
             os << "CL_DRIVER_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DRIVER_VERSION) << endl;
-
+			#ifdef CL_VERSION_1_2
             os << "CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT) << endl;
-
+#endif
             os.close();
 
             cout << "DONE" << endl;

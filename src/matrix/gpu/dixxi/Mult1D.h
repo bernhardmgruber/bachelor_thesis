@@ -54,14 +54,14 @@ namespace gpu
                 void download(CommandQueue* queue, T* result, size_t size) override
                 {
                     queue->enqueueRead(c, result, 0, size * size * sizeof(T));
+					delete a;
+                    delete b;
+                    delete c;
                 }
 
                 void cleanup() override
                 {
                     delete kernel;
-                    delete a;
-                    delete b;
-                    delete c;
                 }
 
                 virtual ~Mult1D() {}

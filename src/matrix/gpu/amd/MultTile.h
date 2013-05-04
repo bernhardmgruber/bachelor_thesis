@@ -90,14 +90,14 @@ namespace gpu
                         queue->enqueueRead(c, result, 0, size * size * sizeof(T));
 
                     //printArr2D(result, size * size, size);
+                    delete a;
+                    delete b;
+                    delete c;
                 }
 
                 void cleanup() override
                 {
                     delete kernel;
-                    delete a;
-                    delete b;
-                    delete c;
                 }
 
                 virtual ~MultTile() {}

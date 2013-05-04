@@ -87,14 +87,14 @@ namespace gpu
                     }
                     else
                         queue->enqueueRead(c, result, 0, elementCount * sizeof(T));
+					delete a;
+                    delete b;
+                    delete c;
                 }
 
                 void cleanup() override
                 {
                     delete kernel;
-                    delete a;
-                    delete b;
-                    delete c;
                 }
 
                 virtual ~Mult2DCoalesced() {}

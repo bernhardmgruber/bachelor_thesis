@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioProject ProjectType="typeStaticLibrary" ProjectCreator="Intel Fortran" Keyword="Static Library" Version="11.0" ProjectIdGuid="{1CEBE0A7-69F2-4227-B9F6-BAFF5E479189}">
+	<Platforms>
+		<Platform Name="x64"/></Platforms>
+	<Configurations>
+		<Configuration Name="Release|x64" ConfigurationType="typeStaticLibrary">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" Parallelization="true" InterproceduralOptimizations="ipoMultiFile"/>
+				<Tool Name="VFLibrarianTool"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/></Configuration></Configurations>
+	<Files>
+		<File RelativePath="..\..\src\common\libs\cblas\src\cdotcsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\cdotusub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\dasumsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\ddotsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\dnrm2sub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\dsdotsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\dzasumsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\dznrm2sub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\icamaxsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\idamaxsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\isamaxsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\izamaxsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\sasumsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\scasumsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\scnrm2sub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\sdotsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\sdsdotsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\snrm2sub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\zdotcsub.f"/>
+		<File RelativePath="..\..\src\common\libs\cblas\src\zdotusub.f"/></Files>
+	<Globals/></VisualStudioProject>

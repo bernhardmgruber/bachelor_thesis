@@ -129,6 +129,7 @@ class Context
          */
         Buffer* createBuffer(cl_mem_flags flags, size_t size, void* ptr = nullptr);
 
+#if OPENCL_VERSION >= 120
         /**
          * Creates a new image.
          *
@@ -139,6 +140,7 @@ class Context
          * @return Returns a new instance of Image. This instance has to be deleted by the user.
          */
         Image* createImage(cl_mem_flags flags, const cl_image_format& format, const cl_image_desc& descriptor, void* ptr = nullptr);
+#endif
 
         /**
          * Retrieves an OpenCL device information.
@@ -598,6 +600,7 @@ class Buffer
     friend CommandQueue;
 };
 
+#if OPENCL_VERSION >= 120
 /**
  * Represents an image.
  */
@@ -649,6 +652,7 @@ class Image
     friend Kernel;
     friend CommandQueue;
 };
+#endif
 
 //
 // TEMPLATE METHODS
@@ -657,8 +661,20 @@ class Image
 template <typename T>
 void CommandQueue::enqueueFill(Buffer* buffer, T val)
 {
+#if OPENCL_VERSION >= 120
     cl_int error = clEnqueueFillBuffer(queue, buffer->buffer, &val, sizeof(T), 0, buffer->size, 0, nullptr, nullptr);
     checkError(error, __LINE__, __FUNCTION__);
+#else
+	size_t len = buffer->size / sizeof(T) + 1;
+	T* mem = new T[len];
+
+	for(size_t i = 0; i < len; i++)
+		mem[i] = val;
+
+	enqueueWrite(buffer, mem);
+
+	delete[] mem;
+#endif
 }
 
 #endif // OPENCL_H

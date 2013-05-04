@@ -436,65 +436,65 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\zdotusub.f">
+    <CustomBuild Include="src\cdotcsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\cdotusub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\zdotusub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\dasumsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\cdotusub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\ddotsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\dasumsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\dnrm2sub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\ddotsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\dsdotsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\dnrm2sub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\dzasumsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\dsdotsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\dznrm2sub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\dzasumsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\icamaxsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\dznrm2sub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\idamaxsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\icamaxsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\isamaxsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\idamaxsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\izamaxsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\isamaxsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\sasumsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\izamaxsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\scasumsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\sasumsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\scnrm2sub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\scasumsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\sdotsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\scnrm2sub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\sdsdotsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\sdotsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\snrm2sub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\sdsdotsub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\zdotcsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\snrm2sub.f">
       <Filter>src</Filter>
-    </None>
-    <None Include="src\cdotcsub.f">
+    </CustomBuild>
+    <CustomBuild Include="src\zdotcsub.f">
       <Filter>src</Filter>
-    </None>
+    </CustomBuild>
   </ItemGroup>
 </Project>

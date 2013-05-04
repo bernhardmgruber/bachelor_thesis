@@ -223,6 +223,7 @@ Buffer* Context::createBuffer(cl_mem_flags flags, size_t size, void* ptr)
     return new Buffer(buffer, size);
 }
 
+#if OPENCL_VERSION >= 120
 Image* Context::createImage(cl_mem_flags flags, const cl_image_format& format, const cl_image_desc& descriptor, void* ptr)
 {
     #if OPENCL_VERSION >= 120
@@ -247,6 +248,7 @@ Image* Context::createImage(cl_mem_flags flags, const cl_image_format& format, c
 
     return new Image(image, format, descriptor);
 }
+#endif
 
 template <>
 string Context::getInfo<string>(cl_device_info info)
@@ -367,11 +369,13 @@ void Kernel::setArg(cl_uint index, Buffer* buffer)
     checkError(__LINE__, __FUNCTION__);
 }
 
+#if OPENCL_VERSION >= 120
 void Kernel::setArg(cl_uint index, Image* image)
 {
     error = clSetKernelArg(kernel, index, sizeof(cl_mem), (const void*)&image->buffer);
     checkError(__LINE__, __FUNCTION__);
 }
+#endif
 
 void Kernel::setArg(cl_uint index, size_t size, const void* value)
 {
@@ -429,6 +433,7 @@ void CommandQueue::enqueueRead(Buffer* buffer, void* destination, size_t offset,
     checkError(__LINE__, __FUNCTION__);
 }
 
+#if OPENCL_VERSION >= 120
 void CommandQueue::enqueueRead(Image* image, void* destination, bool blocking)
 {
     size_t origin[] = {0, 0, 0};
@@ -436,6 +441,7 @@ void CommandQueue::enqueueRead(Image* image, void* destination, bool blocking)
     error = clEnqueueReadImage(queue, image->buffer, blocking, origin, region, 0, 0, destination, 0, nullptr, nullptr);
     checkError(__LINE__, __FUNCTION__);
 }
+#endif
 
 void CommandQueue::enqueueReadRect(Buffer* buffer, void* destination, const size_t bufferOffset[3], const size_t hostOffset[3], const size_t sizes[3], size_t bufferRowLength, size_t bufferSliceLength, size_t hostRowLength, size_t hostSliceLength, bool blocking)
 {
@@ -455,6 +461,7 @@ void CommandQueue::enqueueWrite(Buffer* buffer, const void* source, size_t offse
     checkError(__LINE__, __FUNCTION__);
 }
 
+#if OPENCL_VERSION >= 120
 void CommandQueue::enqueueWrite(Image* image, const void* source, bool blocking)
 {
     size_t origin[] = {0, 0, 0};
@@ -462,6 +469,7 @@ void CommandQueue::enqueueWrite(Image* image, const void* source, bool blocking)
     error = clEnqueueWriteImage(queue, image->buffer, blocking, origin, region, 0, 0, nullptr, 0, nullptr, nullptr);
     checkError(__LINE__, __FUNCTION__);
 }
+#endif
 
 void CommandQueue::enqueueWriteRect(Buffer* buffer, const void* source, const size_t bufferOffset[3], const size_t hostOffset[3], const size_t sizes[3], size_t bufferRowLength, size_t bufferSliceLength, size_t hostRowLength, size_t hostSliceLength, bool blocking)
 {
@@ -469,6 +477,7 @@ void CommandQueue::enqueueWriteRect(Buffer* buffer, const void* source, const si
     checkError(__LINE__, __FUNCTION__);
 }
 
+#if OPENCL_VERSION >= 120
 void* CommandQueue::enqueueMap(Image* image, cl_map_flags flags, bool blocking)
 {
     size_t origin[] = {0, 0, 0};
@@ -479,12 +488,15 @@ void* CommandQueue::enqueueMap(Image* image, cl_map_flags flags, bool blocking)
     checkError(__LINE__, __FUNCTION__);
     return ptr;
 }
+#endif
 
+#if OPENCL_VERSION >= 120
 void CommandQueue::enqueueUnmap(Image* image, void* ptr)
 {
     error = clEnqueueUnmapMemObject(queue, image->buffer, ptr, 0, nullptr, nullptr);
     checkError(__LINE__, __FUNCTION__);
 }
+#endif
 
 void CommandQueue::enqueueCopy(Buffer* src, Buffer* dest)
 {
@@ -554,6 +566,7 @@ cl_mem Buffer::getCLBuffer()
     return buffer;
 }
 
+#if OPENCL_VERSION >= 120
 //
 // class Image
 //
@@ -583,3 +596,4 @@ cl_mem Image::getCLBuffer()
 {
     return buffer;
 }
+#endif

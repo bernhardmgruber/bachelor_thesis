@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\src\common\OpenCL.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\utils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\Timer.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\matrix\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\common\CPUAlgorithm.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\GPUAlgorithm.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\OpenCL.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\Runner.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\StatsWriter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\utils.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\Timer.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\cpu\dixxi\Mult.h">
+      <Filter>cpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\cpu\cblas\Mult.h">
+      <Filter>cpu\cblas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\nvidia\Mult.h">
+      <Filter>gpu\nvidia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\MultBlock.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\MultHybrid.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\MultImage.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\cpu\dixxi\MultThreads.h">
+      <Filter>cpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\amd\MultTileLocal.h">
+      <Filter>gpu\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\amd\MultTile.h">
+      <Filter>gpu\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\Mult1D.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\Mult2D.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\gpu\dixxi\Mult2DCoalesced.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\matrix\MatrixAlgorithm.h" />
+    <ClInclude Include="..\..\src\matrix\MatrixPlugin.h" />
+    <ClInclude Include="..\..\src\matrix\gpu\amdblas\Mult.h">
+      <Filter>gpu\amdblas</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\matrix\gpu\dixxi\MultHybrid.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="..\..\src\matrix\gpu\dixxi\MultBlock.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="..\..\src\matrix\gpu\dixxi\MultImage.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="..\..\src\matrix\gpu\amd\MultTileLocal.cl">
+      <Filter>gpu\amd</Filter>
+    </None>
+    <None Include="..\..\src\matrix\gpu\amd\MultTile.cl">
+      <Filter>gpu\amd</Filter>
+    </None>
+    <None Include="..\..\src\matrix\gpu\nvidia\Mult.cl">
+      <Filter>gpu\nvidia</Filter>
+    </None>
+    <None Include="..\..\src\matrix\gpu\dixxi\Mult1D.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="..\..\src\matrix\gpu\dixxi\Mult2D.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="..\..\src\matrix\gpu\dixxi\Mult2DCoalesced.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{19ec1b47-6d9b-4bce-9d63-367102e9e2c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu">
+      <UniqueIdentifier>{1c4cc968-aaa7-4368-aa5a-fc718704e8dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu\dixxi">
+      <UniqueIdentifier>{4c585727-803f-4d03-959c-c44976b4062c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu">
+      <UniqueIdentifier>{99b66173-7904-4fe9-955d-a74f51dd0f90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\dixxi">
+      <UniqueIdentifier>{937940ab-44ec-4cfe-bd76-57a76fedce18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu\cblas">
+      <UniqueIdentifier>{22077bd6-0db3-4f68-b99c-75db087c2041}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\nvidia">
+      <UniqueIdentifier>{7d47f1fb-7eb0-4d40-9e5c-a56b8efdc799}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\amd">
+      <UniqueIdentifier>{53923b6a-43ea-4799-bd47-3c24676aff82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\amdblas">
+      <UniqueIdentifier>{8ae454b3-4c7e-49fe-9702-56dcb565d4f0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

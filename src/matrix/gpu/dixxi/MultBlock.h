@@ -18,7 +18,7 @@ namespace gpu
                     return "Matrix multiplication (blocked)";
                 }
 
-                const cl_uint getWorkDimensions() override
+                const cl_uint getWorkDimensions() const override
                 {
                     return 2;
                 }
@@ -94,14 +94,14 @@ namespace gpu
                     }
                     else
                         queue->enqueueRead(c, result, 0, size * size * sizeof(T));
+					delete a;
+                    delete b;
+                    delete c;
                 }
 
                 void cleanup() override
                 {
                     delete kernel;
-                    delete a;
-                    delete b;
-                    delete c;
                 }
 
                 virtual ~MultBlock() {}
