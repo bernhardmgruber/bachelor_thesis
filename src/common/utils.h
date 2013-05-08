@@ -77,4 +77,9 @@ void printArr2D(T* arr, size_t size, size_t rowLength)
 
 unsigned int ctz(unsigned int);
 
+/**
+* Calculates the root of a given power of two (value) that is the largest possible power of two which powered by root does not exceeding value.
+*/
+unsigned int rootPowerOfTwo(unsigned int value, unsigned int root);
+
 #endif // UTILS_H

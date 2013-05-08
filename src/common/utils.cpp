@@ -80,3 +80,7 @@ unsigned int ctz(unsigned int x)
     return r;
 #endif
 }
+
+unsigned int rootPowerOfTwo(unsigned int value, unsigned int root) {
+    return 1 << (ctz(value) / root);
+}

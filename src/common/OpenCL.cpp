@@ -70,7 +70,7 @@ void checkError(int line, string name)
     checkError(error, line, name);
 }
 
-void checkError(cl_int error, int line, string name) throw(OpenCLException)
+void checkError(cl_int error, int line, string name)
 {
     if(error != CL_SUCCESS)
     {

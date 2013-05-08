@@ -13,30 +13,26 @@ __kernel void MultTile(__global T4* a, __global T4* b, __global T4* c, uint size
     if(pos.x >= size / 4 || pos.y >= size / 4)
         return;
 
-    uint widthA = size;
-    uint widthB = size;
-
     T4 sum0 = (T4)(0);
     T4 sum1 = (T4)(0);
     T4 sum2 = (T4)(0);
     T4 sum3 = (T4)(0);
 
     /* Vectorization of input Matrices reduces their width by a factor of 4 */
-    uint widthB4 = widthB / 4;
-    uint widthA4 = widthA / 4;
+    uint size4 = size / 4;
 
-    for(int i = 0; i < widthA; i = i + 4)
+    for(int i = 0; i < size4; i = i + 4)
     {
-        T4 tempA0 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 0) * widthA4];
-        T4 tempA1 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 1) * widthA4];
-        T4 tempA2 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 2) * widthA4];
-        T4 tempA3 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 3) * widthA4];
+        T4 tempA0 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 0) * size4];
+        T4 tempA1 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 1) * size4];
+        T4 tempA2 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 2) * size4];
+        T4 tempA3 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 3) * size4];
 
         //Matrix B is not transposed
-        T4 tempB0 = b[pos.x + (i + 0) * widthB4];
-        T4 tempB1 = b[pos.x + (i + 1) * widthB4];
-        T4 tempB2 = b[pos.x + (i + 2) * widthB4];
-        T4 tempB3 = b[pos.x + (i + 3) * widthB4];
+        T4 tempB0 = b[pos.x + (i + 0) * size4];
+        T4 tempB1 = b[pos.x + (i + 1) * size4];
+        T4 tempB2 = b[pos.x + (i + 2) * size4];
+        T4 tempB3 = b[pos.x + (i + 3) * size4];
 
         sum0.x += tempA0.x * tempB0.x + tempA0.y * tempB1.x + tempA0.z * tempB2.x + tempA0.w * tempB3.x;
         sum0.y += tempA0.x * tempB0.y + tempA0.y * tempB1.y + tempA0.z * tempB2.y + tempA0.w * tempB3.y;
@@ -59,13 +55,13 @@ __kernel void MultTile(__global T4* a, __global T4* b, __global T4* c, uint size
         sum3.w += tempA3.x * tempB0.w + tempA3.y * tempB1.w + tempA3.z * tempB2.w + tempA3.w * tempB3.w;
     }
 
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 0) * widthB4] = sum0;
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 1) * widthB4] = sum1;
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 2) * widthB4] = sum2;
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 3) * widthB4] = sum3;
+    c[pos.x + ((pos.y << TILEY_SHIFT) + 0) * size4] = sum0;
+    c[pos.x + ((pos.y << TILEY_SHIFT) + 1) * size4] = sum1;
+    c[pos.x + ((pos.y << TILEY_SHIFT) + 2) * size4] = sum2;
+    c[pos.x + ((pos.y << TILEY_SHIFT) + 3) * size4] = sum3;
 
-    /*c[pos.x + ((pos.y << TILEY_SHIFT) + 0) * widthB4] = (float4)(0, 1, 2, 3);
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 1) * widthB4] = (float4)(4, 5, 6, 7);
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 2) * widthB4] = (float4)(8, 9, 10, 11);
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 3) * widthB4] = (float4)(12, 13, 14, 15);*/
+    /*c[pos.x + ((pos.y << TILEY_SHIFT) + 0) * size4] = (float4)(0, 1, 2, 3);
+    c[pos.x + ((pos.y << TILEY_SHIFT) + 1) * size4] = (float4)(4, 5, 6, 7);
+    c[pos.x + ((pos.y << TILEY_SHIFT) + 2) * size4] = (float4)(8, 9, 10, 11);
+    c[pos.x + ((pos.y << TILEY_SHIFT) + 3) * size4] = (float4)(12, 13, 14, 15);*/
 }

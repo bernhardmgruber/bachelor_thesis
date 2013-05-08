@@ -20,6 +20,11 @@ namespace gpu
                     return "Matrix multiplication (Tiles, AMD)";
                 }
 
+                const cl_uint getWorkDimensions() const override
+                {
+                    return 2;
+                }
+
                 void init(Context* context) override
                 {
                     Program* program = context->createProgram("gpu/amd/MultTile.cl", "-D T4=" + getTypeName<T>() + "4");
@@ -29,8 +34,6 @@ namespace gpu
 
                 void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
                 {
-                    workGroupSize = 16;
-
                     adjustedSize = roundToMultiple(size, BLOCK_SIZE);
 
                     a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
@@ -62,8 +65,6 @@ namespace gpu
 
                 void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
                 {
-                    workGroupSize = 16;
-
                     kernel->setArg(0, a);
                     kernel->setArg(1, b);
                     kernel->setArg(2, c);

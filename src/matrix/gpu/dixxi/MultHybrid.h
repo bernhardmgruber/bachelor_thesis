@@ -18,7 +18,7 @@ namespace gpu
                     return "Matrix multiplication (hybrid)";
                 }
 
-                const cl_uint getWorkDimensions() override
+                const cl_uint getWorkDimensions() const override
                 {
                     return 2;
                 }

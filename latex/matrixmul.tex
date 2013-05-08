@@ -54,25 +54,26 @@ When run on the GPU, the performance of this naive OpenCL implementation is alre
 \subsection{Optimized GPU implementation}
 options for performance improvement
 multiple elements per work item
-caching in local memory (blocks)
+
 texture unit
-vector instructions
 
-maybe kernel code with explanation
+\subsubsection{Using vector instructions}
+vector instructions (AMD Tile)
 
-advantages/disadvantages
 
-runtime (diagram)
-comparison with CPU and naive GPU implementation
+\subsubsection{Using local memory}
+caching in local memory (blocks)
 
 \subsection{Existing implementations}
 
-Beside the presented implementations, several libraries exist supporting 
+Beside the presented implementations, several libraries exist supporting matrix multiplication.
 
-clAmdBlas
-cuBlas
-Intel Math Kernel Library (MKL)
-AMD Core Math Library (ACML)
+\begin{description}
+   \item[clAmdBlas] \hfill \\
+   A BLAS (Basic Linear Algebra Subprograms) library provided by AMD.
+   \item[cuBlas] \hfill \\
+   A BLAS (Basic Linear Algebra Subprograms) library provided by NVIDIA shipped with the CUDA Computing SDK.
+\end{description}
 
 \subsection{Benchmarks and conclusion}
 Which implementation is when better?

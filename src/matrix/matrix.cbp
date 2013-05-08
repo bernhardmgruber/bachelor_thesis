@@ -58,6 +58,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-march=core2" />
 			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
@@ -68,8 +69,8 @@
 		<Linker>
 			<Add library="OpenCL" />
 			<Add library="gomp" />
-			<Add library="..\common\libs\cblas\lib\libcblas.a" />
-			<Add library="..\common\libs\blas\lib\libblas.a" />
+			<Add library="..\common\libs\cblas\bin\libcblas.a" />
+			<Add library="..\common\libs\blas\bin\libblas.a" />
 			<Add library="gfortran" />
 		</Linker>
 		<Unit filename="../common/CPUAlgorithm.h" />
@@ -92,8 +93,12 @@
 		<Unit filename="gpu/amd/MultTileLocal.cl" />
 		<Unit filename="gpu/amd/MultTileLocal.h" />
 		<Unit filename="gpu/amdblas/Mult.h" />
-		<Unit filename="gpu/dixxi/Mult.cl" />
-		<Unit filename="gpu/dixxi/Mult.h" />
+		<Unit filename="gpu/dixxi/Mult1D.cl" />
+		<Unit filename="gpu/dixxi/Mult1D.h" />
+		<Unit filename="gpu/dixxi/Mult2D.cl" />
+		<Unit filename="gpu/dixxi/Mult2D.h" />
+		<Unit filename="gpu/dixxi/Mult2DCoalesced.cl" />
+		<Unit filename="gpu/dixxi/Mult2DCoalesced.h" />
 		<Unit filename="gpu/dixxi/MultBlock.cl" />
 		<Unit filename="gpu/dixxi/MultBlock.h" />
 		<Unit filename="gpu/dixxi/MultHybrid.cl" />

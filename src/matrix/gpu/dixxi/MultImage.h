@@ -20,7 +20,7 @@ namespace gpu
                     return "Matrix multiplication (texture unit)";
                 }
 
-                const cl_uint getWorkDimensions() override
+                const cl_uint getWorkDimensions() const override
                 {
                     return 2;
                 }
