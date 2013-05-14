@@ -43,12 +43,12 @@ class MatrixPlugin
 
         void freeInput(T* data)
         {
-            delete[] (T*)data;
+            delete[] data;
         }
 
         void freeResult(T* result)
         {
-            delete[] (T*)result;
+            delete[] result;
         }
 
         bool verifyResult(MatrixAlgorithm* alg, T* data, T* result, size_t size)
