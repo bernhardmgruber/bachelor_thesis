@@ -10,7 +10,10 @@ __kernel void MultTile(__global T4* a, __global T4* b, __global T4* c, uint size
 {
     int2 pos = (int2)(get_global_id(0), get_global_id(1));
 
-    if(pos.x >= size / 4 || pos.y >= size / 4)
+    /* Vectorization of input Matrices reduces their width by a factor of 4 */
+    uint size4 = size / 4;
+
+    if(pos.x >= size4 || pos.y >= size4)
         return;
 
     T4 sum0 = (T4)(0);
@@ -18,15 +21,12 @@ __kernel void MultTile(__global T4* a, __global T4* b, __global T4* c, uint size
     T4 sum2 = (T4)(0);
     T4 sum3 = (T4)(0);
 
-    /* Vectorization of input Matrices reduces their width by a factor of 4 */
-    uint size4 = size / 4;
-
-    for(int i = 0; i < size4; i = i + 4)
+    for(int i = 0; i < size; i = i + BLOCK_SIZE)
     {
-        T4 tempA0 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 0) * size4];
-        T4 tempA1 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 1) * size4];
-        T4 tempA2 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 2) * size4];
-        T4 tempA3 = a[i / 4 + ((pos.y << TILEY_SHIFT) + 3) * size4];
+        T4 tempA0 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 0) * size4];
+        T4 tempA1 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 1) * size4];
+        T4 tempA2 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 2) * size4];
+        T4 tempA3 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 3) * size4];
 
         //Matrix B is not transposed
         T4 tempB0 = b[pos.x + (i + 0) * size4];
@@ -55,13 +55,8 @@ __kernel void MultTile(__global T4* a, __global T4* b, __global T4* c, uint size
         sum3.w += tempA3.x * tempB0.w + tempA3.y * tempB1.w + tempA3.z * tempB2.w + tempA3.w * tempB3.w;
     }
 
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 0) * size4] = sum0;
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 1) * size4] = sum1;
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 2) * size4] = sum2;
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 3) * size4] = sum3;
-
-    /*c[pos.x + ((pos.y << TILEY_SHIFT) + 0) * size4] = (float4)(0, 1, 2, 3);
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 1) * size4] = (float4)(4, 5, 6, 7);
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 2) * size4] = (float4)(8, 9, 10, 11);
-    c[pos.x + ((pos.y << TILEY_SHIFT) + 3) * size4] = (float4)(12, 13, 14, 15);*/
+    c[pos.x + ((pos.y * BLOCK_SIZE) + 0) * size4] = sum0;
+    c[pos.x + ((pos.y * BLOCK_SIZE) + 1) * size4] = sum1;
+    c[pos.x + ((pos.y * BLOCK_SIZE) + 2) * size4] = sum2;
+    c[pos.x + ((pos.y * BLOCK_SIZE) + 3) * size4] = sum3;
 }

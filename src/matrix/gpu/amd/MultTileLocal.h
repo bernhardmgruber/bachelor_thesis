@@ -28,8 +28,6 @@ namespace gpu
                 Program* program = context->createProgram("gpu/amd/MultTileLocal.cl", "-D T4=" + getTypeName<T>() + "4");
                 kernel = program->createKernel("MultTileLocal");
                 delete program;
-
-                size_t workGroupSize = kernel->getWorkGroupSize();
             }
 
             void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
@@ -98,7 +96,6 @@ namespace gpu
                 else
                     queue->enqueueRead(c, result, 0, size * size * sizeof(T));
 
-                //printArr2D(result, size * size, size);
                 delete a;
                 delete b;
                 delete c;

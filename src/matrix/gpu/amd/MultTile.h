@@ -27,7 +27,9 @@ namespace gpu
 
                 void init(Context* context) override
                 {
-                    Program* program = context->createProgram("gpu/amd/MultTile.cl", "-D T4=" + getTypeName<T>() + "4");
+                    stringstream ss;
+                    ss << "-DT4=" << getTypeName<T>() << "4" << " -DBLOCK_SIZE=" << BLOCK_SIZE;
+                    Program* program = context->createProgram("gpu/amd/MultTile.cl", ss.str());
                     kernel = program->createKernel("MultTile");
                     delete program;
                 }
@@ -70,9 +72,9 @@ namespace gpu
                     kernel->setArg(2, c);
                     kernel->setArg(3, (cl_uint)adjustedSize);
 
-                    size_t adjustedWorkSize = roundToMultiple(adjustedSize, workGroupSize * 4);
+                    size_t adjustedWorkSize = roundToMultiple(adjustedSize, workGroupSize * BLOCK_SIZE);
 
-                    size_t globalWorkSizes[] = { adjustedWorkSize / BLOCK_SIZE, adjustedWorkSize / BLOCK_SIZE };
+                    size_t globalWorkSizes[] = { adjustedWorkSize / BLOCK_SIZE, adjustedWorkSize / BLOCK_SIZE }; // each thread processes one block
                     size_t localWorkSizes[] = { workGroupSize, workGroupSize };
 
                     queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
@@ -90,7 +92,6 @@ namespace gpu
                     else
                         queue->enqueueRead(c, result, 0, size * size * sizeof(T));
 
-                    //printArr2D(result, size * size, size);
                     delete a;
                     delete b;
                     delete c;
