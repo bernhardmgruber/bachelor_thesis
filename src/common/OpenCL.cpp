@@ -391,6 +391,14 @@ size_t Kernel::getWorkGroupSize()
     return size;
 }
 
+cl_ulong Kernel::getLocalMemSize()
+{
+    cl_ulong size;
+    error = clGetKernelWorkGroupInfo(kernel, context->device, CL_KERNEL_LOCAL_MEM_SIZE, sizeof(cl_ulong), &size, nullptr);
+    checkError(__LINE__, __FUNCTION__);
+    return size;
+}
+
 cl_kernel Kernel::getCLKernel()
 {
     return kernel;

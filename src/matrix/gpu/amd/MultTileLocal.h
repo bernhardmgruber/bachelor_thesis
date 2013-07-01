@@ -32,12 +32,18 @@ namespace gpu
 
             void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
             {
-                blockSize = workGroupSize;
+                blockSize = workGroupSize = 16;
 
                 if(blockSize < 4)
-                {
+                    throw OpenCLException("Block size must be a larger than or equal to 4");
+
+                cl_ulong localMemAvailable;
+                clGetDeviceInfo(OpenCL::getGPUContext()->getCLDevice(), CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &localMemAvailable, nullptr);
+
+                size_t localMemRequired = (blockSize * 4) * (blockSize * 4) * sizeof(cl_float);
+                if(localMemRequired > localMemAvailable) {
                     stringstream ss;
-                    ss << "Out of Resources! Group Size specified : " << blockSize * blockSize << ". Max Group Size supported on the kernel : " << workGroupSize << endl;
+                    ss << "Required local memory " << localMemRequired << " for given blockSize of " << blockSize << " is larger than the available memory " << localMemAvailable << endl;
                     throw OpenCLException(ss.str());
                 }
 

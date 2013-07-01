@@ -329,6 +329,11 @@ class Kernel
         size_t getWorkGroupSize();
 
         /**
+        * Queries the amount of local memory used by the kernel.
+        */
+        cl_ulong getLocalMemSize();
+
+        /**
          * Gets the internal OpenCL kernel.
          */
         cl_kernel getCLKernel();
