@@ -10,7 +10,7 @@
 #define CONCAT_EXPANED(a, b) CONCAT(a, b)
 
 
-#define FACTOR(row, col, k) + aTile[row].s##k * bTile[k].s##col
+#define FACTOR(row, col, k) + aTile[row][k] * bTile[k][col]
 
 #define FACTOR_2(row, col) FACTOR(row, col, 0) FACTOR(row, col, 1)
 #define FACTOR_4(row, col) FACTOR(row, col, 0) FACTOR(row, col, 1) FACTOR(row, col, 2) FACTOR(row, col, 3)
@@ -29,7 +29,7 @@
 #error "BLOCK_SIZE of " BLOCK_SIZE " is not supported"
 #endif
 
-#define SUM_START(row, col) sum[row].s##col = sum[row].s##col
+#define SUM_START(row, col) sum[row][col] = sum[row][col]
 #define SUM(row, col) SUM_START(row, col) FACTORS(row, col);
 
 #define SUM_2(row) SUM(row, 0) SUM(row, 1)
@@ -49,12 +49,10 @@
 #error "BLOCK_SIZE of " BLOCK_SIZE " is not supported"
 #endif
 
-#define TB CONCAT_EXPANED(T, BLOCK_SIZE)
-
 // Output tile size : BLOCK_SIZE x BLOCK_SIZE = Each thread computes BLOCK_SIZE x BLOCK_SIZE float values
 // Required global threads = (size / BLOCK_SIZE, size / BLOCK_SIZE)
 // This kernel runs on 7xx and CPU as they don't have hardware local memory 
-__kernel void MultTile(__global TB* a, __global TB* b, __global TB* c, uint size)
+__kernel void MultTile(__global T* a, __global T* b, __global T* c, uint size)
 {
     int2 pos = (int2)(get_global_id(0), get_global_id(1));
 
@@ -64,24 +62,25 @@ __kernel void MultTile(__global TB* a, __global TB* b, __global TB* c, uint size
     if(pos.x >= blocks || pos.y >= blocks)
         return;
 
-    TB sum[BLOCK_SIZE];
-#pragma unroll
-    for(int s = 0; s < BLOCK_SIZE; s++)
-        sum[s] = (TB)(0.0);
+    T sum[BLOCK_SIZE][BLOCK_SIZE] = {0};
 
     for(int k = 0; k < size; k = k + BLOCK_SIZE)
     {
-        TB aTile[BLOCK_SIZE];
-        TB bTile[BLOCK_SIZE];
+        T aTile[BLOCK_SIZE][BLOCK_SIZE];
+        T bTile[BLOCK_SIZE][BLOCK_SIZE];
 
 #pragma unroll
-        for(int s = 0; s < BLOCK_SIZE; s++)
-            aTile[s] = a[k / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + s) * blocks];
+        for(int i = 0; i < BLOCK_SIZE; i++)
+#pragma unroll
+            for(int j = 0; j < BLOCK_SIZE; j++)
+                aTile[i][j] = a[(k / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + i) * blocks) * BLOCK_SIZE + j];
 
         //Matrix B is not transposed
 #pragma unroll
-        for(int s = 0; s < BLOCK_SIZE; s++)
-            bTile[s] = b[pos.x + (k + s) * blocks];
+        for(int i = 0; i < BLOCK_SIZE; i++)
+#pragma unroll
+            for(int j = 0; j < BLOCK_SIZE; j++)
+                bTile[i][j] = b[(pos.x + (k + i) * blocks) * BLOCK_SIZE + j];
 
 #pragma unroll
         for(int row = 0; row < BLOCK_SIZE; row++)
@@ -90,6 +89,8 @@ __kernel void MultTile(__global TB* a, __global TB* b, __global TB* c, uint size
     }
 
 #pragma unroll
-    for(int s = 0; s < BLOCK_SIZE; s++)
-        c[pos.x + ((pos.y * BLOCK_SIZE) + s) * blocks] = sum[s];
+    for(int i = 0; i < BLOCK_SIZE; i++)
+#pragma unroll
+        for(int j = 0; j < BLOCK_SIZE; j++)
+            c[(pos.x + ((pos.y * BLOCK_SIZE) + i) * blocks) * BLOCK_SIZE + j] = sum[i][j];
 }

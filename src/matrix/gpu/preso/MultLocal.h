@@ -1,5 +1,4 @@
-#ifndef GPUPRESOMULTTILELOCAL_H
-#define GPUPRESOMULTTILELOCAL_H
+#pragma once
 
 #include "../../../common/utils.h"
 #include "../../../common/GPUAlgorithm.h"
@@ -34,16 +33,13 @@ namespace gpu
             {
                 stringstream ss;
                 ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE;
-                Program* program = context->createProgram("gpu/preso/MultTileLocal.cl", ss.str());
+                Program* program = context->createProgram("gpu/preso/MultLocal.cl", ss.str());
                 kernel = program->createKernel("MultLocal");
                 delete program;
             }
 
             void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
             {
-                cl_ulong localMemAvailable;
-                clGetDeviceInfo(OpenCL::getGPUContext()->getCLDevice(), CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &localMemAvailable, nullptr);
-
                 adjustedSize = roundToMultiple(size, BLOCK_SIZE);
 
                 a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
@@ -120,5 +116,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUPRESOMULTTILELOCAL_H
