@@ -8,7 +8,7 @@
 
 // Matrix A is cached into local memory block 
 // Required global threads = (size / 4, size / 4) 
-__kernel void MultTileLocal(__global const T4 * a, __global const T4 * b, __global T4 * c, int size, __local T4 * aTile)
+__kernel void MultTileLocal(__global const T4 * a, __global const T4 * b, __global T4 * c, uint size, __local T4 * aTile)
 {
     int blockPos = get_local_id(0) + get_local_size(0) * (get_local_id(1) * BLOCK_SIZE); //Should be : localId * (BLOCK_SIZE / 4) (int4)
 
@@ -27,7 +27,7 @@ __kernel void MultTileLocal(__global const T4 * a, __global const T4 * b, __glob
     for(int i = 0; i < (size4 / get_local_size(0)); i++)
     {
         // Calculate global ids of threads from the particular block to load from matrix A depending on i
-        int globalPosA = i * get_local_size(0) + get_local_id(0) + (get_global_id(1) * BLOCK_SIZE) * size4;
+        int globalPosA = i * get_local_size(0) + get_local_id(0) + (get_global_id(1) * BLOCK_SIZE) * get_global_size(0);
 
         // Load values in aTile from matrixA 
         aTile[blockPos + 0 * get_local_size(0)] = a[globalPosA + 0 * size4];
