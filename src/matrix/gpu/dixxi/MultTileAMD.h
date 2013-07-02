@@ -1,5 +1,4 @@
-#ifndef GPUAMDMULTTILE_H
-#define GPUAMDMULTTILE_H
+#pragma once
 
 #include "../../../common/utils.h"
 #include "../../../common/GPUAlgorithm.h"
@@ -7,17 +6,17 @@
 
 namespace gpu
 {
-    namespace amd
+    namespace dixxi
     {
         template<typename T>
-        class MultTile : public GPUAlgorithm<T>, public MatrixAlgorithm
+        class MultTileAMD : public GPUAlgorithm<T>, public MatrixAlgorithm
         {
             public:
-                static const size_t BLOCK_SIZE = 8;
+                static const size_t BLOCK_SIZE = 4;
 
                 const string getName() override
                 {
-                    return "Matrix multiplication (Tiles, AMD)";
+                    return "Matrix multiplication (Tiles, dixxi AMD)";
                 }
 
                 const cl_uint getWorkDimensions() const override
@@ -29,7 +28,7 @@ namespace gpu
                 {
                     stringstream ss;
                     ss << "-DT=" << getTypeName<T>() << " -DBLOCK_SIZE=" << BLOCK_SIZE;
-                    Program* program = context->createProgram("gpu/amd/MultTile.cl", ss.str());
+                    Program* program = context->createProgram("gpu/dixxi/MultTileAMD.cl", ss.str());
                     kernel = program->createKernel("MultTile");
                     delete program;
                 }
@@ -104,7 +103,7 @@ namespace gpu
                     delete kernel;
                 }
 
-                virtual ~MultTile() {}
+                virtual ~MultTileAMD() {}
 
             private:
                 Kernel* kernel;
@@ -115,5 +114,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUAMDMULTTILE_H

@@ -1,5 +1,10 @@
-#define T float
-#define BLOCK_SIZE 4
+#ifndef T
+#error "T must be defined"
+#endif
+
+#ifndef BLOCK_SIZE
+#error "BLOCK_SIZE must be defined"
+#endif
 
 #define CONCAT(a, b) a ## b
 #define CONCAT_EXPANED(a, b) CONCAT(a, b)

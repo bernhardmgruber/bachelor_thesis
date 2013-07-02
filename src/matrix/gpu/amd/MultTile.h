@@ -48,7 +48,7 @@ namespace gpu
                         queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                     }
                     else
-                        queue->enqueueWrite(a, data, size * size * sizeof(T));
+                        queue->enqueueWrite(a, data);
 
                     b = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                     if(adjustedSize != size)
@@ -60,7 +60,7 @@ namespace gpu
                         queue->enqueueWriteRect(b, data + size * size, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                     }
                     else
-                        queue->enqueueWrite(b, data + size * size, size * size * sizeof(T));
+                        queue->enqueueWrite(b, data + size * size);
 
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 }
@@ -90,7 +90,7 @@ namespace gpu
                         queue->enqueueReadRect(c, result, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                     }
                     else
-                        queue->enqueueRead(c, result, 0, size * size * sizeof(T));
+                        queue->enqueueRead(c, result, 0);
 
                     delete a;
                     delete b;
