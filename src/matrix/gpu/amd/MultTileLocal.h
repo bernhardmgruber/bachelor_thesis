@@ -13,6 +13,8 @@ namespace gpu
         class MultTileLocal : public GPUAlgorithm<T>, public MatrixAlgorithm
         {
         public:
+            static const size_t BLOCK_SIZE = 4;
+
             const string getName() override
             {
                 return "Matrix multiplication (Tiles local, AMD)";
@@ -25,9 +27,11 @@ namespace gpu
 
             void init(Context* context) override
             {
-                Program* program = context->createProgram("gpu/amd/MultTileLocal.cl", "-D T4=" + getTypeName<T>() + "4");
-                kernel = program->createKernel("MultTileLocal");
-                delete program;
+                    stringstream ss;
+                    ss << "-DT4=" << getTypeName<T>() << "4" << " -DBLOCK_SIZE=" << BLOCK_SIZE;
+                    Program* program = context->createProgram("gpu/amd/MultTileLocal.cl", ss.str());
+                    kernel = program->createKernel("MultTileLocal");
+                    delete program;
             }
 
             void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override

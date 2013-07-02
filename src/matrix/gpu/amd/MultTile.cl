@@ -1,16 +1,19 @@
-#define TILEX 4
-#define TILEX_SHIFT 2
-#define TILEY 4
-#define TILEY_SHIFT 2
+#ifndef BLOCK_SIZE
+#error "BLOCK_SIZE must be defined"
+#endif
 
-/* Output tile size : 4x4 = Each thread computes 16 float values*/
-/* Required global threads = (widthC / 4, heightC / 4) */
-/* This kernel runs on 7xx and CPU as they don't have hardware local memory */
-__kernel void MultTile(__global T4* a, __global T4* b, __global T4* c, uint size)
+#ifndef T4
+#error "T4 must be defined"
+#endif
+
+// Output tile size : 4x4 = Each thread computes 16 float values
+// Required global threads = (widthC / 4, heightC / 4) 
+// This kernel runs on 7xx and CPU as they don't have hardware local memory 
+__kernel void MultTile(__global const T4* a, __global const T4* b, __global T4* c, uint size)
 {
     int2 pos = (int2)(get_global_id(0), get_global_id(1));
 
-    /* Vectorization of input Matrices reduces their width by a factor of 4 */
+    // Vectorization of input Matrices reduces their width by a factor of 4 
     uint size4 = size / 4;
 
     if(pos.x >= size4 || pos.y >= size4)
@@ -28,7 +31,7 @@ __kernel void MultTile(__global T4* a, __global T4* b, __global T4* c, uint size
         T4 tempA2 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 2) * size4];
         T4 tempA3 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 3) * size4];
 
-        //Matrix B is not transposed
+        // Matrix B is not transposed
         T4 tempB0 = b[pos.x + (i + 0) * size4];
         T4 tempB1 = b[pos.x + (i + 1) * size4];
         T4 tempB2 = b[pos.x + (i + 2) * size4];

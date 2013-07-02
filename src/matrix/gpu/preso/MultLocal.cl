@@ -1,35 +1,42 @@
+#ifndef BLOCK_SIZE
+#error "BLOCK_SIZE must be defined"
+#endif
+
+#ifndef T
+#error "T must be defined"
+#endif
+
 __kernel void MultLocal(__global T* A, __global T* B, __global T* C, uint size)
 {
-    int bx = get_group_id(0);
-    int by = get_group_id(1);
-    int tx = get_local_id(0);
-    int ty = get_local_id(1);
+    int groupX = get_group_id(0);
+    int groupY = get_group_id(1);
+    int localX = get_local_id(0);
+    int localY = get_local_id(1);
 
-    int aBegin = size * BLOCK_SIZE * by;
+    int aBegin = size * (BLOCK_SIZE * groupY);
     int aEnd = aBegin + size - 1;
     int aStep = BLOCK_SIZE;
 
-    int bBegin = BLOCK_SIZE * bx;
+    int bBegin = BLOCK_SIZE * groupX;
     int bStep = BLOCK_SIZE * size;
 
-    float Csub = 0.0;
+    T sum = 0.0;
 
     for(int a = aBegin, b = bBegin; a <= aEnd; a += aStep, b += bStep)
     {
-        __local T as[BLOCK_SIZE][BLOCK_SIZE];
-        __local T bs[BLOCK_SIZE][BLOCK_SIZE];
+        __local T aTile[BLOCK_SIZE][BLOCK_SIZE];
+        __local T bTile[BLOCK_SIZE][BLOCK_SIZE];
 
-        as[ty][tx] = A[a + size * ty + tx];
-        bs[ty][tx] = B[b + size * ty + tx];
+        aTile[localY][localX] = A[size * localY + localX + a];
+        bTile[localY][localX] = B[size * localY + localX + b];
 
         barrier(CLK_LOCAL_MEM_FENCE);
 
         for(int k = 0; k < BLOCK_SIZE; k++)
-            Csub += as[ty][k] * bs[k][tx];
+            sum += aTile[localY][k] * bTile[k][localX];
 
         barrier(CLK_LOCAL_MEM_FENCE);
     }
 
-    int c = size * BLOCK_SIZE * by + BLOCK_SIZE * bx;
-    C[c + size * ty + tx] = Csub;
+    C[size * BLOCK_SIZE * groupY + BLOCK_SIZE * groupX + size * localY + localX] = sum;
 }
