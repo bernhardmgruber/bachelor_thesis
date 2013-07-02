@@ -1,21 +1,28 @@
-#ifndef GPUAMDMULTTILELOCAL_H
-#define GPUAMDMULTTILELOCAL_H
+#ifndef GPUPRESOMULTTILELOCAL_H
+#define GPUPRESOMULTTILELOCAL_H
 
 #include "../../../common/utils.h"
 #include "../../../common/GPUAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
 
+#include <sstream>
+
 namespace gpu
 {
-    namespace amd
+    namespace preso
     {
+        /**
+        * From: http://www.cs.nyu.edu/~lerner/spring12/Preso07-OpenCL.pdf
+        */
         template<typename T>
-        class MultTileLocal : public GPUAlgorithm<T>, public MatrixAlgorithm
+        class MultLocal : public GPUAlgorithm<T>, public MatrixAlgorithm
         {
+            const static int BLOCK_SIZE = 16;
+
         public:
             const string getName() override
             {
-                return "Matrix multiplication (Tiles local, AMD)";
+                return "Matrix multiplication (Tiles local, Preso)";
             }
 
             const cl_uint getWorkDimensions() const override
@@ -25,29 +32,19 @@ namespace gpu
 
             void init(Context* context) override
             {
-                Program* program = context->createProgram("gpu/amd/MultTileLocal.cl", "-D T4=" + getTypeName<T>() + "4");
-                kernel = program->createKernel("MultTileLocal");
+                stringstream ss;
+                ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE;
+                Program* program = context->createProgram("gpu/preso/MultTileLocal.cl", ss.str());
+                kernel = program->createKernel("MultLocal");
                 delete program;
             }
 
             void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
             {
-                blockSize = workGroupSize;
-
-                if(blockSize < 4)
-                    throw OpenCLException("Block size must be a larger than or equal to 4");
-
                 cl_ulong localMemAvailable;
                 clGetDeviceInfo(OpenCL::getGPUContext()->getCLDevice(), CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &localMemAvailable, nullptr);
 
-                size_t localMemRequired = (blockSize * 4) * (blockSize * 4) * sizeof(cl_float);
-                if(localMemRequired > localMemAvailable) {
-                    stringstream ss;
-                    ss << "Required local memory " << localMemRequired << " for given blockSize of " << blockSize << " is larger than the available memory " << localMemAvailable << endl;
-                    throw OpenCLException(ss.str());
-                }
-
-                adjustedSize = roundToMultiple(size, blockSize * 4);
+                adjustedSize = roundToMultiple(size, BLOCK_SIZE);
 
                 a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 if(adjustedSize != size)
@@ -82,10 +79,9 @@ namespace gpu
                 kernel->setArg(1, b);
                 kernel->setArg(2, c);
                 kernel->setArg(3, (cl_uint)adjustedSize);
-                kernel->setArg(4, (blockSize * 4) * (blockSize * 4) * sizeof(cl_float), nullptr);
 
-                size_t globalWorkSizes[] = { adjustedSize / 4, adjustedSize / 4 };
-                size_t localWorkSizes[] = { blockSize, blockSize };
+                size_t globalWorkSizes[] = { adjustedSize, adjustedSize };
+                size_t localWorkSizes[] = { BLOCK_SIZE, BLOCK_SIZE };
 
                 queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
             }
@@ -112,7 +108,7 @@ namespace gpu
                 delete kernel;
             }
 
-            virtual ~MultTileLocal() {}
+            virtual ~MultLocal() {}
 
         private:
             Kernel* kernel;
@@ -125,4 +121,4 @@ namespace gpu
     }
 }
 
-#endif // GPUAMDMULTTILELOCAL_H
+#endif // GPUPRESOMULTTILELOCAL_H
