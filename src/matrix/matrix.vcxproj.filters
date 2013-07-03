@@ -75,6 +75,18 @@
     <ClInclude Include="gpu\dixxi\Mult2DCoalesced.h">
       <Filter>gpu\dixxi</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\preso\MultLocal.h">
+      <Filter>gpu\preso</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultTileAMD.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultTileAMDArr.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultTileLocalAMD.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\dixxi\MultHybrid.cl">
@@ -102,6 +114,18 @@
       <Filter>gpu\dixxi</Filter>
     </None>
     <None Include="gpu\dixxi\Mult2DCoalesced.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\preso\MultLocal.cl">
+      <Filter>gpu\preso</Filter>
+    </None>
+    <None Include="gpu\dixxi\MultTileAMD.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\MultTileAMDArr.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\MultTileLocalAMD.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
   </ItemGroup>
@@ -132,6 +156,9 @@
     </Filter>
     <Filter Include="gpu\amdblas">
       <UniqueIdentifier>{8ae454b3-4c7e-49fe-9702-56dcb565d4f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\preso">
+      <UniqueIdentifier>{71c8ada8-f3d5-40bc-9a09-60a919bd5acc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

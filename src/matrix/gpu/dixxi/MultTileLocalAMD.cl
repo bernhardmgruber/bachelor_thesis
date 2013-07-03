@@ -30,7 +30,8 @@ __kernel void MultTileLocal(__global const T4 * a, __global const T4 * b, __glob
         int globalPosA = (get_global_id(1) * BLOCK_SIZE) * get_global_size(0) + tileIndex * get_local_size(0) + get_local_id(0);
 
         // Calculate global ids of threads from the particular block to load from matrix B depending on tileIndex
-        int globalPosB = get_global_id(0) + ((tileIndex * get_local_size(0)) * BLOCK_SIZE) * get_global_size(0);
+        int globalPosB = ((tileIndex * get_local_size(1) + get_local_id(1)) * BLOCK_SIZE) * get_global_size(0) + get_global_id(0);
+
 
         // Load values in aTile from matrixA 
         aTile[tilePos + 0 * get_local_size(0)] = a[globalPosA + 0 * size4];
@@ -45,6 +46,23 @@ __kernel void MultTileLocal(__global const T4 * a, __global const T4 * b, __glob
         bTile[tilePos + 3 * get_local_size(0)] = b[globalPosB + 3 * size4];
 
         barrier(CLK_LOCAL_MEM_FENCE);
+
+        //if(get_global_id(0) == 0 && get_global_id(1) == 0) {
+        //    printf("aTile at tileIndex =  %d\n", tileIndex);
+        //    for(int y = 0; y < get_local_size(1) * BLOCK_SIZE; y++) {
+        //        for(int x = 0; x < get_local_size(0); x++)
+        //            printf("%.0v4f ", aTile[y * get_local_size(0) + x]);
+        //        printf("\n");
+        //    }
+
+        //    printf("bTile at tileIndex =  %d\n", tileIndex);
+        //    for(int y = 0; y < get_local_size(1) * BLOCK_SIZE; y++) {
+        //        for(int x = 0; x < get_local_size(0); x++)
+        //            printf("%.0v4f ", bTile[y * get_local_size(0) + x]);
+        //        printf("\n");
+        //    }
+        //    printf("\n");
+        //}
 
         // This loop runs for number of threads in horizontal direction in the block of A 
         for(int j = 0; j < get_local_size(0); j++)
