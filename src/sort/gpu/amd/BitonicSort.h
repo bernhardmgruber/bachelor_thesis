@@ -1,7 +1,6 @@
-#ifndef AMDBITONICSORT_H
-#define AMDBITONICSORT_H
+#pragma once
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 using namespace std;
@@ -14,7 +13,7 @@ namespace gpu
          * From: AMD Stream SDK Samples
          */
         template<typename T>
-        class BitonicSort : public GPUAlgorithm<T>, public SortAlgorithm
+        class BitonicSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             public:
                 const string getName() override
@@ -27,20 +26,20 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     program = context->createProgram("gpu/amd/BitonicSort.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("BitonicSort");
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     in = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
                     queue->enqueueWrite(in, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     /*for (size_t length = 1; length < size; length <<= 1)
                         for (size_t inc = length; inc > 0; inc >>= 1)
@@ -159,7 +158,7 @@ namespace gpu
                     return SDK_SUCCESS;*/
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(in, result);
                     delete in;
@@ -179,5 +178,3 @@ namespace gpu
         };
     }
 }
-
-#endif // AMDBITONICSORT_H

@@ -1,5 +1,4 @@
-#ifndef MATRIXPLUGIN_H
-#define MATRIXPLUGIN_H
+#pragma once
 
 #include <stdlib.h>
 #include <sstream>
@@ -91,5 +90,3 @@ inline bool MatrixPlugin<float>::compare(float a, float b)
 {
     return fabs(a - b) < 0.001;
 }
-
-#endif // MATRIXPLUGIN_H

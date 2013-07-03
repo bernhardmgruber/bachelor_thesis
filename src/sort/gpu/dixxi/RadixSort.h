@@ -1,7 +1,6 @@
-#ifndef GPUDIXXIRADIXSORT_H
-#define GPUDIXXIRADIXSORT_H
+#pragma once
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 namespace gpu
@@ -9,7 +8,7 @@ namespace gpu
     namespace dixxi
     {
         template<typename T>
-        class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
+        class RadixSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             public:
                 static const size_t RADIX = 4;
@@ -25,7 +24,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     cout << context->getInfo<cl_uint>(CL_DEVICE_MAX_ATOMIC_COUNTERS_EXT) << endl;
 
@@ -43,14 +42,14 @@ namespace gpu
                     histogram = context->createBuffer(CL_MEM_READ_WRITE, sizeof(cl_uint) * BUCKETS);
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     src = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * size);
                     queue->enqueueWrite(src, data);
                     dest = context->createBuffer(CL_MEM_WRITE_ONLY, sizeof(T) * size);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     for(size_t bits = 0; bits < sizeof(T) * 8 ; bits += RADIX)
                     {
@@ -112,7 +111,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(dest, result);
                     delete dest;
@@ -140,5 +139,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUDIXXIRADIXSORT_H

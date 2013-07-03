@@ -1,5 +1,4 @@
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
 
 #ifdef _WIN32
 #include <windows.h>
@@ -24,5 +23,3 @@ class Timer
         #endif
         double overhead;
 };
-
-#endif // TIMER_H

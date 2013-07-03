@@ -25,15 +25,15 @@ int main()
         Runner<cl_uint, ScanPlugin> runner(3, sizes.begin(), sizes.end());
 
 
-        runner.run<cpu::Scan>(RunType::CPU);
+        runner.run<cpu::Scan>();
 
-        //runner.run<gpu::clpp::Scan>(RunType::CL_GPU, false); // not working
-        runner.run<gpu::gpugems::NaiveScan>(RunType::CL_GPU, false);
-        runner.run<gpu::gpugems::WorkEfficientScan>(RunType::CL_GPU, false);
-        runner.run<gpu::gpugems::LocalScan>(RunType::CL_GPU, false);
-        runner.run<gpu::apple::Scan>(RunType::CL_GPU, false);
-        //runner.run<gpu::dixxi::ScanTask>(RunType::CL_GPU, false);
-        runner.run<gpu::nvidia::Scan>(RunType::CL_GPU, false);
+        //runner.run<gpu::clpp::Scan>(CLRunType::GPU, false); // not working
+        runner.run<gpu::gpugems::NaiveScan>(CLRunType::GPU, false);
+        runner.run<gpu::gpugems::WorkEfficientScan>(CLRunType::GPU, false);
+        runner.run<gpu::gpugems::LocalScan>(CLRunType::GPU, false);
+        runner.run<gpu::apple::Scan>(CLRunType::GPU, false);
+        //runner.run<gpu::dixxi::ScanTask>(CLRunType::GPU, false);
+        runner.run<gpu::nvidia::Scan>(CLRunType::GPU, false);
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");

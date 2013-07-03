@@ -1,8 +1,7 @@
-#ifndef GPUDIXXIMULT2DCOALESCED_H
-#define GPUDIXXIMULT2DCOALESCED_H
+#pragma once
 
 #include "../../../common/utils.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
 
 namespace gpu
@@ -10,7 +9,7 @@ namespace gpu
     namespace dixxi
     {
         template<typename T>
-        class Mult2DCoalesced : public GPUAlgorithm<T>, public MatrixAlgorithm
+        class Mult2DCoalesced : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
                 const string getName() override
@@ -23,14 +22,14 @@ namespace gpu
                     return 2;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/dixxi/Mult2DCoalesced.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("Mult");
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     elementCount = size * size;
                     adjustedSize = roundToMultiple(size, workGroupSize);
@@ -63,7 +62,7 @@ namespace gpu
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedElementCount * sizeof(T));
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     kernel->setArg(0, a);
                     kernel->setArg(1, b);
@@ -76,7 +75,7 @@ namespace gpu
                     queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     if(adjustedSize != size)
                     {
@@ -109,5 +108,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUDIXXIMULT2DCOALESCED_H

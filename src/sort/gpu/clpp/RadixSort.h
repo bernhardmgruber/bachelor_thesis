@@ -1,7 +1,6 @@
-#ifndef GPUCLPPRADIXSORT_H
-#define GPUCLPPRADIXSORT_H
+#pragma once
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 #include "clpp/clppSort_RadixSortGPU.h"
@@ -13,7 +12,7 @@ namespace gpu
     namespace clpp
     {
         template<typename T>
-        class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
+        class RadixSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             public:
                 const string getName() override
@@ -26,7 +25,7 @@ namespace gpu
                     return true;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     clppProgram::setBasePath("../common/libs/clpp/clpp/");
                     clppcontext.setup(0, 0);
@@ -34,17 +33,17 @@ namespace gpu
                     s = new clppSort_RadixSortGPU(&clppcontext, 0, sizeof(T) * 8, true);
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     s->pushDatas(data, size);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     s->sort();
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     s->popDatas();
                 }
@@ -63,4 +62,3 @@ namespace gpu
     }
 }
 
-#endif // GPUCLPPRADIXSORT_H

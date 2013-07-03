@@ -1,5 +1,4 @@
-#ifndef QUICKSORT_H
-#define QUICKSORT_H
+#pragma once
 
 #include "../../common/CPUAlgorithm.h"
 #include "../SortAlgorithm.h"
@@ -74,4 +73,3 @@ namespace cpu
             T* data;
     };
 }
-#endif // QUICKSORT_H

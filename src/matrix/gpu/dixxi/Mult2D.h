@@ -1,8 +1,7 @@
-#ifndef GPUDIXXIMULT2D_H
-#define GPUDIXXIMULT2D_H
+#pragma once
 
 #include "../../../common/utils.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
 
 namespace gpu
@@ -10,7 +9,7 @@ namespace gpu
     namespace dixxi
     {
         template<typename T>
-        class Mult2D : public GPUAlgorithm<T>, public MatrixAlgorithm
+        class Mult2D : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
                 const string getName() override
@@ -23,14 +22,14 @@ namespace gpu
                     return 2;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/dixxi/Mult2D.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("Mult");
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     size_t elementCount = size * size;
 
@@ -43,7 +42,7 @@ namespace gpu
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, elementCount * sizeof(T));
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     kernel->setArg(0, a);
                     kernel->setArg(1, b);
@@ -58,7 +57,7 @@ namespace gpu
                     queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(c, result, 0, size * size * sizeof(T));
 					delete a;
@@ -81,5 +80,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUDIXXIMULT2D_H

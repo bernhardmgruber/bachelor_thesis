@@ -18,9 +18,6 @@
     <ClInclude Include="..\common\CPUAlgorithm.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\GPUAlgorithm.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\OpenCL.h">
       <Filter>common</Filter>
     </ClInclude>
@@ -86,6 +83,9 @@
     </ClInclude>
     <ClInclude Include="gpu\dixxi\MultTileLocalAMD.h">
       <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\CLAlgorithm.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,4 @@
-#ifndef TIMSORT_H
-#define TIMSORT_H
+#pragma once
 
 #include "timsort.hpp"
 
@@ -35,6 +34,3 @@ namespace cpu
             virtual ~TimSort() {}
     };
 }
-
-
-#endif // TIMSORT_H

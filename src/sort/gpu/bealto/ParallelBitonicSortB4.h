@@ -1,9 +1,8 @@
-#ifndef PARALLELBITONICSORTB4_H
-#define PARALLELBITONICSORTB4_H
+#pragma once
 
 #include <algorithm>
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 using namespace std;
@@ -16,7 +15,7 @@ namespace gpu
          * From: http://www.bealto.com/gpu-sorting_intro.html
          */
         template<typename T>
-        class ParallelBitonicSortB4 : public GPUAlgorithm<T>, public SortAlgorithm
+        class ParallelBitonicSortB4 : public CLAlgorithm<T>, public SortAlgorithm
         {
             public:
                 const string getName()
@@ -29,7 +28,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/bealto/ParallelBitonicSortB4.cl", "-D T=" + getTypeName<T>());
                     kernel2 = program->createKernel("ParallelBitonicSortB2");
@@ -37,13 +36,13 @@ namespace gpu
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
                     queue->enqueueWrite(buffer, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     for (size_t length=1; length<size; length<<=1)
                     {
@@ -79,7 +78,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(buffer, result);
                     delete buffer;
@@ -100,5 +99,3 @@ namespace gpu
         };
     }
 }
-
-#endif // PARALLELBITONICSORTB4_H

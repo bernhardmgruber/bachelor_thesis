@@ -93,7 +93,7 @@ OpenCLException::OpenCLException(string msg)
 
 }
 
-const char* OpenCLException::what() throw()
+const char* OpenCLException::what() const throw()
 {
     return msg.c_str();
 }

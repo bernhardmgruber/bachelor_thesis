@@ -1,8 +1,7 @@
-#ifndef GPUDIXXIMULTBLOCK_H
-#define GPUDIXXIMULTBLOCK_H
+#pragma once
 
 #include "../../../common/utils.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
 
 namespace gpu
@@ -10,7 +9,7 @@ namespace gpu
     namespace dixxi
     {
         template<typename T>
-        class MultBlock : public GPUAlgorithm<T>, public MatrixAlgorithm
+        class MultBlock : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
                 const string getName() override
@@ -23,14 +22,14 @@ namespace gpu
                     return 2;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/dixxi/MultBlock.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("MultBlock");
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     if(workGroupSize > 8)
                         workGroupSize = 8;
@@ -65,7 +64,7 @@ namespace gpu
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     if(workGroupSize > 8)
                         workGroupSize = 8;
@@ -83,7 +82,7 @@ namespace gpu
                     queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     if(adjustedSize != size)
                     {
@@ -115,5 +114,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUDIXXIMULT_H

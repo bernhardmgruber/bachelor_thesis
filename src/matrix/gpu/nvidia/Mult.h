@@ -1,8 +1,7 @@
-#ifndef GPUNVIDIAMULT_H
-#define GPUNVIDIAMULT_H
+#ifn#pragma once
 
 #include "../../../common/utils.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
 
 #include <sstream>
@@ -14,7 +13,7 @@ namespace gpu
     namespace nvidia
     {
         template<typename T>
-        class Mult : public GPUAlgorithm<T>, public MatrixAlgorithm
+        class Mult : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
                 const static size_t BLOCK_SIZE = 16;
@@ -24,7 +23,7 @@ namespace gpu
                     return "Matrix multiplication (NVIDIA)";
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     stringstream ss;
                     ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE;
@@ -34,7 +33,7 @@ namespace gpu
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     adjustedSize = roundToMultiple(size, BLOCK_SIZE);
 
@@ -65,7 +64,7 @@ namespace gpu
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     kernel->setArg(0, c);
                     kernel->setArg(1, a);
@@ -80,7 +79,7 @@ namespace gpu
                     queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     if(adjustedSize != size)
                     {
@@ -115,5 +114,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUNVIDIAMULT_H

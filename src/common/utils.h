@@ -1,5 +1,4 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
 #include <CL/cl.h>
 
@@ -82,4 +81,3 @@ unsigned int ctz(unsigned int);
 */
 unsigned int rootPowerOfTwo(unsigned int value, unsigned int root);
 
-#endif // UTILS_H

@@ -1,7 +1,5 @@
-#ifndef RUNNER_H
-#define RUNNER_H
+#pragma once
 
-#include <typeinfo>
 #include <iomanip>
 #include <map>
 #include <algorithm>
@@ -15,18 +13,17 @@
 
 #include "OpenCL.h"
 #include "CPUAlgorithm.h"
-#include "GPUAlgorithm.h"
+#include "CLAlgorithm.h"
 #include "Timer.h"
 #include "utils.h"
 #include "StatsWriter.h"
 
 using namespace std;
 
-enum RunType
+enum class CLRunType
 {
     CPU,
-    CL_CPU,
-    CL_GPU
+    GPU
 };
 
 /**
@@ -49,6 +46,9 @@ public:
     }
 #endif
 
+    /**
+    * Constructor
+    */
     template <typename I>
     Runner(size_t iterations, const I begin, const I end, bool validate = true)
         : iterations(iterations), validate(validate)
@@ -84,38 +84,58 @@ public:
     * Runs the given algorithm once for every provided problem size.
     * The results of the runs are printed to stdout.
     */
-    template <template <typename> class Algorithm>
-    void run(RunType runType, bool useMultipleWorkGroupSizes = true)
+    template <template <typename> class CPUAlgorithm>
+    void run()
     {
-        checkRunTypeAvailable(runType);
-
-        Algorithm<T>* alg = new Algorithm<T>();
-        Range* r = new Range(runType, alg->getName());
+        CPUAlgorithm<T>* alg = new CPUAlgorithm<T>();
+        Range* r = new Range(alg->getName());
 
         for(size_t size : sizes)
         {
-            Stats* s;
-            switch(runType)
-            {
-            case CPU:
-                s = runCPU(alg, size);
-                break;
-            case CL_CPU:
-                if(!hasCLCPU())
-                    throw OpenCLException("No CPU context initialized!");
-                s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
-                break;
-            case CL_GPU:
-                s = runCL(alg, gpuContext, gpuQueue, useMultipleWorkGroupSizes, size);
-                break;
-            }
+            Stats* s = runCPU(alg, size);
             r->stats.push_back(s);
         }
         ranges.push_back(r);
 
         delete alg;
 
-        printRange(r, runType);
+        printRange(r, RunType::CPU);
+    }
+
+    /**
+    * Runs the given algorithm once for every provided problem size.
+    * The results of the runs are printed to stdout.
+    */
+    template <template <typename> class Algorithm>
+    void run(CLRunType runType, bool useMultipleWorkGroupSizes = true)
+    {
+        checkRunTypeAvailable(runType);
+
+        Algorithm<T>* alg = new Algorithm<T>();
+        switch(runType)
+        {
+        case CLRunType::CPU:
+            alg->setContext(cpuContext);
+            alg->setCommandQueue(cpuQueue);
+            break;
+        case CLRunType::GPU:
+            alg->setContext(gpuContext);
+            alg->setCommandQueue(gpuQueue);
+            break;
+        }
+
+        Range* r = new Range(runType, alg->getName());
+
+        for(size_t size : sizes)
+        {
+            Stats* s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
+            r->stats.push_back(s);
+        }
+        ranges.push_back(r);
+
+        delete alg;
+
+        printRange(r, runType == CLRunType::CPU ? RunType::CL_CPU : RunType::CL_GPU);
     }
 
     /**
@@ -199,6 +219,13 @@ public:
     }
 
 private:
+    enum class RunType
+    {
+        CPU,
+        CL_CPU,
+        CL_GPU
+    };
+
     struct Stats
     {
         const string taskDescription;
@@ -280,9 +307,23 @@ private:
 
         vector<Stats*> stats;
 
-        Range(RunType runType, string algorithmName)
-            : runType(runType), algorithmName(algorithmName)
+        Range(string algorithmName)
+            : runType(RunType::CPU), algorithmName(algorithmName)
         {
+        }
+
+        Range(CLRunType runType, string algorithmName)
+            : algorithmName(algorithmName)
+        {
+            switch(runType)
+            {
+            case CLRunType::CPU:
+                this->runType = RunType::CL_CPU;
+                break;
+            case CLRunType::GPU:
+                this->runType = RunType::CL_GPU;
+                break;
+            }
         }
 
         ~Range()
@@ -385,11 +426,6 @@ private:
         }
     }
 
-    CPURun* runCPU(GPUAlgorithm<T>* alg, size_t size)
-    {
-        throw runtime_error(string(__FUNCTION__) + " should never be called!");
-    }
-
     /**
     * Runs an algorithm on the CPU with the given problem size.
     */
@@ -440,15 +476,10 @@ private:
         return run;
     }
 
-    CLBatch* runCL(CPUAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
-    {
-        throw runtime_error(string(__FUNCTION__) + " should never be called!");
-    }
-
     /**
     * Runs an algorithm using OpenCL with the given problem size.
     */
-    CLBatch* runCL(GPUAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
+    CLBatch* runCL(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
     {
         // create algorithm and batch stats, prepare input
         CLBatch* batch = new CLBatch(plugin->getTaskDescription(size), size);
@@ -458,7 +489,7 @@ private:
 
         // run custom initialization
         timer.start();
-        alg->init(context);
+        alg->init();
         batch->initTime = timer.stop();
 
 
@@ -511,7 +542,7 @@ private:
             return batch;
     }
 
-    inline CLRun uploadRunDownload(GPUAlgorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
+    inline CLRun uploadRunDownload(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
     {
         CLRun run;
         run.wgSize = workGroupSize;
@@ -526,19 +557,19 @@ private:
 
                 // upload data
                 timer.start();
-                alg->upload(context, queue, workGroupSize, data, size);
+                alg->upload(workGroupSize, data, size);
                 queue->finish();
                 iteration.uploadTime = timer.stop();
 
                 // run algorithm
                 timer.start();
-                alg->run(queue, workGroupSize, size);
+                alg->run(workGroupSize, size);
                 queue->finish();
                 iteration.runTime = timer.stop();
 
                 // download data
                 timer.start();
-                alg->download(queue, result, size);
+                alg->download(result, size);
                 queue->finish();
                 iteration.downloadTime = timer.stop();
 
@@ -548,10 +579,10 @@ private:
                 run.iterations.push_back(iteration);
             }
         }
-        catch(OpenCLException& e)
+        catch(const OpenCLException& e)
         {
             run.exceptionOccured = true;
-            run.exceptionMsg = e.what();
+            run.exceptionMsg = string(e.what());
         }
         catch(...)
         {
@@ -594,35 +625,35 @@ private:
         return run;
     }
 
-    string runTypeToString(RunType runType)
+    const string runTypeToString(const RunType runType) const
     {
         switch(runType)
         {
-        case CPU:
+        case RunType::CPU:
+            return "OpenCL CPU";
+        case RunType::CL_GPU:
+            return "OpenCL GPU";
+        case RunType::CL_CPU:
             return "CPU";
-        case CL_CPU:
-            return "CPU CL";
-        case CL_GPU:
-            return "GPU CL";
         }
 
-        return "unkown";
+        throw exception("Invalid RunType");
     }
 
     /**
     * Checks if the context necessary to run an algorithm is available.
     */
-    void checkRunTypeAvailable(RunType runType)
+    void checkRunTypeAvailable(CLRunType runType)
     {
-        if(runType == CL_GPU && !hasCLGPU())
+        if(runType == CLRunType::GPU && !hasCLGPU())
             throw OpenCLException("No GPU context initialized!");
-        if(runType == CL_CPU && !hasCLCPU())
+        if(runType == CLRunType::CPU && !hasCLCPU())
             throw OpenCLException("No CPU context initialized!");
     }
 
     void writeDeviceInfo(Context* context, string fileName, char sep)
     {
-        StatsWriter::Write(context, fileName, sep);
+        StatsWriter::write(context, fileName, sep);
     }
 
     Context* gpuContext;
@@ -645,5 +676,3 @@ private:
 
     bool validate;
 };
-
-#endif // RUNNER_H

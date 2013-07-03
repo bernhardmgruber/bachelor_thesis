@@ -1,8 +1,7 @@
-#ifndef GPUDIXXIMULTHYBRID_H
-#define GPUDIXXIMULTHYBRID_H
+#pragma once
 
 #include "../../../common/utils.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
 
 namespace gpu
@@ -10,7 +9,7 @@ namespace gpu
     namespace dixxi
     {
         template<typename T>
-        class MultHybrid : public GPUAlgorithm<T>, public MatrixAlgorithm
+        class MultHybrid : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
                 const string getName() override
@@ -23,7 +22,7 @@ namespace gpu
                     return 2;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     if(context->getInfo<cl_bool>(CL_DEVICE_IMAGE_SUPPORT) == false)
                         throw OpenCLException("Images are not supported!");
@@ -33,7 +32,7 @@ namespace gpu
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     cl_image_desc descriptor;
                     memset(&descriptor, 0, sizeof(cl_image_desc));
@@ -61,7 +60,7 @@ namespace gpu
                     queue->enqueueUnmap(b, mappedB);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     workGroupSize = 16;
 
@@ -77,7 +76,7 @@ namespace gpu
                     queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(c, result);
 
@@ -102,5 +101,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUDIXXIMULTHYBRID_H

@@ -1,8 +1,7 @@
-#ifndef GPUGEMSNAIVESCAN_H
-#define GPUGEMSNAIVESCAN_H
+#pragma once
 
 #include "../../ScanAlgorithm.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../../common/utils.h"
 
 namespace gpu
@@ -14,7 +13,7 @@ namespace gpu
          * Chapter: 39.2.1 A Naive Parallel Scan
          */
         template<typename T>
-        class NaiveScan : public GPUAlgorithm<T>, public ScanAlgorithm
+        class NaiveScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
             public:
                 const string getName() override
@@ -27,14 +26,14 @@ namespace gpu
                     return true;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/gpugems/NaiveScan.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel("NaiveScan");
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     bufferSize = pow2roundup(size);
 
@@ -45,7 +44,7 @@ namespace gpu
                     queue->enqueueCopy(source, destination);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     for(size_t dpower = 1; dpower < bufferSize; dpower <<= 1)
                     {
@@ -61,7 +60,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(source, result, 0, size * sizeof(T));
                     delete source;
@@ -83,6 +82,3 @@ namespace gpu
         };
     }
 }
-
-
-#endif // GPUGEMSNAIVESCAN_H

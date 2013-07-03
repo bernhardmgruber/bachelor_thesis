@@ -1,7 +1,6 @@
-#ifndef GPUNVIDIABITONICSORT_H
-#define GPUNVIDIABITONICSORT_H
+#pragma once
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 #include <sstream>
@@ -13,7 +12,7 @@ namespace gpu
     namespace nvidia
     {
         template<typename T>
-        class BitonicSort : public GPUAlgorithm<T>, public SortAlgorithm
+        class BitonicSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             public:
                 const static size_t LOCAL_SIZE_LIMIT = 512;
@@ -28,7 +27,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     stringstream ss;
                     ss << "-D T=" << getTypeName<T>() << " -D LOCAL_SIZE_LIMIT=" << LOCAL_SIZE_LIMIT;
@@ -48,7 +47,7 @@ namespace gpu
                         throw OpenCLException("Minimum required work group size: " + (LOCAL_SIZE_LIMIT / 2));
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     bufferSize = pow2roundup(size);
 
@@ -60,7 +59,7 @@ namespace gpu
                     queue->enqueueWrite(d_InputKey, data, 0, size * sizeof(T));
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     size_t batch = 1;
                     size_t arrayLength = bufferSize;
@@ -117,7 +116,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(d_OutputKey, result, 0, size * sizeof(T));
 
@@ -152,5 +151,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUNVIDIABITONICSORT_H

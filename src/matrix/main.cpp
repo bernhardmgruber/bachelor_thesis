@@ -54,36 +54,36 @@ int main()
         //        runner.run<cpu::cblas::Mult>(RunType::CPU);
         //        runner.writeStats("stats.csv");
 
-        //runner.run<gpu::dixxi::Mult1D>(RunType::CL_GPU, false);
+        //runner.run<gpu::dixxi::Mult1D>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::Mult2D>(RunType::CL_GPU, false);
+        //        runner.run<gpu::dixxi::Mult2D>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::Mult2DCoalesced>(RunType::CL_GPU, false);
+        //        runner.run<gpu::dixxi::Mult2DCoalesced>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::MultBlock>(RunType::CL_GPU, false);
+        //        runner.run<gpu::dixxi::MultBlock>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::MultImage>(RunType::CL_GPU, false);
+        //        runner.run<gpu::dixxi::MultImage>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::MultHybrid>(RunType::CL_GPU, false);
+        //        runner.run<gpu::dixxi::MultHybrid>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
-        //runner.run<gpu::dixxi::MultTileAMD>(RunType::CL_GPU, false);
+        //runner.run<gpu::dixxi::MultTileAMD>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
-        //runner.run<gpu::dixxi::MultTileAMDArr>(RunType::CL_GPU, false);
+        //runner.run<gpu::dixxi::MultTileAMDArr>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
-        runner.run<gpu::dixxi::MultTileLocalAMD>(RunType::CL_GPU, false);
+        runner.run<gpu::dixxi::MultTileLocalAMD>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
         //
-        //runner.run<gpu::amdblas::Mult>(RunType::CL_GPU, false); // crashes in x64 on invocation, maybe compiler issue? samples also crash, when compiled with gcc, provided binaries of samples work
+        //runner.run<gpu::amdblas::Mult>(CLRunType::GPU, false); // crashes in x64 on invocation, maybe compiler issue? samples also crash, when compiled with gcc, provided binaries of samples work
 
-        //runner.run<gpu::amd::MultTile>(RunType::CL_GPU, false);
+        //runner.run<gpu::amd::MultTile>(CLRunType::GPU, false);
         //runner.writeStats("stats.csv");
-        runner.run<gpu::amd::MultTileLocal>(RunType::CL_GPU, false);
+        runner.run<gpu::amd::MultTileLocal>(CLRunType::GPU, false);
         //runner.writeStats("stats.csv");
 
-        //        runner.run<gpu::nvidia::Mult>(RunType::CL_GPU, false);
+        //        runner.run<gpu::nvidia::Mult>(CLRunType::GPU, false);
         //        runner.writeStats("stats.csv");
 
-        //runner.run<gpu::preso::MultLocal>(RunType::CL_GPU, false);
+        //runner.run<gpu::preso::MultLocal>(CLRunType::GPU, false);
     }
     catch(OpenCLException& e)
     {

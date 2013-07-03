@@ -1,7 +1,6 @@
-#ifndef GPUNVIDIARADIXSORT_H
-#define GPUNVIDIARADIXSORT_H
+#pragma once
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 // Scan
@@ -13,7 +12,7 @@ namespace gpu
     namespace nvidia
     {
         template<typename T>
-        class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
+        class RadixSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             public:
                 // Radixsort
@@ -40,7 +39,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/nvidia/RadixSort.cl", "-D T=" + getTypeName<T>());
                     ckRadixSortBlocksKeysOnly = program->createKernel("radixSortBlocksKeysOnly");
@@ -57,7 +56,7 @@ namespace gpu
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     bufferSize = pow2roundup(size);
 
@@ -159,7 +158,7 @@ namespace gpu
                     reorderDataKeysOnlyOCL(queue, d_keys, startbit, numElements);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     int i = 0;
                     while (keyBits > i * bitStep)
@@ -169,7 +168,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(d_keys, result, 0, size * sizeof(T));
 
@@ -275,5 +274,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUNVIDIARADIXSORT_H

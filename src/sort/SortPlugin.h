@@ -1,5 +1,4 @@
-#ifndef SORTPLUGIN_H
-#define SORTPLUGIN_H
+#pragma once
 
 #include <sstream>
 
@@ -59,5 +58,3 @@ class SortPlugin
             return true;
         }
 };
-
-#endif // SORTPLUGIN_H

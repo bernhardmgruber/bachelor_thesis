@@ -1,8 +1,7 @@
-#ifndef GPUCLPPSCAN_H
-#define GPUCLPPSCAN_H
+#pragma once
 
 #include "../../ScanAlgorithm.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 
 #include "clpp/clppScan_GPU.h"
 
@@ -11,7 +10,7 @@ namespace gpu
     namespace clpp
     {
         template<typename T>
-        class Scan : public GPUAlgorithm<T>, public ScanAlgorithm
+        class Scan : public CLAlgorithm<T>, public ScanAlgorithm
         {
             public:
                 const string getName() override
@@ -24,7 +23,7 @@ namespace gpu
                     return true;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     clppProgram::setBasePath("../common/libs/clpp/clpp/");
                     clppcontext.setup(0, 0);
@@ -33,7 +32,7 @@ namespace gpu
                     assert(s->_context->clQueue != 0);
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     assert(s->_context->clQueue != 0);
                     buffer = new T[size];
@@ -41,12 +40,12 @@ namespace gpu
                     s->pushDatas(buffer, size);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     s->scan();
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     s->popDatas();
                     memcpy(buffer, result, size * sizeof(T));
@@ -67,5 +66,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUCLPPSCAN_H

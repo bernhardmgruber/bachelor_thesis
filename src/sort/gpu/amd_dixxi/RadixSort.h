@@ -89,10 +89,9 @@ jurisdiction and venue of these courts.
 
 ============================================================ */
 
-#ifndef AMDDIXXIRADIXSORT_H
-#define AMDDIXXIRADIXSORT_H
+#pragma once
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 using namespace std;
@@ -106,7 +105,7 @@ namespace gpu
          * Modified algorithm by Bernhard Manfred Gruber.
          */
         template<typename T>
-        class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
+        class RadixSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             static const unsigned int RADIX = 4;
             static const unsigned int BUCKETS = (1 << RADIX);
@@ -122,7 +121,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/amd_dixxi/RadixSort.cl", "-D T=" + getTypeName<T>());
                     histogramKernel = program->createKernel("histogram");
@@ -135,7 +134,7 @@ namespace gpu
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     //element count must be multiple of workGroupSize * BUCKETS
                     size_t multiple = workGroupSize * BUCKETS;
@@ -164,7 +163,7 @@ namespace gpu
                     sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, adaptedSize * sizeof(T));
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     for(size_t bits = 0; bits < sizeof(T) * RADIX; bits += RADIX)
                     {
@@ -272,7 +271,7 @@ namespace gpu
                     delete sums;
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(sortedDataBuf, result, 0, size);
 
@@ -307,5 +306,3 @@ namespace gpu
         };
     }
 }
-
-#endif // AMDDIXXIRADIXSORT_H

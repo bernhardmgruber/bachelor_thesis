@@ -1,10 +1,7 @@
-#ifndef SORTALGORITHM_H
-#define SORTALGORITHM_H
+#pragma once
 
 class SortAlgorithm
 {
     public:
         virtual bool isInPlace() = 0;
 };
-
-#endif // SORTALGORITHM_H

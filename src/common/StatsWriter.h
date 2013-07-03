@@ -1,12 +1,11 @@
-#ifndef STATSWRITER_H
-#define STATSWRITER_H
+#pragma once
 
 #include <CL/cl.h>
 
 class StatsWriter
 {
 public:
-    static void Write(Context* context, string fileName, char sep)
+    static void write(Context* context, string fileName, char sep)
     {
         cout << "Writing device info file to " << fileName << " ... ";
 
@@ -313,5 +312,3 @@ public:
         cout << "DONE" << endl;
     }
 };
-
-#endif // STATSWRITER_H

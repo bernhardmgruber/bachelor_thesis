@@ -1,5 +1,4 @@
-#ifndef STEREOPSISRADIXSORT_H
-#define STEREOPSISRADIXSORT_H
+#pragma once
 
 #include <cstdlib>
 
@@ -102,5 +101,3 @@ namespace cpu
         };
     }
 }
-
-#endif // STEREOPSISRADIXSORT_H

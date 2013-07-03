@@ -1,5 +1,4 @@
-#ifndef CPUMULT_H
-#define CPUMULT_H
+#pragma once
 
 #include "../../../common/CPUAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
@@ -40,5 +39,3 @@ namespace cpu
         };
     }
 }
-
-#endif // CPUMULT_H

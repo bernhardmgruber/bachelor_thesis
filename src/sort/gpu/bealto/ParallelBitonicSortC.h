@@ -1,9 +1,8 @@
-#ifndef PARALLELBITONICSORTC_H
-#define PARALLELBITONICSORTC_H
+#pragma once
 
 #include <list>
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 #define ALLOWB (16 + 8 + 4 + 2)
@@ -18,7 +17,7 @@ namespace gpu
          * From: http://www.bealto.com/gpu-sorting_intro.html
          */
         template<typename T>
-        class ParallelBitonicSortC : public GPUAlgorithm<T>, public SortAlgorithm
+        class ParallelBitonicSortC : public CLAlgorithm<T>, public SortAlgorithm
         {
 
             public:
@@ -32,7 +31,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/bealto/ParallelBitonicSortC.cl", "-I gpu/bealto/ -D T=" + getTypeName<T>());
                     kernel2 = program->createKernel("ParallelBitonicSortB2");
@@ -43,13 +42,13 @@ namespace gpu
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
                     queue->enqueueWrite(buffer, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     //int mLastN = -1;
 
@@ -146,7 +145,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(buffer, result);
                     delete buffer;
@@ -174,5 +173,3 @@ namespace gpu
         };
     }
 }
-
-#endif // PARALLELBITONICSORTC_H

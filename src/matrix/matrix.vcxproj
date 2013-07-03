@@ -18,7 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\CPUAlgorithm.h" />
-    <ClInclude Include="..\common\GPUAlgorithm.h" />
+    <ClInclude Include="..\common\CLAlgorithm.h" />
     <ClInclude Include="..\common\OpenCL.h" />
     <ClInclude Include="..\common\Runner.h" />
     <ClInclude Include="..\common\StatsWriter.h" />
@@ -36,11 +36,11 @@
     <ClInclude Include="gpu\dixxi\MultBlock.h" />
     <ClInclude Include="gpu\dixxi\MultHybrid.h" />
     <ClInclude Include="gpu\dixxi\MultImage.h" />
-	<ClInclude Include="gpu\dixxi\MultTileAMD.h" />
+    <ClInclude Include="gpu\dixxi\MultTileAMD.h" />
     <ClInclude Include="gpu\dixxi\MultTileAMDArr.h" />
     <ClInclude Include="gpu\dixxi\MultTileLocalAMD.h" />
     <ClInclude Include="gpu\nvidia\Mult.h" />
-	<ClInclude Include="gpu\preso\MultLocal.h" />
+    <ClInclude Include="gpu\preso\MultLocal.h" />
     <ClInclude Include="MatrixAlgorithm.h" />
     <ClInclude Include="MatrixPlugin.h" />
   </ItemGroup>

@@ -1,5 +1,4 @@
-#ifndef STLSORT_H
-#define STLSORT_H
+#pragma once
 
 #include <algorithm>
 
@@ -32,5 +31,3 @@ namespace cpu
             virtual ~STLSort() {}
     };
 }
-
-#endif // STLSORT_H

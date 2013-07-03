@@ -1,5 +1,4 @@
-#ifndef CPUSCAN_H
-#define CPUSCAN_H
+#pragma once
 
 #include "../../common/CPUAlgorithm.h"
 #include "../ScanAlgorithm.h"
@@ -30,5 +29,3 @@ namespace cpu
             virtual ~Scan() {}
     };
 }
-
-#endif // CPUSCAN_H

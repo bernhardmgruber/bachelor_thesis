@@ -89,8 +89,7 @@ jurisdiction and venue of these courts.
 
 ============================================================ */
 
-#ifndef AMDCPURADIXSORT_H
-#define AMDCPURADIXSORT_H
+#pragma once
 
 #include <math.h>
 #include <string.h>
@@ -173,5 +172,3 @@ namespace cpu
 
     }
 }
-
-#endif // AMDCPURADIXSORT_H

@@ -1,8 +1,7 @@
-#ifndef GPUGEMSWORKEFFICIENTSCAN_H
-#define GPUGEMSWORKEFFICIENTSCAN_H
+#pragma once
 
 #include "../../ScanAlgorithm.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 
 #include "../../../common/utils.h"
 
@@ -15,7 +14,7 @@ namespace gpu
          * Chapter: 39.2.2 A Work-Efficient Parallel Scan
          */
         template<typename T>
-        class WorkEfficientScan : public GPUAlgorithm<T>, public ScanAlgorithm
+        class WorkEfficientScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
             public:
                 const string getName() override
@@ -28,7 +27,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     Program* program = context->createProgram("gpu/gpugems/WorkEfficientScan.cl", "-D T=" + getTypeName<T>());
                     upSweepKernel = program->createKernel("UpSweep");
@@ -37,7 +36,7 @@ namespace gpu
                     delete program;
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     bufferSize = pow2roundup(size);
 
@@ -45,7 +44,7 @@ namespace gpu
                     queue->enqueueWrite(buffer, data);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     size_t globalWorkSizes[] = { size };
                     size_t localWorkSizes[] = { workGroupSize };
@@ -82,7 +81,7 @@ namespace gpu
                     }
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(buffer, result, 0, size * sizeof(T));
                     delete buffer;
@@ -106,6 +105,3 @@ namespace gpu
         };
     }
 }
-
-
-#endif // GPUGEMSWORKEFFICIENTSCAN_H

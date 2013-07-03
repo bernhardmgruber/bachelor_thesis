@@ -1,5 +1,4 @@
-#ifndef SCANVERIFIER_H
-#define SCANVERIFIER_H
+#pragma once
 
 #include <sstream>
 
@@ -73,5 +72,3 @@ class ScanPlugin
             }
         }
 };
-
-#endif // SCANVERIFIER_H

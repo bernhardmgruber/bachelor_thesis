@@ -1,5 +1,4 @@
-#ifndef QSORT_H
-#define QSORT_H
+#pragma once
 
 #include <cstdlib>
 
@@ -62,5 +61,3 @@ namespace cpu
         });
     }
 }
-
-#endif // QSORT_H

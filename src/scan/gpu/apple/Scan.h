@@ -56,7 +56,7 @@
 #include <string.h>
 
 #include "../../ScanAlgorithm.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 
 #define NUM_BANKS       (32)
 
@@ -85,7 +85,7 @@ namespace gpu
 		static const unsigned int KernelCount = sizeof(KernelNames) / sizeof(char *);
 
 		template<typename T>
-		class Scan : public GPUAlgorithm<T>, public ScanAlgorithm
+		class Scan : public CLAlgorithm<T>, public ScanAlgorithm
 		{
 		public:
 			Scan() {
@@ -391,11 +391,12 @@ namespace gpu
 			{
 				PreScanBufferRecursive(queue, output_data, input_data, max_group_size, max_work_item_count, element_count, 0);
 			}
-			void init(Context* context) override
+
+			void init() override
 			{
 				size_t max_workgroup_size = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
-				GROUP_SIZE = min( GROUP_SIZE, max_workgroup_size );
+				GROUP_SIZE = min( GROUP_SIZE, (unsigned int)max_workgroup_size );
 
 				Program* program = context->createProgram("gpu/apple/Scan.cl", "-D T=" + getTypeName<T>());
 
@@ -406,13 +407,13 @@ namespace gpu
 					// Create each compute kernel from within the program
 					kernels[i] = program->createKernel(KernelNames[i]);
 					size_t wgSize = kernels[i]->getWorkGroupSize();
-					GROUP_SIZE = min( GROUP_SIZE, wgSize );
+					GROUP_SIZE = min( GROUP_SIZE, (unsigned int)wgSize );
 				}
 
 				delete program;
 			}
 
-			void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+			void upload(size_t workGroupSize, T* data, size_t size) override
 			{
 				// Create the input buffer on the device
 				size_t buffer_size = sizeof(T) * size;
@@ -427,13 +428,13 @@ namespace gpu
 				delete[] zeroMem;
 			}
 
-			void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+			void run(size_t workGroupSize, size_t size) override
 			{
-				CreatePartialSumBuffers(queue->getContext(), size);
-				PreScanBuffer(queue, output, input, GROUP_SIZE, GROUP_SIZE, size);
+				CreatePartialSumBuffers(queue->getContext(), (unsigned int)size);
+				PreScanBuffer(queue, output, input, GROUP_SIZE, GROUP_SIZE, (unsigned int)size);
 			}
 
-			void download(CommandQueue* queue, T* result, size_t size) override
+			void download(T* result, size_t size) override
 			{
 				queue->enqueueRead(output, result);
 				delete input;
@@ -455,7 +456,7 @@ namespace gpu
 			Buffer* input;
 			Buffer* output;
 
-			size_t GROUP_SIZE;
+			unsigned int GROUP_SIZE;
 			Buffer** ScanPartialSums;
 			unsigned int ElementsAllocated;
 			unsigned int LevelsAllocated;

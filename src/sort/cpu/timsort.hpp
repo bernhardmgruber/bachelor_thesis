@@ -8,8 +8,7 @@
  * You can use and/or redistribute in the same term of the original license.
  */
 
-#ifndef GFX_TIMSORT_HPP
-#define GFX_TIMSORT_HPP
+#pragma once
 
 #include <vector>
 #include <cassert>
@@ -677,5 +676,3 @@ static inline void timsort(Iter first, Iter last, Less c) {
 
 #undef LOG
 #undef MOVE
-#endif // GFX_TIMSORT_HPP
-

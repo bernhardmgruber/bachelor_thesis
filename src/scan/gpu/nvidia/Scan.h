@@ -1,8 +1,7 @@
-#ifndef NVIDIAGPUSCAN_H
-#define NVIDIAGPUSCAN_H
+#pragma once
 
 #include "../../ScanAlgorithm.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../../common/utils.h"
 
 namespace gpu
@@ -13,7 +12,7 @@ namespace gpu
          * From: http://developer.download.nvidia.com/compute/cuda/4_2/rel/sdk/website/OpenCL/html/samples.html
          */
         template<typename T>
-        class Scan : public GPUAlgorithm<T>, public ScanAlgorithm
+        class Scan : public CLAlgorithm<T>, public ScanAlgorithm
         {
             public:
                 static const size_t WORKGROUP_SIZE = 256;
@@ -33,7 +32,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     stringstream ss;
                     ss << "-D T=" << getTypeName<T>() << " -D T4=" << getTypeName<T>() << "4" << " -D WORKGROUP_SIZE=" << WORKGROUP_SIZE;
@@ -47,7 +46,7 @@ namespace gpu
                     buffer = context->createBuffer(CL_MEM_READ_WRITE, (MAX_BATCH_ELEMENTS / (4 * WORKGROUP_SIZE)) * sizeof(T));
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     bufferSize = pow2roundup(size);
 
@@ -97,7 +96,7 @@ namespace gpu
                     queue->enqueueKernel(uniformUpdateKernel, 1, globalWorkSizes, localWorkSizes);
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     size_t batchSize = 1;
                     size_t arrayLength = bufferSize;
@@ -117,7 +116,7 @@ namespace gpu
                     uniformUpdate(queue,(batchSize * arrayLength) / (4 * WORKGROUP_SIZE));
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(destination, result, 0, size * sizeof(T));
 
@@ -146,6 +145,3 @@ namespace gpu
         };
     }
 }
-
-
-#endif // NVIDIAGPUSCAN_H

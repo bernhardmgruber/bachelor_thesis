@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef LibCLRadixSort
-#define LibCLRadixSort
+#pragma once
 
 #include "../../../common/libs/libCL/oclContext.h"
 #include "../../../common/libs/libCL/oclBuffer.h"
 #include "../../../common/libs/libCL/sort/oclRadixSort.h"
 
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
 namespace gpu
@@ -31,7 +30,7 @@ namespace gpu
          * Modified by Bernhard Manfred Gruber to be key only.
          */
         template<typename T>
-        class RadixSort : public GPUAlgorithm<T>, public SortAlgorithm
+        class RadixSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             public:
                 const static size_t MAX = 4194304;
@@ -46,7 +45,7 @@ namespace gpu
                     return false;
                 }
 
-                void init(Context* context) override
+                void init() override
                 {
                     oclInit("../common/libs/libCL");
 
@@ -62,7 +61,7 @@ namespace gpu
                         throw OpenCLException("compilation failed!");
                 }
 
-                void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+                void upload(size_t workGroupSize, T* data, size_t size) override
                 {
                     if(size >= MAX)
                     {
@@ -90,12 +89,12 @@ namespace gpu
                     bfKey->write();
                 }
 
-                void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+                void run(size_t workGroupSize, size_t size) override
                 {
                     program->compute(ctx->getDevice(0), *bfKey, *bfVal, 0, 32);
                 }
 
-                void download(CommandQueue* queue, T* result, size_t size) override
+                void download(T* result, size_t size) override
                 {
                     //bfVal->read();
                     bfKey->read();
@@ -127,5 +126,3 @@ namespace gpu
         };
     }
 }
-
-#endif // LibCLRadixSort

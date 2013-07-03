@@ -1,8 +1,7 @@
-#ifndef GPUAMDMULTTILELOCAL_H
-#define GPUAMDMULTTILELOCAL_H
+#pragma once
 
 #include "../../../common/utils.h"
-#include "../../../common/GPUAlgorithm.h"
+#include "../../../common/CLAlgorithm.h"
 #include "../../MatrixAlgorithm.h"
 
 namespace gpu
@@ -10,7 +9,7 @@ namespace gpu
     namespace amd
     {
         template<typename T>
-        class MultTileLocal : public GPUAlgorithm<T>, public MatrixAlgorithm
+        class MultTileLocal : public CLAlgorithm<T>, public MatrixAlgorithm
         {
         public:
             static const size_t BLOCK_SIZE = 4;
@@ -25,7 +24,7 @@ namespace gpu
                 return 2;
             }
 
-            void init(Context* context) override
+            void init() override
             {
                     stringstream ss;
                     ss << "-DT4=" << getTypeName<T>() << "4" << " -DBLOCK_SIZE=" << BLOCK_SIZE;
@@ -34,7 +33,7 @@ namespace gpu
                     delete program;
             }
 
-            void upload(Context* context, CommandQueue* queue, size_t workGroupSize, T* data, size_t size) override
+            void upload(size_t workGroupSize, T* data, size_t size) override
             {
                 tileSize = workGroupSize = 8;
 
@@ -80,7 +79,7 @@ namespace gpu
                 c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * adjustedSize * sizeof(T));
             }
 
-            void run(CommandQueue* queue, size_t workGroupSize, size_t size) override
+            void run(size_t workGroupSize, size_t size) override
             {
                 kernel->setArg(0, a);
                 kernel->setArg(1, b);
@@ -94,7 +93,7 @@ namespace gpu
                 queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
             }
 
-            void download(CommandQueue* queue, T* result, size_t size) override
+            void download(T* result, size_t size) override
             {
                 if(adjustedSize != size)
                 {
@@ -128,5 +127,3 @@ namespace gpu
         };
     }
 }
-
-#endif // GPUAMDMULTTILELOCAL_H

@@ -1,5 +1,4 @@
-#ifndef OPENCL_H
-#define OPENCL_H
+#pragma once
 
 // the target OpenCL version
 //#define OPENCL_VERSION 110 // OpenCL 1.1
@@ -31,7 +30,7 @@ class OpenCLException : public exception
     public:
         OpenCLException(string msg);
 
-        virtual const char* what() throw();
+        virtual const char* what() const throw();
 
     private:
         string msg;
@@ -681,5 +680,3 @@ void CommandQueue::enqueueFill(Buffer* buffer, T val)
 	delete[] mem;
 #endif
 }
-
-#endif // OPENCL_H

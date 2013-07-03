@@ -1,5 +1,4 @@
-#ifndef CPUCBLASMULT_H
-#define CPUCBLASMULT_H
+#pragma once
 
 #include "../../../common/libs/cblas/include/cblas.h"
 #include "../../../common/CPUAlgorithm.h"
@@ -36,5 +35,3 @@ namespace cpu
         }
     }
 }
-
-#endif // CPUCBLASMULT_H

@@ -1,9 +1,7 @@
-#ifndef MATRIXALGORITHM_H
-#define MATRIXALGORITHM_H
+#pragma once
 
 class MatrixAlgorithm
 {
 
 };
 
-#endif // MATRIXALGORITHM_H
