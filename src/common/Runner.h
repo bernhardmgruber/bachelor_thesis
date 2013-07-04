@@ -7,6 +7,7 @@
 #include <string>
 #include <stdexcept>
 #include <iterator>
+#include <chrono>
 #ifdef __GNUG__
 #include <initializer_list>
 #endif
@@ -17,6 +18,8 @@
 #include "Timer.h"
 #include "utils.h"
 #include "DeviceInfoWriter.h"
+#include "StatsWriter.h"
+#include "ConsoleWriter.h"
 
 using namespace std;
 
@@ -33,8 +36,6 @@ template <typename T, template <typename> class Plugin>
 class Runner
 {
 public:
-    static const int FLOAT_PRECISION = 3;
-
 #ifdef __GNUG__
     /**
     * Constructor
@@ -76,8 +77,23 @@ public:
 
         delete plugin;
 
-        for(Range* r : ranges)
-            delete r;
+        //for(Range* r : ranges)
+        //    delete r;
+    }
+
+    void start(string statsFile)
+    {
+        writer.beginFile(statsFile);
+
+        globalTimer.start();
+    }
+
+    void finish()
+    {
+        double seconds = globalTimer.stop();
+
+        writer.endFile(seconds);
+        consoleWriter.endOutput(seconds);
     }
 
     /**
@@ -88,18 +104,17 @@ public:
     void run()
     {
         CPUAlgorithm<T>* alg = new CPUAlgorithm<T>();
-        Range* r = new Range(alg->getName());
+
+        writer.beginAlgorithm(alg->getName(), RunType::CPU);
+        consoleWriter.beginAlgorithm(alg->getName(), RunType::CPU);
 
         for(size_t size : sizes)
-        {
-            Stats* s = runCPU(alg, size);
-            r->stats.push_back(s);
-        }
-        ranges.push_back(r);
+            runCPU(alg, size);
 
         delete alg;
 
-        printRange(r, RunType::CPU);
+        writer.endAlgorithm();
+        consoleWriter.endAlgorithm();
     }
 
     /**
@@ -129,71 +144,16 @@ public:
         alg->setContext(context);
         alg->setCommandQueue(queue);
 
-        Range* r = new Range(runType, alg->getName());
+        writer.beginAlgorithm(alg->getName(), runType == CLRunType::CPU ? RunType::CL_CPU : RunType::CL_GPU);
+        consoleWriter.beginAlgorithm(alg->getName(), runType == CLRunType::CPU ? RunType::CL_CPU : RunType::CL_GPU);
+
         for(size_t size : sizes)
-        {
-            Stats* s = runCL(alg, context, queue, useAllSupportedWorkGroupSizes, size);
-            r->stats.push_back(s);
-        }
-        ranges.push_back(r);
+            runCL(alg, context, queue, useAllSupportedWorkGroupSizes, size);
 
         delete alg;
 
-        printRange(r, runType == CLRunType::CPU ? RunType::CL_CPU : RunType::CL_GPU);
-    }
-
-    /**
-    * Writes the results of all previous runs to the given file.
-    */
-    void writeStats(string fileName)
-    {
-        double seconds = globalTimer.stop();
-
-        cout << "Writing stats file to " << fileName << " ... ";
-
-        const char sep = ';';
-
-        ofstream os(fileName);
-        os.setf(ios::fixed);
-
-        os << "Runner " << __DATE__ << " " << __TIME__ << endl;
-        os << "Bernhard Manfred Gruber" << endl;
-        os << "Duration: " << timeToString(seconds) << endl;
-        os << endl;
-        os << endl;
-
-        // print results of all previous run tests
-        for(Range* r : ranges)
-        {
-            os << r->algorithmName << sep << runTypeToString(r->runType) << endl;
-
-            if(r->runType == RunType::CPU)
-            {
-                os << "size" << sep << "run time mean" << sep << "run time deviation" << sep << "result" << endl;
-
-                for(Stats* s : r->stats)
-                {
-                    CPURun* run = static_cast<CPURun*>(s);
-                    os << run->size << sep << run->runTimeMean << sep << run->runTimeDeviation << sep << (run->exceptionOccured ? "EXCEPTION" : (run->verificationResult ? "SUCCESS" : "FAILED")) << endl;
-                }
-            }
-            else
-            {
-                os << "size" << sep << "init time" << sep << "upload time mean " << sep << "upload time deviation" << sep << "run time mean" << sep << "run time deviation" << sep << "download time mean" << sep << "download time deviation" << sep << "cleanup time" << sep << "wg size" << sep << "up run down sum" << sep << "result" << endl;
-
-                for(Stats* s : r->stats)
-                {
-                    CLBatch* batch = static_cast<CLBatch*>(s);
-                    os << batch->size << sep << batch->initTime << sep << batch->fastest->uploadTimeMean << sep << batch->fastest->uploadTimeDeviation << sep << batch->fastest->runTimeMean << sep << batch->fastest->runTimeDeviation << sep << batch->fastest->downloadTimeMean << sep << batch->fastest->downloadTimeDeviation << sep << batch->cleanupTime << sep << batch->fastest->wgSize << sep << (batch->fastest->uploadTimeMean + batch->fastest->runTimeMean + batch->fastest->downloadTimeMean) << sep << (batch->fastest->exceptionOccured ? "EXCEPTION" : (batch->fastest->verificationResult ? "SUCCESS" : "FAILED")) << endl;
-                }
-            }
-
-            os << endl;
-        }
-
-        os.close();
-
-        cout << "DONE" << endl;
+        writer.endAlgorithm();
+        consoleWriter.endAlgorithm();
     }
 
     void writeCPUDeviceInfo(string fileName)
@@ -223,120 +183,6 @@ public:
     }
 
 private:
-    enum class RunType
-    {
-        CPU,
-        CL_CPU,
-        CL_GPU
-    };
-
-    struct Stats
-    {
-        const string taskDescription;
-        size_t size;
-
-        Stats(string taskDescription, size_t size)
-            : taskDescription(taskDescription), size(size)
-        {
-        }
-    };
-
-    struct CPUIteration
-    {
-        double runTime;
-    };
-
-    struct CPURun : public Stats
-    {
-        vector<CPUIteration> iterations;
-        double runTimeMean;
-        double runTimeDeviation;
-        bool verificationResult;
-        bool exceptionOccured;
-        string exceptionMsg;
-
-        CPURun(string taskDescription, size_t size)
-            : Stats(taskDescription, size), exceptionOccured(false)
-        {
-        }
-    };
-
-    struct CLIteration
-    {
-        double uploadTime;
-        double runTime;
-        double downloadTime;
-    };
-
-    struct CLRun
-    {
-        size_t wgSize;
-        vector<CLIteration> iterations;
-        double uploadTimeMean;
-        double uploadTimeDeviation;
-        double runTimeMean;
-        double runTimeDeviation;
-        double downloadTimeMean;
-        double downloadTimeDeviation;
-        bool verificationResult;
-        bool exceptionOccured;
-        string exceptionMsg;
-
-        CLRun()
-            : exceptionOccured(false)
-        {
-        }
-    };
-
-    struct CLBatch : public Stats
-    {
-        double initTime;
-        double cleanupTime;
-        vector<CLRun> runs;
-        typename vector<CLRun>::iterator fastest;
-        double avgUploadTime;
-        double avgRunTime;
-        double avgDownloadTime;
-
-        CLBatch(string taskDescription, size_t size)
-            : Stats(taskDescription, size)
-        {
-        }
-    };
-
-    struct Range
-    {
-        RunType runType;
-        const string algorithmName;
-
-        vector<Stats*> stats;
-
-        Range(string algorithmName)
-            : runType(RunType::CPU), algorithmName(algorithmName)
-        {
-        }
-
-        Range(CLRunType runType, string algorithmName)
-            : algorithmName(algorithmName)
-        {
-            switch(runType)
-            {
-            case CLRunType::CPU:
-                this->runType = RunType::CL_CPU;
-                break;
-            case CLRunType::GPU:
-                this->runType = RunType::CL_GPU;
-                break;
-            }
-        }
-
-        ~Range()
-        {
-            for(Stats* s : stats)
-                delete s;
-        }
-    };
-
     void init()
     {
         OpenCL::init();
@@ -368,77 +214,18 @@ private:
 
         plugin = new Plugin<T>();
 
-        cout << "##### Initialized Runner #####" << endl;
-        cout << "Running " << iterations << " iterations " << endl;
-        cout << "Sizes: ";
-        copy(sizes.begin(), sizes.end(), ostream_iterator<size_t>(cout, ", "));
-        cout << "\b\b " << endl;
-        cout << "Type: " << getTypeName<T>() << endl;
-        cout << endl;
-
-        globalTimer.start();
-    }
-
-    void printRange(Range* r, RunType runType)
-    {
-        if(runType == RunType::CPU)
-        {
-            cout << "###############################################################################" << endl;
-            cout << "# " << r->algorithmName << endl;
-
-            for(Stats* s : r->stats)
-            {
-                CPURun* run = (CPURun*) s;
-
-                cout << "#  " << run->taskDescription << endl;
-                if(run->exceptionOccured)
-                    cout << "#  CPU       " << "EXCEPTION: " << run->exceptionMsg << endl;
-                else
-                    cout << "#  CPU       " << fixed << setprecision(FLOAT_PRECISION) << run->runTimeMean << " (sigma " << run->runTimeDeviation << "s) " << (run->verificationResult ? "SUCCESS" : "FAILED") << endl;
-            }
-
-            cout << "###############################################################################" << endl;
-            cout << endl;
-        }
-        else
-        {
-            // print results
-            cout << "###############################################################################" << endl;
-            cout << "# " << r->algorithmName << endl;
-
-            for(Stats* s : r->stats)
-            {
-                CLBatch* batch = (CLBatch*) s;
-
-                cout << "#  " << batch->taskDescription << endl;
-                cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << batch->initTime << "s" << endl;
-                cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << batch->avgUploadTime << "s" << endl;
-
-                for(auto r : batch->runs)
-                    if(r.exceptionOccured)
-                        cout << "#  " << (runType == RunType::CL_CPU ? "C" : "G") << "PU (WG: " << setw(4) << r.wgSize << ") EXCEPTION: " << r.exceptionMsg << endl;
-                    else
-                        cout << "#  " << (runType == RunType::CL_CPU ? "C" : "G") << "PU (WG: " << setw(4) << r.wgSize << ") " << fixed << setprecision(FLOAT_PRECISION) << r.runTimeMean << "s (sigma " << r.runTimeDeviation << "s) " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
-
-                cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << batch->avgDownloadTime << "s" << endl;
-                cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << batch->cleanupTime << "s" << endl;
-                cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (batch->fastest->uploadTimeMean + batch->fastest->runTimeMean + batch->fastest->downloadTimeMean) << "s " << "(WG: " << batch->fastest->wgSize << ") " << endl;
-            }
-
-            cout << "###############################################################################" << endl;
-            cout << endl;
-        }
+        consoleWriter.beginOutput(iterations, sizes, getTypeName<T>());
     }
 
     /**
     * Runs an algorithm on the CPU with the given problem size.
     */
-    CPURun* runCPU(CPUAlgorithm<T>* alg, size_t size)
+    void runCPU(CPUAlgorithm<T>* alg, size_t size)
     {
         // create run stats and prepare input
-        CPURun* run = new CPURun(plugin->getTaskDescription(size), size);
+        CPURun run(plugin->getTaskDescription(size), size);
 
-        run->verificationResult = true;
+        run.verificationResult = true;
 
         for(size_t i = 0; i < iterations; i++)
         {
@@ -453,40 +240,41 @@ private:
             iteration.runTime = timer.stop();
 
             // verfiy result
-            run->verificationResult = run->verificationResult && (validate ? plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size) : true);
+            run.verificationResult = run.verificationResult && (validate ? plugin->verifyResult(dynamic_cast<typename Plugin<T>::AlgorithmType*>(alg), data, result, size) : true);
 
             // cleanup
             plugin->freeInput(data);
             plugin->freeResult(result);
 
-            run->iterations.push_back(iteration);
+            run.iterations.push_back(iteration);
         }
 
         // compute mean
         double sum = 0;
-        for(CPUIteration& i : run->iterations)
+        for(CPUIteration& i : run.iterations)
             sum += i.runTime;
-        run->runTimeMean = sum / (double)iterations;
+        run.runTimeMean = sum / (double)iterations;
 
         // compute standard deviation
         sum = 0;
-        for(CPUIteration& i : run->iterations)
+        for(CPUIteration& i : run.iterations)
         {
-            double diff = i.runTime - run->runTimeMean;
+            double diff = i.runTime - run.runTimeMean;
             sum += diff * diff;
         }
-        run->runTimeDeviation = sqrt(sum / (double) iterations);
+        run.runTimeDeviation = sqrt(sum / (double) iterations);
 
-        return run;
+        writer.writeRun(run);
+        consoleWriter.writeRun(run);
     }
 
     /**
     * Runs an algorithm using OpenCL with the given problem size.
     */
-    CLBatch* runCL(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useAllSupportedWorkGroupSizes, size_t size)
+    void runCL(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useAllSupportedWorkGroupSizes, size_t size)
     {
         // create algorithm and batch stats, prepare input
-        CLBatch* batch = new CLBatch(plugin->getTaskDescription(size), size);
+        CLRun run(plugin->getTaskDescription(size), size);
 
         data = plugin->genInput(size);
         result = plugin->genResult(size);
@@ -494,21 +282,21 @@ private:
         // run custom initialization
         timer.start();
         alg->init();
-        batch->initTime = timer.stop();
+        run.initTime = timer.stop();
 
         if(useAllSupportedWorkGroupSizes)
             for(size_t i : alg->getSupportedWorkGroupSizes())
-                batch->runs.push_back(uploadRunDownload(alg, context, queue, i, size));
+                run.runsWithWGSize.push_back(uploadRunDownload(alg, context, queue, i, size));
         else
-            batch->runs.push_back(uploadRunDownload(alg, context, queue, alg->getOptimalWorkGroupSize(), size));
+            run.runsWithWGSize.push_back(uploadRunDownload(alg, context, queue, alg->getOptimalWorkGroupSize(), size));
 
         // cleanup
         timer.start();
         alg->cleanup();
-        batch->cleanupTime = timer.stop();
+        run.cleanupTime = timer.stop();
 
         // calculate fastest run
-        batch->fastest = min_element(batch->runs.begin(), batch->runs.end(), [](CLRun& a, CLRun& b) -> double
+        run.fastest = min_element(run.runsWithWGSize.begin(), run.runsWithWGSize.end(), [](CLRunWithWGSize& a, CLRunWithWGSize& b) -> double
         {
             if(a.exceptionOccured || !a.verificationResult)
                 return false;
@@ -518,32 +306,33 @@ private:
         });
 
         // calculate averages
-        batch->avgUploadTime = 0;
-        batch->avgRunTime = 0;
-        batch->avgDownloadTime = 0;
-        for(auto r : batch->runs) {
+        run.avgUploadTime = 0;
+        run.avgRunTime = 0;
+        run.avgDownloadTime = 0;
+        for(auto r : run.runsWithWGSize) {
             if(!r.exceptionOccured)
             {
-                batch->avgUploadTime += r.uploadTimeMean;
-                batch->avgRunTime += r.runTimeMean;
-                batch->avgDownloadTime += r.downloadTimeMean;
+                run.avgUploadTime += r.uploadTimeMean;
+                run.avgRunTime += r.runTimeMean;
+                run.avgDownloadTime += r.downloadTimeMean;
             }
         }
 
-        batch->avgUploadTime /= batch->runs.size();
-        batch->avgRunTime /= batch->runs.size();
-        batch->avgDownloadTime /= batch->runs.size();
+        run.avgUploadTime /= run.runsWithWGSize.size();
+        run.avgRunTime /= run.runsWithWGSize.size();
+        run.avgDownloadTime /= run.runsWithWGSize.size();
 
         // cleanup
         plugin->freeInput(data);
         plugin->freeResult(result);
 
-        return batch;
+        writer.writeRun(run);
+        consoleWriter.writeRun(run);
     }
 
-    inline CLRun uploadRunDownload(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
+    inline CLRunWithWGSize uploadRunDownload(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
     {
-        CLRun run;
+        CLRunWithWGSize run;
         run.wgSize = workGroupSize;
 
         try
@@ -624,21 +413,6 @@ private:
         return run;
     }
 
-    const string runTypeToString(const RunType runType) const
-    {
-        switch(runType)
-        {
-        case RunType::CPU:
-            return "OpenCL CPU";
-        case RunType::CL_GPU:
-            return "OpenCL GPU";
-        case RunType::CL_CPU:
-            return "CPU";
-        }
-
-        throw exception("Invalid RunType");
-    }
-
     /**
     * Checks if the context necessary to run an algorithm is available.
     */
@@ -655,6 +429,9 @@ private:
         DeviceInfoWriter::write(context, fileName, sep);
     }
 
+    StatsWriter writer;
+    ConsoleWriter consoleWriter;
+
     Context* gpuContext;
     Context* cpuContext;
     CommandQueue* gpuQueue;
@@ -668,7 +445,7 @@ private:
     T* data;
     T* result;
 
-    vector<Range*> ranges;
+    //vector<Range*> ranges;
 
     size_t iterations;
     vector<size_t> sizes;

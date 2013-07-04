@@ -11,6 +11,12 @@
     <ClCompile Include="..\common\Timer.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\StatsWriter.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\ConsoleWriter.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatrixAlgorithm.h" />
@@ -85,6 +91,15 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\common\DeviceInfoWriter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\StatsWriter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\ConsoleWriter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\structs.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

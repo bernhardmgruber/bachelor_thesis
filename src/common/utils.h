@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "structs.h"
+
 using namespace std;
 
 /**
@@ -81,3 +83,4 @@ unsigned int ctz(unsigned int);
 */
 unsigned int rootPowerOfTwo(unsigned int value, unsigned int root);
 
+const string runTypeToString(const RunType runType);

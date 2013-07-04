@@ -11,6 +11,12 @@
     <ClCompile Include="..\common\utils.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\StatsWriter.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\ConsoleWriter.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SortAlgorithm.h" />
@@ -122,6 +128,15 @@
     </ClInclude>
     <ClInclude Include="cpu\stereopsis\radixsort.h">
       <Filter>cpu\stereopsis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\DeviceInfoWriter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\ConsoleWriter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\structs.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -24,6 +24,9 @@ int main()
         array<int, 5> sizes = { 2<<10, 2<<11, 2<<12, 2<<13, 2<<14, /*2<<15, 2<<16, 2<<17, 2<<18, 2<<19, 2<<20, 2<<21, 2<<22, 2<<23, 2<<24*/ };
         Runner<cl_uint, ScanPlugin> runner(3, sizes.begin(), sizes.end());
 
+        runner.writeGPUDeviceInfo("gpuinfo.csv");
+
+        runner.start("stats.csv");
 
         runner.run<cpu::Scan>();
 
@@ -35,10 +38,9 @@ int main()
         //runner.run<gpu::dixxi::ScanTask>(CLRunType::GPU);
         runner.run<gpu::nvidia::Scan>(CLRunType::GPU);
 
-        runner.writeStats("stats.csv");
-        runner.writeGPUDeviceInfo("gpuinfo.csv");
+        runner.finish();
     }
-    catch(OpenCLException& e)
+    catch(const exception& e)
     {
         cerr << e.what() << endl;
         return 1;

@@ -76,17 +76,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\ConsoleWriter.cpp" />
     <ClCompile Include="..\common\OpenCL.cpp" />
+    <ClCompile Include="..\common\StatsWriter.cpp" />
     <ClCompile Include="..\common\Timer.cpp" />
     <ClCompile Include="..\common\utils.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\ConsoleWriter.h" />
     <ClInclude Include="..\common\CPUAlgorithm.h" />
+    <ClInclude Include="..\common\DeviceInfoWriter.h" />
     <ClInclude Include="..\common\GPUAlgorithm.h" />
     <ClInclude Include="..\common\OpenCL.h" />
     <ClInclude Include="..\common\Runner.h" />
     <ClInclude Include="..\common\StatsWriter.h" />
+    <ClInclude Include="..\common\structs.h" />
     <ClInclude Include="..\common\Timer.h" />
     <ClInclude Include="..\common\utils.h" />
     <ClInclude Include="cpu\amd\RadixSort.h" />

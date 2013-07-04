@@ -44,7 +44,10 @@ int main()
         array<size_t, 13> sizes = { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25, 1<<26, 1<<27, 1<<28 };
         //array<size_t, 1> sizes = { 1<<25 };
         Runner<cl_uint, SortPlugin> runner(5, sizes.begin(), sizes.end());
-        //Runner<cl_uint, SortPlugin> runner(1, { 1<<17 });
+
+        runner.writeGPUDeviceInfo("gpuinfo.csv");
+
+        runner.start("stats.csv");
 
         //runner.run<cpu::Quicksort>();
         runner.run<cpu::QSort>();
@@ -82,12 +85,11 @@ int main()
 
         //runner.run<gpu::gpugems::OddEvenTransition>(CLRunType::GPU);
 
-        runner.writeStats("stats.csv");
         //runner.writeGPUDeviceInfo("gpuinfo.csv");
 
-        getchar();
+        runner.finish();
     }
-    catch(OpenCLException& e)
+    catch(const exception& e)
     {
         cerr << e.what() << endl;
         return 1;

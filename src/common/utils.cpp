@@ -84,3 +84,18 @@ unsigned int ctz(unsigned int x)
 unsigned int rootPowerOfTwo(unsigned int value, unsigned int root) {
     return 1 << (ctz(value) / root);
 }
+
+const string runTypeToString(const RunType runType)
+{
+    switch(runType)
+    {
+    case RunType::CPU:
+        return "OpenCL CPU";
+    case RunType::CL_GPU:
+        return "OpenCL GPU";
+    case RunType::CL_CPU:
+        return "CPU";
+    }
+
+    throw exception("Invalid RunType");
+}
