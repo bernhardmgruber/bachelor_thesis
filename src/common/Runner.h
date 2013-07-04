@@ -111,24 +111,28 @@ public:
     {
         checkRunTypeAvailable(runType);
 
-        Algorithm<T>* alg = new Algorithm<T>();
+        Context* context;
+        CommandQueue* queue;
         switch(runType)
         {
         case CLRunType::CPU:
-            alg->setContext(cpuContext);
-            alg->setCommandQueue(cpuQueue);
+            context = cpuContext;
+            queue = cpuQueue;
             break;
         case CLRunType::GPU:
-            alg->setContext(gpuContext);
-            alg->setCommandQueue(gpuQueue);
+            context = gpuContext;
+            queue = gpuQueue;
             break;
         }
 
-        Range* r = new Range(runType, alg->getName());
+        Algorithm<T>* alg = new Algorithm<T>();
+        alg->setContext(context);
+        alg->setCommandQueue(queue);
 
+        Range* r = new Range(runType, alg->getName());
         for(size_t size : sizes)
         {
-            Stats* s = runCL(alg, cpuContext, cpuQueue, useAllSupportedWorkGroupSizes, size);
+            Stats* s = runCL(alg, context, queue, useAllSupportedWorkGroupSizes, size);
             r->stats.push_back(s);
         }
         ranges.push_back(r);
@@ -526,15 +530,15 @@ private:
             }
         }
 
-            batch->avgUploadTime /= batch->runs.size();
-            batch->avgRunTime /= batch->runs.size();
-            batch->avgDownloadTime /= batch->runs.size();
+        batch->avgUploadTime /= batch->runs.size();
+        batch->avgRunTime /= batch->runs.size();
+        batch->avgDownloadTime /= batch->runs.size();
 
-            // cleanup
-            plugin->freeInput(data);
-            plugin->freeResult(result);
+        // cleanup
+        plugin->freeInput(data);
+        plugin->freeResult(result);
 
-            return batch;
+        return batch;
     }
 
     inline CLRun uploadRunDownload(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, size_t workGroupSize, size_t size)
