@@ -53,34 +53,34 @@ int main()
         //runner.run<cpu::amd::RadixSort>();
         runner.run<cpu::stereopsis::RadixSort>();
 
-        //runner.run<gpu::bealto::ParallelSelectionSort>(CLRunType::GPU, true);
-        //runner.run<gpu::bealto::ParallelSelectionSortLocal>(CLRunType::GPU, true);
-        //runner.run<gpu::bealto::ParallelSelectionSortBlocks>(CLRunType::GPU, true);
-        //runner.run<gpu::bealto::ParallelBitonicSortLocal>(CLRunType::GPU, true);
-        //runner.run<gpu::bealto::ParallelBitonicSortLocalOptim>(CLRunType::GPU, true);
-        //runner.run<gpu::bealto::ParallelBitonicSortA>(CLRunType::GPU, false);
-        //runner.run<gpu::bealto::ParallelBitonicSortB2>(CLRunType::GPU, true);
-        //runner.run<gpu::bealto::ParallelBitonicSortB4>(CLRunType::GPU, true);
-        //runner.run<gpu::bealto::ParallelBitonicSortB8>(CLRunType::GPU, true);
-        //runner.run<gpu::bealto::ParallelBitonicSortB16>(CLRunType::GPU, false);
-        //runner.run<gpu::bealto::ParallelBitonicSortC>(CLRunType::GPU, false);
-        //runner.run<gpu::bealto::ParallelMergeSort>(CLRunType::GPU, true);
+        //runner.run<gpu::bealto::ParallelSelectionSort>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelSelectionSortLocal>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelSelectionSortBlocks>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelBitonicSortLocal>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelBitonicSortLocalOptim>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelBitonicSortA>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelBitonicSortB2>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelBitonicSortB4>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelBitonicSortB8>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelBitonicSortB16>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelBitonicSortC>(CLRunType::GPU);
+        //runner.run<gpu::bealto::ParallelMergeSort>(CLRunType::GPU);
 
-        //runner.run<gpu::clpp::RadixSort>(CLRunType::GPU, true); // not working
+        //runner.run<gpu::clpp::RadixSort>(CLRunType::GPU); // not working
 
-        //runner.run<gpu::libcl::RadixSort>(CLRunType::GPU, false);
+        //runner.run<gpu::libcl::RadixSort>(CLRunType::GPU);
 
-        //runner.run<gpu::amd::BitonicSort>(CLRunType::GPU, false);
-        //runner.run<gpu::amd::RadixSort>(CLRunType::GPU, false); // crashes on large arrays
-        //runner.run<gpu::amd_dixxi::RadixSort>(CLRunType::GPU, false);
+        //runner.run<gpu::amd::BitonicSort>(CLRunType::GPU);
+        //runner.run<gpu::amd::RadixSort>(CLRunType::GPU); // crashes on large arrays
+        //runner.run<gpu::amd_dixxi::RadixSort>(CLRunType::GPU);
 
-        //runner.run<gpu::nvidia::RadixSort>(CLRunType::GPU, false);
-        //runner.run<gpu::nvidia::BitonicSort>(CLRunType::GPU, false);
+        //runner.run<gpu::nvidia::RadixSort>(CLRunType::GPU);
+        //runner.run<gpu::nvidia::BitonicSort>(CLRunType::GPU);
 
-        //runner.run<gpu::dixxi::RadixSort>(CLRunType::GPU, false);
-        //runner.run<gpu::dixxi::RadixSortAtomicCounters>(CLRunType::GPU, false);
+        //runner.run<gpu::dixxi::RadixSort>(CLRunType::GPU);
+        //runner.run<gpu::dixxi::RadixSortAtomicCounters>(CLRunType::GPU);
 
-        //runner.run<gpu::gpugems::OddEvenTransition>(CLRunType::GPU, false);
+        //runner.run<gpu::gpugems::OddEvenTransition>(CLRunType::GPU);
 
         runner.writeStats("stats.csv");
         //runner.writeGPUDeviceInfo("gpuinfo.csv");

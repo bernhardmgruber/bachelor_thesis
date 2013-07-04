@@ -27,13 +27,13 @@ int main()
 
         runner.run<cpu::Scan>();
 
-        //runner.run<gpu::clpp::Scan>(CLRunType::GPU, false); // not working
-        runner.run<gpu::gpugems::NaiveScan>(CLRunType::GPU, false);
-        runner.run<gpu::gpugems::WorkEfficientScan>(CLRunType::GPU, false);
-        runner.run<gpu::gpugems::LocalScan>(CLRunType::GPU, false);
-        runner.run<gpu::apple::Scan>(CLRunType::GPU, false);
-        //runner.run<gpu::dixxi::ScanTask>(CLRunType::GPU, false);
-        runner.run<gpu::nvidia::Scan>(CLRunType::GPU, false);
+        //runner.run<gpu::clpp::Scan>(CLRunType::GPU); // not working
+        runner.run<gpu::gpugems::NaiveScan>(CLRunType::GPU);
+        runner.run<gpu::gpugems::WorkEfficientScan>(CLRunType::GPU);
+        runner.run<gpu::gpugems::LocalScan>(CLRunType::GPU);
+        runner.run<gpu::apple::Scan>(CLRunType::GPU);
+        //runner.run<gpu::dixxi::ScanTask>(CLRunType::GPU);
+        runner.run<gpu::nvidia::Scan>(CLRunType::GPU);
 
         runner.writeStats("stats.csv");
         runner.writeGPUDeviceInfo("gpuinfo.csv");

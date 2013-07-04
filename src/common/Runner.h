@@ -107,7 +107,7 @@ public:
     * The results of the runs are printed to stdout.
     */
     template <template <typename> class Algorithm>
-    void run(CLRunType runType, bool useMultipleWorkGroupSizes = true)
+    void run(CLRunType runType, bool useAllSupportedWorkGroupSizes = false)
     {
         checkRunTypeAvailable(runType);
 
@@ -128,7 +128,7 @@ public:
 
         for(size_t size : sizes)
         {
-            Stats* s = runCL(alg, cpuContext, cpuQueue, useMultipleWorkGroupSizes, size);
+            Stats* s = runCL(alg, cpuContext, cpuQueue, useAllSupportedWorkGroupSizes, size);
             r->stats.push_back(s);
         }
         ranges.push_back(r);
@@ -479,7 +479,7 @@ private:
     /**
     * Runs an algorithm using OpenCL with the given problem size.
     */
-    CLBatch* runCL(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useMultipleWorkGroupSizes, size_t size)
+    CLBatch* runCL(CLAlgorithm<T>* alg, Context* context, CommandQueue* queue, bool useAllSupportedWorkGroupSizes, size_t size)
     {
         // create algorithm and batch stats, prepare input
         CLBatch* batch = new CLBatch(plugin->getTaskDescription(size), size);
@@ -492,17 +492,11 @@ private:
         alg->init();
         batch->initTime = timer.stop();
 
-
-        //size_t maxWorkGroupSize = min(context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE), size);
-        size_t maxWorkGroupSize = context->getInfo<size_t>(CL_DEVICE_MAX_WORK_GROUP_SIZE);
-
-        maxWorkGroupSize = rootPowerOfTwo((unsigned int)maxWorkGroupSize, alg->getWorkDimensions());
-
-        if(!useMultipleWorkGroupSizes)
-            batch->runs.push_back(uploadRunDownload(alg, context, queue, maxWorkGroupSize, size));
-        else
-            for(size_t i = 1; i <= maxWorkGroupSize; i <<= 1)
+        if(useAllSupportedWorkGroupSizes)
+            for(size_t i : alg->getSupportedWorkGroupSizes())
                 batch->runs.push_back(uploadRunDownload(alg, context, queue, i, size));
+        else
+            batch->runs.push_back(uploadRunDownload(alg, context, queue, alg->getOptimalWorkGroupSize(), size));
 
         // cleanup
         timer.start();
@@ -523,13 +517,14 @@ private:
         batch->avgUploadTime = 0;
         batch->avgRunTime = 0;
         batch->avgDownloadTime = 0;
-        for(auto r : batch->runs)
+        for(auto r : batch->runs) {
             if(!r.exceptionOccured)
             {
                 batch->avgUploadTime += r.uploadTimeMean;
                 batch->avgRunTime += r.runTimeMean;
                 batch->avgDownloadTime += r.downloadTimeMean;
             }
+        }
 
             batch->avgUploadTime /= batch->runs.size();
             batch->avgRunTime /= batch->runs.size();
@@ -582,7 +577,7 @@ private:
         catch(const OpenCLException& e)
         {
             run.exceptionOccured = true;
-            run.exceptionMsg = string(e.what());
+            run.exceptionMsg = e.what();
         }
         catch(...)
         {

@@ -35,7 +35,7 @@ namespace gpu
 
             void upload(size_t workGroupSize, T* data, size_t size) override
             {
-                tileSize = workGroupSize = 8;
+                tileSize = workGroupSize;
 
                 //if(tileSize < 4)
                 //    throw OpenCLException("Block size must be a larger than or equal to 4");

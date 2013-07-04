@@ -47,45 +47,45 @@ int main()
 
         //runner.writeGPUDeviceInfo("gpuinfo.csv");
 
-        //        runner.run<cpu::dixxi::Mult>(RunType::CPU);
+        //        runner.run<cpu::dixxi::Mult>();
         //        runner.writeStats("stats.csv");
-        //        runner.run<cpu::dixxi::MultThreads>(RunType::CPU);
+        //        runner.run<cpu::dixxi::MultThreads>();
         //        runner.writeStats("stats.csv");
-        //        runner.run<cpu::cblas::Mult>(RunType::CPU);
+        //        runner.run<cpu::cblas::Mult>();
         //        runner.writeStats("stats.csv");
 
-        //runner.run<gpu::dixxi::Mult1D>(CLRunType::GPU, false);
+        //runner.run<gpu::dixxi::Mult1D>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::Mult2D>(CLRunType::GPU, false);
+        //        runner.run<gpu::dixxi::Mult2D>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::Mult2DCoalesced>(CLRunType::GPU, false);
+        //        runner.run<gpu::dixxi::Mult2DCoalesced>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::MultBlock>(CLRunType::GPU, false);
+        //        runner.run<gpu::dixxi::MultBlock>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::MultImage>(CLRunType::GPU, false);
+        //        runner.run<gpu::dixxi::MultImage>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
-        //        runner.run<gpu::dixxi::MultHybrid>(CLRunType::GPU, false);
+        //        runner.run<gpu::dixxi::MultHybrid>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
-        //runner.run<gpu::dixxi::MultTileAMD>(CLRunType::GPU, false);
+        runner.run<gpu::dixxi::MultTileAMD>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
-        //runner.run<gpu::dixxi::MultTileAMDArr>(CLRunType::GPU, false);
+        runner.run<gpu::dixxi::MultTileAMDArr>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
-        runner.run<gpu::dixxi::MultTileLocalAMD>(CLRunType::GPU, false);
+        runner.run<gpu::dixxi::MultTileLocalAMD>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
         //
-        //runner.run<gpu::amdblas::Mult>(CLRunType::GPU, false); // crashes in x64 on invocation, maybe compiler issue? samples also crash, when compiled with gcc, provided binaries of samples work
+        //runner.run<gpu::amdblas::Mult>(CLRunType::GPU); // crashes in x64 on invocation, maybe compiler issue? samples also crash, when compiled with gcc, provided binaries of samples work
 
-        //runner.run<gpu::amd::MultTile>(CLRunType::GPU, false);
+        runner.run<gpu::amd::MultTile>(CLRunType::GPU);
         //runner.writeStats("stats.csv");
-        runner.run<gpu::amd::MultTileLocal>(CLRunType::GPU, false);
+        runner.run<gpu::amd::MultTileLocal>(CLRunType::GPU);
         //runner.writeStats("stats.csv");
 
-        //        runner.run<gpu::nvidia::Mult>(CLRunType::GPU, false);
+        //        runner.run<gpu::nvidia::Mult>(CLRunType::GPU);
         //        runner.writeStats("stats.csv");
 
-        //runner.run<gpu::preso::MultLocal>(CLRunType::GPU, false);
+        //runner.run<gpu::preso::MultLocal>(CLRunType::GPU);
     }
-    catch(OpenCLException& e)
+    catch(const exception& e)
     {
         cerr << e.what() << endl;
     }
