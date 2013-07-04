@@ -16,7 +16,7 @@
 #include "CLAlgorithm.h"
 #include "Timer.h"
 #include "utils.h"
-#include "StatsWriter.h"
+#include "DeviceInfoWriter.h"
 
 using namespace std;
 
@@ -652,7 +652,7 @@ private:
 
     void writeDeviceInfo(Context* context, string fileName, char sep)
     {
-        StatsWriter::write(context, fileName, sep);
+        DeviceInfoWriter::write(context, fileName, sep);
     }
 
     Context* gpuContext;

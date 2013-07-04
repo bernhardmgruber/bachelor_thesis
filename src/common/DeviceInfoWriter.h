@@ -1,8 +1,13 @@
 #pragma once
 
-#include <CL/cl.h>
+#include <iostream>
+#include <fstream>
 
-class StatsWriter
+#include "OpenCL.h"
+
+using namespace std;
+
+class DeviceInfoWriter
 {
 public:
     static void write(Context* context, string fileName, char sep)

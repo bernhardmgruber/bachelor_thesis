@@ -24,9 +24,6 @@
     <ClInclude Include="..\common\Runner.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\StatsWriter.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\utils.h">
       <Filter>common</Filter>
     </ClInclude>
@@ -85,6 +82,9 @@
       <Filter>gpu\dixxi</Filter>
     </ClInclude>
     <ClInclude Include="..\common\CLAlgorithm.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\DeviceInfoWriter.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

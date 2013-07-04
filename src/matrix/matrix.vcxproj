@@ -21,7 +21,7 @@
     <ClInclude Include="..\common\CLAlgorithm.h" />
     <ClInclude Include="..\common\OpenCL.h" />
     <ClInclude Include="..\common\Runner.h" />
-    <ClInclude Include="..\common\StatsWriter.h" />
+    <ClInclude Include="..\common\DeviceInfoWriter.h" />
     <ClInclude Include="..\common\Timer.h" />
     <ClInclude Include="..\common\utils.h" />
     <ClInclude Include="cpu\cblas\Mult.h" />
