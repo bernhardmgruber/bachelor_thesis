@@ -102,6 +102,9 @@
     <ClInclude Include="..\common\structs.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultTileLocalAMDTransposed.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\dixxi\MultHybrid.cl">
@@ -141,6 +144,9 @@
       <Filter>gpu\dixxi</Filter>
     </None>
     <None Include="gpu\dixxi\MultTileLocalAMD.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\MultTileLocalAMDTransposed.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
   </ItemGroup>

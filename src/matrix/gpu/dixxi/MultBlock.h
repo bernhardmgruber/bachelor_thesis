@@ -8,6 +8,9 @@ namespace gpu
 {
     namespace dixxi
     {
+        /**
+        * Eventually became a copy of preso
+        */
         template<typename T>
         class MultBlock : public CLAlgorithm<T>, public MatrixAlgorithm
         {

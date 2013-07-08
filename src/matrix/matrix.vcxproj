@@ -44,6 +44,7 @@
     <ClInclude Include="gpu\dixxi\MultTileAMD.h" />
     <ClInclude Include="gpu\dixxi\MultTileAMDArr.h" />
     <ClInclude Include="gpu\dixxi\MultTileLocalAMD.h" />
+    <ClInclude Include="gpu\dixxi\MultTileLocalAMDTransposed.h" />
     <ClInclude Include="gpu\nvidia\Mult.h" />
     <ClInclude Include="gpu\preso\MultLocal.h" />
     <ClInclude Include="MatrixAlgorithm.h" />
@@ -61,6 +62,7 @@
     <None Include="gpu\dixxi\MultTileAMD.cl" />
     <None Include="gpu\dixxi\MultTileAMDArr.cl" />
     <None Include="gpu\dixxi\MultTileLocalAMD.cl" />
+    <None Include="gpu\dixxi\MultTileLocalAMDTransposed.cl" />
     <None Include="gpu\nvidia\Mult.cl" />
     <None Include="gpu\preso\MultLocal.cl" />
   </ItemGroup>

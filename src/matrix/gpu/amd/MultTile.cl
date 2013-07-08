@@ -14,7 +14,7 @@ __kernel void MultTile(__global const T4* a, __global const T4* b, __global T4* 
     int2 pos = (int2)(get_global_id(0), get_global_id(1));
 
     // Vectorization of input Matrices reduces their width by a factor of 4 
-    uint size4 = size / 4;
+    uint size4 = size / BLOCK_SIZE;
 
     if(pos.x >= size4 || pos.y >= size4)
         return;
@@ -26,36 +26,36 @@ __kernel void MultTile(__global const T4* a, __global const T4* b, __global T4* 
 
     for(int i = 0; i < size; i = i + BLOCK_SIZE)
     {
-        T4 tempA0 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 0) * size4];
-        T4 tempA1 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 1) * size4];
-        T4 tempA2 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 2) * size4];
-        T4 tempA3 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 3) * size4];
+        T4 aBlock0 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 0) * size4];
+        T4 aBlock1 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 1) * size4];
+        T4 aBlock2 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 2) * size4];
+        T4 aBlock3 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 3) * size4];
 
         // Matrix B is not transposed
-        T4 tempB0 = b[pos.x + (i + 0) * size4];
-        T4 tempB1 = b[pos.x + (i + 1) * size4];
-        T4 tempB2 = b[pos.x + (i + 2) * size4];
-        T4 tempB3 = b[pos.x + (i + 3) * size4];
+        T4 bBlock0 = b[pos.x + (i + 0) * size4];
+        T4 bBlock1 = b[pos.x + (i + 1) * size4];
+        T4 bBlock2 = b[pos.x + (i + 2) * size4];
+        T4 bBlock3 = b[pos.x + (i + 3) * size4];
 
-        sum0.x += tempA0.x * tempB0.x + tempA0.y * tempB1.x + tempA0.z * tempB2.x + tempA0.w * tempB3.x;
-        sum0.y += tempA0.x * tempB0.y + tempA0.y * tempB1.y + tempA0.z * tempB2.y + tempA0.w * tempB3.y;
-        sum0.z += tempA0.x * tempB0.z + tempA0.y * tempB1.z + tempA0.z * tempB2.z + tempA0.w * tempB3.z;
-        sum0.w += tempA0.x * tempB0.w + tempA0.y * tempB1.w + tempA0.z * tempB2.w + tempA0.w * tempB3.w;
+        sum0.x += aBlock0.x * bBlock0.x + aBlock0.y * bBlock1.x + aBlock0.z * bBlock2.x + aBlock0.w * bBlock3.x;
+        sum0.y += aBlock0.x * bBlock0.y + aBlock0.y * bBlock1.y + aBlock0.z * bBlock2.y + aBlock0.w * bBlock3.y;
+        sum0.z += aBlock0.x * bBlock0.z + aBlock0.y * bBlock1.z + aBlock0.z * bBlock2.z + aBlock0.w * bBlock3.z;
+        sum0.w += aBlock0.x * bBlock0.w + aBlock0.y * bBlock1.w + aBlock0.z * bBlock2.w + aBlock0.w * bBlock3.w;
 
-        sum1.x += tempA1.x * tempB0.x + tempA1.y * tempB1.x + tempA1.z * tempB2.x + tempA1.w * tempB3.x;
-        sum1.y += tempA1.x * tempB0.y + tempA1.y * tempB1.y + tempA1.z * tempB2.y + tempA1.w * tempB3.y;
-        sum1.z += tempA1.x * tempB0.z + tempA1.y * tempB1.z + tempA1.z * tempB2.z + tempA1.w * tempB3.z;
-        sum1.w += tempA1.x * tempB0.w + tempA1.y * tempB1.w + tempA1.z * tempB2.w + tempA1.w * tempB3.w;
+        sum1.x += aBlock1.x * bBlock0.x + aBlock1.y * bBlock1.x + aBlock1.z * bBlock2.x + aBlock1.w * bBlock3.x;
+        sum1.y += aBlock1.x * bBlock0.y + aBlock1.y * bBlock1.y + aBlock1.z * bBlock2.y + aBlock1.w * bBlock3.y;
+        sum1.z += aBlock1.x * bBlock0.z + aBlock1.y * bBlock1.z + aBlock1.z * bBlock2.z + aBlock1.w * bBlock3.z;
+        sum1.w += aBlock1.x * bBlock0.w + aBlock1.y * bBlock1.w + aBlock1.z * bBlock2.w + aBlock1.w * bBlock3.w;
 
-        sum2.x += tempA2.x * tempB0.x + tempA2.y * tempB1.x + tempA2.z * tempB2.x + tempA2.w * tempB3.x;
-        sum2.y += tempA2.x * tempB0.y + tempA2.y * tempB1.y + tempA2.z * tempB2.y + tempA2.w * tempB3.y;
-        sum2.z += tempA2.x * tempB0.z + tempA2.y * tempB1.z + tempA2.z * tempB2.z + tempA2.w * tempB3.z;
-        sum2.w += tempA2.x * tempB0.w + tempA2.y * tempB1.w + tempA2.z * tempB2.w + tempA2.w * tempB3.w;
+        sum2.x += aBlock2.x * bBlock0.x + aBlock2.y * bBlock1.x + aBlock2.z * bBlock2.x + aBlock2.w * bBlock3.x;
+        sum2.y += aBlock2.x * bBlock0.y + aBlock2.y * bBlock1.y + aBlock2.z * bBlock2.y + aBlock2.w * bBlock3.y;
+        sum2.z += aBlock2.x * bBlock0.z + aBlock2.y * bBlock1.z + aBlock2.z * bBlock2.z + aBlock2.w * bBlock3.z;
+        sum2.w += aBlock2.x * bBlock0.w + aBlock2.y * bBlock1.w + aBlock2.z * bBlock2.w + aBlock2.w * bBlock3.w;
 
-        sum3.x += tempA3.x * tempB0.x + tempA3.y * tempB1.x + tempA3.z * tempB2.x + tempA3.w * tempB3.x;
-        sum3.y += tempA3.x * tempB0.y + tempA3.y * tempB1.y + tempA3.z * tempB2.y + tempA3.w * tempB3.y;
-        sum3.z += tempA3.x * tempB0.z + tempA3.y * tempB1.z + tempA3.z * tempB2.z + tempA3.w * tempB3.z;
-        sum3.w += tempA3.x * tempB0.w + tempA3.y * tempB1.w + tempA3.z * tempB2.w + tempA3.w * tempB3.w;
+        sum3.x += aBlock3.x * bBlock0.x + aBlock3.y * bBlock1.x + aBlock3.z * bBlock2.x + aBlock3.w * bBlock3.x;
+        sum3.y += aBlock3.x * bBlock0.y + aBlock3.y * bBlock1.y + aBlock3.z * bBlock2.y + aBlock3.w * bBlock3.y;
+        sum3.z += aBlock3.x * bBlock0.z + aBlock3.y * bBlock1.z + aBlock3.z * bBlock2.z + aBlock3.w * bBlock3.z;
+        sum3.w += aBlock3.x * bBlock0.w + aBlock3.y * bBlock1.w + aBlock3.z * bBlock2.w + aBlock3.w * bBlock3.w;
     }
 
     c[pos.x + ((pos.y * BLOCK_SIZE) + 0) * size4] = sum0;

@@ -8,7 +8,7 @@
 
 // Matrixes A and B are cached into local memory block 
 // Required global threads = (size / 4, size / 4) 
-__kernel void MultTileLocal(__global const T4 * a, __global const T4 * b, __global T4 * c, uint size, __local T4 * aTile, __local T4 * bTile)
+__kernel void MultTileLocalTransposed(__global const T4 * a, __global const T4 * b, __global T4 * c, uint size, __local T4 * aTile, __local T4 * bTile)
 {
     int tilePos = get_local_id(0) + (get_local_id(1) * BLOCK_SIZE) * get_local_size(0);
 
@@ -39,15 +39,21 @@ __kernel void MultTileLocal(__global const T4 * a, __global const T4 * b, __glob
         aTile[tilePos + 2 * get_local_size(0)] = a[globalPosA + 2 * size4];
         aTile[tilePos + 3 * get_local_size(0)] = a[globalPosA + 3 * size4];
 
-        // Load values in bTile from matrixB
-        bTile[tilePos + 0 * get_local_size(0)] = b[globalPosB + 0 * size4]; 
-        bTile[tilePos + 1 * get_local_size(0)] = b[globalPosB + 1 * size4];
-        bTile[tilePos + 2 * get_local_size(0)] = b[globalPosB + 2 * size4];
-        bTile[tilePos + 3 * get_local_size(0)] = b[globalPosB + 3 * size4];
+        // Load block for bTile from matrixB
+        T4 bFromGlobal0 = b[globalPosB + 0 * size4]; 
+        T4 bFromGlobal1 = b[globalPosB + 1 * size4];
+        T4 bFromGlobal2 = b[globalPosB + 2 * size4];
+        T4 bFromGlobal3 = b[globalPosB + 3 * size4];
+
+        // Transpose block
+        bTile[tilePos + 0 * get_local_size(0)] = (T4)(bFromGlobal0.s0, bFromGlobal1.s0, bFromGlobal2.s0, bFromGlobal3.s0);
+        bTile[tilePos + 1 * get_local_size(0)] = (T4)(bFromGlobal0.s1, bFromGlobal1.s1, bFromGlobal2.s1, bFromGlobal3.s1);
+        bTile[tilePos + 2 * get_local_size(0)] = (T4)(bFromGlobal0.s2, bFromGlobal1.s2, bFromGlobal2.s2, bFromGlobal3.s2);
+        bTile[tilePos + 3 * get_local_size(0)] = (T4)(bFromGlobal0.s3, bFromGlobal1.s3, bFromGlobal2.s3, bFromGlobal3.s3);
 
         barrier(CLK_LOCAL_MEM_FENCE);
 
-        // This loop runs for number of threads in horizontal direction in the block of A 
+        // This loop runs for number of threads in horizontal direction in the tiley
         for(int j = 0; j < get_local_size(0); j++)
         {
             // Load 4 T4s from aTile : access patters = strided from local memory 
@@ -62,26 +68,25 @@ __kernel void MultTileLocal(__global const T4 * a, __global const T4 * b, __glob
             T4 tempB2 = bTile[get_local_id(0) + (j * BLOCK_SIZE + 2) * get_local_size(0)];
             T4 tempB3 = bTile[get_local_id(0) + (j * BLOCK_SIZE + 3) * get_local_size(0)];
 
-            sum0.x += tempA0.x * tempB0.x + tempA0.y * tempB1.x + tempA0.z * tempB2.x + tempA0.w * tempB3.x;
-            sum0.y += tempA0.x * tempB0.y + tempA0.y * tempB1.y + tempA0.z * tempB2.y + tempA0.w * tempB3.y;
-            sum0.z += tempA0.x * tempB0.z + tempA0.y * tempB1.z + tempA0.z * tempB2.z + tempA0.w * tempB3.z;
-            sum0.w += tempA0.x * tempB0.w + tempA0.y * tempB1.w + tempA0.z * tempB2.w + tempA0.w * tempB3.w;
+            sum0.s0 += dot(tempA0, tempB0);
+            sum0.s1 += dot(tempA0, tempB1);
+            sum0.s2 += dot(tempA0, tempB2);
+            sum0.s3 += dot(tempA0, tempB3);
 
-            sum1.x += tempA1.x * tempB0.x + tempA1.y * tempB1.x + tempA1.z * tempB2.x + tempA1.w * tempB3.x;
-            sum1.y += tempA1.x * tempB0.y + tempA1.y * tempB1.y + tempA1.z * tempB2.y + tempA1.w * tempB3.y;
-            sum1.z += tempA1.x * tempB0.z + tempA1.y * tempB1.z + tempA1.z * tempB2.z + tempA1.w * tempB3.z;
-            sum1.w += tempA1.x * tempB0.w + tempA1.y * tempB1.w + tempA1.z * tempB2.w + tempA1.w * tempB3.w;
+            sum1.s0 += dot(tempA1, tempB0);
+            sum1.s1 += dot(tempA1, tempB1);
+            sum1.s2 += dot(tempA1, tempB2);
+            sum1.s3 += dot(tempA1, tempB3);
 
-            sum2.x += tempA2.x * tempB0.x + tempA2.y * tempB1.x + tempA2.z * tempB2.x + tempA2.w * tempB3.x;
-            sum2.y += tempA2.x * tempB0.y + tempA2.y * tempB1.y + tempA2.z * tempB2.y + tempA2.w * tempB3.y;
-            sum2.z += tempA2.x * tempB0.z + tempA2.y * tempB1.z + tempA2.z * tempB2.z + tempA2.w * tempB3.z;
-            sum2.w += tempA2.x * tempB0.w + tempA2.y * tempB1.w + tempA2.z * tempB2.w + tempA2.w * tempB3.w;
+            sum2.s0 += dot(tempA2, tempB0);
+            sum2.s1 += dot(tempA2, tempB1);
+            sum2.s2 += dot(tempA2, tempB2);
+            sum2.s3 += dot(tempA2, tempB3);
 
-            sum3.x += tempA3.x * tempB0.x + tempA3.y * tempB1.x + tempA3.z * tempB2.x + tempA3.w * tempB3.x;
-            sum3.y += tempA3.x * tempB0.y + tempA3.y * tempB1.y + tempA3.z * tempB2.y + tempA3.w * tempB3.y;
-            sum3.z += tempA3.x * tempB0.z + tempA3.y * tempB1.z + tempA3.z * tempB2.z + tempA3.w * tempB3.z;
-            sum3.w += tempA3.x * tempB0.w + tempA3.y * tempB1.w + tempA3.z * tempB2.w + tempA3.w * tempB3.w;
-
+            sum3.s0 += dot(tempA3, tempB0);
+            sum3.s1 += dot(tempA3, tempB1);
+            sum3.s2 += dot(tempA3, tempB2);
+            sum3.s3 += dot(tempA3, tempB3);
         }
         barrier(CLK_LOCAL_MEM_FENCE);
     }
