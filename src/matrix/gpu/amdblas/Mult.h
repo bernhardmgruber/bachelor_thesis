@@ -13,58 +13,107 @@ namespace gpu
         template<typename T>
         class Mult : public CLAlgorithm<T>, public MatrixAlgorithm
         {
-            public:
-                const string getName() override
+        public:
+            const string getName() override
+            {
+                return "Matrix multiplication (AMD BLAS)";
+            }
+
+            const cl_uint getWorkDimensions() const override
+            {
+                return 2;
+            }
+
+            void init() override
+            {
+                cl_int err = clAmdBlasSetup();
+                if (err != CL_SUCCESS)
+                    throw OpenCLException("clAmdBlasSetup() failed with " + err);
+            }
+
+            void upload(size_t workGroupSize, T* data, size_t size) override
+            {
+#if 0
+                size_t matrixSize = size * size * sizeof(T);
+
+                a = context->createBuffer(CL_MEM_READ_ONLY, matrixSize);
+                b = context->createBuffer(CL_MEM_READ_ONLY, matrixSize);
+                c = context->createBuffer(CL_MEM_READ_WRITE, matrixSize);
+
+                queue->enqueueWrite(a, data);
+                queue->enqueueWrite(b, data + size * size);
+#else
+                adjustedSize = roundToMultiple(size, workGroupSize);
+
+                a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
+                if(adjustedSize != size)
                 {
-                    return "Matrix multiplication (AMD BLAS)";
+                    queue->enqueueFill(a, (cl_float)0);
+                    size_t bufferOffset[] = {0, 0, 0};
+                    size_t hostOffset[] = {0, 0, 0};
+                    size_t sizes[] = {size * sizeof(T), size, 1};
+                    queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                 }
-
-                void init() override
-                {
-                    cl_int err = clAmdBlasSetup();
-                    if (err != CL_SUCCESS)
-                        throw OpenCLException("clAmdBlasSetup() failed with " + err);
-                }
-
-                void upload(size_t workGroupSize, T* data, size_t size) override
-                {
-                    size_t matrixSize = size * size * sizeof(T);
-
-                    a = context->createBuffer(CL_MEM_READ_ONLY, matrixSize);
-                    b = context->createBuffer(CL_MEM_READ_ONLY, matrixSize);
-                    c = context->createBuffer(CL_MEM_READ_WRITE, matrixSize);
-
+                else
                     queue->enqueueWrite(a, data);
+
+                b = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
+                if(adjustedSize != size)
+                {
+                    queue->enqueueFill(b, (cl_float)0);
+                    size_t bufferOffset[] = {0, 0, 0};
+                    size_t hostOffset[] = {0, 0, 0};
+                    size_t sizes[] = {size * sizeof(T), size, 1};
+                    queue->enqueueWriteRect(b, data + size * size, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                }
+                else
                     queue->enqueueWrite(b, data + size * size);
-                }
 
-                void run(size_t workGroupSize, size_t size) override
+                c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * adjustedSize * sizeof(T));
+#endif
+            }
+
+            void run(size_t workGroupSize, size_t size) override
+            {
+                cl_command_queue clQueue = queue->getCLCommandQueue();
+                cl_int err = clAmdBlasSgemm(clAmdBlasRowMajor, clAmdBlasNoTrans, clAmdBlasNoTrans, adjustedSize, adjustedSize, adjustedSize, 1.0, a->getCLBuffer(), adjustedSize, b->getCLBuffer(), adjustedSize, 0.0, c->getCLBuffer(), adjustedSize, 1, &clQueue, 0, nullptr, nullptr);
+                if (err != CL_SUCCESS)
+                    throw OpenCLException("clAmdBlasSgemm() failed with " + err);
+            }
+
+            void download(T* result, size_t size) override
+            {
+#if 0
+                queue->enqueueRead(c, result, 0, size * size * sizeof(T));
+#else
+                if(adjustedSize != size)
                 {
-                    cl_command_queue clQueue = queue->getCLCommandQueue();
-                    cl_int err = clAmdBlasSgemm(clAmdBlasRowMajor, clAmdBlasNoTrans, clAmdBlasNoTrans, size, size, size, 1.0, a->getCLBuffer(), size, b->getCLBuffer(), size, 0.0, c->getCLBuffer(), size, 1, &clQueue, 0, nullptr, nullptr);
-                    if (err != CL_SUCCESS)
-                        throw OpenCLException("clAmdBlasSgemm() failed with " + err);
+                    size_t bufferOffset[] = {0, 0, 0};
+                    size_t hostOffset[] = {0, 0, 0};
+                    size_t sizes[] = {size * sizeof(T), size, 1};
+                    queue->enqueueReadRect(c, result, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                 }
+                else
+                    queue->enqueueRead(c, result, 0);
+#endif
+                delete a;
+                delete b;
+                delete c;
+            }
 
-                void download(T* result, size_t size) override
-                {
-                    queue->enqueueRead(c, result, 0, size * size * sizeof(T));
-                    delete a;
-                    delete b;
-                    delete c;
-                }
+            void cleanup() override
+            {
+                clAmdBlasTeardown();
+            }
 
-                void cleanup() override
-                {
-                    clAmdBlasTeardown();
-                }
+            virtual ~Mult() {}
 
-                virtual ~Mult() {}
+        private:
+            size_t adjustedSize;
 
-            private:
-                Buffer* a;
-                Buffer* b;
-                Buffer* c;
+            Buffer* a;
+            Buffer* b;
+            Buffer* c;
         };
     }
 }

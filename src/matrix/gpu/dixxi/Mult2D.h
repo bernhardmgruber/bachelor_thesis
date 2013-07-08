@@ -59,7 +59,7 @@ namespace gpu
 
                 void download(T* result, size_t size) override
                 {
-                    queue->enqueueRead(c, result, 0, size * size * sizeof(T));
+                    queue->enqueueRead(c, result);
 					delete a;
                     delete b;
                     delete c;

@@ -9,11 +9,12 @@
 #ifndef CBLAS_F77_H
 #define CBLAS_f77_H
 
-#ifdef __GNU__
+// Note from dixxi: gcc and cl need same settings, otherwise linker can't find symbols
+//#ifdef __GNU__
 #define ADD_ // from original MakeFile
-#else
-#define UPCASE
-#endif
+//#else
+//#define UPCASE
+//#endif
 
 #ifdef CRAY
    #include <fortran.h>

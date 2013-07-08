@@ -76,6 +76,12 @@ void printArr2D(T* arr, size_t size, size_t rowLength)
     cout << endl;
 }
 
+template <typename T>
+void printArrQuad(T* arr, size_t edgeLength)
+{
+    printArr2D(arr, edgeLength * edgeLength, edgeLength);
+}
+
 unsigned int ctz(unsigned int);
 
 /**

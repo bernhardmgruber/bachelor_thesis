@@ -1,4 +1,4 @@
-__kernel void Mult(__global T* a, __global T* b, __global T* c, uint size)
+__kernel void Mult(const __global T* a, const __global T* b, __global T* c, uint size)
 {
     // check bounds
     if(get_global_id(0) >= size * size)

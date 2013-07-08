@@ -37,9 +37,6 @@ namespace gpu
             {
                 tileSize = workGroupSize;
 
-                if(tileSize < 4)
-                    throw OpenCLException("Block size must be a larger than or equal to 4");
-
                 cl_ulong localMemAvailable;
                 clGetDeviceInfo(OpenCL::getGPUContext()->getCLDevice(), CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &localMemAvailable, nullptr);
 

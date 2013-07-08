@@ -22,6 +22,18 @@ namespace gpu
                     return 2;
                 }
 
+                //virtual const vector<size_t> getSupportedWorkGroupSizes() const override
+                //{
+                //    auto sizes = CLAlgorithm<T>::getSupportedWorkGroupSizes();
+
+                //    sizes.erase(remove_if(sizes.begin(), sizes.end(), [](const size_t wgSize)
+                //    {
+                //        return wgSize > 8;
+                //    }), sizes.end());
+
+                //    return sizes;
+                //}
+
                 void init() override
                 {
                     Program* program = context->createProgram("gpu/dixxi/MultBlock.cl", "-D T=" + getTypeName<T>());
@@ -31,9 +43,6 @@ namespace gpu
 
                 void upload(size_t workGroupSize, T* data, size_t size) override
                 {
-                    if(workGroupSize > 8)
-                        workGroupSize = 8;
-
                     adjustedSize = roundToMultiple(size, workGroupSize);
 
                     a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
@@ -43,10 +52,10 @@ namespace gpu
                         size_t bufferOffset[] = {0, 0, 0};
                         size_t hostOffset[] = {0, 0, 0};
                         size_t sizes[] = {size * sizeof(T), size, 1};
-                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
+                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
                     }
                     else
-                        queue->enqueueWrite(a, data, 0, size * size * sizeof(T), false);
+                        queue->enqueueWrite(a, data);
 
 
                     b = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
@@ -59,20 +68,17 @@ namespace gpu
                         queue->enqueueWriteRect(b, data + size * size, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
                     }
                     else
-                        queue->enqueueWrite(b, data, 0, size * size * sizeof(T), false);
+                        queue->enqueueWrite(b, data + size * size);
 
                     c = context->createBuffer(CL_MEM_WRITE_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 }
 
                 void run(size_t workGroupSize, size_t size) override
                 {
-                    if(workGroupSize > 8)
-                        workGroupSize = 8;
-
                     kernel->setArg(0, a);
                     kernel->setArg(1, b);
                     kernel->setArg(2, c);
-                    kernel->setArg(3, (cl_uint)size);
+                    kernel->setArg(3, (cl_uint)adjustedSize);
                     kernel->setArg(4, workGroupSize * workGroupSize * sizeof(cl_float), nullptr);
                     kernel->setArg(5, workGroupSize * workGroupSize * sizeof(cl_float), nullptr);
 
@@ -92,7 +98,8 @@ namespace gpu
                         queue->enqueueReadRect(c, result, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                     }
                     else
-                        queue->enqueueRead(c, result, 0, size * size * sizeof(T));
+                        queue->enqueueRead(c, result);
+
 					delete a;
                     delete b;
                     delete c;
