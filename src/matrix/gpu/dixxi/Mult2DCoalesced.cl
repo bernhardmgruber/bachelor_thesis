@@ -1,4 +1,4 @@
-__kernel void Mult(__global T* a, __global T* b, __global T* c, uint size)
+__kernel void Mult(__global const T* a, __global const T* b, __global T* c, uint size)
 {
     size_t col = get_global_id(0);
     size_t row = get_global_id(1);

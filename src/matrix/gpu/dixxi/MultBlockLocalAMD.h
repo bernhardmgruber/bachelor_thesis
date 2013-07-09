@@ -13,6 +13,7 @@ namespace gpu
         {
         public:
             static const size_t BLOCK_SIZE = 4;
+            const static size_t TILE_SIZE = 16;
 
             const string getName() override
             {
@@ -21,36 +22,38 @@ namespace gpu
 
             const cl_uint getWorkDimensions() const override
             {
-                return 2;
+                return 2; 
+            }
+
+            const vector<size_t> getSupportedWorkGroupSizes() const override
+            {
+                vector<size_t> sizes;
+                sizes.push_back(TILE_SIZE);
+                return sizes;
             }
 
             void init() override
             {
-                    stringstream ss;
-                    ss << "-DT4=" << getTypeName<T>() << "4" << " -DBLOCK_SIZE=" << BLOCK_SIZE;
-                    Program* program = context->createProgram("gpu/dixxi/MultBlockLocalAMD.cl", ss.str());
-                    kernel = program->createKernel("MultBlockLocal");
-                    delete program;
+                stringstream ss;
+                ss << "-DT4=" << getTypeName<T>() << "4" << " -DBLOCK_SIZE=" << BLOCK_SIZE << " -DTILE_SIZE=" << TILE_SIZE;
+                Program* program = context->createProgram("gpu/dixxi/MultBlockLocalAMD.cl", ss.str());
+                kernel = program->createKernel("MultBlockLocal");
+                delete program;
             }
 
             void upload(size_t workGroupSize, T* data, size_t size) override
             {
-                tileSize = workGroupSize;
-
-                //if(tileSize < 4)
-                //    throw OpenCLException("Block size must be a larger than or equal to 4");
-
                 cl_ulong localMemAvailable;
                 clGetDeviceInfo(OpenCL::getGPUContext()->getCLDevice(), CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &localMemAvailable, nullptr);
 
-                size_t localMemRequired = tileSize * tileSize * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float) * 2;
+                size_t localMemRequired = TILE_SIZE * TILE_SIZE * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float) * 2;
                 if(localMemRequired > localMemAvailable) {
                     stringstream ss;
-                    ss << "Required local memory " << localMemRequired << " for given tileSize of " << tileSize << " is larger than the available memory " << localMemAvailable << endl;
+                    ss << "Required local memory " << localMemRequired << " for given tileSize of " << TILE_SIZE << " is larger than the available memory " << localMemAvailable << endl;
                     throw OpenCLException(ss.str());
                 }
 
-                adjustedSize = roundToMultiple(size, tileSize * 4);
+                adjustedSize = roundToMultiple(size, TILE_SIZE * BLOCK_SIZE);
 
                 a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 if(adjustedSize != size)
@@ -85,11 +88,9 @@ namespace gpu
                 kernel->setArg(1, b);
                 kernel->setArg(2, c);
                 kernel->setArg(3, (cl_uint)adjustedSize);
-                kernel->setArg(4, tileSize * tileSize * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float), nullptr);
-                kernel->setArg(5, tileSize * tileSize * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float), nullptr);
 
-                size_t globalWorkSizes[] = { adjustedSize / 4, adjustedSize / 4 };
-                size_t localWorkSizes[] = { tileSize, tileSize };
+                size_t globalWorkSizes[] = { adjustedSize / BLOCK_SIZE, adjustedSize / BLOCK_SIZE };
+                size_t localWorkSizes[] = { TILE_SIZE, TILE_SIZE };
 
                 queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
             }

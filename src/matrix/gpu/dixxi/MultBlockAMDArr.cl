@@ -52,7 +52,7 @@
 // Output tile size : BLOCK_SIZE x BLOCK_SIZE = Each thread computes BLOCK_SIZE x BLOCK_SIZE float values
 // Required global threads = (size / BLOCK_SIZE, size / BLOCK_SIZE)
 // This kernel runs on 7xx and CPU as they don't have hardware local memory 
-__kernel void MultBlock(__global T* a, __global T* b, __global T* c, uint size)
+__kernel void MultBlock(__global const T* a, __global const T* b, __global T* c, uint size)
 {
     int2 pos = (int2)(get_global_id(0), get_global_id(1));
 

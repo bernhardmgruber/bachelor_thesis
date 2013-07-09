@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     cl_program program = clCreateProgramWithSource(context, 1, &source, nullptr, &error);
 
     // compile the program for the device
-    clBuildProgram(program, 1, &device, "", nullptr, &error);
+    error = clBuildProgram(program, 1, &device, "", nullptr, nullptr);
 
     // create the kernel
     cl_kernel kernel = clCreateKernel(program, "vectorAdd", &error);

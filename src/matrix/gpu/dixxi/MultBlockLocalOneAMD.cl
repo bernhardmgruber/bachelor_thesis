@@ -1,3 +1,7 @@
+#ifndef TILE_SIZE
+#error "TILE_SIZE must be defined"
+#endif
+
 #ifndef BLOCK_SIZE
 #error "BLOCK_SIZE must be defined"
 #endif
@@ -8,9 +12,9 @@
 
 // Matrix A is cached into local memory block 
 // Required global threads = (size / 4, size / 4) 
-__kernel void MultBlockLocal(__global const T4* a, __global const T4* b, __global T4* c, uint size, __local T4* aTile)
+__kernel void MultBlockLocal(__global const T4* a, __global const T4* b, __global T4* c, uint size)
 {
-    int blockPos = get_local_id(0) + get_local_size(0) * (get_local_id(1) * BLOCK_SIZE); //Should be : localId * (BLOCK_SIZE / 4) (int4)
+    int blockPos = get_local_id(0) + TILE_SIZE * (get_local_id(1) * BLOCK_SIZE); //Should be : localId * (BLOCK_SIZE / 4) (int4)
 
     // Position of thread will be according to the number of values it writes i.e TILE size 
     int globalPos = get_global_id(0) + (get_global_id(1) * BLOCK_SIZE) * get_global_size(0);
@@ -21,33 +25,35 @@ __kernel void MultBlockLocal(__global const T4* a, __global const T4* b, __globa
     T4 sum2 = (T4)(0);
     T4 sum3 = (T4)(0);
 
-    int size4 = size / BLOCK_SIZE;
+    int size4 = size / 4;
 
     // This loop runs for number of blocks of A in horizontal direction
-    for(int i = 0; i < (size4 / get_local_size(0)); i++)
+    for(int i = 0; i < (size4 / TILE_SIZE); i++)
     {
         // Calculate global ids of threads from the particular block to load from matrix A depending on i
-        int globalPosA = i * get_local_size(0) + get_local_id(0) + (get_global_id(1) * BLOCK_SIZE) * get_global_size(0);
+        int globalPosA = i * TILE_SIZE + get_local_id(0) + (get_global_id(1) * BLOCK_SIZE) * get_global_size(0);
+
+        __local float4 aTile[TILE_SIZE * TILE_SIZE * BLOCK_SIZE];
 
         // Load values in aTile from matrixA 
-        aTile[blockPos + 0 * get_local_size(0)] = a[globalPosA + 0 * size4];
-        aTile[blockPos + 1 * get_local_size(0)] = a[globalPosA + 1 * size4];
-        aTile[blockPos + 2 * get_local_size(0)] = a[globalPosA + 2 * size4];
-        aTile[blockPos + 3 * get_local_size(0)] = a[globalPosA + 3 * size4];
+        aTile[blockPos + 0 * TILE_SIZE] = a[globalPosA + 0 * size4];
+        aTile[blockPos + 1 * TILE_SIZE] = a[globalPosA + 1 * size4];
+        aTile[blockPos + 2 * TILE_SIZE] = a[globalPosA + 2 * size4];
+        aTile[blockPos + 3 * TILE_SIZE] = a[globalPosA + 3 * size4];
 
         barrier(CLK_LOCAL_MEM_FENCE);
 
         // Calculate global ids of threads from the particular block to load from matrix B depending on i
-        int globalPosB = get_global_id(0) + ((i * get_local_size(0)) * BLOCK_SIZE) * get_global_size(0);
+        int globalPosB = get_global_id(0) + ((i * TILE_SIZE) * BLOCK_SIZE) * get_global_size(0);
 
         // This loop runs for number of threads in horizontal direction in the block of A 
-        for(int j = 0; j < get_local_size(0) * 4; j=j+4)
+        for(int j = 0; j < TILE_SIZE * 4; j=j+4)
         {
             // Load 4 int4s from aTile : access patters = strided from local memory 
-            T4 tempA0 = aTile[(j / BLOCK_SIZE) + (get_local_id(1) * BLOCK_SIZE + 0) * get_local_size(0)];
-            T4 tempA1 = aTile[(j / BLOCK_SIZE) + (get_local_id(1) * BLOCK_SIZE + 1) * get_local_size(0)];
-            T4 tempA2 = aTile[(j / BLOCK_SIZE) + (get_local_id(1) * BLOCK_SIZE + 2) * get_local_size(0)];
-            T4 tempA3 = aTile[(j / BLOCK_SIZE) + (get_local_id(1) * BLOCK_SIZE + 3) * get_local_size(0)];
+            T4 tempA0 = aTile[(j / BLOCK_SIZE) + (get_local_id(1) * BLOCK_SIZE + 0) * TILE_SIZE];
+            T4 tempA1 = aTile[(j / BLOCK_SIZE) + (get_local_id(1) * BLOCK_SIZE + 1) * TILE_SIZE];
+            T4 tempA2 = aTile[(j / BLOCK_SIZE) + (get_local_id(1) * BLOCK_SIZE + 2) * TILE_SIZE];
+            T4 tempA3 = aTile[(j / BLOCK_SIZE) + (get_local_id(1) * BLOCK_SIZE + 3) * TILE_SIZE];
 
             // Load corresponding values from matrixB, access pattern = linear from global memory 
             T4 tempB0 = b[globalPosB + (j + 0) * get_global_size(0)]; //Should be localId.x * (BLOCK_SIZE / 4)

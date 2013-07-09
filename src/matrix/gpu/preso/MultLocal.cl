@@ -6,7 +6,7 @@
 #error "T must be defined"
 #endif
 
-__kernel void MultLocal(const __global T* a, const __global T* b, __global T* c, uint size)
+__kernel void MultLocal(__global const T* a, __global const T* b, __global T* c, uint size)
 {
     int globalX = get_global_id(0);
     int globalY = get_global_id(1);

@@ -1,4 +1,4 @@
-__kernel void Mult(const __global T* a, const __global T* b, __global T* c, uint size)
+__kernel void Mult(__global const T* a, __global const T* b, __global T* c, uint size)
 {
     if(get_global_id(0) >= size * size)
         return;

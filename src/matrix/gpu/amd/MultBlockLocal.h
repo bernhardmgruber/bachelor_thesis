@@ -16,7 +16,7 @@ namespace gpu
 
             const string getName() override
             {
-                return "Matrix multiplication (Blocks and local tiles, AMD)";
+                return "Matrix multiplication (Blocks and one local tile, AMD)";
             }
 
             const cl_uint getWorkDimensions() const override
@@ -47,7 +47,7 @@ namespace gpu
                     throw OpenCLException(ss.str());
                 }
 
-                adjustedSize = roundToMultiple(size, tileSize * 4);
+                adjustedSize = roundToMultiple(size, tileSize * BLOCK_SIZE);
 
                 a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                 if(adjustedSize != size)
@@ -84,7 +84,7 @@ namespace gpu
                 kernel->setArg(3, (cl_uint)adjustedSize);
                 kernel->setArg(4, tileSize * tileSize * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float), nullptr);
 
-                size_t globalWorkSizes[] = { adjustedSize / 4, adjustedSize / 4 };
+                size_t globalWorkSizes[] = { adjustedSize / BLOCK_SIZE, adjustedSize / BLOCK_SIZE };
                 size_t localWorkSizes[] = { tileSize, tileSize };
 
                 queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);

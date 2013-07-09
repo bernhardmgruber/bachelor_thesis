@@ -1,4 +1,4 @@
-__kernel void MultLocal(__global T* a, __global T* b, __global T* c, uint size, __local float* aTile, __local float* bTile)
+__kernel void MultLocal(__global const T* a, __global const T* b, __global T* c, uint size, __local float* aTile, __local float* bTile)
 {
     int BLOCK_SIZE = get_local_size(0);
 

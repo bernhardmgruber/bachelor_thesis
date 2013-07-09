@@ -105,6 +105,9 @@
     <ClInclude Include="gpu\nvidia\MultLocal.h">
       <Filter>gpu\nvidia</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultBlockLocalOneAMD.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\dixxi\MultHybrid.cl">
@@ -148,6 +151,9 @@
     </None>
     <None Include="gpu\nvidia\MultLocal.cl">
       <Filter>gpu\nvidia</Filter>
+    </None>
+    <None Include="gpu\dixxi\MultBlockLocalOneAMD.cl">
+      <Filter>gpu\dixxi</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

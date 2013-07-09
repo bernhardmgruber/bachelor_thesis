@@ -45,7 +45,7 @@ After global and local work size have been chosen, the kernel can be enqueued on
 The last missing component of the naive GPU implementation is the OpenCL kernel itself which is given in listing \ref{lst:matrix_cl_naive_kernel}. The \lstinline!__kernel! function closely resembles the loop body of the second \lstinline!for! loop of the CPU implementation in listing \ref{lst:matrix_cpu}. The purpose of a single invocation of this kernel is to calculate one element of the output matrix. By using OpenCL's built-in function \lstinline!get_global_id()! with the dimension as argument, the kernel invocation can retrieve it's position inside the NDRange which equals the output matrix (plus extra space due to work group size rounding). Therefore, the retrieved position has to be checked against the matrices' size as the NDRange may be larger than the original matrix. If the coordinates identify a valid matrix position, the output element is again determined by calculating the dot product of the \lstinline!row! in matrix \lstinline!a! and the \lstinline!col! in matrix \lstinline!b! and eventually written to the output matrix buffer \lstinline!c!.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix., label=lst:matrix_cl_naive_kernel]{code/matrix/Mult.cl}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per work item., label=lst:matrix_cl_naive_kernel]{code/matrix/Mult.cl}
 \lstset{basicstyle=\ttfamily{}}
 
 When run on the GPU, the performance of this naive OpenCL implementation is already amazingly fast when we have a look at the benchmark in figure \ref{fig:matrix_chart}. At an edge length of 800 elements, the size where the CPU implementation's needed time started to blow up beyond several seconds, the GPU variant still runs very happily at around 200 milliseconds. Additionally, the curve raises far slower than the CPU's one.
@@ -55,19 +55,28 @@ When run on the GPU, the performance of this naive OpenCL implementation is alre
 
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix by caching tiles of the input matrices in local memory. The implementation is based on J. Tompson and K. Schlachter \cite{preso}., label=lst:matrix_cl_local_kernel,]{code/matrix/MultLocal.cl}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per wok item. The input matrixes are split into tiles which are cached in local memory. The implementation is based on J. Tompson and K. Schlachter \cite{preso}., label=lst:matrix_cl_local_kernel,]{code/matrix/MultLocal.cl}
 \lstset{basicstyle=\ttfamily{}}
 
 
 
-\subsubsection{Optimization using vectorization}
+\subsection{Optimization using vectorization}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per wok item using float4 vectors. The input matrixes are accessed directly from global memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_kernel,]{code/matrix/MultBlock.cl}
+\lstset{basicstyle=\ttfamily{}}
 
 
 
+\subsection{Optimization using both}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per wok item using float4 vectors. The input matrixes are split into tiles of blocks which are cached in local memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_kernel,]{code/matrix/MultBlockLocal.cl}
+\lstset{basicstyle=\ttfamily{}}
+
+\subsection{Further tries}
 
 
-\subsubsection{Using local memory}
-caching in local memory (blocks)
 
 \subsection{Existing implementations}
 

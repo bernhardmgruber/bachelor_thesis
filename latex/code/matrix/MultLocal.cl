@@ -1,6 +1,6 @@
 #define TILE_SIZE 16
 
-__kernel void MultLocal(const __global float* a, const __global float* b, __global float* c, uint size)
+__kernel void MultLocal(__global const float* a, __global const float* b, __global float* c, uint size)
 {
     int globalX = get_global_id(0);
     int globalY = get_global_id(1);
