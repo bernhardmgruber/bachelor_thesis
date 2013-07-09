@@ -6,17 +6,18 @@
 
 namespace gpu
 {
-    namespace amd
+    namespace dixxi
     {
+        /**
+        * Eventually became a copy of preso
+        */
         template<typename T>
-        class MultTile : public CLAlgorithm<T>, public MatrixAlgorithm
+        class MultLocal : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
-                static const size_t BLOCK_SIZE = 4;
-
                 const string getName() override
                 {
-                    return "Matrix multiplication (Tiles, AMD)";
+                    return "Matrix multiplication (Local tiles)";
                 }
 
                 const cl_uint getWorkDimensions() const override
@@ -26,16 +27,14 @@ namespace gpu
 
                 void init() override
                 {
-                    stringstream ss;
-                    ss << "-DT4=" << getTypeName<T>() << "4" << " -DBLOCK_SIZE=" << BLOCK_SIZE;
-                    Program* program = context->createProgram("gpu/amd/MultTile.cl", ss.str());
-                    kernel = program->createKernel("MultTile");
+                    Program* program = context->createProgram("gpu/dixxi/MultLocal.cl", "-D T=" + getTypeName<T>());
+                    kernel = program->createKernel("MultLocal");
                     delete program;
                 }
 
                 void upload(size_t workGroupSize, T* data, size_t size) override
                 {
-                    adjustedSize = roundToMultiple(size, BLOCK_SIZE);
+                    adjustedSize = roundToMultiple(size, workGroupSize);
 
                     a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                     if(adjustedSize != size)
@@ -44,10 +43,11 @@ namespace gpu
                         size_t bufferOffset[] = {0, 0, 0};
                         size_t hostOffset[] = {0, 0, 0};
                         size_t sizes[] = {size * sizeof(T), size, 1};
-                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                        queue->enqueueWriteRect(a, data, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
                     }
                     else
                         queue->enqueueWrite(a, data);
+
 
                     b = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                     if(adjustedSize != size)
@@ -56,7 +56,7 @@ namespace gpu
                         size_t bufferOffset[] = {0, 0, 0};
                         size_t hostOffset[] = {0, 0, 0};
                         size_t sizes[] = {size * sizeof(T), size, 1};
-                        queue->enqueueWriteRect(b, data + size * size, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
+                        queue->enqueueWriteRect(b, data + size * size, bufferOffset, hostOffset, sizes , adjustedSize * sizeof(T), 0, size * sizeof(T), 0, false);
                     }
                     else
                         queue->enqueueWrite(b, data + size * size);
@@ -70,10 +70,10 @@ namespace gpu
                     kernel->setArg(1, b);
                     kernel->setArg(2, c);
                     kernel->setArg(3, (cl_uint)adjustedSize);
+                    kernel->setArg(4, workGroupSize * workGroupSize * sizeof(cl_float), nullptr);
+                    kernel->setArg(5, workGroupSize * workGroupSize * sizeof(cl_float), nullptr);
 
-                    size_t adjustedWorkSize = roundToMultiple(adjustedSize, workGroupSize * BLOCK_SIZE);
-
-                    size_t globalWorkSizes[] = { adjustedWorkSize / BLOCK_SIZE, adjustedWorkSize / BLOCK_SIZE }; // each thread processes one block
+                    size_t globalWorkSizes[] = { adjustedSize, adjustedSize };
                     size_t localWorkSizes[] = { workGroupSize, workGroupSize };
 
                     queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
@@ -89,9 +89,9 @@ namespace gpu
                         queue->enqueueReadRect(c, result, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                     }
                     else
-                        queue->enqueueRead(c, result, 0);
+                        queue->enqueueRead(c, result);
 
-                    delete a;
+					delete a;
                     delete b;
                     delete c;
                 }
@@ -101,7 +101,7 @@ namespace gpu
                     delete kernel;
                 }
 
-                virtual ~MultTile() {}
+                virtual ~MultLocal() {}
 
             private:
                 Kernel* kernel;

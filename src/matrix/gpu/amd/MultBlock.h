@@ -6,17 +6,17 @@
 
 namespace gpu
 {
-    namespace dixxi
+    namespace amd
     {
         template<typename T>
-        class MultTileAMD : public CLAlgorithm<T>, public MatrixAlgorithm
+        class MultBlock : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
                 static const size_t BLOCK_SIZE = 4;
 
                 const string getName() override
                 {
-                    return "Matrix multiplication (Tiles, dixxi AMD)";
+                    return "Matrix multiplication (Blocks, AMD)";
                 }
 
                 const cl_uint getWorkDimensions() const override
@@ -27,9 +27,9 @@ namespace gpu
                 void init() override
                 {
                     stringstream ss;
-                    ss << "-DT=" << getTypeName<T>() << " -DBLOCK_SIZE=" << BLOCK_SIZE;
-                    Program* program = context->createProgram("gpu/dixxi/MultTileAMD.cl", ss.str());
-                    kernel = program->createKernel("MultTile");
+                    ss << "-DT4=" << getTypeName<T>() << "4" << " -DBLOCK_SIZE=" << BLOCK_SIZE;
+                    Program* program = context->createProgram("gpu/amd/MultBlock.cl", ss.str());
+                    kernel = program->createKernel("MultBlock");
                     delete program;
                 }
 
@@ -89,9 +89,7 @@ namespace gpu
                         queue->enqueueReadRect(c, result, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(T), 0, size * sizeof(T), 0);
                     }
                     else
-                        queue->enqueueRead(c, result, 0, size * size * sizeof(T));
-
-                    //printArr2D(result, size * size, size);
+                        queue->enqueueRead(c, result, 0);
 
                     delete a;
                     delete b;
@@ -103,7 +101,7 @@ namespace gpu
                     delete kernel;
                 }
 
-                virtual ~MultTileAMD() {}
+                virtual ~MultBlock() {}
 
             private:
                 Kernel* kernel;

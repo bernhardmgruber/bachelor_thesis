@@ -6,17 +6,17 @@
 
 namespace gpu
 {
-    namespace amd
+    namespace dixxi
     {
         template<typename T>
-        class MultTileLocal : public CLAlgorithm<T>, public MatrixAlgorithm
+        class MultBlockLocalAMDTransposed : public CLAlgorithm<T>, public MatrixAlgorithm
         {
         public:
             static const size_t BLOCK_SIZE = 4;
 
             const string getName() override
             {
-                return "Matrix multiplication (Tiles local, AMD)";
+                return "Matrix multiplication (Blocks and local tiles transposed, dixxi AMD)";
             }
 
             const cl_uint getWorkDimensions() const override
@@ -28,8 +28,8 @@ namespace gpu
             {
                     stringstream ss;
                     ss << "-DT4=" << getTypeName<T>() << "4" << " -DBLOCK_SIZE=" << BLOCK_SIZE;
-                    Program* program = context->createProgram("gpu/amd/MultTileLocal.cl", ss.str());
-                    kernel = program->createKernel("MultTileLocal");
+                    Program* program = context->createProgram("gpu/dixxi/MultBlockLocalAMDTransposed.cl", ss.str());
+                    kernel = program->createKernel("MultBlockLocalTransposed");
                     delete program;
             }
 
@@ -37,10 +37,13 @@ namespace gpu
             {
                 tileSize = workGroupSize;
 
+                //if(tileSize < 4)
+                //    throw OpenCLException("Block size must be a larger than or equal to 4");
+
                 cl_ulong localMemAvailable;
                 clGetDeviceInfo(OpenCL::getGPUContext()->getCLDevice(), CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &localMemAvailable, nullptr);
 
-                size_t localMemRequired = tileSize * tileSize * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float);
+                size_t localMemRequired = tileSize * tileSize * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float) * 2;
                 if(localMemRequired > localMemAvailable) {
                     stringstream ss;
                     ss << "Required local memory " << localMemRequired << " for given tileSize of " << tileSize << " is larger than the available memory " << localMemAvailable << endl;
@@ -83,6 +86,7 @@ namespace gpu
                 kernel->setArg(2, c);
                 kernel->setArg(3, (cl_uint)adjustedSize);
                 kernel->setArg(4, tileSize * tileSize * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float), nullptr);
+                kernel->setArg(5, tileSize * tileSize * BLOCK_SIZE * BLOCK_SIZE * sizeof(cl_float), nullptr);
 
                 size_t globalWorkSizes[] = { adjustedSize / 4, adjustedSize / 4 };
                 size_t localWorkSizes[] = { tileSize, tileSize };
@@ -112,7 +116,7 @@ namespace gpu
                 delete kernel;
             }
 
-            virtual ~MultTileLocal() {}
+            virtual ~MultBlockLocalAMDTransposed() {}
 
         private:
             Kernel* kernel;

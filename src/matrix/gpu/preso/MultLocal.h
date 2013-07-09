@@ -21,7 +21,7 @@ namespace gpu
         public:
             const string getName() override
             {
-                return "Matrix multiplication (Tiles local, Preso)";
+                return "Matrix multiplication (Local tiles, Preso)";
             } 
 
             const cl_uint getWorkDimensions() const override

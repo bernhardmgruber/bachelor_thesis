@@ -13,29 +13,36 @@ namespace gpu
     namespace nvidia
     {
         template<typename T>
-        class Mult : public CLAlgorithm<T>, public MatrixAlgorithm
+        class MultLocal : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
-                const static size_t BLOCK_SIZE = 16;
+                const static size_t TILE_SIZE = 16;
 
                 const string getName() override
                 {
-                    return "Matrix multiplication (NVIDIA)";
+                    return "Matrix multiplication (Local tiles, NVIDIA)";
+                }
+
+                const vector<size_t> getSupportedWorkGroupSizes() const override
+                {
+                    vector<size_t> sizes;
+                    sizes.push_back(TILE_SIZE);
+                    return sizes;
                 }
 
                 void init() override
                 {
                     stringstream ss;
-                    ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE;
+                    ss << "-D T=" << getTypeName<T>() << " -D TILE_SIZE=" << TILE_SIZE;
 
-                    Program* program = context->createProgram("gpu/nvidia/Mult.cl", ss.str());
+                    Program* program = context->createProgram("gpu/nvidia/MultLocal.cl", ss.str());
                     kernel = program->createKernel("matrixMul");
                     delete program;
                 }
 
                 void upload(size_t workGroupSize, T* data, size_t size) override
                 {
-                    adjustedSize = roundToMultiple(size, BLOCK_SIZE);
+                    adjustedSize = roundToMultiple(size, TILE_SIZE);
 
                     a = context->createBuffer(CL_MEM_READ_ONLY, adjustedSize * adjustedSize * sizeof(T));
                     if(adjustedSize != size)
@@ -69,12 +76,12 @@ namespace gpu
                     kernel->setArg(0, c);
                     kernel->setArg(1, a);
                     kernel->setArg(2, b);
-                    kernel->setArg(3, sizeof(T) * BLOCK_SIZE * BLOCK_SIZE, nullptr);
-                    kernel->setArg(4, sizeof(T) * BLOCK_SIZE * BLOCK_SIZE, nullptr);
+                    kernel->setArg(3, sizeof(T) * TILE_SIZE * TILE_SIZE, nullptr);
+                    kernel->setArg(4, sizeof(T) * TILE_SIZE * TILE_SIZE, nullptr);
                     kernel->setArg(5, (cl_int)adjustedSize);
 
                     size_t globalWorkSizes[] = { adjustedSize, adjustedSize };
-                    size_t localWorkSizes[] = { BLOCK_SIZE, BLOCK_SIZE };
+                    size_t localWorkSizes[] = { TILE_SIZE, TILE_SIZE };
 
                     queue->enqueueKernel(kernel, 2, globalWorkSizes, localWorkSizes);
                 }
@@ -102,7 +109,7 @@ namespace gpu
                     delete kernel;
                 }
 
-                virtual ~Mult() {}
+                virtual ~MultLocal() {}
 
             private:
                 Kernel* kernel;

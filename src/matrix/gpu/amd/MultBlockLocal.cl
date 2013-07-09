@@ -8,7 +8,7 @@
 
 // Matrix A is cached into local memory block 
 // Required global threads = (size / 4, size / 4) 
-__kernel void MultTileLocal(__global const T4* a, __global const T4* b, __global T4* c, uint size, __local T4* aTile)
+__kernel void MultBlockLocal(__global const T4* a, __global const T4* b, __global T4* c, uint size, __local T4* aTile)
 {
     int blockPos = get_local_id(0) + get_local_size(0) * (get_local_id(1) * BLOCK_SIZE); //Should be : localId * (BLOCK_SIZE / 4) (int4)
 

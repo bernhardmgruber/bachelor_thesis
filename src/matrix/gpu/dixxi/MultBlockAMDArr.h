@@ -9,14 +9,14 @@ namespace gpu
     namespace dixxi
     {
         template<typename T>
-        class MultTileAMDArr : public CLAlgorithm<T>, public MatrixAlgorithm
+        class MultBlockAMDArr : public CLAlgorithm<T>, public MatrixAlgorithm
         {
             public:
                 static const size_t BLOCK_SIZE = 4;
 
                 const string getName() override
                 {
-                    return "Matrix multiplication (Tiles array, dixxi AMD)";
+                    return "Matrix multiplication (Blocks array, dixxi AMD)";
                 }
 
                 const cl_uint getWorkDimensions() const override
@@ -28,8 +28,8 @@ namespace gpu
                 {
                     stringstream ss;
                     ss << "-DT=" << getTypeName<T>() << " -DBLOCK_SIZE=" << BLOCK_SIZE;
-                    Program* program = context->createProgram("gpu/dixxi/MultTileAMDArr.cl", ss.str());
-                    kernel = program->createKernel("MultTile");
+                    Program* program = context->createProgram("gpu/dixxi/MultBlockAMDArr.cl", ss.str());
+                    kernel = program->createKernel("MultBlock");
                     delete program;
                 }
 
@@ -103,7 +103,7 @@ namespace gpu
                     delete kernel;
                 }
 
-                virtual ~MultTileAMDArr() {}
+                virtual ~MultBlockAMDArr() {}
 
             private:
                 Kernel* kernel;

@@ -54,7 +54,7 @@
 // Output tile size : BLOCK_SIZE x BLOCK_SIZE = Each thread computes BLOCK_SIZE x BLOCK_SIZE float values
 // Required global threads = (size / BLOCK_SIZE, size / BLOCK_SIZE)
 // This kernel runs on 7xx and CPU as they don't have hardware local memory 
-__kernel void MultTile(__global TB* a, __global TB* b, __global TB* c, uint size)
+__kernel void MultBlock(__global TB* a, __global TB* b, __global TB* c, uint size)
 {
     int2 pos = (int2)(get_global_id(0), get_global_id(1));
 
@@ -78,7 +78,6 @@ __kernel void MultTile(__global TB* a, __global TB* b, __global TB* c, uint size
         for(int s = 0; s < BLOCK_SIZE; s++)
             aTile[s] = a[k / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + s) * blocks];
 
-        //Matrix B is not transposed
 #pragma unroll
         for(int s = 0; s < BLOCK_SIZE; s++)
             bTile[s] = b[pos.x + (k + s) * blocks];

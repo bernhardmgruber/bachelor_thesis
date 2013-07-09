@@ -42,14 +42,8 @@
     <ClInclude Include="cpu\cblas\Mult.h">
       <Filter>cpu\cblas</Filter>
     </ClInclude>
-    <ClInclude Include="gpu\nvidia\Mult.h">
-      <Filter>gpu\nvidia</Filter>
-    </ClInclude>
     <ClInclude Include="gpu\amdblas\Mult.h">
       <Filter>gpu\amdblas</Filter>
-    </ClInclude>
-    <ClInclude Include="gpu\dixxi\MultBlock.h">
-      <Filter>gpu\dixxi</Filter>
     </ClInclude>
     <ClInclude Include="gpu\dixxi\MultHybrid.h">
       <Filter>gpu\dixxi</Filter>
@@ -59,12 +53,6 @@
     </ClInclude>
     <ClInclude Include="cpu\dixxi\MultThreads.h">
       <Filter>cpu\dixxi</Filter>
-    </ClInclude>
-    <ClInclude Include="gpu\amd\MultTileLocal.h">
-      <Filter>gpu\amd</Filter>
-    </ClInclude>
-    <ClInclude Include="gpu\amd\MultTile.h">
-      <Filter>gpu\amd</Filter>
     </ClInclude>
     <ClInclude Include="gpu\dixxi\Mult1D.h">
       <Filter>gpu\dixxi</Filter>
@@ -77,15 +65,6 @@
     </ClInclude>
     <ClInclude Include="gpu\preso\MultLocal.h">
       <Filter>gpu\preso</Filter>
-    </ClInclude>
-    <ClInclude Include="gpu\dixxi\MultTileAMD.h">
-      <Filter>gpu\dixxi</Filter>
-    </ClInclude>
-    <ClInclude Include="gpu\dixxi\MultTileAMDArr.h">
-      <Filter>gpu\dixxi</Filter>
-    </ClInclude>
-    <ClInclude Include="gpu\dixxi\MultTileLocalAMD.h">
-      <Filter>gpu\dixxi</Filter>
     </ClInclude>
     <ClInclude Include="..\common\CLAlgorithm.h">
       <Filter>common</Filter>
@@ -102,28 +81,37 @@
     <ClInclude Include="..\common\structs.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="gpu\dixxi\MultTileLocalAMDTransposed.h">
+    <ClInclude Include="gpu\amd\MultBlock.h">
+      <Filter>gpu\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\amd\MultBlockLocal.h">
+      <Filter>gpu\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultLocal.h">
       <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultBlockAMD.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultBlockAMDArr.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultBlockLocalAMD.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\MultBlockLocalAMDTransposed.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\nvidia\MultLocal.h">
+      <Filter>gpu\nvidia</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\dixxi\MultHybrid.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
-    <None Include="gpu\dixxi\MultBlock.cl">
-      <Filter>gpu\dixxi</Filter>
-    </None>
     <None Include="gpu\dixxi\MultImage.cl">
       <Filter>gpu\dixxi</Filter>
-    </None>
-    <None Include="gpu\amd\MultTileLocal.cl">
-      <Filter>gpu\amd</Filter>
-    </None>
-    <None Include="gpu\amd\MultTile.cl">
-      <Filter>gpu\amd</Filter>
-    </None>
-    <None Include="gpu\nvidia\Mult.cl">
-      <Filter>gpu\nvidia</Filter>
     </None>
     <None Include="gpu\dixxi\Mult1D.cl">
       <Filter>gpu\dixxi</Filter>
@@ -137,17 +125,29 @@
     <None Include="gpu\preso\MultLocal.cl">
       <Filter>gpu\preso</Filter>
     </None>
-    <None Include="gpu\dixxi\MultTileAMD.cl">
+    <None Include="gpu\amd\MultBlock.cl">
+      <Filter>gpu\amd</Filter>
+    </None>
+    <None Include="gpu\amd\MultBlockLocal.cl">
+      <Filter>gpu\amd</Filter>
+    </None>
+    <None Include="gpu\dixxi\MultLocal.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
-    <None Include="gpu\dixxi\MultTileAMDArr.cl">
+    <None Include="gpu\dixxi\MultBlockAMD.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
-    <None Include="gpu\dixxi\MultTileLocalAMD.cl">
+    <None Include="gpu\dixxi\MultBlockAMDArr.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
-    <None Include="gpu\dixxi\MultTileLocalAMDTransposed.cl">
+    <None Include="gpu\dixxi\MultBlockLocalAMD.cl">
       <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\MultBlockLocalAMDTransposed.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\nvidia\MultLocal.cl">
+      <Filter>gpu\nvidia</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

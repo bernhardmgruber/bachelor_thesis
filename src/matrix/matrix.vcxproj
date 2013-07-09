@@ -33,37 +33,37 @@
     <ClInclude Include="cpu\dixxi\Mult.h" />
     <ClInclude Include="cpu\dixxi\MultThreads.h" />
     <ClInclude Include="gpu\amdblas\Mult.h" />
-    <ClInclude Include="gpu\amd\MultTile.h" />
-    <ClInclude Include="gpu\amd\MultTileLocal.h" />
+    <ClInclude Include="gpu\amd\MultBlock.h" />
+    <ClInclude Include="gpu\amd\MultBlockLocal.h" />
     <ClInclude Include="gpu\dixxi\Mult1D.h" />
     <ClInclude Include="gpu\dixxi\Mult2D.h" />
     <ClInclude Include="gpu\dixxi\Mult2DCoalesced.h" />
-    <ClInclude Include="gpu\dixxi\MultBlock.h" />
+    <ClInclude Include="gpu\dixxi\MultLocal.h" />
     <ClInclude Include="gpu\dixxi\MultHybrid.h" />
     <ClInclude Include="gpu\dixxi\MultImage.h" />
-    <ClInclude Include="gpu\dixxi\MultTileAMD.h" />
-    <ClInclude Include="gpu\dixxi\MultTileAMDArr.h" />
-    <ClInclude Include="gpu\dixxi\MultTileLocalAMD.h" />
-    <ClInclude Include="gpu\dixxi\MultTileLocalAMDTransposed.h" />
-    <ClInclude Include="gpu\nvidia\Mult.h" />
+    <ClInclude Include="gpu\dixxi\MultBlockAMD.h" />
+    <ClInclude Include="gpu\dixxi\MultBlockAMDArr.h" />
+    <ClInclude Include="gpu\dixxi\MultBlockLocalAMD.h" />
+    <ClInclude Include="gpu\dixxi\MultBlockLocalAMDTransposed.h" />
+    <ClInclude Include="gpu\nvidia\MultLocal.h" />
     <ClInclude Include="gpu\preso\MultLocal.h" />
     <ClInclude Include="MatrixAlgorithm.h" />
     <ClInclude Include="MatrixPlugin.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="gpu\amd\MultTile.cl" />
-    <None Include="gpu\amd\MultTileLocal.cl" />
+    <None Include="gpu\amd\MultBlock.cl" />
+    <None Include="gpu\amd\MultBlockLocal.cl" />
     <None Include="gpu\dixxi\Mult1D.cl" />
     <None Include="gpu\dixxi\Mult2D.cl" />
     <None Include="gpu\dixxi\Mult2DCoalesced.cl" />
-    <None Include="gpu\dixxi\MultBlock.cl" />
+    <None Include="gpu\dixxi\MultLocal.cl" />
     <None Include="gpu\dixxi\MultHybrid.cl" />
     <None Include="gpu\dixxi\MultImage.cl" />
-    <None Include="gpu\dixxi\MultTileAMD.cl" />
-    <None Include="gpu\dixxi\MultTileAMDArr.cl" />
-    <None Include="gpu\dixxi\MultTileLocalAMD.cl" />
-    <None Include="gpu\dixxi\MultTileLocalAMDTransposed.cl" />
-    <None Include="gpu\nvidia\Mult.cl" />
+    <None Include="gpu\dixxi\MultBlockAMD.cl" />
+    <None Include="gpu\dixxi\MultBlockAMDArr.cl" />
+    <None Include="gpu\dixxi\MultBlockLocalAMD.cl" />
+    <None Include="gpu\dixxi\MultBlockLocalAMDTransposed.cl" />
+    <None Include="gpu\nvidia\MultLocal.cl" />
     <None Include="gpu\preso\MultLocal.cl" />
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@
 // Output tile size : 4x4 = Each thread computes 16 float values
 // Required global threads = (widthC / 4, heightC / 4) 
 // This kernel runs on 7xx and CPU as they don't have hardware local memory 
-__kernel void MultTile(__global const T4* a, __global const T4* b, __global T4* c, uint size)
+__kernel void MultBlock(__global const T4* a, __global const T4* b, __global T4* c, uint size)
 {
     int2 pos = (int2)(get_global_id(0), get_global_id(1));
 
