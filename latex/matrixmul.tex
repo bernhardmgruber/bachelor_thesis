@@ -39,7 +39,7 @@ Note that choosing a work group size which does not evenly divide the global wor
 After global and local work size have been chosen, the kernel can be enqueued on the command queue to be executed by calling \lstinline!clEnqueueNDRangeKernel()!. The call immediately returns as the kernel is executed asynchronously when the command queue is flushed (\lstinline!clFlush()!) or a blocking command is enqueued, which is the case on the subsequent read operation. The call to \lstinline!clEnqueueReadBuffer()! reads the result back from the device to the host application's array. Note that the third parameter is set to \lstinline!true! indicating a blocking operation. All previously enqueued commands are ensured to be executed and finished before the read operation takes place which returns after all data has been successfully copied to client memory.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for a matrix multiplication implementation using OpenCL., label=lst:matrix_cl_naive, firstline=29, lastline=55]{code/matrix/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for a matrix multiplication implementation using OpenCL., label=lst:matrix_cl_naive, firstline=32, lastline=62]{code/matrix/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 The last missing component of the naive GPU implementation is the OpenCL kernel itself which is given in listing \ref{lst:matrix_cl_naive_kernel}. The \lstinline!__kernel! function closely resembles the loop body of the second \lstinline!for! loop of the CPU implementation in listing \ref{lst:matrix_cpu}. The purpose of a single invocation of this kernel is to calculate one element of the output matrix. By using OpenCL's built-in function \lstinline!get_global_id()! with the dimension as argument, the kernel invocation can retrieve it's position inside the NDRange which equals the output matrix (plus extra space due to work group size rounding). Therefore, the retrieved position has to be checked against the matrices' size as the NDRange may be larger than the original matrix. If the coordinates identify a valid matrix position, the output element is again determined by calculating the dot product of the \lstinline!row! in matrix \lstinline!a! and the \lstinline!col! in matrix \lstinline!b! and eventually written to the output matrix buffer \lstinline!c!.
@@ -51,14 +51,19 @@ The last missing component of the naive GPU implementation is the OpenCL kernel 
 When run on the GPU, the performance of this naive OpenCL implementation is already amazingly fast when we have a look at the benchmark in figure \ref{fig:matrix_chart}. At an edge length of 800 elements, the size where the CPU implementation's needed time started to blow up beyond several seconds, the GPU variant still runs very happily at around 200 milliseconds. Additionally, the curve raises far slower than the CPU's one.
 
 
-\subsection{Optimized GPU implementation}
-options for performance improvement
-multiple elements per work item
+\subsection{Optimization using local memory}
 
-texture unit
 
-\subsubsection{Using vector instructions}
-vector instructions (AMD Tile)
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix by caching tiles of the input matrices in local memory. The implementation is based on J. Tompson and K. Schlachter \cite{preso}., label=lst:matrix_cl_local_kernel,]{code/matrix/MultLocal.cl}
+\lstset{basicstyle=\ttfamily{}}
+
+
+
+\subsubsection{Optimization using vectorization}
+
+
+
 
 
 \subsubsection{Using local memory}
@@ -77,6 +82,8 @@ Beside the presented implementations, several libraries exist supporting matrix 
 
 \subsection{Benchmarks and conclusion}
 Which implementation is when better?
+
+
 
 \begin{figure}
 \centering

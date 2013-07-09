@@ -3,7 +3,6 @@ __kernel void Mult(const __global float* a, const __global float* b, __global fl
     size_t col = get_global_id(0);
     size_t row = get_global_id(1);
 
-    // check bounds
     if(row >= size || col >= size)
         return;
 
