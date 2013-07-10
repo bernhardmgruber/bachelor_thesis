@@ -25,14 +25,18 @@ void ConsoleWriter::endOutput(double seconds)
     cout << "Finishing runner after " << seconds << "s of run time" << endl;
 }
 
-void ConsoleWriter::beginAlgorithm(string algorithmName, RunType runType)
+void ConsoleWriter::beginAlgorithm(string algorithmName, RunType runType, double initTime)
 {
     cout << "###############################################################################" << endl;
     cout << "# " << algorithmName << " " << runTypeToString(runType) << endl;
+    if(initTime != -1.0)
+        cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << initTime << "s" << endl;
 }
 
-void ConsoleWriter::endAlgorithm()
+void ConsoleWriter::endAlgorithm(double cleanupTime)
 {
+    if(cleanupTime != -1.0)
+        cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << cleanupTime << "s" << endl;
     cout << "###############################################################################" << endl;
     cout << endl;
 }
@@ -49,7 +53,6 @@ void ConsoleWriter::writeRun(const CPURun& run)
 void ConsoleWriter::writeRun(const CLRun& run)
 {
     cout << "#  " << run.taskDescription << endl;
-    cout << "#  (Init)         " << fixed << setprecision(FLOAT_PRECISION) << run.initTime << "s" << endl;
     cout << "#  Upload (avg)   " << fixed << setprecision(FLOAT_PRECISION) << run.avgUploadTime << "s" << endl;
 
     for(auto r : run.runsWithWGSize)
@@ -59,6 +62,5 @@ void ConsoleWriter::writeRun(const CLRun& run)
             cout << "#  WG: " << setw(4) << r.wgSize << "       " << fixed << setprecision(FLOAT_PRECISION) << r.runTimeMean << "s (sigma " << r.runTimeDeviation << "s) " << (r.verificationResult ? "SUCCESS" : "FAILED ") << endl;
 
     cout << "#  Download (avg) " << fixed << setprecision(FLOAT_PRECISION) << run.avgDownloadTime << "s" << endl;
-    cout << "#  (Cleanup)      " << fixed << setprecision(FLOAT_PRECISION) << run.cleanupTime << "s" << endl;
     cout << "#  Fastest        " << fixed << setprecision(FLOAT_PRECISION) << (run.fastest->uploadTimeMean + run.fastest->runTimeMean + run.fastest->downloadTimeMean) << "s " << "(WG: " << run.fastest->wgSize << ") " << endl;
 }

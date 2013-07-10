@@ -59,7 +59,7 @@ class MatrixPlugin
             bool success = true;
 
             #pragma omp parallel for
-            for(size_t i = 0; i < size; i++)
+            for(int i = 0; i < size; i++)
             {
                 if(success)
                     for(size_t j = 0; j < size; j++)

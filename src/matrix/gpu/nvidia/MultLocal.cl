@@ -24,7 +24,7 @@
 //! Matrix multiplication on the device: C = A * B
 //! uiWA is A's width and uiWB is B's width
 ////////////////////////////////////////////////////////////////////////////////
-__kernel void matrixMul( __global const T* C, __global const T* A, __global T* B, __local T* As, __local T* Bs, int size)
+__kernel void matrixMul( __global const T* A, __global const T* B, __global T* C, __local T* As, __local T* Bs, int size)
 {
     int uiWA = size;
     int uiWB = size;

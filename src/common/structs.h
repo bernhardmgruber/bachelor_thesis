@@ -72,8 +72,8 @@ struct CLRunWithWGSize
 
 struct CLRun : public Run
 {
-    double initTime;
-    double cleanupTime;
+    //double initTime;
+    //double cleanupTime;
     vector<CLRunWithWGSize> runsWithWGSize;
     vector<CLRunWithWGSize>::iterator fastest;
     double avgUploadTime;

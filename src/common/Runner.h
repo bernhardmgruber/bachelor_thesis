@@ -144,16 +144,27 @@ public:
         alg->setContext(context);
         alg->setCommandQueue(queue);
 
-        writer.beginAlgorithm(alg->getName(), runType == CLRunType::CPU ? RunType::CL_CPU : RunType::CL_GPU);
-        consoleWriter.beginAlgorithm(alg->getName(), runType == CLRunType::CPU ? RunType::CL_CPU : RunType::CL_GPU);
+        // run custom initialization
+        timer.start();
+        alg->init();
+        double initTime = timer.stop();
 
+        writer.beginAlgorithm(alg->getName(), runType == CLRunType::CPU ? RunType::CL_CPU : RunType::CL_GPU, initTime);
+        consoleWriter.beginAlgorithm(alg->getName(), runType == CLRunType::CPU ? RunType::CL_CPU : RunType::CL_GPU, initTime);
+
+        // run algorithm for different problem sizes
         for(size_t size : sizes)
             runCL(alg, context, queue, useAllSupportedWorkGroupSizes, size);
 
+        // cleanup
+        timer.start();
+        alg->cleanup();
+        double cleanupTime = timer.stop();
+
         delete alg;
 
-        writer.endAlgorithm();
-        consoleWriter.endAlgorithm();
+        writer.endAlgorithm(cleanupTime);
+        consoleWriter.endAlgorithm(cleanupTime);
     }
 
     void writeCPUDeviceInfo(string fileName)
@@ -279,21 +290,12 @@ private:
         data = plugin->genInput(size);
         result = plugin->genResult(size);
 
-        // run custom initialization
-        timer.start();
-        alg->init();
-        run.initTime = timer.stop();
 
         if(useAllSupportedWorkGroupSizes)
             for(size_t i : alg->getSupportedWorkGroupSizes())
                 run.runsWithWGSize.push_back(uploadRunDownload(alg, context, queue, i, size));
         else
             run.runsWithWGSize.push_back(uploadRunDownload(alg, context, queue, alg->getOptimalWorkGroupSize(), size));
-
-        // cleanup
-        timer.start();
-        alg->cleanup();
-        run.cleanupTime = timer.stop();
 
         // calculate fastest run
         run.fastest = min_element(run.runsWithWGSize.begin(), run.runsWithWGSize.end(), [](CLRunWithWGSize& a, CLRunWithWGSize& b) -> double

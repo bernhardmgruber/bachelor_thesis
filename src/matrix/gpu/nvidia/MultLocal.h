@@ -73,9 +73,9 @@ namespace gpu
 
                 void run(size_t workGroupSize, size_t size) override
                 {
-                    kernel->setArg(0, c);
-                    kernel->setArg(1, a);
-                    kernel->setArg(2, b);
+                    kernel->setArg(0, a);
+                    kernel->setArg(1, b);
+                    kernel->setArg(2, c);
                     kernel->setArg(3, sizeof(T) * TILE_SIZE * TILE_SIZE, nullptr);
                     kernel->setArg(4, sizeof(T) * TILE_SIZE * TILE_SIZE, nullptr);
                     kernel->setArg(5, (cl_int)adjustedSize);
