@@ -25,6 +25,8 @@ The \lstinline!matrixMul()! function takes two pointers to the memory where the 
 The algorithm itself is simple. Every element of the output matrix has to be calculated, therefore the outer two \lstinline!for! loops run through all of these elements. For each output element the dot product of the \lstinline!row! in matrix \lstinline!a! and the \lstinline!col! in matrix \lstinline!b! are calculated.
 
 The performance of this implementation is conceivably slow as one can see in figure \ref{fig:matrix_chart}. Multiplying matrices with an edge length of up to 700 elements can be done in a short time (below one second), but larger matrices require a huge period of time which is unsatisfying in most cases.
+Also a multithreaded version of the provided code in listing \ref{lst:matrix_cpu} (e.g. by using OpenMP and place a \lstinline!#pragma omp parallel for! above the outer for loop) does not provide a solution here, as we can see in figure \ref{fig:matrix_chart}.
+The highly optimized Fortan77 BLAS library \cite{blas_lib} achieves a significant better performance when compared with the simple CPU implementation provided here.
 
 \subsection{Naive GPU implementation}
 
@@ -75,6 +77,9 @@ When run on the GPU, the performance of this naive OpenCL implementation is alre
 \lstset{basicstyle=\ttfamily{}}
 
 \subsection{Further tries}
+1D vs 2D problem dimensions
+texture unit (images)
+
 
 
 
@@ -97,7 +102,7 @@ Which implementation is when better?
 \begin{figure}
 \centering
 \includegraphics[width=1.0\linewidth]{matrix_chart}
-\caption{Benchmark of several square matrix multiplication implementations. CPU implementations are drawn as dashed lines.}
+\caption{Benchmark of several square matrix multiplication implementations.}
 \label{fig:matrix_chart}
 \end{figure}
 
