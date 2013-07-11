@@ -1,30 +1,30 @@
 __kernel void MultLocal(__global const T* a, __global const T* b, __global T* c, uint size, __local float* aTile, __local float* bTile)
 {
-    int BLOCK_SIZE = get_local_size(0);
+    int tileSize = get_local_size(0);
 
     int groupX = get_group_id(0);
     int groupY = get_group_id(1);
     int localX = get_local_id(0);
     int localY = get_local_id(1);
 
-    int aBegin = size * (BLOCK_SIZE * groupY);
+    int aBegin = size * (tileSize * groupY);
     int aEnd = aBegin + size - 1;
-    int aStep = BLOCK_SIZE;
+    int aStep = tileSize;
 
-    int bBegin = BLOCK_SIZE * groupX;
-    int bStep = BLOCK_SIZE * size;
+    int bBegin = tileSize * groupX;
+    int bStep = tileSize * size;
 
     T sum = 0.0;
 
     for(int aPos = aBegin, bPos = bBegin; aPos <= aEnd; aPos += aStep, bPos += bStep)
     {
-        aTile[localY * BLOCK_SIZE + localX] = a[size * localY + localX + aPos];
-        bTile[localY * BLOCK_SIZE + localX] = b[size * localY + localX + bPos];
+        aTile[localY * tileSize + localX] = a[size * localY + localX + aPos];
+        bTile[localY * tileSize + localX] = b[size * localY + localX + bPos];
 
         barrier(CLK_LOCAL_MEM_FENCE);
 
-        for(int k = 0; k < BLOCK_SIZE; k++)
-            sum += aTile[localY * BLOCK_SIZE + k] * bTile[k * BLOCK_SIZE + localX];
+        for(int k = 0; k < tileSize; k++)
+            sum += aTile[localY * tileSize + k] * bTile[k * tileSize + localX];
 
         barrier(CLK_LOCAL_MEM_FENCE);
     }
