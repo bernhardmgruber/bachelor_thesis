@@ -1,6 +1,6 @@
 \section{Matrix multiplication}
 
-Multiplying matrices of a large size is often part of heavy scientific calculations and therefore an important building block in every mathematics library. Unfortunately, with an increasing size of the matrices the computation of the product becomes desperately slow due to an asymptotic runtime complexity of $\mathcal{O}(n^3)$ for a naive attempt. Therefore, several improvements have been tried to speed up the calculation like Strassen's algorithm achieving a runtime complexity of $\mathcal{O}(n^{\log_2 7}) = \mathcal{O}(n^{2.807})$ \ref{} which is faster than the naive version but still does not compute results within a satisfying time.
+Multiplying matrices of a large size is often part of heavy scientific calculations and therefore an important building block in every mathematics library. Unfortunately, with an increasing size of the matrices the computation of the product becomes desperately slow due to an asymptotic runtime complexity of $\mathcal{O}(n^3)$ for a naive attempt. Therefore, several improvements have been tried to speed up the calculation. Strassen's algorithm for example achieves a runtime complexity of $\mathcal{O}(n^{\log_2 7}) = \mathcal{O}(n^{2.807})$ \cite{strassen} which is faster than the naive version but still does not compute results within a satisfying time for larger matrixes.
 Nonetheless, modern computing systems can take advantage of one important aspect of the matrix multiplication which is it's embarrassing parallel nature. Each element of the output matrix can be computed completely independent. This potential may not only be used by today's CPU's vector extensions like SSE \footnote{Streaming SIMD Extensions, a vector instruction set extension by Intel supporting 128 bit wide registers to process 4 single precision floats in parallel.} or AVX \footnote{Advanced Vector Extensions, Intel's latest vector instruction set extension featuring 256 bit wide registers to process 8 single precision floats in parallel.}. Especially a GPU can make excellent use of the large number of independent pieces of work to perfectly utilize its hundreds or thousands of cores.
 
 \begin{figure}
@@ -73,7 +73,7 @@ When run on the GPU, the performance of this naive OpenCL implementation is alre
 \subsection{Optimization using both}
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per wok item using float4 vectors. The input matrixes are split into tiles of blocks which are cached in local memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_kernel,]{code/matrix/MultBlockLocal.cl}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per wok item using float4 vectors. The input matrixes are split into tiles of blocks which are cached in local memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_local_kernel,]{code/matrix/MultBlockLocal.cl}
 \lstset{basicstyle=\ttfamily{}}
 
 \subsection{Further tries}
@@ -81,9 +81,92 @@ When run on the GPU, the performance of this naive OpenCL implementation is alre
 texture unit (images)
 
 
+\subsection{Benchmarks and conclusion}
+Which implementation is when better?
 
 
-\subsection{Existing implementations}
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\linewidth]{matrix_chart}
+	\caption{Benchmark of several square matrix multiplication implementations.}
+	\label{fig:matrix_chart}
+\end{figure}
+
+\begin{table}
+	\centering
+	%\resizebox{\textwidth}{!}{
+		\begin{tabular}{l r r r r r r r}
+			Kernel & Global size & Work group & Time & Local mem & VGPRs & Occ. (\%) & Wavefronts \\
+			\hline
+			Mult & $4000 \times 4000$ & $16 \times 16$ & 14387 & 0 & 6 & 100 & 84000 \\
+			MultLocal & $4000 \times 4000$ & $16 \times 16$ & 5364 & 2048 & 7 & 100 & 84000 \\
+			MultBlock & $1008 \times 1008$ & $16 \times 16$ & 1101 & 0 & 18 & 37,5 & 15876 \\
+			MultBlockLocal & $1008 \times 1008$ & $16 \times 16$ & 1839 & 32768 & 27 & 12,5 & 15876 \\
+		\end{tabular}
+		
+		\begin{tabular}{l r r r r r r}
+			Kernel & ALU insts & Fetch insts & ALU fetch ratio & Write insts & LDS fetch insts & LDS write insts \\
+			\hline
+			Mult & 20019 & 8000 & 2,5 & 1 & 0 & 0 \\
+			MultLocal & 8516 & 500 & 17,0 & 1 & 4250 & 500 \\
+			MultBlock & 28796 & 7937 & 3,6 & 4 & 0 & 0 \\
+			MultBlockLocal & 45008 & 504 & 89,3 & 4 & 18459 & 2016 \\
+		\end{tabular}
+		
+		\begin{tabular}{l r r r r r r}
+			Kernel & ALU busy & ALU packing & Fetch unit busy & Cache hit & Fetch size \\
+			\hline
+			Mult & 62,5 & 36,0 & 99,9 & 57,6 & 23002707 \\
+			MultLocal & 71,3 & 61,1 & 16,8 & 3,9 & 10095104 \\
+			MultBlock & 74,6 & 77,9 & 99,1 & 29,7 & 21983484 \\
+			MultBlockLocal & 69,8 & 75,9 & 4,2 & 38,5 & 4918471 \\
+		\end{tabular}
+		
+		\begin{description}
+		   \item[Global size] \hfill \\
+		   The global work size as specified to \lstinline!clEnqueueNDRangeKernel()!.
+		   \item[Work group] \hfill \\
+		   The local work size (size of the work group) as specified to \lstinline!clEnqueueNDRangeKernel()!.
+		   \item[Time] \hfill \\
+		   The time spent executing the kernel on the GPU in milliseconds. This value is measured using the on-board GPU clock.
+		   \item[Local mem] \hfill \\
+		   The amount of local memory needed by a work group in bytes.
+		   \item[VGPRs] \hfill \\
+		   The number of Vector General Purpose Registers needed per work item.
+		   \item[Occ.] \hfill \\
+		   The kernel occupancy. This is an estimate of the number of in-flight wavefronts on a compute unit as a percentage of the theoretical maximum number of wavefronts that the compute unit can support.
+		   \item[Wavefronts] \hfill \\
+		   The total number of wavefronts that where executed on all compute units.
+		   \item[ALU insts] \hfill \\
+		   The average number of ALU instructions executed per work item.
+		   \item[Fetch insts] \hfill \\
+		   The average number of fetch instructions to the global memory executed per work item.
+		   \item[Write insts] \hfill \\
+		   The average number of write instructions to the global memory executed per work item.
+		   \item[LDS fetch insts] \hfill \\
+		   The average number of fetch instructions to the local memory (local data share) executed per work item.
+		   \item[LDS write insts] \hfill \\
+		   The average number of write instructions to the local memory (local data share) executed per work item.
+		   \item[Fetch size] \hfill \\
+		   The total number of kilobytes eventually fetched from global memory.
+		   \item[ALU busy] \hfill \\
+		   The percentage of GPU time ALU instructions are processed.
+		   \item[ALU fetch ratio] \hfill \\
+		   The ratio of ALU instructions to fetch instructions.
+		   \item[ALU packing] \hfill \\
+		   This value indicates how well the shader compiler packs the scalar and vector instructions of the OpenCL program into 5-way VLIW instructions\footnote{VLIW = Very long instruction word. VLIWs are packets of instructions that can be executed in parallel (instruction level parallelism). These packets are generated by the compiler. Due to dependencies between instructions, a VLIW may not always be completely filled and therefore not utilize a VLIW processor completely.} for the GPU.
+		   \item[Cache hit] \hfill \\
+		   The percentage of fetch instructions to the global memory which could be served from the cache.
+		   \item[Fetch unit busy] \hfill \\
+		   The percentage of GPU time the fetch unit is busy.
+		\end{description}
+	%}
+	\caption{Selected performance counters of all matrix multiplication kernels gathered using AMD CodeXL's GPU profiler \cite{amd_codexl}. Some values have been rounded. The descriptions of the counters are based on the tool tips provided by the CodeXL Visual Studio integration.}
+	\label{tbl:matrix_perf_counter}
+\end{table}
+
+Which problem size?
+Which hardware?
 
 Beside the presented implementations, several libraries exist supporting matrix multiplication.
 
@@ -93,19 +176,4 @@ Beside the presented implementations, several libraries exist supporting matrix 
    \item[cuBlas] \hfill \\
    A BLAS (Basic Linear Algebra Subprograms) library provided by NVIDIA shipped with the CUDA Computing SDK.
 \end{description}
-
-\subsection{Benchmarks and conclusion}
-Which implementation is when better?
-
-
-
-\begin{figure}
-\centering
-\includegraphics[width=1.0\linewidth]{matrix_chart}
-\caption{Benchmark of several square matrix multiplication implementations.}
-\label{fig:matrix_chart}
-\end{figure}
-
-Which problem size?
-Which hardware?
 
