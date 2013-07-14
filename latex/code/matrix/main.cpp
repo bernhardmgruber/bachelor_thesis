@@ -61,8 +61,64 @@ void matrixMulCL(float* a, float* b, float* c, cl_uint size, cl_context context,
     clReleaseMemObject(cBuffer);
 }
 
-#define BLOCK_SIZE 4
 #define TILE_SIZE 16
+
+void matrixMulCLLocal(float* a, float* b, float* c, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel kernel)
+{
+    cl_int error;
+
+    cl_uint adjustedSize = roundToMultiple(size, TILE_SIZE);
+
+    size_t count = adjustedSize * adjustedSize;
+
+    cl_mem aBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY, count * sizeof(float), nullptr, &error);
+    cl_mem bBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY, count * sizeof(float), nullptr, &error);
+    cl_mem cBuffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY, count * sizeof(float), nullptr, &error);
+
+    if(adjustedSize != size)
+    {
+        float zero = 0.0f;
+        error = clEnqueueFillBuffer(queue, aBuffer, &zero, sizeof(float), 0, count * sizeof(float), 0, nullptr, nullptr);
+        error = clEnqueueFillBuffer(queue, bBuffer, &zero, sizeof(float), 0, count * sizeof(float), 0, nullptr, nullptr);
+
+        size_t bufferOffset[] = {0, 0, 0};
+        size_t hostOffset[] = {0, 0, 0};
+        size_t sizes[] = {size * sizeof(float), size, 1};
+        error = clEnqueueWriteBufferRect(queue, aBuffer, false, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, size * sizeof(float), 0, a, 0, nullptr, nullptr);
+        error = clEnqueueWriteBufferRect(queue, bBuffer, false, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, size * sizeof(float), 0, b, 0, nullptr, nullptr);
+    }
+    else
+    {
+        error = clEnqueueWriteBuffer(queue, aBuffer, false, 0, count * sizeof(float), a, 0, nullptr, nullptr);
+        error = clEnqueueWriteBuffer(queue, bBuffer, false, 0, count * sizeof(float), b, 0, nullptr, nullptr);
+    }
+
+    clSetKernelArg(kernel, 0, sizeof(cl_mem), &aBuffer);
+    clSetKernelArg(kernel, 1, sizeof(cl_mem), &bBuffer);
+    clSetKernelArg(kernel, 2, sizeof(cl_mem), &cBuffer);
+    clSetKernelArg(kernel, 3, sizeof(cl_uint), &adjustedSize);
+
+    size_t globalWorkSizes[] = { adjustedSize, adjustedSize };
+    size_t localWorkSizes[] = { TILE_SIZE, TILE_SIZE };
+
+    error = clEnqueueNDRangeKernel(queue, kernel, 2, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
+
+    if(adjustedSize != size)
+    {
+        size_t bufferOffset[] = {0, 0, 0};
+        size_t hostOffset[] = {0, 0, 0};
+        size_t sizes[] = {size * sizeof(float), size, 1};
+        error = clEnqueueReadBufferRect(queue, cBuffer, true, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, size * sizeof(float), 0, c, 0, nullptr, nullptr);
+    }
+    else
+        error = clEnqueueReadBuffer(queue, cBuffer, true, 0, count * sizeof(float), c, 0, nullptr, nullptr);
+
+    clReleaseMemObject(aBuffer);
+    clReleaseMemObject(bBuffer);
+    clReleaseMemObject(cBuffer);
+}
+
+#define BLOCK_SIZE 4
 
 void matrixMulCLRect(float* a, float* b, float* c, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize, int multiple, int elementsPerThread)
 {
@@ -216,7 +272,7 @@ int main(int argc, char* argv[])
     else
         cout << "kernel 1 ok" << endl;
 
-    matrixMulCLRect(a, b, c2, size, context, queue, kernel2, 16, TILE_SIZE, 1); // 2D
+    matrixMulCLLocal(a, b, c2, size, context, queue, kernel2); // 2D
     if(!memcmp_float(c0, c2, size * size))
         cerr << "validation of kernel 2 failed" << endl;
     else

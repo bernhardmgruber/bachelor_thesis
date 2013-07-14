@@ -52,13 +52,33 @@ The last missing component of the naive GPU implementation is the OpenCL kernel 
 
 When run on the GPU, the performance of this naive OpenCL implementation is already amazingly fast when we have a look at the benchmark in figure \ref{fig:matrix_chart}. At an edge length of 800 elements, the size where the CPU implementation's needed time started to blow up beyond several seconds, the GPU variant still runs very happily at around 200 milliseconds. Additionally, the curve raises far slower than the CPU's one.
 
+However, when we have a look at the performance counters of the naive approach in table \ref{tbl:matrix_perf_counter} we notice a few things. Despite the perfect 100\% occupancy of the kernel (as a result of no local memory usage and low vector register footprint) the algorithm performs a relatively high number of fetch instructions (cf. the ALU fetch ratio of 2.5). This can also be seen at the time the fetch unit was busy, which was 99.9\%. This means the algorithm is highly memory bound. Furthermore, elements of the input matrices are accessed multiple times (edge length of output matrix times). Though this explains the nice cache behavior of 57.6\% hits, here is definitely room for improvement.
+
 
 \subsection{Optimization using local memory}
+Based on performance analysis of the naive GPU approach the first and most obvious optimization is to reduce the number of memory requests to global memory. Ideally, each input matrix element should be accessed only once. This scenario can be achieved by subdividing the input matrices into smaller tiles as shown in figure \ref{fig:matrix_mul_local}. Instead of each work item accessing all needed input elements like in the naive version, each work item of a work group (which is equally sized as a tile) copies one element of a tile from each input matrix to local memory. After the two tiles have been copied completely, the work items than access the corresponding elements from the tiles in local memory (avoiding redundant global memory requests), multiply and add the values to the output sum of each work item (element of the output matrix). Then the next two tiles are loaded. The algorithm repeats until all tiles have been processed.
 
+\begin{figure}
+\centering
+\includegraphics[width=0.5\linewidth]{matrix_mul_local}
+\caption{Optimization of the matrix multiplication by subdivision into tiles.}
+\label{fig:matrix_mul_local}
+\end{figure}
+
+The host code for this algorithms looks very similar to the one of the naive version. The major difference is that the edge length of the input matrix must now be a multiple of the tile size. This can be achieved by allocating slightly bigger buffers (whose edge lengths are a multiple of the tile size) and initialize them with zeros. The actual input matrices can then be copied into the upper left rectangle of the larger buffer. OpenCL offers corresponding functions to achieve this task. Listing \ref{lst:matrix_cl_local_host} shows the host code for the optimized matrix multiplication using tiles in local memory.
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=Host code for a matrix multiplication implementation using OpenCL. The input and output matrices' edge lengths are rounded up to be a multiple of \lstinline!TILE_SIZE!., label=lst:matrix_cl_local_host, firstline=66, lastline=119]{code/matrix/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+The buffers are again allocated with \lstinline!clCreateBuffer()!. If the adjusted buffer size is larger than the actual matrix size, the input buffers are initialized to zero using \lstinline!clEnqueueFillBuffer()!. Afterwards, each input matrix is copied to a rectangular region (as large as the input matrix) in the top left corner of the allocated buffer using \lstinline!clEnqueueWriteBufferRect!. For a detailed explanation of the arguments please have a look at the corresponding entry in the OpenCL specification \cite[p.76]{opencl_spec}. Apart form the kernel's arguments which equal the ones of the naive version, the work group size must be equal to the defined \lstinline!TILE_SIZE!. Finally, the results are retrieved from the output buffer following the same principle as when the inputs where copied to the input buffers.
+
+Listing \ref{lst:matrix_cl_local_kernel} shows the kernel code of the optimized matrix multiplication using tiles in local memory.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per wok item. The input matrixes are split into tiles which are cached in local memory. The implementation is based on J. Tompson and K. Schlachter \cite{preso}., label=lst:matrix_cl_local_kernel,]{code/matrix/MultLocal.cl}
 \lstset{basicstyle=\ttfamily{}}
+
 
 
 
@@ -70,7 +90,7 @@ When run on the GPU, the performance of this naive OpenCL implementation is alre
 
 
 
-\subsection{Optimization using both}
+\subsection{Combining both approaches}
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per wok item using float4 vectors. The input matrixes are split into tiles of blocks which are cached in local memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_local_kernel,]{code/matrix/MultBlockLocal.cl}
