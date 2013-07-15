@@ -2,30 +2,30 @@
 
 __kernel void MultBlock(__global float4* a, __global float4* b, __global float4* c, uint size)
 {
-  int2 pos = (int2)(get_global_id(0), get_global_id(1));
+  int row = get_global_id(0);
+  int col = get_global_id(1);
 
   uint size4 = size / BLOCK_SIZE;
 
-  if(pos.x >= size4 || pos.y >= size4)
+  if(row >= size4 || col >= size4)
     return;
 
-  float4 sum0 = (float4)(0);
-  float4 sum1 = (float4)(0);
-  float4 sum2 = (float4)(0);
-  float4 sum3 = (float4)(0);
+  float4 sum0 = (float4)(0.0f);
+  float4 sum1 = (float4)(0.0f);
+  float4 sum2 = (float4)(0.0f);
+  float4 sum3 = (float4)(0.0f);
 
   for(int i = 0; i < size; i = i + BLOCK_SIZE)
   {
-    float4 aBlock0 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 0) * size4];
-    float4 aBlock1 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 1) * size4];
-    float4 aBlock2 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 2) * size4];
-    float4 aBlock3 = a[i / BLOCK_SIZE + ((pos.y * BLOCK_SIZE) + 3) * size4];
+    float4 aBlock0 = a[i / BLOCK_SIZE + (col * BLOCK_SIZE + 0) * size4];
+    float4 aBlock1 = a[i / BLOCK_SIZE + (col * BLOCK_SIZE + 1) * size4];
+    float4 aBlock2 = a[i / BLOCK_SIZE + (col * BLOCK_SIZE + 2) * size4];
+    float4 aBlock3 = a[i / BLOCK_SIZE + (col * BLOCK_SIZE + 3) * size4];
 
-    // Matrix B is not transposed
-    float4 bBlock0 = b[pos.x + (i + 0) * size4];
-    float4 bBlock1 = b[pos.x + (i + 1) * size4];
-    float4 bBlock2 = b[pos.x + (i + 2) * size4];
-    float4 bBlock3 = b[pos.x + (i + 3) * size4];
+    float4 bBlock0 = b[row + (i + 0) * size4];
+    float4 bBlock1 = b[row + (i + 1) * size4];
+    float4 bBlock2 = b[row + (i + 2) * size4];
+    float4 bBlock3 = b[row + (i + 3) * size4];
 
     sum0.x += aBlock0.x * bBlock0.x + aBlock0.y * bBlock1.x + aBlock0.z * bBlock2.x + aBlock0.w * bBlock3.x;
     sum0.y += aBlock0.x * bBlock0.y + aBlock0.y * bBlock1.y + aBlock0.z * bBlock2.y + aBlock0.w * bBlock3.y;
@@ -48,8 +48,8 @@ __kernel void MultBlock(__global float4* a, __global float4* b, __global float4*
     sum3.w += aBlock3.x * bBlock0.w + aBlock3.y * bBlock1.w + aBlock3.z * bBlock2.w + aBlock3.w * bBlock3.w;
   }
 
-  c[pos.x + ((pos.y * BLOCK_SIZE) + 0) * size4] = sum0;
-  c[pos.x + ((pos.y * BLOCK_SIZE) + 1) * size4] = sum1;
-  c[pos.x + ((pos.y * BLOCK_SIZE) + 2) * size4] = sum2;
-  c[pos.x + ((pos.y * BLOCK_SIZE) + 3) * size4] = sum3;
+  c[row + (col * BLOCK_SIZE + 0) * size4] = sum0;
+  c[row + (col * BLOCK_SIZE + 1) * size4] = sum1;
+  c[row + (col * BLOCK_SIZE + 2) * size4] = sum2;
+  c[row + (col * BLOCK_SIZE + 3) * size4] = sum3;
 }

@@ -177,6 +177,18 @@ void matrixMulCLRect(float* a, float* b, float* c, cl_uint size, cl_context cont
     clReleaseMemObject(cBuffer);
 }
 
+#if 0
+#define BLOCK_SIZE 4
+    ...
+    cl_uint adjustedSize = roundToMultiple(size, BLOCK_SIZE);
+    ...
+    size_t adjustedWorkSize = roundToMultiple(adjustedSize, workGroupSize * BLOCK_SIZE);
+
+    size_t globalWorkSizes[] = { adjustedWorkSize / BLOCK_SIZE, adjustedWorkSize / BLOCK_SIZE };
+    size_t localWorkSizes[] = { workGroupSize, workGroupSize };
+#endif
+
+
 string readFile(string fileName)
 {
     ifstream file(fileName, ios::in);

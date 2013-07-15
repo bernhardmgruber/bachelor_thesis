@@ -13,7 +13,7 @@ __kernel void MultLocal(__global float* a, __global float* b, __global float* c,
   int bPos = TILE_SIZE * tileX;
   int aEnd = aPos + size;
 
-  float sum = 0.0;
+  float sum = 0.0f;
 
   while(aPos < aEnd)
   {

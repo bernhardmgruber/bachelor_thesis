@@ -6,7 +6,7 @@ __kernel void Mult(__global float* a, __global float* b, __global float* c, uint
   if(row >= size || col >= size)
     return;
 
-  float sum = 0;
+  float sum = 0.0f;
   for(size_t i = 0; i < size; i++)
     sum += a[row * size + i] * b[i * size + col];
 

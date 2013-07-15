@@ -6,10 +6,10 @@ __kernel void MultBlockLocal(__global float4* a, __global float4* b, __global fl
   int tilePos = get_local_id(0) + (get_local_id(1) * BLOCK_SIZE) * TILE_SIZE;
   int globalPosC = (get_global_id(1) * BLOCK_SIZE) * get_global_size(0) + get_global_id(0);
 
-  float4 sum0 = (float4)(0);
-  float4 sum1 = (float4)(0);
-  float4 sum2 = (float4)(0);
-  float4 sum3 = (float4)(0);
+  float4 sum0 = (float4)(0.0f);
+  float4 sum1 = (float4)(0.0f);
+  float4 sum2 = (float4)(0.0f);
+  float4 sum3 = (float4)(0.0f);
 
   int size4 = size / BLOCK_SIZE;
 
@@ -21,7 +21,7 @@ __kernel void MultBlockLocal(__global float4* a, __global float4* b, __global fl
 
     int globalPosA = (get_global_id(1) * BLOCK_SIZE) * get_global_size(0) + tileIndex * TILE_SIZE + get_local_id(0);
     int globalPosB = ((tileIndex * TILE_SIZE + get_local_id(1)) * BLOCK_SIZE) * get_global_size(0) + get_global_id(0);
-		
+
     // Load values in aTile from matrix a
     aTile[tilePos + 0 * TILE_SIZE] = a[globalPosA + 0 * size4];
     aTile[tilePos + 1 * TILE_SIZE] = a[globalPosA + 1 * size4];
