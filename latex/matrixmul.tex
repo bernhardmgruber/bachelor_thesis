@@ -79,6 +79,7 @@ Listing \ref{lst:matrix_cl_local_kernel} shows the kernel code of the optimized 
 \lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per wok item. The input matrixes are split into tiles which are cached in local memory. The implementation is based on J. Tompson and K. Schlachter \cite{preso}., label=lst:matrix_cl_local_kernel,]{code/matrix/MultLocal.cl}
 \lstset{basicstyle=\ttfamily{}}
 
+When compared with the first, naive OpenCL kernel run on the GPU, the optimization using locally cached tiles achieves a nice linear speedup of 2,6 as we can see in figure \ref{fig:matrix_chart} and the detailed benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}.
 
 
 
@@ -108,7 +109,7 @@ Which implementation is when better?
 \begin{figure}
 	\centering
 	\includegraphics[width=1.0\linewidth]{matrix_chart}
-	\caption{Benchmark of several square matrix multiplication implementations.}
+	\caption{Benchmark of several square matrix multiplication implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:matrix_mul_chart_data}.}
 	\label{fig:matrix_chart}
 \end{figure}
 
