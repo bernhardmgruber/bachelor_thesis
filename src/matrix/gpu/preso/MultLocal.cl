@@ -8,19 +8,19 @@
 
 __kernel void MultLocal(__global const T* a, __global const T* b, __global T* c, uint size)
 {
-    int globalX = get_global_id(0);
-    int globalY = get_global_id(1);
-    int groupX = get_group_id(0);
-    int groupY = get_group_id(1);
-    int localX = get_local_id(0);
-    int localY = get_local_id(1);
+    uint globalX = get_global_id(0);
+    uint globalY = get_global_id(1);
+    uint groupX = get_group_id(0);
+    uint groupY = get_group_id(1);
+    uint localX = get_local_id(0);
+    uint localY = get_local_id(1);
 
-    int aBegin = size * (TILE_SIZE * groupY);
-    int aEnd = aBegin + size - 1;
-    int aStep = TILE_SIZE;
+    uint aBegin = size * (TILE_SIZE * groupY);
+    uint aEnd = aBegin + size - 1;
+    uint aStep = TILE_SIZE;
 
-    int bBegin = TILE_SIZE * groupX;
-    int bStep = TILE_SIZE * size;
+    uint bBegin = TILE_SIZE * groupX;
+    uint bStep = TILE_SIZE * size;
 
     T sum = 0.0;
 
@@ -34,7 +34,7 @@ __kernel void MultLocal(__global const T* a, __global const T* b, __global T* c,
 
         barrier(CLK_LOCAL_MEM_FENCE);
 
-        for(int k = 0; k < TILE_SIZE; k++)
+        for(uint k = 0; k < TILE_SIZE; k++)
             sum += aTile[localY][k] * bTile[k][localX];
 
         barrier(CLK_LOCAL_MEM_FENCE);

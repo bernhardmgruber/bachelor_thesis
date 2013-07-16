@@ -25,16 +25,16 @@ __kernel void MultBlockLocal(__global const T4 * a, __global const T4 * b, __glo
     T4 sum2 = (T4)(0);
     T4 sum3 = (T4)(0);
 
-    int size4 = size / BLOCK_SIZE;
+    uint size4 = size / BLOCK_SIZE;
 
     // This loop runs for the number of workgroup tiles (tiles of blocks) of A in horizontal direction
-    for(int tileIndex = 0; tileIndex < (size4 / TILE_SIZE); tileIndex++)
+    for(uint tileIndex = 0; tileIndex < (size4 / TILE_SIZE); tileIndex++)
     {
         // Calculate global ids of threads from the particular block to load from matrix A depending on tileIndex
-        int globalPosA = (get_global_id(1) * BLOCK_SIZE) * get_global_size(0) + tileIndex * TILE_SIZE + get_local_id(0);
+        uint globalPosA = (get_global_id(1) * BLOCK_SIZE) * get_global_size(0) + tileIndex * TILE_SIZE + get_local_id(0);
 
         // Calculate global ids of threads from the particular block to load from matrix B depending on tileIndex
-        int globalPosB = ((tileIndex * TILE_SIZE + get_local_id(1)) * BLOCK_SIZE) * get_global_size(0) + get_global_id(0);
+        uint globalPosB = ((tileIndex * TILE_SIZE + get_local_id(1)) * BLOCK_SIZE) * get_global_size(0) + get_global_id(0);
 
         __local T4 aTile[TILE_SIZE * TILE_SIZE * BLOCK_SIZE];
         __local T4 bTile[TILE_SIZE * TILE_SIZE * BLOCK_SIZE];
@@ -54,7 +54,7 @@ __kernel void MultBlockLocal(__global const T4 * a, __global const T4 * b, __glo
         barrier(CLK_LOCAL_MEM_FENCE);
 
         // This loop runs for number of threads in horizontal direction in the block of A 
-        for(int j = 0; j < TILE_SIZE; j++)
+        for(uint j = 0; j < TILE_SIZE; j++)
         {
             // Load 4 T4s from aTile : access patters = strided from local memory 
             T4 tempA0 = aTile[j + (get_local_id(1) * BLOCK_SIZE + 0) * TILE_SIZE];
