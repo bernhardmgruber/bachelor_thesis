@@ -47,12 +47,12 @@ After global and local work size have been chosen, the kernel can be enqueued on
 The last missing component of the naive GPU implementation is the OpenCL kernel itself which is given in listing \ref{lst:matrix_cl_naive_kernel}. The \lstinline!__kernel! function closely resembles the loop body of the second \lstinline!for! loop of the CPU implementation in listing \ref{lst:matrix_cpu}. The purpose of a single invocation of this kernel is to calculate one element of the output matrix. By using OpenCL's built-in function \lstinline!get_global_id()! with the dimension as argument, the kernel invocation can retrieve it's position inside the NDRange which equals the output matrix (plus extra space due to work group size rounding). Therefore, the retrieved position has to be checked against the matrices' size as the NDRange may be larger than the original matrix. If the coordinates identify a valid matrix position, the output element is again determined by calculating the dot product of the \lstinline!row! in matrix \lstinline!a! and the \lstinline!col! in matrix \lstinline!b! and eventually written to the output matrix buffer \lstinline!c!.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per work item., label=lst:matrix_cl_naive_kernel]{code/matrix/Mult.cl}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per work item., label=lst:matrix_cl_naive_kernel]{../src/matrix/gpu/thesis/Mult.cl}
 \lstset{basicstyle=\ttfamily{}}
 
 When run on the GPU, the performance of this naive OpenCL implementation is already amazingly fast when we have a look at the benchmark in figure \ref{fig:matrix_chart}. At an edge length of 800 elements, the size where the CPU implementation's needed time started to blow up beyond several seconds, the GPU variant still runs very happily at around 200 milliseconds. Additionally, the curve raises far slower than the CPU's one.
 
-However, when we have a look at the performance counters of the naive approach in table \ref{tbl:matrix_perf_counter} we notice a few things. Despite the perfect 100\% occupancy of the kernel (as a result of no local memory usage and low vector register footprint) the algorithm performs a relatively high number of fetch instructions (cf. the ALU fetch ratio of 2.5). This can also be seen at the time the fetch unit was busy, which was 99.9\%. This means the algorithm is highly memory bound. Furthermore, elements of the input matrices are accessed multiple times (edge length of output matrix times). Though this explains the nice cache behavior of 57.6\% hits, here is definitely room for improvement.
+However, when we have a look at the performance counters of the naive approach in table \ref{tbl:matrix_perf_counter} we notice a few things. Despite the perfect 100\% occupancy of the kernel (as a result of no local memory usage and low vector register footprint) the algorithm performs a relatively high number of fetch instructions (cf. the ALU fetch ratio of 2.5). This can also be seen at the time the fetch unit was busy, which was 99.9\%. This means the algorithm is highly memory bound. Furthermore, elements of the input matrices are accessed multiple times (edge length of output matrix times). Though this explains the nice cache behavior of 57.5\% hits, here is definitely room for improvement.
 Another approach to reduce the total number of memory requests would be by querying larger elements per work item. This would lead to fewer but larger memory requests which might be handled more efficiently by the memory system. Furthermore, fewer work items would be required.
 
 \subsection{Optimization using local memory}
@@ -78,24 +78,24 @@ The buffers are again allocated with \lstinline!clCreateBuffer()!. If the adjust
 Listing \ref{lst:matrix_cl_local_kernel} shows the kernel code of the optimized matrix multiplication using tiles in local memory.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per wok item. The input matrixes are split into tiles which are cached in local memory. The implementation is based on J. Tompson and K. Schlachter \cite{preso}., label=lst:matrix_cl_local_kernel,]{code/matrix/MultLocal.cl}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per wok item. The input matrixes are split into tiles which are cached in local memory. The implementation is based on J. Tompson and K. Schlachter \cite{preso}., label=lst:matrix_cl_local_kernel,]{../src/matrix/gpu/thesis/MultLocal.cl}
 \lstset{basicstyle=\ttfamily{}}
 
-When compared with the first, naive OpenCL kernel run on the GPU, the optimization using locally cached tiles achieves a nice linear speedup of 2.6 as we can see in figure \ref{fig:matrix_chart} and the detailed benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}.
+When compared with the first, naive OpenCL kernel run on the GPU, the optimization using locally cached tiles achieves a nice speedup of 2.63 at a problem size of 4000 as we can see in figure \ref{fig:matrix_chart} and the detailed benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}.
 
-We can also see some improvements on the performance counters in table \ref{tbl:matrix_perf_counter}. Although the general thread management overhead remains constant (equal number of work items, work groups and therefore wave fronts) and the kernel occupancy still stays at perfect 100\% we notice a major decrease in general ALU instructions. Moreover and most importantly, fetch instructions to global memory have been reduced to a sixteenth part (due to the used \lstinline!TILE_SIZE! of 16). Despite this reduction, the eventually fetched data from global memory could only be reduced by a factor of 2.3 due to bad cache behavior.
+We can also see some improvements on the performance counters in table \ref{tbl:matrix_perf_counter}. Although the general thread management overhead remains constant (equal number of work items, work groups and therefore wave fronts) and the kernel occupancy still stays at perfect 100\% we notice a major decrease in general ALU instructions. Moreover and most importantly, fetch instructions to global memory have been reduced to a sixteenth part (due to the used \lstinline!TILE_SIZE! of 16). Despite this reduction, the eventually fetched data from global memory could only be reduced by a factor of 2.4 due to bad cache behavior.
 In addition to fewer memory requests and ALU instructions a third and probably more unnoticed optimization occurred. As \lstinline!TILE_SIZE! is a compile time constant the compiler is now able to fully unroll and vectorize the inner for loop which results in more independent instructions available to the compiler to generate better filled VLIWs. This can be seen by an almost doubling of the ALU packing counter's value.
 
 
-
 \subsection{Optimization using vectorization}
+\label{sec:matrix_mul_vec}
 Instead of using local memory to decrease the number of redundant memory requests this approach focuses on a better utilization of the memory system by using vector types and multiple fetches and writes per work item. Therefore, one work item does not only fetch one element but a block of elements.
-The algorithm itself works conceptually equal to the local tile version of the previous chapter \ref{sec:matrix_mul_local}. The tiles are now called blocks and each work item fetches a two whole blocks itself. No local memory is used, as the fetched blocks are stored in each work item's registers. Each work item then also produces an output block which is written to global memory.
+The algorithm itself works conceptually equal to the local tile version of the previous chapter \ref{sec:matrix_mul_local}. The tiles are now called blocks and each work item fetches two whole blocks itself. No local memory is used, as the fetched blocks are stored in each work item's registers. Each work item then also produces an output block which is written to global memory.
 
 The host code for this matrix multiplication version is almost identical to the one using tiles cached in local memory in listing \ref{lst:matrix_cl_local_host}. The only differences are shown in listing \ref{lst:matrix_cl_block_host}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=Differences of the host code for the matrix multiplication using vector types when compared with the one using tiles cached in local memory., label=lst:matrix_cl_block_host, firstline=181, lastline=188]{code/matrix/main.cpp}
+\lstinputlisting[language=CL, caption=Differences of the host code for the matrix multiplication using vector types when compared with the one using tiles cached in local memory from listing \ref{lst:matrix_cl_local_host}., label=lst:matrix_cl_block_host, firstline=181, lastline=188]{code/matrix/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 Most importantly a \lstinline!BLOCK_SIZE! is defined, that sets the size (the edge length of a square) of the block of elements that is fetched from global memory per work item. This parameter must be one of the OpenCL supported vector type widths (which are 2, 4, 8 or 16). A larger \lstinline!BLOCK_SIZE! means more and bigger elements are fetched from global memory (better bus utilization) per work item and less work items will be needed to run the calculation (lesser thread management overhead). Furthermore, multiple independent global memory fetches can be pipelined. Additionally, as the number of elements a work item calculates increments, the number of independent instructions (instruction level parallelism) of the kernel increases allowing better ALU utilization through mostly full VLIWs (super scalar execution). However, as a consequence the required registers per work item rise which allow fewer work groups to run concurrently on a SM. For further reading Vasily Volkov from the University of California, Berkeley held a great talk about these kind of optimizations \cite{volkov}.
@@ -104,23 +104,35 @@ The determination of the optimal \lstinline!BLOCK_SIZE! is probably different fo
 Listing \ref{lst:matrix_cl_block_kernel} shows the kernel code of the optimized matrix multiplication using vector types and multiple reads/writes to global memory per work item.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per wok item using four float4 vectors. The input matrixes are accessed directly from global memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_kernel,]{code/matrix/MultBlock.cl}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per wok item using four float4 vectors. The input matrixes are accessed directly from global memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_kernel,]{../src/matrix/gpu/thesis/MultBlock.cl}
 \lstset{basicstyle=\ttfamily{}}
 
+Compared with the naive GPU version we achieve an amazing speedup of 11.95 at a problem size of 4000 when we have a look at the chart in figure \ref{fig:matrix_chart} and the benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}. The kernel also performs 4.54 times faster than the optimized version using locally cached tiles in chapter \ref{sec:matrix_mul_local}.
 
-
-Increase transactions by having
-Independent loads and stores from the same thread
-Loads and stores from different threads (more threads)
-Larger word sizes (float2 is twice the transactions of float, for example)
-
+Also the performance counters in table \ref{tbl:matrix_perf_counter} show interesting changes. Most notable is the change of global work size from $4000 \times 4000$ to $1008 \times 1008$ which accounts mostly for the achieved speedup. Although the kernel now processes 16 elements instead of one, the number if needed instructions per work item only increased by a factor of 1.19 (from 20019 to 23782). Furthermore, the number of total fetch instructions per work item remained the same (a work item now issues four instructions but fetches four times more data per instruction) resulting in equal management work for the fetch unit (which is still busy at 99.4\%) but higher throughput. Additionally, as each work item processes four independent output elements, the amount of independent instructions increased leading to an almost doubling in ALU packing performance. The only major drawback of this version is that the high number of needed registers (VGPRs) limits the amount of wavefronts that can be concurrently executed on a SM. This can be seen clearly at the lower occupancy of only 37.5\%. As a result, memory latency may not be hided well enough. However, this problem is specific to the amount of available registers which increases as GPGPU computing becomes an important design factor for GPU hardware vendors.
 
 
 \subsection{Combining both approaches}
+The optimization attempts presented in the last two chapters \ref{sec:matrix_mul_local} and \ref{sec:matrix_mul_vec} focus on two different aspects. The first one tries to reduce the number of redundant global memory requests by subdividing the input matrices into tiles which are read once by each work group and cached in local memory. The second approach tries to improve the general memory system and ALU utilization. The final kernel presented in this chapter will combine both ideas.
+As a consequence the matrices will be subdivided in two levels. On the lower level elements will be organized into small blocks which are always loaded completely by a work item. On a higher level, the blocks are then grouped together into tiles which can be cached in local memory and are always retrieved by a whole work group.
+
+The host code for this matrix multiplication version is almost identical to the one using tiles cached in local memory in listing \ref{lst:matrix_cl_local_host}. The only differences are shown in listing \ref{lst:matrix_cl_block_local_host}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per wok item using float4 vectors. The input matrixes are split into tiles of blocks which are cached in local memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_local_kernel,]{code/matrix/MultBlockLocal.cl}
+\lstinputlisting[language=CL, caption=Differences of the host code for the matrix multiplication using vector types and locally cached tiles when compared with the one using only tiles cached in local memory from listing \ref{lst:matrix_cl_local_host}., label=lst:matrix_cl_block_local_host, firstline=192, lastline=197]{code/matrix/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
+
+The multiple of \lstinline!BLOCK_SIZE * TILE_SIZE! the matrix sizes are round up to and is required to ensure coalesced memory access and to avoid complicated bounds checking (resulting in branch divergence) inside the kernel. This value is significant higher than in the previous approaches and may account for a notable memory overhead on larger matrices (e.g. a matrix of edge length 4033 is rounded up to 4096 creating 512127 padding elements which are 3\% of the processed data).
+
+Listing \ref{lst:matrix_cl_block_local_kernel} shows the kernel code of the optimized matrix multiplication using vector types, multiple reads/writes to global memory per work item and locally cached tiles.
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per work item using float4 vectors. The input matrixes are split into tiles of blocks which are cached in local memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_local_kernel,]{../src/matrix/gpu/thesis/MultBlockLocal.cl}
+\lstset{basicstyle=\ttfamily{}}
+
+Although this approach can be seen as an optimization of the block only version from chapter \ref{sec:matrix_mul_vec} by using locally cached tiles, this kernel performs, contrary to expectations, slower than the original block only version. The reason for this at first glance confusing behavior is easily detected when we have a look at the corresponding performance counters.
+First of all, the number of work items is equal 
+
 
 \subsection{Further tries}
 1D vs 2D problem dimensions
@@ -142,30 +154,30 @@ Which implementation is when better?
 	\centering
 	%\resizebox{\textwidth}{!}{
 		\begin{tabular}{l r r r r r r r}
-			Kernel & Global size & Work group & Time & Local mem & VGPRs & Occ. (\%) & Wavefronts \\
+			Kernel         & Global size        & Work group     & Time  & Local mem & VGPRs & Occ. & Wavefronts \\
 			\hline
-			Mult & $4000 \times 4000$ & $16 \times 16$ & 14387 & 0 & 6 & 100 & 84000 \\
-			MultLocal & $4000 \times 4000$ & $16 \times 16$ & 5364 & 2048 & 7 & 100 & 84000 \\
-			MultBlock & $1008 \times 1008$ & $16 \times 16$ & 1101 & 0 & 18 & 37,5 & 15876 \\
-			MultBlockLocal & $1008 \times 1008$ & $16 \times 16$ & 1839 & 32768 & 27 & 12,5 & 15876 \\
+			Mult           & $4000 \times 4000$ & $16 \times 16$ & 14390 & 0         & 6     & 100  & 84000      \\
+			MultLocal      & $4000 \times 4000$ & $16 \times 16$ & 5132  & 2048      & 5     & 100  & 84000      \\
+			MultBlock      & $1008 \times 1008$ & $16 \times 16$ & 1074  & 0         & 16    & 37.5 & 15914      \\
+			MultBlockLocal & $1008 \times 1008$ & $16 \times 16$ & 1823  & 32768     & 31    & 12.5 & 15914      \\
 		\end{tabular}
 		
 		\begin{tabular}{l r r r r r r}
-			Kernel & ALU insts & Fetch insts & ALU fetch ratio & Write insts & LDS fetch insts & LDS write insts \\
+			Kernel         & ALU insts & Fetches & ALU fetch ratio & Writes & LDS fetchs & LDS writes \\
 			\hline
-			Mult & 20019 & 8000 & 2,5 & 1 & 0 & 0 \\
-			MultLocal & 8516 & 500 & 17,0 & 1 & 4250 & 500 \\
-			MultBlock & 28796 & 7937 & 3,6 & 4 & 0 & 0 \\
-			MultBlockLocal & 45008 & 504 & 89,3 & 4 & 18459 & 2016 \\
+			Mult           & 20019     & 8000    & 2.5             & 1      & 0          & 0          \\
+			MultLocal      & 7767      & 500     & 15.5            & 1      & 4000       & 500        \\
+			MultBlock      & 23782     & 7918    & 3.0             & 4      & 0          & 0          \\
+			MultBlockLocal & 44214     & 503     & 87.9            & 4      & 18352      & 2011       \\
 		\end{tabular}
 		
 		\begin{tabular}{l r r r r r r}
-			Kernel & ALU busy & ALU packing & Fetch unit busy & Cache hit & Fetch size \\
+			Kernel         & ALU busy & ALU packing & Fetch unit busy & Cache hit & Fetch size \\
 			\hline
-			Mult & 62,5 & 36,0 & 99,9 & 57,6 & 23002707 \\
-			MultLocal & 71,3 & 61,1 & 16,8 & 3,9 & 10095104 \\
-			MultBlock & 74,6 & 77,9 & 99,1 & 29,7 & 21983484 \\
-			MultBlockLocal & 69,8 & 75,9 & 4,2 & 38,5 & 4918471 \\
+			Mult           & 62.5     & 36.0        & 99.9            & 57.5      & 23149005   \\
+			MultLocal      & 68.1     & 59.3        & 17.5            & 7.3       & 9729495    \\
+			MultBlock      & 74.6     & 62.8        & 99.4            & 31.2      & 21510158   \\
+			MultBlockLocal & 69.8     & 69.6        & 4.2             & 37.1      & 5030126    \\
 		\end{tabular}
 		
 		\begin{description}
@@ -185,13 +197,13 @@ Which implementation is when better?
 		   The total number of wavefronts that where executed on all compute units. A wavefront (on an AMD GPU) is a packet of 64 hardware threads running simultaneously on a SM.
 		   \item[ALU insts] \hfill \\
 		   The average number of ALU instructions executed per work item.
-		   \item[Fetch insts] \hfill \\
+		   \item[Fetches] \hfill \\
 		   The average number of fetch instructions to the global memory executed per work item.
-		   \item[Write insts] \hfill \\
+		   \item[Writes] \hfill \\
 		   The average number of write instructions to the global memory executed per work item.
-		   \item[LDS fetch insts] \hfill \\
+		   \item[LDS fetches] \hfill \\
 		   The average number of fetch instructions to the local memory (local data share) executed per work item.
-		   \item[LDS write insts] \hfill \\
+		   \item[LDS writes] \hfill \\
 		   The average number of write instructions to the local memory (local data share) executed per work item.
 		   \item[ALU busy] \hfill \\
 		   The percentage of GPU time ALU instructions are processed.

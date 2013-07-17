@@ -35,10 +35,6 @@
 		<Linker>
 			<Add library="opencl" />
 		</Linker>
-		<Unit filename="Mult.cl" />
-		<Unit filename="MultBlock.cl" />
-		<Unit filename="MultBlockLocal.cl" />
-		<Unit filename="MultLocal.cl" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

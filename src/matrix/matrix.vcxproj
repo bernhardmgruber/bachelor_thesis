@@ -48,6 +48,10 @@
     <ClInclude Include="gpu\dixxi\MultBlockLocalAMDTransposed.h" />
     <ClInclude Include="gpu\nvidia\MultLocal.h" />
     <ClInclude Include="gpu\preso\MultLocal.h" />
+    <ClInclude Include="gpu\thesis\Mult.h" />
+    <ClInclude Include="gpu\thesis\MultBlock.h" />
+    <ClInclude Include="gpu\thesis\MultBlockLocal.h" />
+    <ClInclude Include="gpu\thesis\MultLocal.h" />
     <ClInclude Include="MatrixAlgorithm.h" />
     <ClInclude Include="MatrixPlugin.h" />
   </ItemGroup>
@@ -67,6 +71,10 @@
     <None Include="gpu\dixxi\MultBlockLocalAMDTransposed.cl" />
     <None Include="gpu\nvidia\MultLocal.cl" />
     <None Include="gpu\preso\MultLocal.cl" />
+    <None Include="gpu\thesis\Mult.cl" />
+    <None Include="gpu\thesis\MultBlock.cl" />
+    <None Include="gpu\thesis\MultBlockLocal.cl" />
+    <None Include="gpu\thesis\MultLocal.cl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\libs\cblas\cblas.vcxproj">

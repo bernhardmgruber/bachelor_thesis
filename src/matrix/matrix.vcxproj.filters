@@ -108,6 +108,18 @@
     <ClInclude Include="gpu\dixxi\MultBlockLocalOneAMD.h">
       <Filter>gpu\dixxi</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\thesis\MultLocal.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\thesis\Mult.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\thesis\MultBlock.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\thesis\MultBlockLocal.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\dixxi\MultHybrid.cl">
@@ -155,6 +167,18 @@
     <None Include="gpu\dixxi\MultBlockLocalOneAMD.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
+    <None Include="gpu\thesis\MultLocal.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
+    <None Include="gpu\thesis\Mult.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
+    <None Include="gpu\thesis\MultBlock.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
+    <None Include="gpu\thesis\MultBlockLocal.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -186,6 +210,9 @@
     </Filter>
     <Filter Include="gpu\preso">
       <UniqueIdentifier>{71c8ada8-f3d5-40bc-9a09-60a919bd5acc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\thesis">
+      <UniqueIdentifier>{a833f63e-c1d5-4270-81d9-a3eb5c9d7214}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

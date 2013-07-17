@@ -188,6 +188,15 @@ void matrixMulCLRect(float* a, float* b, float* c, cl_uint size, cl_context cont
     size_t localWorkSizes[] = { workGroupSize, workGroupSize };
 #endif
 
+#if 0
+#define TILE_SIZE 16
+#define BLOCK_SIZE 4
+    ...
+    cl_uint adjustedSize = roundToMultiple(size, BLOCK_SIZE * TILE_SIZE);
+    ...
+    size_t globalWorkSizes[] = { adjustedSize / BLOCK_SIZE, adjustedSize / BLOCK_SIZE };
+#endif
+
 
 string readFile(string fileName)
 {
@@ -230,10 +239,10 @@ int main(int argc, char* argv[])
     cl_command_queue queue = clCreateCommandQueue(context, device, 0, &error);
 
     // create OpenCL program from source code
-    string source1 = readFile("Mult.cl");
-    string source2 = readFile("MultLocal.cl");
-    string source3 = readFile("MultBlock.cl");
-    string source4 = readFile("MultBlockLocal.cl");
+    string source1 = readFile("../../../src/matrix/gpu/thesis/Mult.cl");
+    string source2 = readFile("../../../src/matrix/gpu/thesis/MultLocal.cl");
+    string source3 = readFile("../../../src/matrix/gpu/thesis/MultBlock.cl");
+    string source4 = readFile("../../../src/matrix/gpu/thesis/MultBlockLocal.cl");
 
     const char* source1Ptr = source1.c_str();
     const char* source2Ptr = source2.c_str();
