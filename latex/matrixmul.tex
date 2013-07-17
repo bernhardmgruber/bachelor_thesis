@@ -29,6 +29,7 @@ Also a multithreaded version of the provided code in listing \ref{lst:matrix_cpu
 The highly optimized Fortan77 BLAS library \cite{blas_lib} achieves a significant better performance when compared with the simple CPU implementation provided here.
 
 \subsection{Naive GPU implementation}
+\label{sec:matrix_mul_naive}
 
 A working GPU implementation can be directly derived from the simple CPU implementation given in the previous chapter \ref{sec:matrix_cpu_implementation}. As we can see in figure \ref{fig:matrix_mul}, each output element is calculated independently and the calculation of an output element corresponds to the loop body of the second \lstinline!for! loop in the CPU implementation in listing \ref{lst:matrix_cpu}. Therefore, both outer \lstinline!for! loops offering a good starting point for parallelization. 
 
@@ -130,18 +131,8 @@ Listing \ref{lst:matrix_cl_block_local_kernel} shows the kernel code of the opti
 \lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a 4x4 block of elements of the output matrix per work item using float4 vectors. The input matrixes are split into tiles of blocks which are cached in local memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_cl_block_local_kernel,]{../src/matrix/gpu/thesis/MultBlockLocal.cl}
 \lstset{basicstyle=\ttfamily{}}
 
-Although this approach can be seen as an optimization of the block only version from chapter \ref{sec:matrix_mul_vec} by using locally cached tiles, this kernel performs, contrary to expectations, slower than the original block only version. The reason for this at first glance confusing behavior is easily detected when we have a look at the corresponding performance counters.
-First of all, the number of work items is equal 
-
-
-\subsection{Further tries}
-1D vs 2D problem dimensions
-texture unit (images)
-
-
-\subsection{Benchmarks and conclusion}
-Which implementation is when better?
-
+Although this approach can be seen as an optimization of the block only version from chapter \ref{sec:matrix_mul_vec} by using locally cached tiles, this kernel performs, contrary to expectations, slower than the original block only version (cf. benchmark chart, figure \ref{fig:matrix_chart}). The reason for this at first glance confusing behavior is easily detected when we have a look at the corresponding performance counters in table \ref{tbl:matrix_perf_counter}.
+First of all, the number of work items is equal to the block only approach and therefore also the number of resulting wavefronts the hardware has to process stays the same. The higher amount of index calculations of the kernel becomes notable in the huge increase of processed ALU instructions per work item which is almost twice as much as in the block only variant (44214 vs 23782). However, the use of local memory as a cache works successfully as can be seen at the number of fetches to global memory which has been reduced by a factor of \lstinline!TILE_SIZE! and the total number of fetched KiB which has been decreased to a fourth. So far the counter values indicate rather an increase in performance. The big penalty however comes from the high register and moreover the local memory consumption of the kernel which only allow one work group to run concurrently on a SM (the local memory usage of 32 KiB fills the entire available scratch pad memory). As a result the kernel can only run 12.5\% of the hardware supported number of wavefronts concurrently (occupancy). Memory request latency will therefore account for most of the consumed runtime. By reducing the work group size, the local memory consumption can be decreased. This would allow more wavefronts to run concurrently on the cost of more redundant global memory requests. However, this idea has not proven to be beneficial during benchmarks. Nevertheless, as hardware advances more registers and local memory will be available in the future maybe allowing this kernel to develop its full potential. 
 
 \begin{figure}
 	\centering
@@ -151,87 +142,95 @@ Which implementation is when better?
 \end{figure}
 
 \begin{table}
-	\centering
-	%\resizebox{\textwidth}{!}{
-		\begin{tabular}{l r r r r r r r}
-			Kernel         & Global size        & Work group     & Time  & Local mem & VGPRs & Occ. & Wavefronts \\
-			\hline
-			Mult           & $4000 \times 4000$ & $16 \times 16$ & 14390 & 0         & 6     & 100  & 84000      \\
-			MultLocal      & $4000 \times 4000$ & $16 \times 16$ & 5132  & 2048      & 5     & 100  & 84000      \\
-			MultBlock      & $1008 \times 1008$ & $16 \times 16$ & 1074  & 0         & 16    & 37.5 & 15914      \\
-			MultBlockLocal & $1008 \times 1008$ & $16 \times 16$ & 1823  & 32768     & 31    & 12.5 & 15914      \\
-		\end{tabular}
+	\begin{tabular*}{\textwidth}{l @{\extracolsep{\fill}} r r r r r r r}
+		Kernel         & Global size        & Work group     & Time  & Local mem & VGPRs & Occ. & Wavefronts \\
+		\hline
+		Mult           & $4000 \times 4000$ & $16 \times 16$ & 14390 & 0         & 6     & 100  & 84000      \\
+		MultLocal      & $4000 \times 4000$ & $16 \times 16$ & 5132  & 2048      & 5     & 100  & 84000      \\
+		MultBlock      & $1008 \times 1008$ & $16 \times 16$ & 1074  & 0         & 16    & 37.5 & 15914      \\
+		MultBlockLocal & $1008 \times 1008$ & $16 \times 16$ & 1823  & 32768     & 31    & 12.5 & 15914      \\
+	\end{tabular*}
+	
+	\begin{tabular*}{\textwidth}{l @{\extracolsep{\fill}} r r r r r r}
+		Kernel         & ALU insts & Fetches & ALU fetch ratio & Writes & LDS fetchs & LDS writes \\
+		\hline
+		Mult           & 20019     & 8000    & 2.5             & 1      & 0          & 0          \\
+		MultLocal      & 7767      & 500     & 15.5            & 1      & 4000       & 500        \\
+		MultBlock      & 23782     & 7918    & 3.0             & 4      & 0          & 0          \\
+		MultBlockLocal & 44214     & 503     & 87.9            & 4      & 18352      & 2011       \\
+	\end{tabular*}
+	
+	\begin{tabular*}{\textwidth}{l @{\extracolsep{\fill}} r r r r r r}
+		Kernel         & ALU busy & ALU packing & Fetch unit busy & Cache hit & Fetch size \\
+		\hline
+		Mult           & 62.5     & 36.0        & 99.9            & 57.5      & 23149005   \\
+		MultLocal      & 68.1     & 59.3        & 17.5            & 7.3       & 9729495    \\
+		MultBlock      & 74.6     & 62.8        & 99.4            & 31.2      & 21510158   \\
+		MultBlockLocal & 69.8     & 69.6        & 4.2             & 37.1      & 5030126    \\
+	\end{tabular*}
+	
+	\vspace{\baselineskip}
+	
+	\begin{tabularx}{\textwidth}{>{\bfseries}l X}
+		Global size &
+		The global work size as specified to \lstinline!clEnqueueNDRangeKernel()!. \\
+		Work group &
+		The local work size (size of the work groups) as specified to \lstinline!clEnqueueNDRangeKernel()!. \\
+		Time &
+		The time spent executing the kernel on the GPU in milliseconds. This value is measured using the on-board GPU clock. \\
+		Local mem &
+		The amount of local memory needed by a work group in bytes. \\
+		VGPRs &
+		The number of Vector General Purpose Registers needed per work item. \\
+		Occ. &
+		The kernel occupancy. This is an estimate of the number of in-flight wavefronts on a compute unit as a percentage of the theoretical maximum number of wavefronts that the compute unit can support. \\
+		Wavefronts &
+		The total number of wavefronts that where executed on all compute units. A wavefront (on an AMD GPU) is a packet of 64 hardware threads running simultaneously on a SM. \\
+		ALU insts &
+		The average number of ALU instructions executed per work item. \\
+		Fetches &
+		The average number of fetch instructions to the global memory executed per work item. \\
+		Writes &
+		The average number of write instructions to the global memory executed per work item. \\
+		LDS fetches &
+		The average number of fetch instructions to the local memory (local data share) executed per work item. \\
+		LDS writes &
+		The average number of write instructions to the local memory (local data share) executed per work item. \\
+		ALU busy &
+		The percentage of GPU time ALU instructions are processed. \\
+		ALU fetch ratio &
+		The ratio of ALU instructions to fetch instructions. \\
+		ALU packing &
+		This value indicates how well the shader compiler packs the scalar and vector instructions of the OpenCL program into 5-way VLIW instructions\footnote{VLIW = Very long instruction word. VLIWs are packets of instructions that can be executed in parallel (instruction level parallelism). These packets are generated by the compiler. Due to dependencies between instructions, a VLIW may not always be completely filled and therefore not utilize a VLIW processor completely.} for the GPU. \\
+		Fetch unit busy &
+		The percentage of GPU time the fetch unit is busy. \\
+		Cache hit &
+		The percentage of fetch instructions to the global memory which could be served from the cache. \\
+		Fetch size &
+		The total number of kilobytes eventually fetched from global memory. \\
+	\end{tabularx}
 		
-		\begin{tabular}{l r r r r r r}
-			Kernel         & ALU insts & Fetches & ALU fetch ratio & Writes & LDS fetchs & LDS writes \\
-			\hline
-			Mult           & 20019     & 8000    & 2.5             & 1      & 0          & 0          \\
-			MultLocal      & 7767      & 500     & 15.5            & 1      & 4000       & 500        \\
-			MultBlock      & 23782     & 7918    & 3.0             & 4      & 0          & 0          \\
-			MultBlockLocal & 44214     & 503     & 87.9            & 4      & 18352      & 2011       \\
-		\end{tabular}
-		
-		\begin{tabular}{l r r r r r r}
-			Kernel         & ALU busy & ALU packing & Fetch unit busy & Cache hit & Fetch size \\
-			\hline
-			Mult           & 62.5     & 36.0        & 99.9            & 57.5      & 23149005   \\
-			MultLocal      & 68.1     & 59.3        & 17.5            & 7.3       & 9729495    \\
-			MultBlock      & 74.6     & 62.8        & 99.4            & 31.2      & 21510158   \\
-			MultBlockLocal & 69.8     & 69.6        & 4.2             & 37.1      & 5030126    \\
-		\end{tabular}
-		
-		\begin{description}
-		   \item[Global size] \hfill \\
-		   The global work size as specified to \lstinline!clEnqueueNDRangeKernel()!.
-		   \item[Work group] \hfill \\
-		   The local work size (size of the work group) as specified to \lstinline!clEnqueueNDRangeKernel()!.
-		   \item[Time] \hfill \\
-		   The time spent executing the kernel on the GPU in milliseconds. This value is measured using the on-board GPU clock.
-		   \item[Local mem] \hfill \\
-		   The amount of local memory needed by a work group in bytes.
-		   \item[VGPRs] \hfill \\
-		   The number of Vector General Purpose Registers needed per work item.
-		   \item[Occ.] \hfill \\
-		   The kernel occupancy. This is an estimate of the number of in-flight wavefronts on a compute unit as a percentage of the theoretical maximum number of wavefronts that the compute unit can support.
-		   \item[Wavefronts] \hfill \\
-		   The total number of wavefronts that where executed on all compute units. A wavefront (on an AMD GPU) is a packet of 64 hardware threads running simultaneously on a SM.
-		   \item[ALU insts] \hfill \\
-		   The average number of ALU instructions executed per work item.
-		   \item[Fetches] \hfill \\
-		   The average number of fetch instructions to the global memory executed per work item.
-		   \item[Writes] \hfill \\
-		   The average number of write instructions to the global memory executed per work item.
-		   \item[LDS fetches] \hfill \\
-		   The average number of fetch instructions to the local memory (local data share) executed per work item.
-		   \item[LDS writes] \hfill \\
-		   The average number of write instructions to the local memory (local data share) executed per work item.
-		   \item[ALU busy] \hfill \\
-		   The percentage of GPU time ALU instructions are processed.
-		   \item[ALU fetch ratio] \hfill \\
-		   The ratio of ALU instructions to fetch instructions.
-		   \item[ALU packing] \hfill \\
-		   This value indicates how well the shader compiler packs the scalar and vector instructions of the OpenCL program into 5-way VLIW instructions\footnote{VLIW = Very long instruction word. VLIWs are packets of instructions that can be executed in parallel (instruction level parallelism). These packets are generated by the compiler. Due to dependencies between instructions, a VLIW may not always be completely filled and therefore not utilize a VLIW processor completely.} for the GPU.
-		   \item[Fetch unit busy] \hfill \\
-		   The percentage of GPU time the fetch unit is busy.
-		   \item[Cache hit] \hfill \\
-		   The percentage of fetch instructions to the global memory which could be served from the cache.
-		   \item[Fetch size] \hfill \\
-		   The total number of kilobytes eventually fetched from global memory.
-		\end{description}
-	%}
 	\caption{Selected performance counters of all matrix multiplication kernels gathered using AMD CodeXL's GPU profiler \cite{amd_codexl}. Some values have been rounded. The descriptions of the counters are based on the tool tips provided by the CodeXL Visual Studio integration.}
 	\label{tbl:matrix_perf_counter}
 \end{table}
 
-Which problem size?
-Which hardware?
-
-Beside the presented implementations, several libraries exist supporting matrix multiplication.
+\subsection{Further implementations}
+Beside the presented kernels further approaches have been implemented and benchmarked which will not be covered in detail. However some experiences may help future developers.
 
 \begin{description}
-   \item[clAmdBlas] \hfill \\
-   A BLAS (Basic Linear Algebra Subprograms) library provided by AMD.
-   \item[cuBlas] \hfill \\
-   A BLAS (Basic Linear Algebra Subprograms) library provided by NVIDIA shipped with the CUDA Computing SDK.
+	\item[1D vs 2D problem dimensions] \hfill \\
+	For the naive approach from chapter \ref{sec:matrix_mul_naive} it does not make a difference of the kernel is run with a 1D or 2D problem dimension. 2D seems more natural for matrices but does not affect performance.
+	\item[Using images and the texture units] \hfill \\
+	Using images instead of buffers as memory objects (without further specialization of access patterns) does not increase performance. Images may benefit from special hardware capabilities (e.g. texture units on a GPU provide different cache mechanisms).
+	\item[Vector types vs arrays] \hfill \\
+	Using vector types over an array (e.g. \lstinline!float4 a;! over \lstinline!float a[4];!) does make a difference. The blocked approach from chapter \ref{sec:matrix_mul_vec} has been implemented using arrays instead of vector types. Performance dropped by a factor of four.
 \end{description}
 
+Beside the presented implementations, several libraries exist supporting GPGPU accelerated matrix multiplication.
+
+\begin{description}
+   \item[clAmdBlas \cite{cl_amd_blas}] \hfill \\
+   A BLAS (Basic Linear Algebra Subprograms) library provided by AMD achieving very similar results when compared with the blocks kernel of chapter \ref{sec:matrix_mul_vec}. 
+   \item[cuBlas \cite{cublas}] \hfill \\
+   A BLAS (Basic Linear Algebra Subprograms) library provided by NVIDIA shipped with their CUDA Toolkit. It uses CUDA as GPU Computing language and runs on NVIDIA GPUs only.
+\end{description}
