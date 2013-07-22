@@ -1,3 +1,6 @@
+#ifndef T
+#error "T must be defined"
+#endif
 
 /**
  * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
@@ -16,7 +19,7 @@ __kernel void LocalScan(__global T* buffer, __global T* sums, __local T* shared)
     shared[2 * thid]     = buffer[2 * globalId];
     shared[2 * thid + 1] = buffer[2 * globalId + 1];
 
-    for (int d = n>>1; d > 0; d >>= 1)                    // build sum in place up the tree
+    for (int d = n >> 1; d > 0; d >>= 1)                    // build sum in place up the tree
     {
         barrier(CLK_LOCAL_MEM_FENCE);
         if (thid < d)

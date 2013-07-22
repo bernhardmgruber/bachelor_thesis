@@ -18,7 +18,7 @@ using namespace std;
  *
  * From: http://stackoverflow.com/questions/364985/algorithm-for-finding-the-smallest-power-of-two-thats-greater-or-equal-to-a-giv
  */
-size_t pow2roundup(size_t x);
+size_t roundToPowerOfTwo(size_t x);
 
 
 /**
@@ -83,6 +83,7 @@ void printArrQuad(T* arr, size_t edgeLength)
 }
 
 unsigned int ctz(unsigned int);
+unsigned int clz(unsigned int);
 
 /**
 * Calculates the root of a given power of two (value) that is the largest possible power of two which powered by root does not exceeding value.

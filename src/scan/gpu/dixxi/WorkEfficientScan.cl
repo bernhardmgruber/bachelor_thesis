@@ -1,3 +1,6 @@
+#ifndef T
+#error "T must be defined"
+#endif
 
 /**
  * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
@@ -13,7 +16,7 @@ __kernel void UpSweep(__global T* buffer, uint offset, uint stride)
         buffer[k] += buffer[k - offset];
 }
 
-__kernel void SetLastZeroSweep(__global T* buffer, uint index)
+__kernel void SetLastZero(__global T* buffer, uint index)
 {
     buffer[index] = 0;
 }

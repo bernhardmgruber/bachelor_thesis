@@ -7,10 +7,10 @@
 
 namespace gpu
 {
-    namespace gpugems
+    namespace dixxi
     {
         /**
-         * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
+         * Full array version of: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
          * Chapter: 39.2.2 A Work-Efficient Parallel Scan
          */
         template<typename T>
@@ -19,7 +19,7 @@ namespace gpu
             public:
                 const string getName() override
                 {
-                    return "Work Efficient Scan (GPU Gems) (exclusiv)";
+                    return "Work Efficient Scan (dixxi GPU Gems) (exclusiv)";
                 }
 
                 bool isInclusiv() override
@@ -29,16 +29,16 @@ namespace gpu
 
                 void init() override
                 {
-                    Program* program = context->createProgram("gpu/gpugems/WorkEfficientScan.cl", "-D T=" + getTypeName<T>());
+                    Program* program = context->createProgram("gpu/dixxi/WorkEfficientScan.cl", "-D T=" + getTypeName<T>());
                     upSweepKernel = program->createKernel("UpSweep");
-                    setLastZeroKernel = program->createKernel("SetLastZeroSweep");
+                    setLastZeroKernel = program->createKernel("SetLastZero");
                     downSweepKernel = program->createKernel("DownSweep");
                     delete program;
                 }
 
                 void upload(size_t workGroupSize, T* data, size_t size) override
                 {
-                    bufferSize = pow2roundup(size);
+                    bufferSize = roundToPowerOfTwo(size);
 
                     buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
                     queue->enqueueWrite(buffer, data);

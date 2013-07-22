@@ -1,3 +1,7 @@
+#ifndef T
+#error "T must be defined"
+#endif
+
 /*
  * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
  *

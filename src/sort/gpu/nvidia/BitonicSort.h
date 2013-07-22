@@ -49,7 +49,7 @@ namespace gpu
 
                 void upload(size_t workGroupSize, T* data, size_t size) override
                 {
-                    bufferSize = pow2roundup(size);
+                    bufferSize = roundToPowerOfTwo(size);
 
                     d_InputKey  = context->createBuffer(CL_MEM_READ_ONLY, bufferSize * sizeof(T));
                     //d_InputVal  = context->createBuffer(CL_MEM_READ_ONLY, bufferSize * sizeof(T));

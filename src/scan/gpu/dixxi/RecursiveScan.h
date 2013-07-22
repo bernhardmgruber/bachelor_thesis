@@ -9,14 +9,14 @@
 
 namespace gpu
 {
-    namespace gpugems
+    namespace dixxi
     {
         /**
-         * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
+         * Idea from: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
          * Chapter: 39.2.3 Avoiding Bank Conflicts and 39.2.4 Arrays of Arbitrary Size
          */
         template<typename T>
-        class LocalScan : public CLAlgorithm<T>, public ScanAlgorithm
+        class RecursiveScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
             public:
                 /**
@@ -24,7 +24,7 @@ namespace gpu
                  *
                  * @param useOptimizedKernel: Uses a local memory access optimized kernel implementation when set to true. Address computation will be slower.
                  */
-                LocalScan(bool useOptimizedKernel = false)
+                RecursiveScan(bool useOptimizedKernel = false)
                     : useOptimizedKernel(useOptimizedKernel)
                 {
                 };
@@ -41,7 +41,7 @@ namespace gpu
 
                 void init() override
                 {
-                    Program* program = context->createProgram("gpu/gpugems/LocalScan.cl", "-D T=" + getTypeName<T>());
+                    Program* program = context->createProgram("gpu/dixxi/RecursiveScan.cl", "-D T=" + getTypeName<T>());
                     kernel = program->createKernel(useOptimizedKernel ? "LocalScanOptim" : "LocalScan");
                     addKernel = program->createKernel("AddSums");
                     delete program;
@@ -87,7 +87,7 @@ namespace gpu
 
                         // get the remaining available local memory
                         size_t totalGlobalWorkSize = blocks->getSize() / sizeof(T) / 2;
-                        size_t maxLocalMemSize = context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE); // FIXME: This does not work for NVIDIA cards, raises OUT_OF_RESOURCES
+                        size_t maxLocalMemSize = context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE) / 8; // FIXME: This does not work for NVIDIA cards, raises OUT_OF_RESOURCES
                         size_t maxGlobalWorkSize = maxLocalMemSize / sizeof(cl_int) * workGroupSize;
 
                         size_t offset = 0;
@@ -124,7 +124,7 @@ namespace gpu
                     delete addKernel;
                 }
 
-                virtual ~LocalScan() {}
+                virtual ~RecursiveScan() {}
 
             private:
                 size_t bufferSize;

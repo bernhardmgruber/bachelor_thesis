@@ -48,7 +48,7 @@ namespace gpu
 
                 void upload(size_t workGroupSize, T* data, size_t size) override
                 {
-                    bufferSize = pow2roundup(size);
+                    bufferSize = roundToPowerOfTwo(size);
 
                     source = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
                     queue->enqueueWrite(source, data);

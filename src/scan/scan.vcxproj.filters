@@ -21,9 +21,6 @@
   <ItemGroup>
     <ClInclude Include="ScanAlgorithm.h" />
     <ClInclude Include="ScanPlugin.h" />
-    <ClInclude Include="gpu\gpugems\NaiveScan.h">
-      <Filter>gpu\gpugems</Filter>
-    </ClInclude>
     <ClInclude Include="gpu\apple\Scan.h">
       <Filter>gpu\apple</Filter>
     </ClInclude>
@@ -36,14 +33,8 @@
     <ClInclude Include="gpu\dixxi\ScanTask.h">
       <Filter>gpu\dixxi</Filter>
     </ClInclude>
-    <ClInclude Include="gpu\gpugems\WorkEfficientScan.h">
-      <Filter>gpu\gpugems</Filter>
-    </ClInclude>
     <ClInclude Include="cpu\Scan.h">
       <Filter>cpu</Filter>
-    </ClInclude>
-    <ClInclude Include="gpu\gpugems\LocalScan.h">
-      <Filter>gpu\gpugems</Filter>
     </ClInclude>
     <ClInclude Include="..\common\OpenCL.h">
       <Filter>common</Filter>
@@ -75,14 +66,29 @@
     <ClInclude Include="..\common\structs.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\thesis\NaiveScan.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\NaiveScan.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\WorkEfficientScan.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\gpugems\LocalNaiveScan.h">
+      <Filter>gpu\gpugems</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\gpugems\LocalWorkEfficientScan.h">
+      <Filter>gpu\gpugems</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\RecursiveScan.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\LocalWorkEfficientBlockScan.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="gpu\gpugems\NaiveScan.cl">
-      <Filter>gpu\gpugems</Filter>
-    </None>
-    <None Include="gpu\gpugems\WorkEfficientScan.cl">
-      <Filter>gpu\gpugems</Filter>
-    </None>
     <None Include="gpu\dixxi\ScanTask.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
@@ -92,8 +98,26 @@
     <None Include="gpu\nvidia\Scan.cl">
       <Filter>gpu\nvidia</Filter>
     </None>
-    <None Include="gpu\gpugems\LocalScan.cl">
+    <None Include="gpu\thesis\NaiveScan.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
+    <None Include="gpu\dixxi\NaiveScan.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\WorkEfficientScan.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\gpugems\LocalNaiveScan.cl">
       <Filter>gpu\gpugems</Filter>
+    </None>
+    <None Include="gpu\gpugems\LocalWorkEfficientScan.cl">
+      <Filter>gpu\gpugems</Filter>
+    </None>
+    <None Include="gpu\dixxi\RecursiveScan.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\LocalWorkEfficientBlockScan.cl">
+      <Filter>gpu\dixxi</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +144,9 @@
     </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{e1241011-7254-4c4b-9a78-e214e1c53920}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\thesis">
+      <UniqueIdentifier>{3441b673-477a-4799-877d-cb279d277961}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

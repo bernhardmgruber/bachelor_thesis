@@ -58,7 +58,7 @@ namespace gpu
 
                 void upload(size_t workGroupSize, T* data, size_t size) override
                 {
-                    bufferSize = pow2roundup(size);
+                    bufferSize = roundToPowerOfTwo(size);
 
                     size_t maxElements = bufferSize;
                     size_t numBlocks = ((maxElements % (CTA_SIZE * 4)) == 0) ? (maxElements / (CTA_SIZE * 4)) : (maxElements / (CTA_SIZE * 4) + 1);

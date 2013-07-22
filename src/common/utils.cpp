@@ -7,7 +7,7 @@
 
 using namespace std;
 
-size_t pow2roundup(size_t x)
+size_t roundToPowerOfTwo(size_t x)
 {
     --x;
     x |= x >> 1;
@@ -19,6 +19,7 @@ size_t pow2roundup(size_t x)
         x |= x >> 32;
 
     return x + 1;
+    //return (1 << sizeof(size_t) * 8 - 1) << clz(x);
 }
 
 size_t roundToMultiple(size_t x, size_t multiple)
@@ -77,6 +78,17 @@ unsigned int ctz(unsigned int x)
 #else
     unsigned long r;
     _BitScanForward(&r, x);
+    return r;
+#endif
+}
+
+unsigned int clz(unsigned int x)
+{
+#ifdef __GNUG__
+    return __builtin_clz(x);
+#else
+    unsigned long r;
+    _BitScanReverse(&r, x);
     return r;
 #endif
 }
