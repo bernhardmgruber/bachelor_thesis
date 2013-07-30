@@ -21,6 +21,8 @@
 
 #define VECTOR_ELEMENT(v, e) CONCAT_EXPANED(v.s, e)
 
+#define UPSWEEP_STEP(left, right) right += left
+
 #define DOWNSWEEP_STEP_RND(left, right, tmp) \
     T tmp = left;                            \
     left = right;                            \
@@ -38,9 +40,12 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __local T* shared)
     size_t localId = get_local_id(0);
     size_t n = get_local_size(0) * 2;
 
-    int offset = 1;
+    uint offset = 1;
 
+    //
     // load input vectors
+    //
+
     TB val1 = buffer[2 * globalId + 0];
     TB val2 = buffer[2 * globalId + 1];
 
@@ -49,56 +54,56 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __local T* shared)
     //
 
     // upsweep
-    val1.s1 += val1.s0;
-    val2.s1 += val2.s0;
+    UPSWEEP_STEP(val1.s0, val1.s1);
+    UPSWEEP_STEP(val2.s0, val2.s1);
 #if BLOCK_SIZE > 2
-    val1.s3 += val1.s2;
-    val2.s3 += val2.s2;
+    UPSWEEP_STEP(val1.s2, val1.s3);
+    UPSWEEP_STEP(val2.s2, val2.s3);
 #endif
 #if BLOCK_SIZE > 4
-    val1.s5 += val1.s4;
-    val2.s5 += val2.s4;
-    val1.s7 += val1.s6;
-    val2.s7 += val2.s6;
+    UPSWEEP_STEP(val1.s4, val1.s5);
+    UPSWEEP_STEP(val2.s4, val2.s5);
+    UPSWEEP_STEP(val1.s6, val1.s7);
+    UPSWEEP_STEP(val2.s6, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    val1.s9 += val1.s8;
-    val2.s9 += val2.s8;
-    val1.s11 += val1.s10;
-    val2.s11 += val2.s10;
-    val1.s13 += val1.s12;
-    val2.s13 += val2.s12;
-    val1.s15 += val1.s14;
-    val2.s15 += val2.s14;
+    UPSWEEP_STEP(val1.s8, val1.s9);
+    UPSWEEP_STEP(val2.s8, val2.s9);
+    UPSWEEP_STEP(val1.s10, val1.s11);
+    UPSWEEP_STEP(val2.s10, val2.s11);
+    UPSWEEP_STEP(val1.s12, val1.s13);
+    UPSWEEP_STEP(val2.s12, val2.s13);
+    UPSWEEP_STEP(val1.s14, val1.s15);
+    UPSWEEP_STEP(val2.s14, val2.s15);
 #endif
 
 #if BLOCK_SIZE > 2
-    val1.s3 += val1.s1;
-    val2.s3 += val2.s1;
+    UPSWEEP_STEP(val1.s1, val1.s3);
+    UPSWEEP_STEP(val2.s1, val2.s3);
 #endif
 #if BLOCK_SIZE > 4
-    val1.s7 += val1.s5;
-    val2.s7 += val2.s5;
+    UPSWEEP_STEP(val1.s5, val1.s7);
+    UPSWEEP_STEP(val2.s5, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    val1.s11 += val1.s9;
-    val2.s11 += val2.s9;
-    val1.s15 += val1.s13;
-    val2.s15 += val2.s13;
+    UPSWEEP_STEP(val1.s9, val1.s11);
+    UPSWEEP_STEP(val2.s9, val2.s11);
+    UPSWEEP_STEP(val1.s13, val1.s15);
+    UPSWEEP_STEP(val2.s13, val2.s15);
 #endif
 
 #if BLOCK_SIZE > 4
-    val1.s7 += val1.s3;
-    val2.s7 += val2.s3;
+    UPSWEEP_STEP(val1.s3, val1.s7);
+    UPSWEEP_STEP(val2.s3, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    val1.s15 += val1.s11;
-    val2.s15 += val2.s11;
+    UPSWEEP_STEP(val1.s11, val1.s15);
+    UPSWEEP_STEP(val2.s11, val2.s15);
 #endif
 
 #if BLOCK_SIZE > 8
-    val1.s15 += val1.s7;
-    val2.s15 += val2.s7;
+    UPSWEEP_STEP(val1.s7, val1.s15);
+    UPSWEEP_STEP(val2.s7, val2.s15);
 #endif
 
     // sums
@@ -171,14 +176,13 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __local T* shared)
     //
 
     // build sum in place up the tree
-    #pragma unroll
-    for (int d = n >> 1; d > 0; d >>= 1)                    
+    for (uint d = n >> 1; d > 0; d >>= 1)                    
     {
         barrier(CLK_LOCAL_MEM_FENCE);
         if (localId < d)
         {
-            int ai = offset*(2*localId+1)-1;
-            int bi = offset*(2*localId+2)-1;
+            uint ai = offset*(2*localId+1)-1;
+            uint bi = offset*(2*localId+2)-1;
 
             shared[bi] += shared[ai];
         }
@@ -190,15 +194,14 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __local T* shared)
         shared[n - 1] = 0;    
 
     // traverse down tree & build scan
-#pragma unroll
-    for (int d = 1; d < n; d *= 2) 
+    for (uint d = 1; d < n; d *= 2) 
     {
         offset >>= 1;
         barrier(CLK_LOCAL_MEM_FENCE);
         if (localId < d)
         {
-            int ai = offset*(2*localId+1)-1;
-            int bi = offset*(2*localId+2)-1;
+            uint ai = offset*(2*localId+1)-1;
+            uint bi = offset*(2*localId+2)-1;
 
             T t = shared[ai];
             shared[ai] = shared[bi];
@@ -207,11 +210,17 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __local T* shared)
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
+    //
     // apply the sums
+    //
+
     val1 += shared[2 * localId + 0];
     val2 += shared[2 * localId + 1];
 
+    //
     // write results to device memory
+    //
+
     buffer[2 * globalId + 0] = val1;
     buffer[2 * globalId + 1] = val2;
 }
