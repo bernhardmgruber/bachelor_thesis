@@ -26,9 +26,9 @@ int main()
     try
     {
         //array<int, 5> sizes = { 2<<10, 2<<11, 2<<12, 2<<13, 2<<14, /*2<<15, 2<<16, 2<<17, 2<<18, 2<<19, 2<<20, 2<<21, 2<<22, 2<<23, 2<<24*/ };
-        array<size_t, 1> sizes = { 1024 };
+        array<size_t, 1> sizes = { 1<<24 };
 
-        Runner<int, ScanPlugin> runner(1, sizes.begin(), sizes.end());
+        Runner<int, ScanPlugin> runner(3, sizes.begin(), sizes.end());
 
         //runner.writeGPUDeviceInfo("gpuinfo.csv");
 

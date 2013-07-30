@@ -37,7 +37,7 @@ namespace gpu
 
             void upload(size_t workGroupSize, T* data, size_t size) override
             {
-                bufferSize = roundToPowerOfTwo(roundToMultiple(size / 2, workGroupSize));
+                bufferSize = roundToPowerOfTwo(roundToMultiple(size, workGroupSize * 2));
 
                 source = context->createBuffer(CL_MEM_READ_ONLY, bufferSize * sizeof(T));
                 queue->enqueueWrite(source, data, 0, size * sizeof(T));
@@ -60,7 +60,6 @@ namespace gpu
             void download(T* result, size_t size) override
             {
                 queue->enqueueRead(destination, result, 0, size * sizeof(T));
-                printArr(result, size);
                 delete source;
                 delete destination;
             }

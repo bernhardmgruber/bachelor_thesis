@@ -33,7 +33,7 @@ namespace gpu
             void init() override
             {
                 stringstream ss;
-                ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE;
+                ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE << " -D BLOCK_SIZE_MINUS_ONE=" << BLOCK_SIZE - 1;
                 Program* program = context->createProgram("gpu/dixxi/LocalWorkEfficientBlockScan.cl", ss.str());
                 kernel = program->createKernel("WorkEfficientBlockScan");
                 delete program;
@@ -41,11 +41,11 @@ namespace gpu
 
             void upload(size_t workGroupSize, T* data, size_t size) override
             {
-                bufferSize = roundToPowerOfTwo(roundToMultiple(size / (2 * BLOCK_SIZE), workGroupSize));
+                bufferSize = roundToPowerOfTwo(roundToMultiple(size, workGroupSize * (2 * BLOCK_SIZE)));
 
                 source = context->createBuffer(CL_MEM_READ_ONLY, bufferSize * sizeof(T));
                 queue->enqueueWrite(source, data, 0, size * sizeof(T));
- 
+
                 destination = context->createBuffer(CL_MEM_WRITE_ONLY, bufferSize * sizeof(T));
             }
 
@@ -53,7 +53,7 @@ namespace gpu
             {
                 kernel->setArg(0, source);
                 kernel->setArg(1, destination);
-                kernel->setArg(2, workGroupSize * sizeof(T) * BLOCK_SIZE * 2, nullptr);
+                kernel->setArg(2, workGroupSize * sizeof(T) * 2, nullptr);
 
                 size_t globalWorkSizes[] = { bufferSize / (2 * BLOCK_SIZE) };
                 size_t localWorkSizes[] = { workGroupSize };
@@ -64,7 +64,6 @@ namespace gpu
             void download(T* result, size_t size) override
             {
                 queue->enqueueRead(destination, result, 0, size * sizeof(T));
-                printArr(result, size);
                 delete source;
                 delete destination;
             }
