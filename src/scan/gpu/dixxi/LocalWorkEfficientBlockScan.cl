@@ -32,7 +32,7 @@
 * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 * Chapter: 39.2.2 A Work-Efficient Parallel Scan
 */
-__kernel void WorkEfficientBlockScan(__global const TB* src, __global TB* dest, __local T* shared)
+__kernel void WorkEfficientBlockScan(__global TB* buffer, __local T* shared)
 {
     size_t globalId = get_global_id(0);
     size_t localId = get_local_id(0);
@@ -41,8 +41,8 @@ __kernel void WorkEfficientBlockScan(__global const TB* src, __global TB* dest, 
     int offset = 1;
 
     // load input vectors
-    TB val1 = src[2 * globalId + 0];
-    TB val2 = src[2 * globalId + 1];
+    TB val1 = buffer[2 * globalId + 0];
+    TB val2 = buffer[2 * globalId + 1];
 
     //
     // scan input vectores
@@ -212,6 +212,6 @@ __kernel void WorkEfficientBlockScan(__global const TB* src, __global TB* dest, 
     val2 += shared[2 * localId + 1];
 
     // write results to device memory
-    dest[2 * globalId + 0] = val1;
-    dest[2 * globalId + 1] = val2;
+    buffer[2 * globalId + 0] = val1;
+    buffer[2 * globalId + 1] = val2;
 }

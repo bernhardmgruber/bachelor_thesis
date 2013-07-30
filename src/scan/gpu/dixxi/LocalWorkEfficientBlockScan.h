@@ -10,8 +10,8 @@ namespace gpu
     namespace dixxi
     {
         /**
-        * Adapted from: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
-        * Chapter: 39.2.2 A Work-Efficient Parallel Scan
+        * Idea from: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
+        * Chapter: 39.2.5 Further Optimization and Performance Results
         * Scans only local blocks
         */
         template<typename T>
@@ -41,19 +41,16 @@ namespace gpu
 
             void upload(size_t workGroupSize, T* data, size_t size) override
             {
-                bufferSize = roundToPowerOfTwo(roundToMultiple(size, workGroupSize * (2 * BLOCK_SIZE)));
+                bufferSize = roundToMultiple(size, workGroupSize * 2 * BLOCK_SIZE);
 
-                source = context->createBuffer(CL_MEM_READ_ONLY, bufferSize * sizeof(T));
-                queue->enqueueWrite(source, data, 0, size * sizeof(T));
-
-                destination = context->createBuffer(CL_MEM_WRITE_ONLY, bufferSize * sizeof(T));
+                buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+                queue->enqueueWrite(buffer, data, 0, size * sizeof(T));
             }
 
             void run(size_t workGroupSize, size_t size) override
             {
-                kernel->setArg(0, source);
-                kernel->setArg(1, destination);
-                kernel->setArg(2, workGroupSize * sizeof(T) * 2, nullptr);
+                kernel->setArg(0, buffer);
+                kernel->setArg(1, workGroupSize * sizeof(T) * 2, nullptr);
 
                 size_t globalWorkSizes[] = { bufferSize / (2 * BLOCK_SIZE) };
                 size_t localWorkSizes[] = { workGroupSize };
@@ -63,9 +60,8 @@ namespace gpu
 
             void download(T* result, size_t size) override
             {
-                queue->enqueueRead(destination, result, 0, size * sizeof(T));
-                delete source;
-                delete destination;
+                queue->enqueueRead(buffer, result, 0, size * sizeof(T));
+                delete buffer;
             }
 
             void cleanup() override
@@ -78,8 +74,7 @@ namespace gpu
         private:
             size_t bufferSize;
             Kernel* kernel;
-            Buffer* source;
-            Buffer* destination;
+            Buffer* buffer;
         };
     }
 }

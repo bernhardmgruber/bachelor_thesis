@@ -122,20 +122,13 @@ __kernel void LocalScanOptim(__global T* buffer, __global T* sums, __local T* sh
     buffer[globalId + (n/2)] = shared[bi + bankOffsetB];
 }
 
-__kernel void AddSums(__global T* buffer, __global T* sums, __local T* shared)
+__kernel void AddSums(__global T* buffer, __global T* sums)
 {
-    //size_t gid = get_group_id(0);
-    size_t groupIdWithOffset = get_global_id(0) / get_local_size(0);
-    size_t groupId = get_group_id(0);
+    size_t globalId = get_global_id(0);
 
-    if(get_local_id(0) == 0)
-        // the first thread of the work group loads the sum value
-        shared[groupId] = sums[groupIdWithOffset];
-    barrier(CLK_LOCAL_MEM_FENCE);
+    T val = sums[get_group_id(0)];
 
-    size_t id = get_global_id(0);
-
-    buffer[id * 2]     += shared[groupId];
-    buffer[id * 2 + 1] += shared[groupId];
+    buffer[globalId * 2 + 0] += val;
+    buffer[globalId * 2 + 1] += val;
 }
 
