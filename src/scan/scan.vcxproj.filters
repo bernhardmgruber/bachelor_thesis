@@ -87,6 +87,9 @@
     <ClInclude Include="gpu\dixxi\LocalWorkEfficientBlockScan.h">
       <Filter>gpu\dixxi</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\dixxi\RecursiveBlockScan.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\dixxi\ScanTask.cl">
@@ -117,6 +120,9 @@
       <Filter>gpu\dixxi</Filter>
     </None>
     <None Include="gpu\dixxi\LocalWorkEfficientBlockScan.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\RecursiveBlockScan.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
   </ItemGroup>

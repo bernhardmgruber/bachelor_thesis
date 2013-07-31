@@ -18,7 +18,7 @@ namespace gpu
         template<typename T>
         class RecursiveBlockScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
-            static const int BLOCK_SIZE = 4;
+            static const int BLOCK_SIZE = 8;
 
         public:
             /**
@@ -51,7 +51,7 @@ namespace gpu
             void init() override
             {
                 stringstream ss;
-                ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE << " -D BLOCK_SIZE_MINUS_ONE=" << BLOCK_SIZE - 1;
+                ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE << " -D BLOCK_SIZE_MINUS_ONE_HEX=" << hex << BLOCK_SIZE - 1;
                 Program* program = context->createProgram("gpu/dixxi/RecursiveBlockScan.cl", ss.str());
                 kernel = program->createKernel(useOptimizedKernel ? "WorkEfficientBlockScanOptim" : "WorkEfficientBlockScan");
                 addKernel = program->createKernel("AddSums");

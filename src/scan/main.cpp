@@ -15,6 +15,7 @@
 #include "gpu/dixxi/NaiveScan.h"
 #include "gpu/dixxi/WorkEfficientScan.h"
 #include "gpu/dixxi/RecursiveScan.h"
+#include "gpu/dixxi/RecursiveBlockScan.h"
 #include "gpu/dixxi/LocalWorkEfficientBlockScan.h"
 #include "gpu/nvidia/Scan.h"
 #include "gpu/thesis/NaiveScan.h"
@@ -28,7 +29,7 @@ int main()
         //array<int, 5> sizes = { 2<<10, 2<<11, 2<<12, 2<<13, 2<<14, /*2<<15, 2<<16, 2<<17, 2<<18, 2<<19, 2<<20, 2<<21, 2<<22, 2<<23, 2<<24*/ };
         array<size_t, 1> sizes = { 1<<24 };
 
-        Runner<int, ScanPlugin> runner(3, sizes.begin(), sizes.end());
+        Runner<int, ScanPlugin> runner(1, sizes.begin(), sizes.end());
 
         //runner.writeGPUDeviceInfo("gpuinfo.csv");
 
@@ -38,13 +39,14 @@ int main()
 
         //runner.run<gpu::clpp::Scan>(CLRunType::GPU); // not working
         //runner.run<gpu::gpugems::LocalNaiveScan>(CLRunType::GPU);
-        runner.run<gpu::gpugems::LocalWorkEfficientScan>(CLRunType::GPU);
+        //runner.run<gpu::gpugems::LocalWorkEfficientScan>(CLRunType::GPU);
         //runner.run<gpu::apple::Scan>(CLRunType::GPU);
         //runner.run<gpu::dixxi::ScanTask>(CLRunType::GPU);
         //runner.run<gpu::dixxi::NaiveScan>(CLRunType::GPU);
         //runner.run<gpu::dixxi::WorkEfficientScan>(CLRunType::GPU);
         //runner.run<gpu::dixxi::RecursiveScan>(CLRunType::GPU);
-        runner.run<gpu::dixxi::LocalWorkEfficientBlockScan>(CLRunType::GPU);
+        //runner.run<gpu::dixxi::RecursiveBlockScan>(CLRunType::GPU);
+        //runner.run<gpu::dixxi::LocalWorkEfficientBlockScan>(CLRunType::GPU);
         //runner.run<gpu::nvidia::Scan>(CLRunType::GPU);
         //runner.run<gpu::thesis::NaiveScan>(CLRunType::GPU);
 

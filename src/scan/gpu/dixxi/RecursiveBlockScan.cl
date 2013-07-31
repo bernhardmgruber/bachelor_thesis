@@ -6,8 +6,8 @@
 #error "BLOCK_SIZE must be defined"
 #endif
 
-#ifndef BLOCK_SIZE_MINUS_ONE
-#error "BLOCK_SIZE_MINUS_ONE must be defined"
+#ifndef BLOCK_SIZE_MINUS_ONE_HEX
+#error "BLOCK_SIZE_MINUS_ONE_HEX must be defined"
 #endif
 
 #if BLOCK_SIZE < 2
@@ -69,12 +69,12 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __global T* sums, __lo
 #if BLOCK_SIZE > 8
     UPSWEEP_STEP(val1.s8, val1.s9);
     UPSWEEP_STEP(val2.s8, val2.s9);
-    UPSWEEP_STEP(val1.s10, val1.s11);
-    UPSWEEP_STEP(val2.s10, val2.s11);
-    UPSWEEP_STEP(val1.s12, val1.s13);
-    UPSWEEP_STEP(val2.s12, val2.s13);
-    UPSWEEP_STEP(val1.s14, val1.s15);
-    UPSWEEP_STEP(val2.s14, val2.s15);
+    UPSWEEP_STEP(val1.sA, val1.sB);
+    UPSWEEP_STEP(val2.sA, val2.sB);
+    UPSWEEP_STEP(val1.sC, val1.sD);
+    UPSWEEP_STEP(val2.sC, val2.sD);
+    UPSWEEP_STEP(val1.sE, val1.sF);
+    UPSWEEP_STEP(val2.sE, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 2
@@ -86,10 +86,10 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __global T* sums, __lo
     UPSWEEP_STEP(val2.s5, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    UPSWEEP_STEP(val1.s9, val1.s11);
-    UPSWEEP_STEP(val2.s9, val2.s11);
-    UPSWEEP_STEP(val1.s13, val1.s15);
-    UPSWEEP_STEP(val2.s13, val2.s15);
+    UPSWEEP_STEP(val1.s9, val1.sB);
+    UPSWEEP_STEP(val2.s9, val2.sB);
+    UPSWEEP_STEP(val1.sD, val1.sF);
+    UPSWEEP_STEP(val2.sD, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 4
@@ -97,31 +97,31 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __global T* sums, __lo
     UPSWEEP_STEP(val2.s3, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    UPSWEEP_STEP(val1.s11, val1.s15);
-    UPSWEEP_STEP(val2.s11, val2.s15);
+    UPSWEEP_STEP(val1.sB, val1.sF);
+    UPSWEEP_STEP(val2.sB, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 8
-    UPSWEEP_STEP(val1.s7, val1.s15);
-    UPSWEEP_STEP(val2.s7, val2.s15);
+    UPSWEEP_STEP(val1.s7, val1.sF);
+    UPSWEEP_STEP(val2.s7, val2.sF);
 #endif
 
     // sums
-    T sum1 = VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE);
-    T sum2 = VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE);
+    T sum1 = VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE_HEX);
+    T sum2 = VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE_HEX);
 
     // move sums into shared memory
     shared[2 * localId + 0] = sum1;
     shared[2 * localId + 1] = sum2;
 
     // set last elements to zero
-    VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE) = 0;
-    VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE) = 0;
+    VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE_HEX) = 0;
+    VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE_HEX) = 0;
 
     // downsweep
 #if BLOCK_SIZE > 8
-    DOWNSWEEP_STEP(val1.s7, val1.s15);
-    DOWNSWEEP_STEP(val2.s7, val2.s15);
+    DOWNSWEEP_STEP(val1.s7, val1.sF);
+    DOWNSWEEP_STEP(val2.s7, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 4
@@ -129,8 +129,8 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __global T* sums, __lo
     DOWNSWEEP_STEP(val2.s3, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    DOWNSWEEP_STEP(val1.s11, val1.s15);
-    DOWNSWEEP_STEP(val2.s11, val2.s15);
+    DOWNSWEEP_STEP(val1.sB, val1.sF);
+    DOWNSWEEP_STEP(val2.sB, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 2
@@ -142,10 +142,10 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __global T* sums, __lo
     DOWNSWEEP_STEP(val2.s5, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    DOWNSWEEP_STEP(val1.s9, val1.s11);
-    DOWNSWEEP_STEP(val2.s9, val2.s11);
-    DOWNSWEEP_STEP(val1.s13, val1.s15);
-    DOWNSWEEP_STEP(val2.s13, val2.s15);
+    DOWNSWEEP_STEP(val1.s9, val1.sB);
+    DOWNSWEEP_STEP(val2.s9, val2.sB);
+    DOWNSWEEP_STEP(val1.sD, val1.sF);
+    DOWNSWEEP_STEP(val2.sD, val2.sF);
 #endif
 
     DOWNSWEEP_STEP(val1.s0, val1.s1);
@@ -163,12 +163,12 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __global T* sums, __lo
 #if BLOCK_SIZE > 8
     DOWNSWEEP_STEP(val1.s8, val1.s9);
     DOWNSWEEP_STEP(val2.s8, val2.s9);
-    DOWNSWEEP_STEP(val1.s10, val1.s11);
-    DOWNSWEEP_STEP(val2.s10, val2.s11);
-    DOWNSWEEP_STEP(val1.s12, val1.s13);
-    DOWNSWEEP_STEP(val2.s12, val2.s13);
-    DOWNSWEEP_STEP(val1.s14, val1.s15);
-    DOWNSWEEP_STEP(val2.s14, val2.s15);
+    DOWNSWEEP_STEP(val1.sA, val1.sB);
+    DOWNSWEEP_STEP(val2.sA, val2.sB);
+    DOWNSWEEP_STEP(val1.sC, val1.sD);
+    DOWNSWEEP_STEP(val2.sC, val2.sD);
+    DOWNSWEEP_STEP(val1.sE, val1.sF);
+    DOWNSWEEP_STEP(val2.sE, val2.sF);
 #endif
 
     //
@@ -271,12 +271,12 @@ __kernel void WorkEfficientBlockScanOptim(__global TB* buffer, __global T* sums,
 #if BLOCK_SIZE > 8
     UPSWEEP_STEP(val1.s8, val1.s9);
     UPSWEEP_STEP(val2.s8, val2.s9);
-    UPSWEEP_STEP(val1.s10, val1.s11);
-    UPSWEEP_STEP(val2.s10, val2.s11);
-    UPSWEEP_STEP(val1.s12, val1.s13);
-    UPSWEEP_STEP(val2.s12, val2.s13);
-    UPSWEEP_STEP(val1.s14, val1.s15);
-    UPSWEEP_STEP(val2.s14, val2.s15);
+    UPSWEEP_STEP(val1.sA, val1.sB);
+    UPSWEEP_STEP(val2.sA, val2.sB);
+    UPSWEEP_STEP(val1.sC, val1.sD);
+    UPSWEEP_STEP(val2.sC, val2.sD);
+    UPSWEEP_STEP(val1.sE, val1.sF);
+    UPSWEEP_STEP(val2.sE, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 2
@@ -288,10 +288,10 @@ __kernel void WorkEfficientBlockScanOptim(__global TB* buffer, __global T* sums,
     UPSWEEP_STEP(val2.s5, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    UPSWEEP_STEP(val1.s9, val1.s11);
-    UPSWEEP_STEP(val2.s9, val2.s11);
-    UPSWEEP_STEP(val1.s13, val1.s15);
-    UPSWEEP_STEP(val2.s13, val2.s15);
+    UPSWEEP_STEP(val1.s9, val1.sB);
+    UPSWEEP_STEP(val2.s9, val2.sB);
+    UPSWEEP_STEP(val1.sD, val1.sF);
+    UPSWEEP_STEP(val2.sD, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 4
@@ -299,31 +299,31 @@ __kernel void WorkEfficientBlockScanOptim(__global TB* buffer, __global T* sums,
     UPSWEEP_STEP(val2.s3, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    UPSWEEP_STEP(val1.s11, val1.s15);
-    UPSWEEP_STEP(val2.s11, val2.s15);
+    UPSWEEP_STEP(val1.sB, val1.sF);
+    UPSWEEP_STEP(val2.sB, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 8
-    UPSWEEP_STEP(val1.s7, val1.s15);
-    UPSWEEP_STEP(val2.s7, val2.s15);
+    UPSWEEP_STEP(val1.s7, val1.sF);
+    UPSWEEP_STEP(val2.s7, val2.sF);
 #endif
 
     // sums
-    T sum1 = VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE);
-    T sum2 = VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE);
+    T sum1 = VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE_HEX);
+    T sum2 = VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE_HEX);
 
     // move sums into shared memory
     shared[ai + bankOffsetA]  = sum1;
     shared[bi + bankOffsetB]  = sum2;
 
     // set last elements to zero
-    VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE) = 0;
-    VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE) = 0;
+    VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE_HEX) = 0;
+    VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE_HEX) = 0;
 
     // downsweep
 #if BLOCK_SIZE > 8
-    DOWNSWEEP_STEP(val1.s7, val1.s15);
-    DOWNSWEEP_STEP(val2.s7, val2.s15);
+    DOWNSWEEP_STEP(val1.s7, val1.sF);
+    DOWNSWEEP_STEP(val2.s7, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 4
@@ -331,8 +331,8 @@ __kernel void WorkEfficientBlockScanOptim(__global TB* buffer, __global T* sums,
     DOWNSWEEP_STEP(val2.s3, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    DOWNSWEEP_STEP(val1.s11, val1.s15);
-    DOWNSWEEP_STEP(val2.s11, val2.s15);
+    DOWNSWEEP_STEP(val1.sB, val1.sF);
+    DOWNSWEEP_STEP(val2.sB, val2.sF);
 #endif
 
 #if BLOCK_SIZE > 2
@@ -344,10 +344,10 @@ __kernel void WorkEfficientBlockScanOptim(__global TB* buffer, __global T* sums,
     DOWNSWEEP_STEP(val2.s5, val2.s7);
 #endif
 #if BLOCK_SIZE > 8
-    DOWNSWEEP_STEP(val1.s9, val1.s11);
-    DOWNSWEEP_STEP(val2.s9, val2.s11);
-    DOWNSWEEP_STEP(val1.s13, val1.s15);
-    DOWNSWEEP_STEP(val2.s13, val2.s15);
+    DOWNSWEEP_STEP(val1.s9, val1.sB);
+    DOWNSWEEP_STEP(val2.s9, val2.sB);
+    DOWNSWEEP_STEP(val1.sD, val1.sF);
+    DOWNSWEEP_STEP(val2.sD, val2.sF);
 #endif
 
     DOWNSWEEP_STEP(val1.s0, val1.s1);
@@ -365,12 +365,12 @@ __kernel void WorkEfficientBlockScanOptim(__global TB* buffer, __global T* sums,
 #if BLOCK_SIZE > 8
     DOWNSWEEP_STEP(val1.s8, val1.s9);
     DOWNSWEEP_STEP(val2.s8, val2.s9);
-    DOWNSWEEP_STEP(val1.s10, val1.s11);
-    DOWNSWEEP_STEP(val2.s10, val2.s11);
-    DOWNSWEEP_STEP(val1.s12, val1.s13);
-    DOWNSWEEP_STEP(val2.s12, val2.s13);
-    DOWNSWEEP_STEP(val1.s14, val1.s15);
-    DOWNSWEEP_STEP(val2.s14, val2.s15);
+    DOWNSWEEP_STEP(val1.sA, val1.sB);
+    DOWNSWEEP_STEP(val2.sA, val2.sB);
+    DOWNSWEEP_STEP(val1.sC, val1.sD);
+    DOWNSWEEP_STEP(val2.sC, val2.sD);
+    DOWNSWEEP_STEP(val1.sE, val1.sF);
+    DOWNSWEEP_STEP(val2.sE, val2.sF);
 #endif
 
     //

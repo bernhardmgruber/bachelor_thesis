@@ -98,6 +98,7 @@
     <ClInclude Include="gpu\clpp\Scan.h" />
     <ClInclude Include="gpu\dixxi\LocalWorkEfficientBlockScan.h" />
     <ClInclude Include="gpu\dixxi\NaiveScan.h" />
+    <ClInclude Include="gpu\dixxi\RecursiveBlockScan.h" />
     <ClInclude Include="gpu\dixxi\RecursiveScan.h" />
     <ClInclude Include="gpu\dixxi\ScanTask.h" />
     <ClInclude Include="gpu\dixxi\WorkEfficientScan.h" />
@@ -112,6 +113,7 @@
     <None Include="gpu\apple\Scan.cl" />
     <None Include="gpu\dixxi\LocalWorkEfficientBlockScan.cl" />
     <None Include="gpu\dixxi\NaiveScan.cl" />
+    <None Include="gpu\dixxi\RecursiveBlockScan.cl" />
     <None Include="gpu\dixxi\RecursiveScan.cl" />
     <None Include="gpu\dixxi\ScanTask.cl" />
     <None Include="gpu\dixxi\WorkEfficientScan.cl" />
