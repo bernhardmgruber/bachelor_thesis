@@ -96,36 +96,36 @@
     <ClInclude Include="cpu\Scan.h" />
     <ClInclude Include="gpu\apple\Scan.h" />
     <ClInclude Include="gpu\clpp\Scan.h" />
-    <ClInclude Include="gpu\dixxi\LocalWorkEfficientBlockScan.h" />
+    <ClInclude Include="gpu\dixxi\LocalWorkEfficientVecScan.h" />
     <ClInclude Include="gpu\dixxi\NaiveScan.h" />
-    <ClInclude Include="gpu\dixxi\RecursiveBlockScan.h" />
     <ClInclude Include="gpu\dixxi\RecursiveScan.h" />
+    <ClInclude Include="gpu\dixxi\RecursiveVecScan.h" />
     <ClInclude Include="gpu\dixxi\ScanTask.h" />
     <ClInclude Include="gpu\dixxi\WorkEfficientScan.h" />
     <ClInclude Include="gpu\gpugems\LocalNaiveScan.h" />
     <ClInclude Include="gpu\gpugems\LocalWorkEfficientScan.h" />
     <ClInclude Include="gpu\nvidia\Scan.h" />
     <ClInclude Include="gpu\thesis\NaiveScan.h" />
-    <ClInclude Include="gpu\thesis\RecursiveBlockScan.h" />
     <ClInclude Include="gpu\thesis\RecursiveScan.h" />
+    <ClInclude Include="gpu\thesis\RecursiveVecScan.h" />
     <ClInclude Include="gpu\thesis\WorkEfficientScan.h" />
     <ClInclude Include="ScanAlgorithm.h" />
     <ClInclude Include="ScanPlugin.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\apple\Scan.cl" />
-    <None Include="gpu\dixxi\LocalWorkEfficientBlockScan.cl" />
+    <None Include="gpu\dixxi\LocalWorkEfficientVecScan.cl" />
     <None Include="gpu\dixxi\NaiveScan.cl" />
-    <None Include="gpu\dixxi\RecursiveBlockScan.cl" />
     <None Include="gpu\dixxi\RecursiveScan.cl" />
+    <None Include="gpu\dixxi\RecursiveVecScan.cl" />
     <None Include="gpu\dixxi\ScanTask.cl" />
     <None Include="gpu\dixxi\WorkEfficientScan.cl" />
     <None Include="gpu\gpugems\LocalNaiveScan.cl" />
     <None Include="gpu\gpugems\LocalWorkEfficientScan.cl" />
     <None Include="gpu\nvidia\Scan.cl" />
     <None Include="gpu\thesis\NaiveScan.cl" />
-    <None Include="gpu\thesis\RecursiveBlockScan.cl" />
     <None Include="gpu\thesis\RecursiveScan.cl" />
+    <None Include="gpu\thesis\RecursiveVecScan.cl" />
     <None Include="gpu\thesis\WorkEfficientScan.cl" />
   </ItemGroup>
   <ItemGroup>

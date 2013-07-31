@@ -15,14 +15,14 @@ namespace gpu
         * Scans only local blocks
         */
         template<typename T>
-        class LocalWorkEfficientBlockScan : public CLAlgorithm<T>, public ScanAlgorithm
+        class LocalWorkEfficientVecScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
             static const int BLOCK_SIZE = 4;
 
         public:
             const string getName() override
             {
-                return "Work Efficient Block Scan (dixxi GPU Gems) (exclusiv)";
+                return "Work Efficient Vec Scan (dixxi GPU Gems) (exclusiv)";
             }
 
             bool isInclusiv() override
@@ -34,8 +34,8 @@ namespace gpu
             {
                 stringstream ss;
                 ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE << " -D BLOCK_SIZE_MINUS_ONE=" << BLOCK_SIZE - 1;
-                Program* program = context->createProgram("gpu/dixxi/LocalWorkEfficientBlockScan.cl", ss.str());
-                kernel = program->createKernel("WorkEfficientBlockScan");
+                Program* program = context->createProgram("gpu/dixxi/LocalWorkEfficientVecScan.cl", ss.str());
+                kernel = program->createKernel("WorkEfficientVecScan");
                 delete program;
             }
 
@@ -69,7 +69,7 @@ namespace gpu
                 delete kernel;
             }
 
-            virtual ~LocalWorkEfficientBlockScan() {}
+            virtual ~LocalWorkEfficientVecScan() {}
 
         private:
             size_t bufferSize;

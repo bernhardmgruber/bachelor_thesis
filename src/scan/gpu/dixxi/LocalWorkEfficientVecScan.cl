@@ -34,7 +34,7 @@
 * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 * Chapter: 39.2.2 A Work-Efficient Parallel Scan
 */
-__kernel void WorkEfficientBlockScan(__global TB* buffer, __local T* shared)
+__kernel void WorkEfficientVecScan(__global TB* buffer, __local T* shared)
 {
     size_t globalId = get_global_id(0);
     size_t localId = get_local_id(0);

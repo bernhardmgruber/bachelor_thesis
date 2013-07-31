@@ -18,7 +18,7 @@
 * From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 * Chapter: 39.2.2 A Work-Efficient Parallel Scan
 */
-__kernel void WorkEfficientBlockScan(__global TB* buffer, __global int* sums, __local int* shared)
+__kernel void WorkEfficientVecScan(__global TB* buffer, __global int* sums, __local int* shared)
 {
     uint globalId = get_global_id(0);
     uint localId = get_local_id(0);
@@ -215,7 +215,7 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __global int* sums, __
 #define LOG_NUM_BANKS 4
 #define CONFLICT_FREE_OFFSET(n) ((n) >> NUM_BANKS + (n) >> (2 * LOG_NUM_BANKS))
 
-__kernel void WorkEfficientBlockScanOptim(__global TB* buffer, __global int* sums, __local int* shared)
+__kernel void WorkEfficientVecScanOptim(__global TB* buffer, __global int* sums, __local int* shared)
 {
     uint globalId = get_global_id(0) + get_group_id(0) * get_local_size(0);
     uint localId = get_local_id(0);

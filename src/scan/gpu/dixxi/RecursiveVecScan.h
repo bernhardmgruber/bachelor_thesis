@@ -16,7 +16,7 @@ namespace gpu
         * Chapter: 39.2.5 Further Optimization and Performance Results
         */
         template<typename T>
-        class RecursiveBlockScan : public CLAlgorithm<T>, public ScanAlgorithm
+        class RecursiveVecScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
             static const int BLOCK_SIZE = 8;
 
@@ -26,14 +26,14 @@ namespace gpu
             *
             * @param useOptimizedKernel: Uses a local memory access optimized kernel implementation when set to true. Address computation will be slower.
             */
-            RecursiveBlockScan(bool useOptimizedKernel = false)
+            RecursiveVecScan(bool useOptimizedKernel = false)
                 : useOptimizedKernel(useOptimizedKernel)
             {
             };
 
             const string getName() override
             {
-                return "Recursive Block Scan (dixxi GPU Gems) (exclusiv)" + string(useOptimizedKernel ? " (optimized)" : "");
+                return "Recursive Vec Scan (dixxi GPU Gems) (exclusiv)" + string(useOptimizedKernel ? " (optimized)" : "");
             }
 
             const vector<size_t> getSupportedWorkGroupSizes() const override
@@ -53,8 +53,8 @@ namespace gpu
             {
                 stringstream ss;
                 ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE << " -D BLOCK_SIZE_MINUS_ONE_HEX=" << hex << BLOCK_SIZE - 1;
-                Program* program = context->createProgram("gpu/dixxi/RecursiveBlockScan.cl", ss.str());
-                kernel = program->createKernel(useOptimizedKernel ? "WorkEfficientBlockScanOptim" : "WorkEfficientBlockScan");
+                Program* program = context->createProgram("gpu/dixxi/RecursiveVecScan.cl", ss.str());
+                kernel = program->createKernel(useOptimizedKernel ? "WorkEfficientVecScanOptim" : "WorkEfficientVecScan");
                 addKernel = program->createKernel("AddSums");
                 delete program;
             }
@@ -110,7 +110,7 @@ namespace gpu
                 delete addKernel;
             }
 
-            virtual ~RecursiveBlockScan() {}
+            virtual ~RecursiveVecScan() {}
 
         private:
             size_t bufferSize;
