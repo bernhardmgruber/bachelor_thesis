@@ -25,8 +25,8 @@ class ScanPlugin
 
             generate(data, data + size, []()
             {
-                return rand() % 100;
-                //return 1;
+                //return rand() % 100;
+                return 1;
             });
 
             return data;

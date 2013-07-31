@@ -18,29 +18,23 @@ namespace gpu
         template<typename T>
         class RecursiveScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
-            static_assert(is_same<T, int>::value, "Thesis algorithms only support int");
+            static_assert(is_same<T, cl_int>::value, "Thesis algorithms only support int");
+
+            /// Uses a local memory access optimized kernel implementation when set to true. Address computation will be slower.
+            static const bool AVOID_BANK_CONFLICTS = false;
 
         public:
-            /**
-            * Constructor.
-            *
-            * @param useOptimizedKernel: Uses a local memory access optimized kernel implementation when set to true. Address computation will be slower.
-            */
-            RecursiveScan(bool useOptimizedKernel = false)
-                : useOptimizedKernel(useOptimizedKernel)
-            {
-            };
-
             const string getName() override
             {
-                return "Recursive Scan (THESIS GPU Gems) (exclusiv)" + string(useOptimizedKernel ? " (optimized)" : "");
+                return "Recursive Scan (THESIS GPU Gems) (exclusiv)" + string(AVOID_BANK_CONFLICTS ? " (optimized)" : "");
             }
 
             const vector<size_t> getSupportedWorkGroupSizes() const override
             {
                 // this algorithm does not allow a work group size of 1, because this would not reduce the problem size in a recursion.
+                // work group sizes larger than 128 do not work for bank conflict avoidance
                 auto sizes = CLAlgorithm<T>::getSupportedWorkGroupSizes();
-                sizes.erase(remove_if(begin(sizes), end(sizes), [](size_t size) { return size < 2; }), sizes.end());
+                sizes.erase(remove_if(begin(sizes), end(sizes), [](size_t size) { return size < 2 || (size > 128 && AVOID_BANK_CONFLICTS); }), sizes.end());
                 return sizes;
             }
 
@@ -52,7 +46,7 @@ namespace gpu
             void init() override
             {
                 Program* program = context->createProgram("gpu/thesis/RecursiveScan.cl");
-                kernel = program->createKernel(useOptimizedKernel ? "WorkEfficientScanOptim" : "WorkEfficientScan");
+                kernel = program->createKernel(AVOID_BANK_CONFLICTS ? "WorkEfficientScanOptim" : "WorkEfficientScan");
                 addKernel = program->createKernel("AddSums");
                 delete program;
             }
@@ -82,6 +76,11 @@ namespace gpu
                 kernel->setArg(2, sizeof(T) * 2 * localWorkSizes[0], nullptr);
                 queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
 
+                //T* result = new T[bufferSize];
+                //queue->enqueueRead(values, result, 0, size * sizeof(T));
+                //printArr(result, size);
+                //delete result;
+
                 if(values->getSize() / sizeof(T) > localWorkSizes[0] * 2)
                 {
                     // the buffer containes more than one scanned block, scan the created sum buffer
@@ -99,6 +98,7 @@ namespace gpu
             void download(T* result, size_t size) override
             {
                 queue->enqueueRead(buffer, result, 0, size * sizeof(T));
+                //printArr(result, size);
                 delete buffer;
             }
 
@@ -115,7 +115,6 @@ namespace gpu
             Kernel* kernel;
             Kernel* addKernel;
             Buffer* buffer;
-            bool useOptimizedKernel;
         };
     }
 }

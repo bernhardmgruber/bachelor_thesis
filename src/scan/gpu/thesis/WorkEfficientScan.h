@@ -16,7 +16,7 @@ namespace gpu
         template<typename T>
         class WorkEfficientScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
-            static_assert(is_same<T, int>::value, "Thesis algorithms only support int");
+            static_assert(is_same<T, cl_int>::value, "Thesis algorithms only support int");
 
         public:
             const string getName() override
