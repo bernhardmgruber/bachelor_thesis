@@ -227,8 +227,8 @@ __kernel void WorkEfficientBlockScan(__global TB* buffer, __global T* sums, __lo
     buffer[2 * globalId + 1] = val2;
 }
 
-#define NUM_BANKS 32
-#define LOG_NUM_BANKS 5
+#define NUM_BANKS 16
+#define LOG_NUM_BANKS 4
 #define CONFLICT_FREE_OFFSET(n) ((n) >> NUM_BANKS + (n) >> (2 * LOG_NUM_BANKS))
 
 __kernel void WorkEfficientBlockScanOptim(__global TB* buffer, __global T* sums, __local T* shared)

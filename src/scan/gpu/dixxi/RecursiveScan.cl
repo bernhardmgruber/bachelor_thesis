@@ -59,8 +59,8 @@ __kernel void WorkEfficientScan(__global T* buffer, __global T* sums, __local T*
     buffer[2 * globalId + 1] = shared[2 * thid + 1];
 }
 
-#define NUM_BANKS 32
-#define LOG_NUM_BANKS 5
+#define NUM_BANKS 16
+#define LOG_NUM_BANKS 4
 #define CONFLICT_FREE_OFFSET(n) ((n) >> NUM_BANKS + (n) >> (2 * LOG_NUM_BANKS))
 
 __kernel void WorkEfficientScanOptim(__global T* buffer, __global T* sums, __local T* shared)
