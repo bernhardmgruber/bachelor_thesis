@@ -36,6 +36,7 @@ namespace gpu
 
             const vector<size_t> getSupportedWorkGroupSizes() const override
             {
+                // this algorithm does not allow a work group size of 1, because this would not reduce the problem size in a recursion.
                 auto sizes = CLAlgorithm<T>::getSupportedWorkGroupSizes();
                 sizes.erase(remove_if(begin(sizes), end(sizes), [](size_t size) { return size < 2; }), sizes.end());
                 return sizes;

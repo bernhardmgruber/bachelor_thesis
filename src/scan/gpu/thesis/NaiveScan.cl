@@ -7,6 +7,6 @@ __kernel void NaiveScan(__global int* src, __global int* dest, uint power, uint 
 
     if(k >= power)
         dest[k] = src[k] + src[k - power];
-    else //if(k >= (power >> 1))
+    else if(k >= (power >> 1))
         dest[k] = src[k];
 }

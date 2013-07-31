@@ -7,7 +7,7 @@
 
 namespace gpu
 {
-    namespace dixxi
+    namespace thesis
     {
         /**
         * Full array version of: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
@@ -16,10 +16,12 @@ namespace gpu
         template<typename T>
         class WorkEfficientScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
+            static_assert(is_same<T, int>::value, "Thesis algorithms only support int");
+
         public:
             const string getName() override
             {
-                return "Work Efficient Scan (dixxi GPU Gems) (exclusiv)";
+                return "Work Efficient Scan (THESIS dixxi GPU Gems) (exclusiv)";
             }
 
             bool isInclusiv() override
@@ -29,7 +31,7 @@ namespace gpu
 
             void init() override
             {
-                Program* program = context->createProgram("gpu/dixxi/WorkEfficientScan.cl", "-D T=" + getTypeName<T>());
+                Program* program = context->createProgram("gpu/thesis/WorkEfficientScan.cl");
                 upSweepKernel = program->createKernel("UpSweep");
                 setLastZeroKernel = program->createKernel("SetLastZero");
                 downSweepKernel = program->createKernel("DownSweep");

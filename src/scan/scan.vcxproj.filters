@@ -90,6 +90,15 @@
     <ClInclude Include="gpu\dixxi\RecursiveBlockScan.h">
       <Filter>gpu\dixxi</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\thesis\WorkEfficientScan.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\thesis\RecursiveBlockScan.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\thesis\RecursiveScan.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\dixxi\ScanTask.cl">
@@ -124,6 +133,15 @@
     </None>
     <None Include="gpu\dixxi\RecursiveBlockScan.cl">
       <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\thesis\WorkEfficientScan.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
+    <None Include="gpu\thesis\RecursiveBlockScan.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
+    <None Include="gpu\thesis\RecursiveScan.cl">
+      <Filter>gpu\thesis</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

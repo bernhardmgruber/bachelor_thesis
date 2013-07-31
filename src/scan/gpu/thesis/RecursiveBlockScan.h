@@ -9,7 +9,7 @@
 
 namespace gpu
 {
-    namespace dixxi
+    namespace thesis
     {
         /**
         * Idea from: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
@@ -18,6 +18,8 @@ namespace gpu
         template<typename T>
         class RecursiveBlockScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
+            static_assert(is_same<T, int>::value, "Thesis algorithms only support int");
+
             static const int BLOCK_SIZE = 8;
 
         public:
@@ -33,7 +35,7 @@ namespace gpu
 
             const string getName() override
             {
-                return "Recursive Block Scan (dixxi GPU Gems) (exclusiv)" + string(useOptimizedKernel ? " (optimized)" : "");
+                return "Recursive Block Scan (THESIS dixxi GPU Gems) (exclusiv)" + string(useOptimizedKernel ? " (optimized)" : "");
             }
 
             const vector<size_t> getSupportedWorkGroupSizes() const override
@@ -52,8 +54,8 @@ namespace gpu
             void init() override
             {
                 stringstream ss;
-                ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE << " -D BLOCK_SIZE_MINUS_ONE_HEX=" << hex << BLOCK_SIZE - 1;
-                Program* program = context->createProgram("gpu/dixxi/RecursiveBlockScan.cl", ss.str());
+                ss << " -D BLOCK_SIZE=" << BLOCK_SIZE << " -D BLOCK_SIZE_MINUS_ONE_HEX=" << hex << BLOCK_SIZE - 1;
+                Program* program = context->createProgram("gpu/thesis/RecursiveBlockScan.cl", ss.str());
                 kernel = program->createKernel(useOptimizedKernel ? "WorkEfficientBlockScanOptim" : "WorkEfficientBlockScan");
                 addKernel = program->createKernel("AddSums");
                 delete program;
