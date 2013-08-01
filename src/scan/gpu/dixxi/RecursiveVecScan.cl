@@ -2,22 +2,22 @@
 #error "T must be defined"
 #endif
 
-#ifndef BLOCK_SIZE
-#error "BLOCK_SIZE must be defined"
+#ifndef VECTOR_WIDTH
+#error "VECTOR_WIDTH must be defined"
 #endif
 
-#ifndef BLOCK_SIZE_MINUS_ONE_HEX
-#error "BLOCK_SIZE_MINUS_ONE_HEX must be defined"
+#ifndef VECTOR_WIDTH_MINUS_ONE_HEX
+#error "VECTOR_WIDTH_MINUS_ONE_HEX must be defined"
 #endif
 
-#if BLOCK_SIZE < 2
-#error "BLOCK_SIZE must be at least 2"
+#if VECTOR_WIDTH < 2
+#error "VECTOR_WIDTH must be at least 2"
 #endif
 
 #define CONCAT(a, b) a ## b
 #define CONCAT_EXPANED(a, b) CONCAT(a, b)
 
-#define TB CONCAT_EXPANED(T, BLOCK_SIZE)
+#define TB CONCAT_EXPANED(T, VECTOR_WIDTH)
 
 #define VECTOR_ELEMENT(v, e) CONCAT_EXPANED(v.s, e)
 
@@ -56,17 +56,17 @@ __kernel void WorkEfficientVecScan(__global TB* buffer, __global T* sums, __loca
     // upsweep
     UPSWEEP_STEP(val1.s0, val1.s1);
     UPSWEEP_STEP(val2.s0, val2.s1);
-#if BLOCK_SIZE > 2
+#if VECTOR_WIDTH > 2
     UPSWEEP_STEP(val1.s2, val1.s3);
     UPSWEEP_STEP(val2.s2, val2.s3);
 #endif
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     UPSWEEP_STEP(val1.s4, val1.s5);
     UPSWEEP_STEP(val2.s4, val2.s5);
     UPSWEEP_STEP(val1.s6, val1.s7);
     UPSWEEP_STEP(val2.s6, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     UPSWEEP_STEP(val1.s8, val1.s9);
     UPSWEEP_STEP(val2.s8, val2.s9);
     UPSWEEP_STEP(val1.sA, val1.sB);
@@ -77,71 +77,71 @@ __kernel void WorkEfficientVecScan(__global TB* buffer, __global T* sums, __loca
     UPSWEEP_STEP(val2.sE, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 2
+#if VECTOR_WIDTH > 2
     UPSWEEP_STEP(val1.s1, val1.s3);
     UPSWEEP_STEP(val2.s1, val2.s3);
 #endif
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     UPSWEEP_STEP(val1.s5, val1.s7);
     UPSWEEP_STEP(val2.s5, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     UPSWEEP_STEP(val1.s9, val1.sB);
     UPSWEEP_STEP(val2.s9, val2.sB);
     UPSWEEP_STEP(val1.sD, val1.sF);
     UPSWEEP_STEP(val2.sD, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     UPSWEEP_STEP(val1.s3, val1.s7);
     UPSWEEP_STEP(val2.s3, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     UPSWEEP_STEP(val1.sB, val1.sF);
     UPSWEEP_STEP(val2.sB, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     UPSWEEP_STEP(val1.s7, val1.sF);
     UPSWEEP_STEP(val2.s7, val2.sF);
 #endif
 
     // sums
-    T sum1 = VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE_HEX);
-    T sum2 = VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE_HEX);
+    T sum1 = VECTOR_ELEMENT(val1, VECTOR_WIDTH_MINUS_ONE_HEX);
+    T sum2 = VECTOR_ELEMENT(val2, VECTOR_WIDTH_MINUS_ONE_HEX);
 
     // move sums into shared memory
     shared[2 * localId + 0] = sum1;
     shared[2 * localId + 1] = sum2;
 
     // set last elements to zero
-    VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE_HEX) = 0;
-    VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE_HEX) = 0;
+    VECTOR_ELEMENT(val1, VECTOR_WIDTH_MINUS_ONE_HEX) = 0;
+    VECTOR_ELEMENT(val2, VECTOR_WIDTH_MINUS_ONE_HEX) = 0;
 
     // downsweep
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     DOWNSWEEP_STEP(val1.s7, val1.sF);
     DOWNSWEEP_STEP(val2.s7, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     DOWNSWEEP_STEP(val1.s3, val1.s7);
     DOWNSWEEP_STEP(val2.s3, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     DOWNSWEEP_STEP(val1.sB, val1.sF);
     DOWNSWEEP_STEP(val2.sB, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 2
+#if VECTOR_WIDTH > 2
     DOWNSWEEP_STEP(val1.s1, val1.s3);
     DOWNSWEEP_STEP(val2.s1, val2.s3);
 #endif
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     DOWNSWEEP_STEP(val1.s5, val1.s7);
     DOWNSWEEP_STEP(val2.s5, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     DOWNSWEEP_STEP(val1.s9, val1.sB);
     DOWNSWEEP_STEP(val2.s9, val2.sB);
     DOWNSWEEP_STEP(val1.sD, val1.sF);
@@ -150,17 +150,17 @@ __kernel void WorkEfficientVecScan(__global TB* buffer, __global T* sums, __loca
 
     DOWNSWEEP_STEP(val1.s0, val1.s1);
     DOWNSWEEP_STEP(val2.s0, val2.s1);
-#if BLOCK_SIZE > 2
+#if VECTOR_WIDTH > 2
     DOWNSWEEP_STEP(val1.s2, val1.s3);
     DOWNSWEEP_STEP(val2.s2, val2.s3);
 #endif
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     DOWNSWEEP_STEP(val1.s4, val1.s5);
     DOWNSWEEP_STEP(val2.s4, val2.s5);
     DOWNSWEEP_STEP(val1.s6, val1.s7);
     DOWNSWEEP_STEP(val2.s6, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     DOWNSWEEP_STEP(val1.s8, val1.s9);
     DOWNSWEEP_STEP(val2.s8, val2.s9);
     DOWNSWEEP_STEP(val1.sA, val1.sB);
@@ -189,6 +189,7 @@ __kernel void WorkEfficientVecScan(__global TB* buffer, __global T* sums, __loca
         offset <<= 1;
     }
 
+    barrier(CLK_LOCAL_MEM_FENCE);
     if (localId == 0)
     {
         sums[get_group_id(0)] = shared[n - 1];
@@ -258,17 +259,17 @@ __kernel void WorkEfficientVecScanOptim(__global TB* buffer, __global T* sums, _
     // upsweep
     UPSWEEP_STEP(val1.s0, val1.s1);
     UPSWEEP_STEP(val2.s0, val2.s1);
-#if BLOCK_SIZE > 2
+#if VECTOR_WIDTH > 2
     UPSWEEP_STEP(val1.s2, val1.s3);
     UPSWEEP_STEP(val2.s2, val2.s3);
 #endif
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     UPSWEEP_STEP(val1.s4, val1.s5);
     UPSWEEP_STEP(val2.s4, val2.s5);
     UPSWEEP_STEP(val1.s6, val1.s7);
     UPSWEEP_STEP(val2.s6, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     UPSWEEP_STEP(val1.s8, val1.s9);
     UPSWEEP_STEP(val2.s8, val2.s9);
     UPSWEEP_STEP(val1.sA, val1.sB);
@@ -279,71 +280,71 @@ __kernel void WorkEfficientVecScanOptim(__global TB* buffer, __global T* sums, _
     UPSWEEP_STEP(val2.sE, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 2
+#if VECTOR_WIDTH > 2
     UPSWEEP_STEP(val1.s1, val1.s3);
     UPSWEEP_STEP(val2.s1, val2.s3);
 #endif
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     UPSWEEP_STEP(val1.s5, val1.s7);
     UPSWEEP_STEP(val2.s5, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     UPSWEEP_STEP(val1.s9, val1.sB);
     UPSWEEP_STEP(val2.s9, val2.sB);
     UPSWEEP_STEP(val1.sD, val1.sF);
     UPSWEEP_STEP(val2.sD, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     UPSWEEP_STEP(val1.s3, val1.s7);
     UPSWEEP_STEP(val2.s3, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     UPSWEEP_STEP(val1.sB, val1.sF);
     UPSWEEP_STEP(val2.sB, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     UPSWEEP_STEP(val1.s7, val1.sF);
     UPSWEEP_STEP(val2.s7, val2.sF);
 #endif
 
     // sums
-    T sum1 = VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE_HEX);
-    T sum2 = VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE_HEX);
+    T sum1 = VECTOR_ELEMENT(val1, VECTOR_WIDTH_MINUS_ONE_HEX);
+    T sum2 = VECTOR_ELEMENT(val2, VECTOR_WIDTH_MINUS_ONE_HEX);
 
     // move sums into shared memory
     shared[ai + bankOffsetA]  = sum1;
     shared[bi + bankOffsetB]  = sum2;
 
     // set last elements to zero
-    VECTOR_ELEMENT(val1, BLOCK_SIZE_MINUS_ONE_HEX) = 0;
-    VECTOR_ELEMENT(val2, BLOCK_SIZE_MINUS_ONE_HEX) = 0;
+    VECTOR_ELEMENT(val1, VECTOR_WIDTH_MINUS_ONE_HEX) = 0;
+    VECTOR_ELEMENT(val2, VECTOR_WIDTH_MINUS_ONE_HEX) = 0;
 
     // downsweep
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     DOWNSWEEP_STEP(val1.s7, val1.sF);
     DOWNSWEEP_STEP(val2.s7, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     DOWNSWEEP_STEP(val1.s3, val1.s7);
     DOWNSWEEP_STEP(val2.s3, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     DOWNSWEEP_STEP(val1.sB, val1.sF);
     DOWNSWEEP_STEP(val2.sB, val2.sF);
 #endif
 
-#if BLOCK_SIZE > 2
+#if VECTOR_WIDTH > 2
     DOWNSWEEP_STEP(val1.s1, val1.s3);
     DOWNSWEEP_STEP(val2.s1, val2.s3);
 #endif
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     DOWNSWEEP_STEP(val1.s5, val1.s7);
     DOWNSWEEP_STEP(val2.s5, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     DOWNSWEEP_STEP(val1.s9, val1.sB);
     DOWNSWEEP_STEP(val2.s9, val2.sB);
     DOWNSWEEP_STEP(val1.sD, val1.sF);
@@ -352,17 +353,17 @@ __kernel void WorkEfficientVecScanOptim(__global TB* buffer, __global T* sums, _
 
     DOWNSWEEP_STEP(val1.s0, val1.s1);
     DOWNSWEEP_STEP(val2.s0, val2.s1);
-#if BLOCK_SIZE > 2
+#if VECTOR_WIDTH > 2
     DOWNSWEEP_STEP(val1.s2, val1.s3);
     DOWNSWEEP_STEP(val2.s2, val2.s3);
 #endif
-#if BLOCK_SIZE > 4
+#if VECTOR_WIDTH > 4
     DOWNSWEEP_STEP(val1.s4, val1.s5);
     DOWNSWEEP_STEP(val2.s4, val2.s5);
     DOWNSWEEP_STEP(val1.s6, val1.s7);
     DOWNSWEEP_STEP(val2.s6, val2.s7);
 #endif
-#if BLOCK_SIZE > 8
+#if VECTOR_WIDTH > 8
     DOWNSWEEP_STEP(val1.s8, val1.s9);
     DOWNSWEEP_STEP(val2.s8, val2.s9);
     DOWNSWEEP_STEP(val1.sA, val1.sB);
@@ -392,6 +393,7 @@ __kernel void WorkEfficientVecScanOptim(__global TB* buffer, __global T* sums, _
         offset <<= 1;
     }
 
+    barrier(CLK_LOCAL_MEM_FENCE);
     if (localId == 0)
     {
         uint index = n - 1 + CONFLICT_FREE_OFFSET(n - 1);

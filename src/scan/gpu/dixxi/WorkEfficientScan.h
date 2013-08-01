@@ -59,7 +59,6 @@ namespace gpu
                     upSweepKernel->setArg(2, (cl_uint)stride);
 
                     queue->enqueueKernel(upSweepKernel, 1, globalWorkSizes, localWorkSizes);
-                    queue->enqueueBarrier();
                 }
 
                 // set last element to zero
@@ -77,7 +76,6 @@ namespace gpu
                     downSweepKernel->setArg(2, (cl_uint)stride);
 
                     queue->enqueueKernel(downSweepKernel, 1, globalWorkSizes, localWorkSizes);
-                    queue->enqueueBarrier();
                 }
             }
 

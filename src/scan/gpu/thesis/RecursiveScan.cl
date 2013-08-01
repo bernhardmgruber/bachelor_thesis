@@ -24,6 +24,7 @@ __kernel void WorkEfficientScan(__global int* buffer, __global int* sums, __loca
         offset <<= 1;
     }
 
+    barrier(CLK_LOCAL_MEM_FENCE);
     if (localId == 0)
     {
         sums[get_group_id(0)] = shared[n - 1];
@@ -51,6 +52,16 @@ __kernel void WorkEfficientScan(__global int* buffer, __global int* sums, __loca
     // write results to device memory
     buffer[2 * globalId + 0] = shared[2 * localId + 0];
     buffer[2 * globalId + 1] = shared[2 * localId + 1];
+}
+
+__kernel void AddSums(__global int* buffer, __global int* sums)
+{
+    uint globalId = get_global_id(0);
+
+    int val = sums[get_group_id(0)];
+
+    buffer[globalId * 2 + 0] += val;
+    buffer[globalId * 2 + 1] += val;
 }
 
 #define NUM_BANKS 16
@@ -125,14 +136,3 @@ __kernel void WorkEfficientScanOptim(__global int* buffer, __global int* sums, _
     buffer[globalId]           = shared[ai + bankOffsetA];
     buffer[globalId + (n / 2)] = shared[bi + bankOffsetB];
 }
-
-__kernel void AddSums(__global int* buffer, __global int* sums)
-{
-    uint globalId = get_global_id(0);
-
-    int val = sums[get_group_id(0)];
-
-    buffer[globalId * 2 + 0] += val;
-    buffer[globalId * 2 + 1] += val;
-}
-

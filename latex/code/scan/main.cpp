@@ -5,6 +5,9 @@
 #include <fstream>
 #include <exception>
 #include <stdexcept>
+#include <stdint.h>
+
+#define int cl_int
 
 using namespace std;
 
@@ -46,119 +49,177 @@ void scanCL(int* data, int* result, cl_uint size, cl_context context, cl_command
 
     size_t adjustedWorkSize = roundToMultiple(size, workGroupSize);
 
-    for(cl_uint power = 1; power < bufferSize; power <<= 1)
+    for(cl_uint power = 1; power < size; power <<= 1)
     {
-        clSetKernelArg(kernel, 0, sizeof(cl_mem), &source);
-        clSetKernelArg(kernel, 1, sizeof(cl_mem), &destination);
-        clSetKernelArg(kernel, 3, sizeof(cl_uint), &power);
-        clSetKernelArg(kernel, 3, sizeof(cl_uint), &size);
+        error = clSetKernelArg(kernel, 0, sizeof(cl_mem), &source);
+        error = clSetKernelArg(kernel, 1, sizeof(cl_mem), &destination);
+        error = clSetKernelArg(kernel, 3, sizeof(cl_uint), &power);
+        error = clSetKernelArg(kernel, 3, sizeof(cl_uint), &size);
 
         size_t globalWorkSizes[] = { adjustedWorkSize };
         size_t localWorkSizes[] = { workGroupSize };
 
-        clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
+        error = clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
 
         swap(source, destination);
     }
 
     error = clEnqueueReadBuffer(queue, source, true, 0, size * sizeof(int), result, 0, nullptr, nullptr);
 
-    clReleaseMemObject(source);
-    clReleaseMemObject(destination);
+    error = clReleaseMemObject(source);
+    error = clReleaseMemObject(destination);
 }
 
-void scanCLWorkEfficient(int* data, int* result, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize)
+void scanCLWorkEfficient(int* data, int* result, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel upSweep, cl_kernel setLastZero, cl_kernel downSweep, size_t workGroupSize)
 {
     cl_int error;
 
-    cl_mem source      = clCreateBuffer(context, CL_MEM_READ_WRITE, size * sizeof(int), nullptr, &error);
-    cl_mem destination = clCreateBuffer(context, CL_MEM_READ_WRITE, size * sizeof(int), nullptr, &error);
+    size_t bufferSize = roundToPowerOfTwo(size);
 
-    error = clEnqueueWriteBuffer(queue, source, false, 0, size * sizeof(int), data, 0, nullptr, nullptr);
+    cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferSize * sizeof(int), nullptr, &error);
 
-    size_t adjustedWorkSize = roundToPowerOfTwo(size, workGroupSize);
+    error = clEnqueueWriteBuffer(queue, buffer, false, 0, size * sizeof(int), data, 0, nullptr, nullptr);
 
-    for(cl_uint power = 1; power < bufferSize; power <<= 1)
+    size_t globalWorkSizes[] = { bufferSize };
+    size_t localWorkSizes[] = { min(workGroupSize, bufferSize) };
+
+    // upsweep (reduce)
+    for(cl_uint offset = 1; offset < bufferSize; offset <<= 1)
     {
-        clSetKernelArg(kernel, 0, sizeof(cl_mem), &source);
-        clSetKernelArg(kernel, 1, sizeof(cl_mem), &destination);
-        clSetKernelArg(kernel, 3, sizeof(cl_uint), &power);
-        clSetKernelArg(kernel, 3, sizeof(cl_uint), &size);
+        cl_uint stride = 2 * offset;
 
-        size_t globalWorkSizes[] = { adjustedWorkSize };
-        size_t localWorkSizes[] = { workGroupSize };
+        error = clSetKernelArg(upSweep, 0, sizeof(cl_mem), &buffer);
+        error = clSetKernelArg(upSweep, 1, sizeof(cl_uint), &offset);
+        error = clSetKernelArg(upSweep, 2, sizeof(cl_uint), &stride);
 
-        clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
-
-        swap(source, destination);
+        error = clEnqueueNDRangeKernel(queue, upSweep, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
     }
 
-    error = clEnqueueReadBuffer(queue, source, true, 0, size * sizeof(int), result, 0, nullptr, nullptr);
+    // set last element to zero
+    cl_uint lastIndex = bufferSize - 1;
 
-    clReleaseMemObject(source);
-    clReleaseMemObject(destination);
+    error = clSetKernelArg(setLastZero, 0, sizeof(cl_mem), &buffer);
+    error = clSetKernelArg(setLastZero, 1, sizeof(cl_uint), &lastIndex);
+
+    error = clEnqueueTask(queue, setLastZero, 0, nullptr, nullptr);
+
+    // downsweep
+    for(cl_uint offset = bufferSize >> 1; offset >= 1; offset >>= 1)
+    {
+        cl_uint stride = 2 * offset;
+
+        error = clSetKernelArg(downSweep, 0, sizeof(cl_mem), &buffer);
+        error = clSetKernelArg(downSweep, 1, sizeof(cl_uint), &offset);
+        error = clSetKernelArg(downSweep, 2, sizeof(cl_uint), &stride);
+
+        error = clEnqueueNDRangeKernel(queue, downSweep, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
+    }
+
+    error = clEnqueueReadBuffer(queue, buffer, true, 0, size * sizeof(int), result, 0, nullptr, nullptr);
+
+    error = clReleaseMemObject(buffer);
 }
 
-//
-//#define BLOCK_SIZE 4
-//
-//void matrixMulCLRect(float* a, float* b, float* c, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize, int multiple, int elementsPerThread)
-//{
-//    cl_int error;
-//
-//    cl_uint adjustedSize = roundToMultiple(size, multiple);
-//
-//    size_t count = adjustedSize * adjustedSize;
-//
-//    cl_mem aBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY, count * sizeof(float), nullptr, &error);
-//    cl_mem bBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY, count * sizeof(float), nullptr, &error);
-//    cl_mem cBuffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY, count * sizeof(float), nullptr, &error);
-//
-//    if(adjustedSize != size)
-//    {
-//        float zero = 0.0f;
-//        error = clEnqueueFillBuffer(queue, aBuffer, &zero, sizeof(float), 0, count * sizeof(float), 0, nullptr, nullptr);
-//        error = clEnqueueFillBuffer(queue, bBuffer, &zero, sizeof(float), 0, count * sizeof(float), 0, nullptr, nullptr);
-//
-//        size_t bufferOffset[] = {0, 0, 0};
-//        size_t hostOffset[] = {0, 0, 0};
-//        size_t sizes[] = {size * sizeof(float), size, 1};
-//        error = clEnqueueWriteBufferRect(queue, aBuffer, false, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, size * sizeof(float), 0, a, 0, nullptr, nullptr);
-//        error = clEnqueueWriteBufferRect(queue, bBuffer, false, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, size * sizeof(float), 0, b, 0, nullptr, nullptr);
-//    }
-//    else
-//    {
-//        error = clEnqueueWriteBuffer(queue, aBuffer, false, 0, count * sizeof(float), a, 0, nullptr, nullptr);
-//        error = clEnqueueWriteBuffer(queue, bBuffer, false, 0, count * sizeof(float), b, 0, nullptr, nullptr);
-//    }
-//
-//    clSetKernelArg(kernel, 0, sizeof(cl_mem), &aBuffer);
-//    clSetKernelArg(kernel, 1, sizeof(cl_mem), &bBuffer);
-//    clSetKernelArg(kernel, 2, sizeof(cl_mem), &cBuffer);
-//    clSetKernelArg(kernel, 3, sizeof(cl_uint), &adjustedSize);
-//
-//    size_t adjustedWorkSize = roundToMultiple(adjustedSize, workGroupSize * elementsPerThread);
-//
-//    size_t globalWorkSizes[] = { adjustedWorkSize / elementsPerThread, adjustedWorkSize / elementsPerThread };
-//    size_t localWorkSizes[] = { workGroupSize, workGroupSize };
-//
-//    error = clEnqueueNDRangeKernel(queue, kernel, 2, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
-//
-//    if(adjustedSize != size)
-//    {
-//        size_t bufferOffset[] = {0, 0, 0};
-//        size_t hostOffset[] = {0, 0, 0};
-//        size_t sizes[] = {size * sizeof(float), size, 1};
-//        error = clEnqueueReadBufferRect(queue, cBuffer, true, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, size * sizeof(float), 0, c, 0, nullptr, nullptr);
-//    }
-//    else
-//        error = clEnqueueReadBuffer(queue, cBuffer, true, 0, count * sizeof(float), c, 0, nullptr, nullptr);
-//
-//    clReleaseMemObject(aBuffer);
-//    clReleaseMemObject(bBuffer);
-//    clReleaseMemObject(cBuffer);
-//}
-//
+void scanCLRecursive_r(cl_mem values, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
+{
+    cl_int error;
+
+    size_t sumBufferSize = roundToMultiple(size / (workGroupSize * 2), workGroupSize * 2);
+
+    cl_mem sums = clCreateBuffer(context, CL_MEM_READ_WRITE, sumBufferSize * sizeof(int), nullptr, &error);
+
+    size_t globalWorkSizes[] = { size / 2 }; // the global work size is the half number of elements (each thread processed 2 elements)
+    size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
+
+    error = clSetKernelArg(scanBlocks, 0, sizeof(cl_mem), &values);
+    error = clSetKernelArg(scanBlocks, 1, sizeof(cl_mem), &sums);
+    error = clSetKernelArg(scanBlocks, 2, sizeof(int) * 2 * localWorkSizes[0], nullptr);
+
+    error = clEnqueueNDRangeKernel(queue, scanBlocks, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
+
+    if(size > localWorkSizes[0] * 2)
+    {
+        // the buffer containes more than one scanned block, scan the created sum buffer
+        scanCLRecursive_r(sums, sumBufferSize, context, queue, scanBlocks, addSums, workGroupSize);
+
+        // apply the sums to the buffer
+        error = clSetKernelArg(addSums, 0, sizeof(cl_mem), &values);
+        error = clSetKernelArg(addSums, 1, sizeof(cl_mem), &sums);
+
+        error = clEnqueueNDRangeKernel(queue, addSums, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
+    }
+
+    clReleaseMemObject(sums);
+}
+
+void scanCLRecursive(int* data, int* result, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
+{
+    cl_int error;
+
+    size_t bufferSize = roundToMultiple(size, workGroupSize * 2);
+
+    cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferSize * sizeof(int), nullptr, &error);
+
+    error = clEnqueueWriteBuffer(queue, buffer, false, 0, size * sizeof(int), data, 0, nullptr, nullptr);
+
+    scanCLRecursive_r(buffer, bufferSize, context, queue, scanBlocks, addSums, workGroupSize);
+
+    error = clEnqueueReadBuffer(queue, buffer, true, 0, size * sizeof(int), result, 0, nullptr, nullptr);
+
+    error = clReleaseMemObject(buffer);
+}
+
+#define VECTOR_WIDTH 8
+
+void scanCLRecursiveVector_r(cl_mem values, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
+{
+    cl_int error;
+
+    size_t sumBufferSize = roundToMultiple(size / (workGroupSize * 2 * VECTOR_WIDTH), workGroupSize * 2 * VECTOR_WIDTH);
+
+    cl_mem sums = clCreateBuffer(context, CL_MEM_READ_WRITE, sumBufferSize * sizeof(int), nullptr, &error);
+
+    size_t globalWorkSizes[] = { size / (2 * VECTOR_WIDTH) };
+    size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
+
+    error = clSetKernelArg(scanBlocks, 0, sizeof(cl_mem), &values);
+    error = clSetKernelArg(scanBlocks, 1, sizeof(cl_mem), &sums);
+    error = clSetKernelArg(scanBlocks, 2, sizeof(int) * 2 * localWorkSizes[0], nullptr);
+
+    error = clEnqueueNDRangeKernel(queue, scanBlocks, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
+
+    if(size > localWorkSizes[0] * 2 * VECTOR_WIDTH)
+    {
+        // the buffer containes more than one scanned block, scan the created sum buffer
+        scanCLRecursiveVector_r(sums, sumBufferSize, context, queue, scanBlocks, addSums, workGroupSize);
+
+        // apply the sums to the buffer
+        error = clSetKernelArg(addSums, 0, sizeof(cl_mem), &values);
+        error = clSetKernelArg(addSums, 1, sizeof(cl_mem), &sums);
+
+        error = clEnqueueNDRangeKernel(queue, addSums, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
+    }
+
+    clReleaseMemObject(sums);
+}
+
+void scanCLRecursiveVector(int* data, int* result, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
+{
+    cl_int error;
+
+    size_t bufferSize = roundToMultiple(size, workGroupSize * 2 * VECTOR_WIDTH);
+
+    cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferSize * sizeof(int), nullptr, &error);
+
+    error = clEnqueueWriteBuffer(queue, buffer, false, 0, size * sizeof(int), data, 0, nullptr, nullptr);
+
+    scanCLRecursiveVector_r(buffer, bufferSize, context, queue, scanBlocks, addSums, workGroupSize);
+
+    error = clEnqueueReadBuffer(queue, buffer, true, 0, size * sizeof(int), result, 0, nullptr, nullptr);
+
+    error = clReleaseMemObject(buffer);
+}
+
 string readFile(string fileName)
 {
     ifstream file(fileName, ios::in);
@@ -193,8 +254,8 @@ int main(int argc, char* argv[])
     // create OpenCL program from source code
     string source1 = readFile("../../../src/scan/gpu/thesis/NaiveScan.cl");
     string source2 = readFile("../../../src/scan/gpu/thesis/WorkEfficientScan.cl");
-    string source3 = readFile("../../../src/scan/gpu/thesis/RecrusivceScan.cl");
-    string source4 = readFile("../../../src/scan/gpu/thesis/RecrusivceVecScan.cl");
+    string source3 = readFile("../../../src/scan/gpu/thesis/RecursiveScan.cl");
+    string source4 = readFile("../../../src/scan/gpu/thesis/RecursiveVecScan.cl");
 
     const char* source1Ptr = source1.c_str();
     const char* source2Ptr = source2.c_str();
@@ -214,9 +275,13 @@ int main(int argc, char* argv[])
 
     // create the kernel
     cl_kernel kernel1 = clCreateKernel(program1, "Scan", &error);
-    cl_kernel kernel2 = clCreateKernel(program2, "ScanWorkEfficient", &error);
-    cl_kernel kernel3 = clCreateKernel(program3, "MultBlock", &error);
-    cl_kernel kernel4 = clCreateKernel(program4, "MultBlockLocal", &error);
+    cl_kernel kernel2_up = clCreateKernel(program2, "UpSweep", &error);
+    cl_kernel kernel2_zero = clCreateKernel(program2, "SetLastZero", &error);
+    cl_kernel kernel2_down = clCreateKernel(program2, "DownSweep", &error);
+    cl_kernel kernel3_scan = clCreateKernel(program3, "WorkEfficientScan", &error);
+    cl_kernel kernel3_sums = clCreateKernel(program3, "AddSums", &error);
+    cl_kernel kernel4_scan = clCreateKernel(program4, "WorkEfficientScan", &error);
+    cl_kernel kernel4_sums = clCreateKernel(program4, "AddSums", &error);
 
     // SCAN
     size_t size = 1<<20;
@@ -225,6 +290,7 @@ int main(int argc, char* argv[])
     int* result1 = new int[size]();
     int* result2 = new int[size]();
     int* result3 = new int[size]();
+    int* result4 = new int[size]();
 
     generate(input, input + size, []()
     {
@@ -239,19 +305,19 @@ int main(int argc, char* argv[])
     else
         cout << "kernel 1 ok" << endl;
 
-    scanCL(input, result2, size, context, queue, kernel2, 256);
+    scanCLWorkEfficient(input, result2, size, context, queue, kernel2_up, kernel2_zero, kernel2_down, 256);
     if(!memcmp(result0, result2, size))
         cerr << "validation of kernel 2 failed" << endl;
     else
         cout << "kernel 2 ok" << endl;
 
-    scanCL(input, result3, size, context, queue, kernel3, 256);
+    scanCLRecursive(input, result3, size, context, queue, kernel3_scan, kernel3_sums, 256);
     if(!memcmp(result0, result3, size))
         cerr << "validation of kernel 3 failed" << endl;
     else
         cout << "kernel 3 ok" << endl;
 
-    scanCL(input, result4, size, context, queue, kernel4, 256);
+    scanCLRecursiveVector(input, result4, size, context, queue, kernel4_scan, kernel4_sums, 256);
     if(!memcmp(result0, result4, size))
         cerr << "validation of kernel 4 failed" << endl;
     else
@@ -262,11 +328,16 @@ int main(int argc, char* argv[])
     delete[] result1;
     delete[] result2;
     delete[] result3;
+    delete[] result4;
 
     error = clReleaseKernel(kernel1);
-    error = clReleaseKernel(kernel2);
-    error = clReleaseKernel(kernel3);
-    error = clReleaseKernel(kernel4);
+    error = clReleaseKernel(kernel2_up);
+    error = clReleaseKernel(kernel2_zero);
+    error = clReleaseKernel(kernel2_down);
+    error = clReleaseKernel(kernel3_scan);
+    error = clReleaseKernel(kernel3_sums);
+    error = clReleaseKernel(kernel4_scan);
+    error = clReleaseKernel(kernel4_sums);
     error = clReleaseProgram(program1);
     error = clReleaseProgram(program2);
     error = clReleaseProgram(program3);

@@ -20,12 +20,14 @@ linear problem, hard to implement in parallel
 \end{figure}
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Host code for the naive scan algorithm., label=lst:scan_naive_host, firstline=41, lastline=71]{code/scan/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for the naive scan algorithm., label=lst:scan_naive_kernel]{../src/scan/gpu/thesis/NaiveScan.cl}
 \lstset{basicstyle=\ttfamily{}}
 
-
-
-extremely bad performance, why?
+bad performance, why?
 
 \subsection{Work efficient GPU implementation}
 
@@ -45,6 +47,14 @@ tree based approach (GPU Gems) work efficiency?
 \label{fig:scan_work_efficient_down_sweep}
 \end{figure}
 
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Host code for the efficient scan algorithm., label=lst:scan_work_efficient_host, firstline=73, lastline=120]{code/scan/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for the work efficient scan algorithm., label=lst:scan_work_efficient_kernel]{../src/scan/gpu/thesis/WorkEfficientScan.cl}
+\lstset{basicstyle=\ttfamily{}}
+
 \subsection{Recursively scanning blocks in local memory}
 
 \begin{figure}
@@ -54,12 +64,23 @@ tree based approach (GPU Gems) work efficiency?
 \label{fig:scan_recursive}
 \end{figure}
 
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm., label=lst:scan_recursive_host, firstline=123, lastline=170]{code/scan/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm., label=lst:scan_recursive_kernel, firstline=1, lastline=65]{../src/scan/gpu/thesis/RecursiveScan.cl}
+\lstset{basicstyle=\ttfamily{}}
 
 \subsection{Optimization using vector types}
 
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_host, firstline=123, lastline=170]{code/scan/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
 
-maybe kernel code with explanation
-runtime (diagram), memory transfer vs. calculation
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_kernel, firstline=1, lastline=149]{../src/scan/gpu/thesis/RecursiveScan.cl}
+\lstset{basicstyle=\ttfamily{}}
 
 \begin{figure}
 \centering

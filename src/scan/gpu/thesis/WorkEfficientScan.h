@@ -52,16 +52,15 @@ namespace gpu
                 size_t localWorkSizes[] = { min(workGroupSize, bufferSize) };
 
                 // upsweep (reduce)
-                for(size_t offset = 1; offset < bufferSize; offset <<= 1)
+                for(cl_uint offset = 1; offset < bufferSize; offset <<= 1)
                 {
-                    size_t stride = 2 * offset;
+                    cl_uint stride = 2 * offset;
 
                     upSweepKernel->setArg(0, buffer);
-                    upSweepKernel->setArg(1, (cl_uint)offset);
-                    upSweepKernel->setArg(2, (cl_uint)stride);
+                    upSweepKernel->setArg(1, offset);
+                    upSweepKernel->setArg(2, stride);
 
                     queue->enqueueKernel(upSweepKernel, 1, globalWorkSizes, localWorkSizes);
-                    queue->enqueueBarrier();
                 }
 
                 // set last element to zero
@@ -70,16 +69,15 @@ namespace gpu
                 queue->enqueueTask(setLastZeroKernel);
 
                 // downsweep
-                for(size_t offset = bufferSize >> 1; offset >= 1; offset >>= 1)
+                for(cl_uint offset = (cl_uint)bufferSize >> 1; offset >= 1; offset >>= 1)
                 {
-                    size_t stride = 2 * offset;
+                    cl_uint stride = 2 * offset;
 
                     downSweepKernel->setArg(0, buffer);
-                    downSweepKernel->setArg(1, (cl_uint)offset);
-                    downSweepKernel->setArg(2, (cl_uint)stride);
+                    downSweepKernel->setArg(1, offset);
+                    downSweepKernel->setArg(2, stride);
 
                     queue->enqueueKernel(downSweepKernel, 1, globalWorkSizes, localWorkSizes);
-                    queue->enqueueBarrier();
                 }
             }
 

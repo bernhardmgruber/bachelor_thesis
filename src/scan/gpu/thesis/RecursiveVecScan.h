@@ -21,7 +21,7 @@ namespace gpu
             static_assert(is_same<T, cl_int>::value, "Thesis algorithms only support int");
 
             /// Uses a local memory access optimized kernel implementation when set to true. Address computation will be slower.
-            static const bool AVOID_BANK_CONFLICTS = true;
+            static const bool AVOID_BANK_CONFLICTS = false;
 
             static const int VECTOR_WIDTH = 8;
 
@@ -64,14 +64,16 @@ namespace gpu
 
             void run(size_t workGroupSize, size_t size) override
             {
-                run_r(workGroupSize, buffer, size);
+                run_r(workGroupSize, buffer, bufferSize);
             }
 
             void run_r(size_t workGroupSize, Buffer* values, size_t size)
             {
-                Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, roundToMultiple(values->getSize() / workGroupSize, workGroupSize * 2 * VECTOR_WIDTH * sizeof(T)));
+                size_t sumBufferSize = roundToMultiple(size / (workGroupSize * 2 * VECTOR_WIDTH), workGroupSize * 2 * VECTOR_WIDTH);
 
-                size_t globalWorkSizes[] = { values->getSize() / (2 * VECTOR_WIDTH * sizeof(T)) }; // each thread processed 2 * VECTOR_WIDTH elements
+                Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, sumBufferSize * sizeof(T));
+
+                size_t globalWorkSizes[] = { size / (2 * VECTOR_WIDTH) }; // each thread processed 2 * VECTOR_WIDTH elements
                 size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
 
                 kernel->setArg(0, values);
@@ -79,10 +81,10 @@ namespace gpu
                 kernel->setArg(2, sizeof(T) * 2 * localWorkSizes[0], nullptr);
                 queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
 
-                if(values->getSize() / sizeof(T) > localWorkSizes[0] * 2 * VECTOR_WIDTH)
+                if(size > localWorkSizes[0] * 2 * VECTOR_WIDTH)
                 {
                     // the buffer containes more than one scanned block, scan the created sum buffer
-                    run_r(workGroupSize, sums, size);
+                    run_r(workGroupSize, sums, sumBufferSize);
 
                     // apply the sums to the buffer
                     addKernel->setArg(0, values);

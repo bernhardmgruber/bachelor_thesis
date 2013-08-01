@@ -99,6 +99,7 @@ __kernel void WorkEfficientVecScan(__global int8* buffer, __global int* sums, __
         offset <<= 1;
     }
 
+    barrier(CLK_LOCAL_MEM_FENCE);
     if (localId == 0)
     {
         sums[get_group_id(0)] = shared[n - 1];
@@ -135,6 +136,16 @@ __kernel void WorkEfficientVecScan(__global int8* buffer, __global int* sums, __
 
     buffer[2 * globalId + 0] = val1;
     buffer[2 * globalId + 1] = val2;
+}
+
+__kernel void AddSums(__global int8* buffer, __global int* sums)
+{
+    uint globalId = get_global_id(0);
+
+    int val = sums[get_group_id(0)];
+
+    buffer[globalId * 2 + 0] += val;
+    buffer[globalId * 2 + 1] += val;
 }
 
 #define NUM_BANKS 16
@@ -234,6 +245,7 @@ __kernel void WorkEfficientVecScanOptim(__global int8* buffer, __global int* sum
         offset <<= 1;
     }
 
+    barrier(CLK_LOCAL_MEM_FENCE);
     if (localId == 0)
     {
         uint index = n - 1 + CONFLICT_FREE_OFFSET(n - 1);
@@ -275,14 +287,3 @@ __kernel void WorkEfficientVecScanOptim(__global int8* buffer, __global int* sum
     buffer[globalId]           = val1;
     buffer[globalId + (n / 2)] = val2;
 }
-
-__kernel void AddSums(__global int8* buffer, __global int* sums)
-{
-    uint globalId = get_global_id(0);
-
-    int val = sums[get_group_id(0)];
-
-    buffer[globalId * 2 + 0] += val;
-    buffer[globalId * 2 + 1] += val;
-}
-

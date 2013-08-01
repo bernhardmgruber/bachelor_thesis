@@ -32,6 +32,7 @@ __kernel void WorkEfficientScan(__global T* buffer, __global T* sums, __local T*
         offset <<= 1;
     }
 
+    barrier(CLK_LOCAL_MEM_FENCE);
     if (thid == 0)
     {
         sums[get_group_id(0)] = shared[n - 1];
@@ -93,6 +94,7 @@ __kernel void WorkEfficientScanOptim(__global T* buffer, __global T* sums, __loc
         offset <<= 1;
     }
 
+    barrier(CLK_LOCAL_MEM_FENCE);
     if (thid == 0)
     {
         uint index = n - 1 + CONFLICT_FREE_OFFSET(n - 1);

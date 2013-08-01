@@ -18,7 +18,7 @@ namespace gpu
         template<typename T>
         class RecursiveVecScan : public CLAlgorithm<T>, public ScanAlgorithm
         {
-            static const int BLOCK_SIZE = 8;
+            static const int VECTOR_WIDTH = 8;
 
         public:
             /**
@@ -53,7 +53,7 @@ namespace gpu
             void init() override
             {
                 stringstream ss;
-                ss << "-D T=" << getTypeName<T>() << " -D BLOCK_SIZE=" << BLOCK_SIZE << " -D BLOCK_SIZE_MINUS_ONE_HEX=" << hex << BLOCK_SIZE - 1;
+                ss << "-D T=" << getTypeName<T>() << " -D VECTOR_WIDTH=" << VECTOR_WIDTH << " -D VECTOR_WIDTH_MINUS_ONE_HEX=" << hex << VECTOR_WIDTH - 1;
                 Program* program = context->createProgram("gpu/dixxi/RecursiveVecScan.cl", ss.str());
                 kernel = program->createKernel(useOptimizedKernel ? "WorkEfficientVecScanOptim" : "WorkEfficientVecScan");
                 addKernel = program->createKernel("AddSums");
@@ -62,7 +62,7 @@ namespace gpu
 
             void upload(size_t workGroupSize, T* data, size_t size) override
             {
-                bufferSize = roundToMultiple(size, workGroupSize * 2 * BLOCK_SIZE);
+                bufferSize = roundToMultiple(size, workGroupSize * 2 * VECTOR_WIDTH);
 
                 buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
                 queue->enqueueWrite(buffer, data, 0, size * sizeof(T));
@@ -70,14 +70,16 @@ namespace gpu
 
             void run(size_t workGroupSize, size_t size) override
             {
-                run_r(workGroupSize, buffer, size);
+                run_r(workGroupSize, buffer, bufferSize);
             }
 
             void run_r(size_t workGroupSize, Buffer* values, size_t size)
             {
-                Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, roundToMultiple(values->getSize() / workGroupSize, workGroupSize * 2 * BLOCK_SIZE * sizeof(T)));
+                size_t sumBufferSize = roundToMultiple(size / (workGroupSize * 2 * VECTOR_WIDTH), workGroupSize * 2 * VECTOR_WIDTH);
 
-                size_t globalWorkSizes[] = { values->getSize() / (2 * BLOCK_SIZE * sizeof(T)) }; // each thread processed 2 * BLOCK_SIZE elements
+                Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, sumBufferSize * sizeof(T));
+
+                size_t globalWorkSizes[] = { size / (2 * VECTOR_WIDTH) }; // each thread processed 2 * BLOCK_SIZE elements
                 size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
 
                 kernel->setArg(0, values);
@@ -85,10 +87,10 @@ namespace gpu
                 kernel->setArg(2, sizeof(T) * 2 * localWorkSizes[0], nullptr);
                 queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
 
-                if(values->getSize() / sizeof(T) > localWorkSizes[0] * 2 * BLOCK_SIZE)
+                if(size > localWorkSizes[0] * 2 * VECTOR_WIDTH)
                 {
                     // the buffer containes more than one scanned block, scan the created sum buffer
-                    run_r(workGroupSize, sums, size);
+                    run_r(workGroupSize, sums, sumBufferSize);
 
                     // apply the sums to the buffer
                     addKernel->setArg(0, values);
