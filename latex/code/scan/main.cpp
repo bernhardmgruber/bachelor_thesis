@@ -33,9 +33,9 @@ cl_uint roundToPowerOfTwo(cl_uint x)
 
 void scan(int* data, int* result, size_t size)
 {
-    result[0] = data[0];
+    result[0] = 0;
     for(size_t i = 1; i < size; i++)
-        result[i] = result[i - 1] + data[i];
+        result[i] = result[i - 1] + data[i - 1];
 }
 
 void scanCL(int* data, int* result, cl_uint size, cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize)
@@ -53,7 +53,7 @@ void scanCL(int* data, int* result, cl_uint size, cl_context context, cl_command
     {
         error = clSetKernelArg(kernel, 0, sizeof(cl_mem), &source);
         error = clSetKernelArg(kernel, 1, sizeof(cl_mem), &destination);
-        error = clSetKernelArg(kernel, 3, sizeof(cl_uint), &power);
+        error = clSetKernelArg(kernel, 2, sizeof(cl_uint), &power);
         error = clSetKernelArg(kernel, 3, sizeof(cl_uint), &size);
 
         size_t globalWorkSizes[] = { adjustedWorkSize };
@@ -274,13 +274,13 @@ int main(int argc, char* argv[])
     error = clBuildProgram(program4, 1, &device, "", nullptr, nullptr);
 
     // create the kernel
-    cl_kernel kernel1 = clCreateKernel(program1, "Scan", &error);
+    cl_kernel kernel1 = clCreateKernel(program1, "NaiveScan", &error);
     cl_kernel kernel2_up = clCreateKernel(program2, "UpSweep", &error);
     cl_kernel kernel2_zero = clCreateKernel(program2, "SetLastZero", &error);
     cl_kernel kernel2_down = clCreateKernel(program2, "DownSweep", &error);
     cl_kernel kernel3_scan = clCreateKernel(program3, "WorkEfficientScan", &error);
     cl_kernel kernel3_sums = clCreateKernel(program3, "AddSums", &error);
-    cl_kernel kernel4_scan = clCreateKernel(program4, "WorkEfficientScan", &error);
+    cl_kernel kernel4_scan = clCreateKernel(program4, "WorkEfficientVecScan", &error);
     cl_kernel kernel4_sums = clCreateKernel(program4, "AddSums", &error);
 
     // SCAN
@@ -300,25 +300,25 @@ int main(int argc, char* argv[])
     scan(input, result0, size);
 
     scanCL(input, result1, size, context, queue, kernel1, 256);
-    if(!memcmp(result0, result1, size))
+    if(memcmp(result0 + 1, result1, (size - 1) * sizeof(int))) // inclusive scan
         cerr << "validation of kernel 1 failed" << endl;
     else
         cout << "kernel 1 ok" << endl;
 
     scanCLWorkEfficient(input, result2, size, context, queue, kernel2_up, kernel2_zero, kernel2_down, 256);
-    if(!memcmp(result0, result2, size))
+    if(memcmp(result0, result2, size * sizeof(int)))
         cerr << "validation of kernel 2 failed" << endl;
     else
         cout << "kernel 2 ok" << endl;
 
     scanCLRecursive(input, result3, size, context, queue, kernel3_scan, kernel3_sums, 256);
-    if(!memcmp(result0, result3, size))
+    if(memcmp(result0, result3, size * sizeof(int)))
         cerr << "validation of kernel 3 failed" << endl;
     else
         cout << "kernel 3 ok" << endl;
 
     scanCLRecursiveVector(input, result4, size, context, queue, kernel4_scan, kernel4_sums, 256);
-    if(!memcmp(result0, result4, size))
+    if(memcmp(result0, result4, size * sizeof(int)))
         cerr << "validation of kernel 4 failed" << endl;
     else
         cout << "kernel 4 ok" << endl;
