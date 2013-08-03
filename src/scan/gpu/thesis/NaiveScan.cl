@@ -1,12 +1,12 @@
-__kernel void NaiveScan(__global int* src, __global int* dest, uint power, uint size)
+__kernel void NaiveScan(__global int* src, __global int* dst, uint offset, uint n)
 {
-    size_t k = get_global_id(0);
+    size_t id = get_global_id(0);
 
-    if(k >= size)
+    if(id >= n)
         return;
 
-    if(k >= power)
-        dest[k] = src[k] + src[k - power];
-    else if(k >= (power >> 1))
-        dest[k] = src[k];
+    if(id >= offset)
+        dst[id] = src[id] + src[id - offset];
+    else if(id >= (offset >> 1))
+        dst[id] = src[id];
 }

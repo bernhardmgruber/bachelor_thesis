@@ -64,6 +64,7 @@ From a performance concerned developer's perspective, all we have to pay attenti
 
 
 \subsubsection{Graphics Processing Unit (GPU)}
+\label{sec:gpu}
 
 When we think of a GPU we think of a highly parallel graphics orientated processing device. From its introduction with OpenCL in 1989 till the creation of the first GPGPU languages in 2004 (See section \ref{sec:history} for more details about the history of GPUs) the architecture of a GPU's hardware followed the principles of the graphics pipeline. To fit this purpose GPUs developed from original desktop processors to (as written in \cite{opencl_book}) heavily multithreaded devices employing sophisticated task management directly in hardware. This was needed to cope with complex task graphs processing vertices, geometry and pixels. This tasks and the data they process are highly parallel representing an extensive amount of independent work which is therefore most suitably handled by a device with a great amount of cores employing latency tolerant multithreading \footnote{Latency tolerant processing units are characterized by being insensitive to longer lasting memory requests.}.
 

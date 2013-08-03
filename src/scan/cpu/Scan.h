@@ -8,22 +8,33 @@ namespace cpu
     template<typename T>
     class Scan : public CPUAlgorithm<T>, public ScanAlgorithm
     {
+        static const bool INCLUSIVE = false;
+
     public:
         const string getName() override
         {
-            return "Scan (inclusiv)";
+            return string("Scan ") + (INCLUSIVE ? "(inclusiv)" : "(exclusive)");
         }
 
         bool isInclusiv() override
         {
-            return true;
+            return INCLUSIVE;
         }
 
         void run(T* data, T* result, size_t size)
         {
-            result[0] = data[0];
-            for(size_t i = 1; i < size; i++)
-                result[i] = result[i - 1] + data[i];
+            if(INCLUSIVE)
+            {
+                result[0] = data[0];
+                for(size_t i = 1; i < size; i++)
+                    result[i] = result[i - 1] + data[i];
+            }
+            else
+            {
+                result[0] = 0;
+                for(size_t i = 1; i < size; i++)
+                    result[i] = result[i - 1] + data[i - 1];
+            }
         }
 
         virtual ~Scan() {}
