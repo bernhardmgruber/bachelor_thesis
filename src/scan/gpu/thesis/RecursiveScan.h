@@ -46,7 +46,7 @@ namespace gpu
             void init() override
             {
                 Program* program = context->createProgram("gpu/thesis/RecursiveScan.cl");
-                kernel = program->createKernel(AVOID_BANK_CONFLICTS ? "WorkEfficientScanOptim" : "WorkEfficientScan");
+                kernel = program->createKernel(AVOID_BANK_CONFLICTS ? "ScanBlocksOptim" : "ScanBlocks");
                 addKernel = program->createKernel("AddSums");
                 delete program;
             }
@@ -70,15 +70,16 @@ namespace gpu
 
                 Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, sumBufferSize * sizeof(T));
 
-                size_t globalWorkSizes[] = { size / 2 }; // the global work size is the half number of elements (each thread processed 2 elements)
-                size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
-
                 kernel->setArg(0, values);
                 kernel->setArg(1, sums);
-                kernel->setArg(2, sizeof(T) * 2 * localWorkSizes[0], nullptr);
+                kernel->setArg(2, sizeof(T) * 2 * workGroupSize, nullptr);
+
+                size_t globalWorkSizes[] = { size / 2 }; // the global work size is the half number of elements (each thread processed 2 elements)
+                size_t localWorkSizes[] = { workGroupSize };
+
                 queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
 
-                if(size > localWorkSizes[0] * 2)
+                if(size > workGroupSize * 2)
                 {
                     // the buffer containes more than one scanned block, scan the created sum buffer
                     run_r(workGroupSize, sums, sumBufferSize);

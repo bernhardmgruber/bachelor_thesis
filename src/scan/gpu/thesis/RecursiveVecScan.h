@@ -49,7 +49,7 @@ namespace gpu
             {
                 stringstream ss;
                 Program* program = context->createProgram("gpu/thesis/RecursiveVecScan.cl");
-                kernel = program->createKernel(AVOID_BANK_CONFLICTS ? "WorkEfficientVecScanOptim" : "WorkEfficientVecScan");
+                kernel = program->createKernel(AVOID_BANK_CONFLICTS ? "ScanBlocksVecOptim" : "ScanBlocksVec");
                 addKernel = program->createKernel("AddSums");
                 delete program;
             }
@@ -73,15 +73,16 @@ namespace gpu
 
                 Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, sumBufferSize * sizeof(T));
 
-                size_t globalWorkSizes[] = { size / (2 * VECTOR_WIDTH) }; // each thread processed 2 * VECTOR_WIDTH elements
-                size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
-
                 kernel->setArg(0, values);
                 kernel->setArg(1, sums);
-                kernel->setArg(2, sizeof(T) * 2 * localWorkSizes[0], nullptr);
+                kernel->setArg(2, sizeof(T) * 2 * workGroupSize, nullptr);
+
+                size_t globalWorkSizes[] = { size / (2 * VECTOR_WIDTH) }; // each thread processed 2 * VECTOR_WIDTH elements
+                size_t localWorkSizes[] = { workGroupSize };
+
                 queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
 
-                if(size > localWorkSizes[0] * 2 * VECTOR_WIDTH)
+                if(size > workGroupSize * 2 * VECTOR_WIDTH)
                 {
                     // the buffer containes more than one scanned block, scan the created sum buffer
                     run_r(workGroupSize, sums, sumBufferSize);

@@ -1,4 +1,4 @@
-__kernel void WorkEfficientScan(__global int* buffer, __global int* sums, __local int* shared)
+__kernel void ScanBlocks(__global int* buffer, __global int* sums, __local int* shared)
 {
     uint globalId = get_global_id(0);
     uint localId = get_local_id(0);
@@ -69,7 +69,7 @@ __kernel void AddSums(__global int* buffer, __global int* sums)
 #define CONFLICT_FREE_OFFSET(addr) (((addr) >> (NUM_BANKS + (addr))) >> (2 * LOG_NUM_BANKS))
 //#define CONFLICT_FREE_OFFSET(addr) ((addr) / NUM_BANKS)
 
-__kernel void WorkEfficientScanOptim(__global int* buffer, __global int* sums, __local int* shared)
+__kernel void ScanBlocksOptim(__global int* buffer, __global int* sums, __local int* shared)
 {
     uint globalId = get_global_id(0) + get_group_id(0) * get_local_size(0);
     uint localId = get_local_id(0);

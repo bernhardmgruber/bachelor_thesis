@@ -123,21 +123,19 @@ void scanCLRecursive_r(cl_mem values, cl_uint n, cl_context context, cl_command_
 
     cl_mem sums = clCreateBuffer(context, CL_MEM_READ_WRITE, sumBufferSize * sizeof(int), nullptr, &error);
 
-    size_t globalWorkSizes[] = { n / 2 }; // the global work n is the half number of elements (each thread processed 2 elements)
-    size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
-
     error = clSetKernelArg(scanBlocks, 0, sizeof(cl_mem), &values);
     error = clSetKernelArg(scanBlocks, 1, sizeof(cl_mem), &sums);
-    error = clSetKernelArg(scanBlocks, 2, sizeof(int) * 2 * localWorkSizes[0], nullptr);
+    error = clSetKernelArg(scanBlocks, 2, sizeof(int) * 2 * workGroupSize, nullptr);
+
+    size_t globalWorkSizes[] = { n / 2 };
+    size_t localWorkSizes[] = { workGroupSize };
 
     error = clEnqueueNDRangeKernel(queue, scanBlocks, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
 
-    if(n > localWorkSizes[0] * 2)
+    if(n > workGroupSize * 2)
     {
-        // the buffer containes more than one scanned block, scan the created sum buffer
         scanCLRecursive_r(sums, sumBufferSize, context, queue, scanBlocks, addSums, workGroupSize);
 
-        // apply the sums to the buffer
         error = clSetKernelArg(addSums, 0, sizeof(cl_mem), &values);
         error = clSetKernelArg(addSums, 1, sizeof(cl_mem), &sums);
 

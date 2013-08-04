@@ -40,7 +40,7 @@ namespace gpu
                 bufferSize = roundToPowerOfTwo(size);
 
                 buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
-                queue->enqueueWrite(buffer, data);
+                queue->enqueueWrite(buffer, data, 0, size * sizeof(T));
             }
 
             void run(size_t workGroupSize, size_t size) override

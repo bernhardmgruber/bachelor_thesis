@@ -125,14 +125,11 @@ The \lstinline!UpSweep! kernel starts by querying the buffer index of the curren
 
 The \lstinline!DownSweep! kernel initializes the same way as it's preceding one by determining the element's index and the current pass' stride. This time, the stride is the distance between the indexes of the parent nodes. It is used to determine if the current work item corresponds to the parent node of the current pass. If this the case, the value of the parent node is read and temporarily stored. Then the value of the left child node (given by \lstinline!offset!) is added the parent node (which becomes the right child node). Finally the previous, temporarily stored value of the parent node is passed down to the left child node.
 
-When having a look at the benchmark results for this algorithm in figure \ref{fig:scan_chart} we can see that our efforts have payed off. The initial 1148 ms of the naive GPU implementation have shrunk to 603 ms on an array of $2^{26}$ elements. Furthermore, this implementation is now work-efficient and therefore avoiding unnecessary additions. Additionally, as all intermediate results are stored in-place, the algorithm does not waste memory by double buffering such as the naive approach. However, the algorithm requires the input to be a power of two, which becomes more disadvantages with larger input sizes.
+When having a look at the benchmark results for this algorithm in figure \ref{fig:scan_chart} we can see that our efforts have payed off. The initial 1148 ms of the naive GPU implementation have shrunk to 603 ms on an array of $2^{26}$ elements. Furthermore, this implementation is now work-efficient and therefore avoiding unnecessary additions. Additionally, as all intermediate results are stored in-place, the algorithm does not waste memory by double buffering such as the naive approach. However, the algorithm requires the input to be a power of two, which becomes more disadvantages with larger input sizes. This can be clearly seen in the performance data table of the work-efficient scan in appendix chapter \ref{sec:scan_chart_data}, where the time required for the calculation is equal for all problem sizes that are round up to the same power of two. This also explains the stepped shape of the runtime curve.
 
 \subsection{Recursively scanning blocks in local memory}
 
 The previous work-efficient implementation in chapter \ref{sec:scan_work_efficient} does already perform quite well for an initially sequential problem. However, the input buffer size restriction is undesirable. Furthermore, no local memory is used which might be useful for computing and storing intermediate results.
-GPU Gems 3 Chapter 39 \cite{gpu_gems_3_chapter_39} shows a different approach for computing all prefix sums of an input array. The method is shown in figure \ref{fig:scan_recursive}. The input data is rounded up to be a multiple of a block size which is two times the chosen work group size in their implementation. Each work group then loads a block 
-
-It uses the work-efficient implementation of the last chapter
 
 \begin{figure}
 \centering
@@ -141,15 +138,33 @@ It uses the work-efficient implementation of the last chapter
 \label{fig:scan_recursive}
 \end{figure}
 
+GPU Gems 3 Chapter 39 \cite{gpu_gems_3_chapter_39} shows a different approach for computing all prefix sums of an input array. The method is shown in figure \ref{fig:scan_recursive}. The input data is rounded up to be a multiple of a block size which is two times the chosen work group size in their implementation. Each work group then loads a block from global memory to local memory. Each block is then scanned using Blelloch's work-efficient scan algorithm \cite{scan_blelloch}, but in local memory inside a work group. After the up-sweep phase is finished, the root element of each tree in a block is copied into a smaller, temporary buffer. This buffer is then recursively scanned again. The scan result of the temporary buffer can then be used to offset the scanned blocks of the original buffer to build the final scan.
+Although this algorithm is not tied to a specific work group size it performs better the larger the work group size is chosen, as the work group sizes determines the factor by which the input data is reduced in each recursion.
+
+Listing \ref{lst:scan_recursive_host} shows the host code of this recursive scan algorithm.
+
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm., label=lst:scan_recursive_host, firstline=123, lastline=170]{code/scan/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm., label=lst:scan_recursive_host, firstline=118, lastline=163]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
+
+This implementation again uses two kernels, one for scanning the blocks in local memory and one for applying the offsets from the scanned temporary buffer to the original one. The host code consists of two parts, the setup code and the actual recursion. The setup is performed in \lstinline!scanCLRecursive! which starts by rounding the input data size up to be a multiple of twice the size of a work group, because each work item processes two values. Then a buffer is created and the input data written to it. This buffer is then passed to the recursive scan procedure \lstinline!scanCLRecursive_r!. The recursion starts by computing the size of the temporary buffer \lstinline!sums! that will hold the values of the root nodes (the sums over each block). As each thread processes two input elements and each work group computes one sum over a block, this temporary buffer's size is the problem size divided by two times the work group size. The result is then rounded up to be a multiple of this value, so it can be recursively scanned again with this algorithm. After the size has been determined, the \lstinline!sums! buffer can be created. No initialization or memory transfer is required is the buffer is entirely accessed by the kernels. Afterwards, the block scan kernel can be set up. It takes the original input buffer as well as the buffer for the sums as arguments. Furthermore local memory is allocated to cache the block calculated by each work group. As each work item reads two input elements, the global work size is half the number of input elements. After the kernel has been enqueued, we have to check whether the input data for this recursion consisted of more than one block. If this is the case we scan the temporary buffer (containing more than 1 value) by recursively calling \lstinline!scanCLRecursive_r! on this buffer. After scanning the temporary \lstinline!sums! buffer completed, the sums can be applied to the original buffer. Therefore another kernel is enqueued given both buffers as arguments. The global and local work size are equal to the previous kernel on the same recursion level.
+ 
+Listing \ref{lst:scan_recursive_kernel} shows the kernel code for the recursive scan implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm., label=lst:scan_recursive_kernel, firstline=1, lastline=65]{../src/scan/gpu/thesis/RecursiveScan.cl}
 \lstset{basicstyle=\ttfamily{}}
 
+The \lstinline!ScanBlocks! kernel starts with querying some values from OpenCL. Beside the global and local id, also the size \lstinline!n! of the block of the current work group is determined. Each thread than loads two values of the block into local memory. The following code then implements the tree based scan approach by Blelloch which has already been discussed in the previous chapter \ref{sec:scan_work_efficient}. The three phases (up-sweep, set-last-zero and down-sweep) are executed across all threads of the work group on the block in local memory. The only difference is, that the computed value of the root node after the up-sweep phase is moved to the \lstinline!sums! buffer at the index of the current work group. After the block has been scanned completely, it is copied back from local to global memory.
+
+The \lstinline!AddSums! kernel is executed with the same global and local sizes as specified to the \lstinline!ScanBlocks! kernel on the same recursion level. The \lstinline!sums! buffer now contains a scan of the sums of all blocks scanned in this recursion. Therefore, the position where the \lstinline!ScanBlocks! kernel wrote the root node's value, now contains the sum of all elements (of all blocks) preceding the block of the current work group. This value is retrieved and added to all values of the current block finishing the scan.
+
+Concerning the performance benchmark in figure \ref{fig:scan_chart}, this implementation scales better with the problem size although it is not much faster than the global work-efficient scan of the previous chapter. Furthermore, the recursive implementations' kernels are enqueued far less often than the one's of the work-efficient implementation. This can be explained by the reduction factor in each algorithm. The work efficient implementation reduces the number of work items by a factor of two each iteration while the recursive algorithm reduces by the work group size (which was 256 for the benchmarks). In return, a lot more work is done inside the recursive algorithm's kernels. Also the number of additions required to compute the final result increased as extra adds a needed to apply the sums from the temporary buffer to the input buffer.
+However, this implementation showed a different concept of how a problem can be broken down into smaller parallel pieces of work. The next chapter will follow up on this idea.
+
 \subsection{Optimization using vector types}
+
+
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_host, firstline=123, lastline=170]{code/scan/main.cpp}
