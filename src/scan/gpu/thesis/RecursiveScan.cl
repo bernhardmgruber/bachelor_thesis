@@ -33,7 +33,7 @@ __kernel void WorkEfficientScan(__global int* buffer, __global int* sums, __loca
     }
 
     // traverse down tree & build scan
-    for (uint d = 1; d < n; d *= 2) 
+    for (uint d = 1; d < n; d <<= 1) 
     {
         offset >>= 1;
         barrier(CLK_LOCAL_MEM_FENCE);

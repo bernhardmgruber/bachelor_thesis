@@ -9,24 +9,20 @@
 
 __kernel void UpSweep(__global T* buffer, uint offset)
 {
-    uint id = get_global_id(0);
-
     uint stride = offset << 1;
 
-    if((id + 1) % stride == 0)
-        buffer[id] += buffer[id - offset];
+    uint id = (get_global_id(0) + 1) * stride - 1;
+
+    buffer[id] += buffer[id - offset];
 }
 
 __kernel void DownSweep(__global T* buffer, uint offset)
 {
-    uint id = get_global_id(0);
-
     uint stride = offset << 1;
 
-    if((id + 1) % stride == 0)
-    {
-        T val = buffer[id];
-        buffer[id] += buffer[id - offset];
-        buffer[id - offset] = val;
-    }
+    uint id = (get_global_id(0) + 1) * stride - 1;
+
+    T val = buffer[id];
+    buffer[id] += buffer[id - offset];
+    buffer[id - offset] = val;
 }

@@ -31,7 +31,6 @@ namespace gpu
             {
                 Program* program = context->createProgram("gpu/dixxi/WorkEfficientScan.cl", "-D T=" + getTypeName<T>());
                 upSweepKernel = program->createKernel("UpSweep");
-                setLastZeroKernel = program->createKernel("SetLastZero");
                 downSweepKernel = program->createKernel("DownSweep");
                 delete program;
             }
@@ -52,28 +51,21 @@ namespace gpu
                 // upsweep (reduce)
                 for(size_t offset = 1; offset < bufferSize; offset <<= 1)
                 {
-                    size_t stride = 2 * offset;
-
                     upSweepKernel->setArg(0, buffer);
                     upSweepKernel->setArg(1, (cl_uint)offset);
-                    upSweepKernel->setArg(2, (cl_uint)stride);
 
                     queue->enqueueKernel(upSweepKernel, 1, globalWorkSizes, localWorkSizes);
                 }
 
                 // set last element to zero
-                setLastZeroKernel->setArg(0, buffer);
-                setLastZeroKernel->setArg(1, (cl_uint)(bufferSize - 1));
-                queue->enqueueTask(setLastZeroKernel);
+                cl_uint zero = 0;
+                queue->enqueueWrite(buffer, &zero, (bufferSize - 1) * sizeof(cl_uint), sizeof(cl_uint));
 
                 // downsweep
                 for(size_t offset = bufferSize >> 1; offset >= 1; offset >>= 1)
                 {
-                    size_t stride = 2 * offset;
-
                     downSweepKernel->setArg(0, buffer);
                     downSweepKernel->setArg(1, (cl_uint)offset);
-                    downSweepKernel->setArg(2, (cl_uint)stride);
 
                     queue->enqueueKernel(downSweepKernel, 1, globalWorkSizes, localWorkSizes);
                 }
@@ -89,7 +81,6 @@ namespace gpu
             {
                 delete upSweepKernel;
                 delete downSweepKernel;
-                delete setLastZeroKernel;
             }
 
             virtual ~WorkEfficientScan() {}
@@ -98,7 +89,6 @@ namespace gpu
             size_t bufferSize;
             Kernel* upSweepKernel;
             Kernel* downSweepKernel;
-            Kernel* setLastZeroKernel;
             Buffer* buffer;
         };
     }

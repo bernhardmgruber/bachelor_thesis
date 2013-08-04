@@ -70,7 +70,7 @@ void scanCL(int* data, int* result, cl_uint n, cl_context context, cl_command_qu
     error = clReleaseMemObject(dst);
 }
 
-void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel upSweep, cl_kernel setLastZero, cl_kernel downSweep, size_t workGroupSize)
+void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel upSweep, cl_kernel downSweep, size_t workGroupSize)
 {
     cl_int error;
 
@@ -80,37 +80,32 @@ void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, 
 
     error = clEnqueueWriteBuffer(queue, buffer, false, 0, n * sizeof(int), data, 0, nullptr, nullptr);
 
-    size_t globalWorkSizes[] = { bufferSize };
-    size_t localWorkSizes[] = { min(workGroupSize, bufferSize) };
-
     // upsweep (reduce)
-    for(cl_uint offset = 1; offset < bufferSize; offset <<= 1)
+    size_t nodes = bufferSize >> 1;
+    for(cl_uint offset = 1; offset < bufferSize; offset <<= 1, nodes >>= 1)
     {
-        cl_uint stride = 2 * offset;
-
         error = clSetKernelArg(upSweep, 0, sizeof(cl_mem), &buffer);
         error = clSetKernelArg(upSweep, 1, sizeof(cl_uint), &offset);
-        error = clSetKernelArg(upSweep, 2, sizeof(cl_uint), &stride);
+
+        size_t globalWorkSizes[] = { nodes };
+        size_t localWorkSizes[] = { min(workGroupSize, nodes) };
 
         error = clEnqueueNDRangeKernel(queue, upSweep, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
     }
 
     // set last element to zero
-    cl_uint lastIndex = bufferSize - 1;
-
-    error = clSetKernelArg(setLastZero, 0, sizeof(cl_mem), &buffer);
-    error = clSetKernelArg(setLastZero, 1, sizeof(cl_uint), &lastIndex);
-
-    error = clEnqueueTask(queue, setLastZero, 0, nullptr, nullptr);
+    cl_uint zero = 0;
+    clEnqueueWriteBuffer(queue, buffer, false, (bufferSize - 1) * sizeof(cl_uint), sizeof(cl_uint), &zero, 0, nullptr, nullptr);
 
     // downsweep
-    for(cl_uint offset = bufferSize >> 1; offset >= 1; offset >>= 1)
+    nodes = 1;
+    for(cl_uint offset = bufferSize >> 1; offset >= 1; offset >>= 1, nodes <<= 1)
     {
-        cl_uint stride = 2 * offset;
-
         error = clSetKernelArg(downSweep, 0, sizeof(cl_mem), &buffer);
         error = clSetKernelArg(downSweep, 1, sizeof(cl_uint), &offset);
-        error = clSetKernelArg(downSweep, 2, sizeof(cl_uint), &stride);
+
+        size_t globalWorkSizes[] = { nodes };
+        size_t localWorkSizes[] = { min(workGroupSize, nodes) };
 
         error = clEnqueueNDRangeKernel(queue, downSweep, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
     }
@@ -276,7 +271,6 @@ int main(int argc, char* argv[])
     // create the kernel
     cl_kernel kernel1 = clCreateKernel(program1, "NaiveScan", &error);
     cl_kernel kernel2_up = clCreateKernel(program2, "UpSweep", &error);
-    cl_kernel kernel2_zero = clCreateKernel(program2, "SetLastZero", &error);
     cl_kernel kernel2_down = clCreateKernel(program2, "DownSweep", &error);
     cl_kernel kernel3_scan = clCreateKernel(program3, "WorkEfficientScan", &error);
     cl_kernel kernel3_sums = clCreateKernel(program3, "AddSums", &error);
@@ -305,7 +299,7 @@ int main(int argc, char* argv[])
     else
         cout << "kernel 1 ok" << endl;
 
-    scanCLWorkEfficient(input, result2, n, context, queue, kernel2_up, kernel2_zero, kernel2_down, 256);
+    scanCLWorkEfficient(input, result2, n, context, queue, kernel2_up, kernel2_down, 256);
     if(memcmp(result0, result2, n * sizeof(int)))
         cerr << "validation of kernel 2 failed" << endl;
     else
@@ -332,7 +326,6 @@ int main(int argc, char* argv[])
 
     error = clReleaseKernel(kernel1);
     error = clReleaseKernel(kernel2_up);
-    error = clReleaseKernel(kernel2_zero);
     error = clReleaseKernel(kernel2_down);
     error = clReleaseKernel(kernel3_scan);
     error = clReleaseKernel(kernel3_sums);

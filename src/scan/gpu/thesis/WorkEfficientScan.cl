@@ -1,24 +1,19 @@
-__kernel void UpSweep(__global int* buffer, uint offset, uint stride)
+__kernel void UpSweep(__global int* buffer, uint offset)
 {
-    uint k = get_global_id(0);
+    uint stride = offset << 1;
 
-    if((k + 1) % stride == 0)
-        buffer[k] += buffer[k - offset];
+    uint id = (get_global_id(0) + 1) * stride - 1;
+
+    buffer[id] += buffer[id - offset];
 }
 
-__kernel void SetLastZero(__global int* buffer, uint index)
+__kernel void DownSweep(__global int* buffer, uint offset)
 {
-    buffer[index] = 0;
-}
+    uint stride = offset << 1;
 
-__kernel void DownSweep(__global int* buffer, uint offset, uint stride)
-{
-    uint k = get_global_id(0);
+    uint id = (get_global_id(0) + 1) * stride - 1;
 
-    if((k + 1) % stride == 0)
-    {
-        int val = buffer[k];
-        buffer[k] += buffer[k - offset];
-        buffer[k - offset] = val;
-    }
+    int val = buffer[id];
+    buffer[id] += buffer[id - offset];
+    buffer[id - offset] = val;
 }

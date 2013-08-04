@@ -46,6 +46,7 @@ A parallel computation is work-efficient if it does asymptotically no more work 
 The benchmark of this algorithm in figure \ref{fig:scan_chart} confirms the linearity of scan. Furthermore we can also see that scanning is a quite fast operation (when e.g. being compared to the matrix multiplication of the previous chapter \ref{sec:matrix_mul}). The CPU implementation manages to scan $2^{26}$ elements (256 MiB of data) in 215 ms.
 
 \subsection{Naive GPU implementation}
+\label{sec:scan_naive}
 
 The first GPU implementation is base on the article Data Parallel Algorithms written by Hillis and Steele in 1986 \cite{scan_naive}. Their approach to compute an inclusive (!) scan is shown in figure \ref{fig:scan_naive}. The algorithm uses several passes to compute the final output array in place. In each pass the value of a predecessor is added to an element. The offset from each element to its predecessor is determined by the pass index and is $2^{d - 1}$ where d is the number of the pass starting with 1.
 
@@ -63,7 +64,7 @@ Listing \ref{lst:scan_naive_host} shows an example host code implementing this a
 \lstinputlisting[language=C++, caption=Host code for the naive scan algorithm., label=lst:scan_naive_host, firstline=41, lastline=71]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
-At first, two buffers with the size of the input are created. Both of them have to be read- and writable as they are read from and written to alternatingly when executing the passes. The source buffer is filled with the input data. Although this algorithm is independent from the chosen work group size, we have to round the number of enqueued work items (one for each input element) up to be a multiple of the work group size. This \lstinline!adjustedWorkSize! will be the size of the enqueued ND range. After this short setup the passes are executed. Each pass corresponds to a power of two (loop variable \lstinline!offset!, cf. figure \ref{fig:scan_naive}) which corresponds to the offset of an element to the predecessor that should be added to it. This offset is raised each pass until it is larger than the problem size. The kernel is executed once for each pass, given the source and destination buffer, the offset and the original problem size as arguments. At the end of a pass the source and destination buffers are swapped (only the handles, not the actual contents). After the last pass has been executed, the result is read from the source buffer (the last pass wrote to the destination buffer which was swapped with the source buffer at the end of the loop).
+At first, two buffers with the size of the input are created. Both of them have to be read- and writable as they are read from and written to alternatingly when executing the passes. The source buffer is filled with the input data. Although this algorithm is independent from the chosen work group size, we have to round the number of enqueued work items (one for each input element) up to be a multiple of the work group size. This \lstinline!adjustedWorkSize! will be the size of the enqueued ND range. After this short setup the passes are executed. Each pass corresponds to a power of two (loop variable \lstinline!offset!, cf. figure \ref{fig:scan_naive}) which corresponds to the offset of an element to the predecessor that should be added to it. This offset is raised to the next power of two each pass until it is larger than the problem size. The kernel is executed once for each pass, given the source and destination buffer, the offset and the original problem size as arguments. At the end of a pass the source and destination buffers are swapped (only the handles, not the actual contents). After the last pass has been executed, the result is read from the source buffer (the last pass wrote to the destination buffer which was swapped with the source buffer at the end of the loop).
 Listing \ref{lst:scan_naive_kernel} shows the kernel code corresponding to the host code from listing \ref{lst:scan_naive_host}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
@@ -77,6 +78,7 @@ Fortunately, both problems can be tackled which will be subject to the following
 
 
 \subsection{Work efficient GPU implementation}
+\label{sec:scan_work_efficient}
 
 In 1990 Blelloch presented a more efficient version of the all-prefix-sums operation in his article Prefix Sums and Their Applications \cite{scan_blelloch}. He presented a tree-based approach consisting of three phases.
 
@@ -87,7 +89,7 @@ In 1990 Blelloch presented a more efficient version of the all-prefix-sums opera
 \label{fig:scan_work_efficient_up_sweep}
 \end{figure}
 
-The first phase is called the reduce or up-sweep phase and is illustrated in figure \ref{fig:scan_work_efficient_up_sweep}. It takes an input array whose length must be a power of two. All elements of the input array are leaves of the tree. The algorithm than takes adjacent pairs of elements and adds them together forming a node holding the sum of it's two child nodes. This step forms a pass of the up-sweep phase and is repeated until the root of the tree which than holds the sum of all values. As the values of the right child nodes are not needed anymore after their parent nodes have been calculated, the tree can be built in-place.
+The first phase is called the reduce or up-sweep phase and is illustrated in figure \ref{fig:scan_work_efficient_up_sweep}. It takes an input array whose length must be a power of two. All elements of the input array are leaves of the tree. The algorithm than takes adjacent pairs of elements and adds them together forming a node holding the sum of it's two child nodes. This step forms a pass of the up-sweep phase and is repeated for the created parent nodes until the root of the tree which than holds the sum of all values. As the values of the right child nodes are not needed anymore after their parent nodes have been calculated, the tree can be built in-place.
 
 \begin{figure}
 \centering
@@ -99,19 +101,38 @@ The first phase is called the reduce or up-sweep phase and is illustrated in fig
 The second phase sets the value of the root node to zero to prepare for the third phase, the down-sweep phase, which is illustrated in figure \ref{fig:scan_work_efficient_down_sweep}. The down-sweep phase again consists of several passes starting at the root node and repeating along all levels of the tree until the leaves. In each pass the values of the left child nodes are read and temporarily stored. The left child nodes are than replaced by the value of their parent nodes. The previous, temporarily stored values of the left child nodes are then added to the parent nodes' values and written to the right child node. As the parent nodes are not needed anymore after the sum for the right child has been calculated, the tree can again be traversed downwards in-place.
 Overall, for an input array of $n$ elements, this algorithm performs $n - 1$ adds during the up-sweep phase and the same amount of adds during the down-sweep phase \footnote{A perfect binary tree with $n$ leaves has a total of $2n - 1$ nodes. As only the non-leaf nodes perform additions, the number of leaf nodes can be subtracted resulting in $2n - 1 - n = n - 1$ nodes which perform an addition.}. Although almost twice as much work is performed when compared with the sequential CPU implementation, this algorithm can still be considered work-efficient according to the definition given in chapter \ref{sec:scan_cpu}.
 
-Listing \ref{lst:scan_work_efficient_host} shows the host code implementing the work-efficient tree based approach.
+Listing \ref{lst:scan_work_efficient_host} shows the host code implementing the work-efficient tree based approach after Blelloch \cite{scan_blelloch}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the efficient scan algorithm., label=lst:scan_work_efficient_host, firstline=73, lastline=120]{code/scan/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for the work-efficient scan algorithm., label=lst:scan_work_efficient_host, firstline=73, lastline=116]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
+Contrary to the previous algorithms, this implementation will use two kernels, one for the up-sweep and one for the down-sweep phase. 
+To start with the number of input elements has to be rounded up to be a power of two. This size is then used to create a buffer which is filled with the input array.
+After these initialization steps we can begin with the up-sweep phase. The loop variable for the passes is the offset of the buffer index between two adjacent nodes on the same tree level. This value starts with one for the first pass and is raised to the next power of two for each subsequent pass until the size of the input buffer has been reached. For each pass the up-sweep kernel is enqueued with the buffer and the current pass' offset as arguments. The number of work items required for a pass is equal to the number of parent nodes calculated on the current pass' level. This value is a half of the buffer size for the first pass and halves itself after each pass. Although this algorithm is still independent of the chosen work group size, we have to make sure that it is not larger than the global number of work items.
 
+After the up-sweep phase has been completed, the last element corresponding to the tree's root node will be set to zero. This is easily accomplished by enqueuing a write operation writing the value zero to the last buffer element.
+Finally the down-sweep phase can finish the scan computation. Similar to the up-sweep phase several passes are executed given the offset between two adjacent tree nodes on the same level and the buffer as argument. In contrast to the up-sweep phase, the tree is now traversed top-down meaning the offset starts with a half of the buffer size and is set to the next lower power of two in each pass until one has been reached. Analogous, the number of nodes to process (the global work size) starts with one and doubles every pass.
+When the down-sweep phase has completed, the buffer holds the final scan result which can than be read back to host memory.
+
+Listing \ref{lst:scan_work_efficient_kernel} shows the corresponding OpenCL kernel code for the work-efficient scan implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for the work efficient scan algorithm., label=lst:scan_work_efficient_kernel]{../src/scan/gpu/thesis/WorkEfficientScan.cl}
 \lstset{basicstyle=\ttfamily{}}
 
+The \lstinline!UpSweep! kernel starts by querying the buffer index of the current element the kernel is processing. Furthermore it computes the value of \lstinline!stride! which is the distance of two parent nodes calculated in the current pass. This value is used to determine if the current work item's id addresses the place where the value of the computed parent node is written to. If this is the case, the input value at \lstinline!id! is read (right child) together with the corresponding neighbor node at the given offset (left child). The computed sum is then written over the right child's location.
+
+The \lstinline!DownSweep! kernel initializes the same way as it's preceding one by determining the element's index and the current pass' stride. This time, the stride is the distance between the indexes of the parent nodes. It is used to determine if the current work item corresponds to the parent node of the current pass. If this the case, the value of the parent node is read and temporarily stored. Then the value of the left child node (given by \lstinline!offset!) is added the parent node (which becomes the right child node). Finally the previous, temporarily stored value of the parent node is passed down to the left child node.
+
+When having a look at the benchmark results for this algorithm in figure \ref{fig:scan_chart} we can see that our efforts have payed off. The initial 1148 ms of the naive GPU implementation have shrunk to 603 ms on an array of $2^{26}$ elements. Furthermore, this implementation is now work-efficient and therefore avoiding unnecessary additions. Additionally, as all intermediate results are stored in-place, the algorithm does not waste memory by double buffering such as the naive approach. However, the algorithm requires the input to be a power of two, which becomes more disadvantages with larger input sizes.
+
 \subsection{Recursively scanning blocks in local memory}
+
+The previous work-efficient implementation in chapter \ref{sec:scan_work_efficient} does already perform quite well for an initially sequential problem. However, the input buffer size restriction is undesirable. Furthermore, no local memory is used which might be useful for computing and storing intermediate results.
+GPU Gems 3 Chapter 39 \cite{gpu_gems_3_chapter_39} shows a different approach for computing all prefix sums of an input array. The method is shown in figure \ref{fig:scan_recursive}. The input data is rounded up to be a multiple of a block size which is two times the chosen work group size in their implementation. Each work group then loads a block 
+
+It uses the work-efficient implementation of the last chapter
 
 \begin{figure}
 \centering
@@ -135,7 +156,7 @@ Listing \ref{lst:scan_work_efficient_host} shows the host code implementing the 
 \lstset{basicstyle=\ttfamily{}}
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_kernel, firstline=1, lastline=149]{../src/scan/gpu/thesis/RecursiveScan.cl}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_kernel, firstline=1, lastline=149]{../src/scan/gpu/thesis/RecursiveVecScan.cl}
 \lstset{basicstyle=\ttfamily{}}
 
 \begin{figure}

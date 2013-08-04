@@ -102,6 +102,7 @@
     <ClInclude Include="gpu\dixxi\RecursiveVecScan.h" />
     <ClInclude Include="gpu\dixxi\ScanTask.h" />
     <ClInclude Include="gpu\dixxi\WorkEfficientScan.h" />
+    <ClInclude Include="gpu\dixxi\WorkEfficientScanWI.h" />
     <ClInclude Include="gpu\gpugems\LocalNaiveScan.h" />
     <ClInclude Include="gpu\gpugems\LocalWorkEfficientScan.h" />
     <ClInclude Include="gpu\nvidia\Scan.h" />
@@ -120,6 +121,7 @@
     <None Include="gpu\dixxi\RecursiveVecScan.cl" />
     <None Include="gpu\dixxi\ScanTask.cl" />
     <None Include="gpu\dixxi\WorkEfficientScan.cl" />
+    <None Include="gpu\dixxi\WorkEfficientScanWI.cl" />
     <None Include="gpu\gpugems\LocalNaiveScan.cl" />
     <None Include="gpu\gpugems\LocalWorkEfficientScan.cl" />
     <None Include="gpu\nvidia\Scan.cl" />

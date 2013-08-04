@@ -7,21 +7,19 @@
 
 namespace gpu
 {
-    namespace thesis
+    namespace dixxi
     {
         /**
         * Full array version of: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
         * Chapter: 39.2.2 A Work-Efficient Parallel Scan
         */
         template<typename T>
-        class WorkEfficientScan : public CLAlgorithm<T>, public ScanAlgorithm
+        class WorkEfficientScanWI : public CLAlgorithm<T>, public ScanAlgorithm
         {
-            static_assert(is_same<T, cl_int>::value, "Thesis algorithms only support int");
-
         public:
             const string getName() override
             {
-                return "Work Efficient Scan WI (THESIS dixxi GPU Gems) (exclusiv)";
+                return "Work Efficient Scan WI (dixxi GPU Gems) (exclusiv)";
             }
 
             bool isInclusiv() override
@@ -31,7 +29,7 @@ namespace gpu
 
             void init() override
             {
-                Program* program = context->createProgram("gpu/thesis/WorkEfficientScan.cl");
+                Program* program = context->createProgram("gpu/dixxi/WorkEfficientScanWI.cl", "-D T=" + getTypeName<T>());
                 upSweepKernel = program->createKernel("UpSweep");
                 downSweepKernel = program->createKernel("DownSweep");
                 delete program;
@@ -88,7 +86,7 @@ namespace gpu
                 delete downSweepKernel;
             }
 
-            virtual ~WorkEfficientScan() {}
+            virtual ~WorkEfficientScanWI() {}
 
         private:
             size_t bufferSize;
