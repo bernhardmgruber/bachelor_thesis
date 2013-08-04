@@ -29,6 +29,7 @@ The following chapter will focus on efficient and parallel implementations of an
 
 
 \subsection{CPU Implementation}
+\label{sec:scan_cpu}
 
 Implementing a sequential, single threaded scan for the CPU is simple. The first output element is initialized to zero. We than loop over the remaining output elements and set each one to the value of its predecessor plus the corresponding input element. Listing \ref{lst:scan_cpu} shows an example of a scan implementation.
 
@@ -50,7 +51,7 @@ The first GPU implementation is base on the article Data Parallel Algorithms wri
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\linewidth]{scan_naive}
+\includegraphics[width=0.6\linewidth]{scan_naive}
 \caption{A naive approach for a parallel scan \cite{scan_naive}. (figure from GPU Gems 3 \cite{gpu_gems_3_chapter_39})}
 \label{fig:scan_naive}
 \end{figure}
@@ -77,25 +78,34 @@ Fortunately, both problems can be tackled which will be subject to the following
 
 \subsection{Work efficient GPU implementation}
 
-tree based approach (GPU Gems) work efficiency?
+In 1990 Blelloch presented a more efficient version of the all-prefix-sums operation in his article Prefix Sums and Their Applications \cite{scan_blelloch}. He presented a tree-based approach consisting of three phases.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\linewidth]{scan_work_efficient_up_sweep}
+\includegraphics[width=0.6\linewidth]{scan_work_efficient_up_sweep}
 \caption{The up-sweep phase of a work efficient parallel scan \cite{scan_blelloch}.  (figure from GPU Gems 3 \cite{gpu_gems_3_chapter_39})}
 \label{fig:scan_work_efficient_up_sweep}
 \end{figure}
 
+The first phase is called the reduce or up-sweep phase and is illustrated in figure \ref{fig:scan_work_efficient_up_sweep}. It takes an input array whose length must be a power of two. All elements of the input array are leaves of the tree. The algorithm than takes adjacent pairs of elements and adds them together forming a node holding the sum of it's two child nodes. This step forms a pass of the up-sweep phase and is repeated until the root of the tree which than holds the sum of all values. As the values of the right child nodes are not needed anymore after their parent nodes have been calculated, the tree can be built in-place.
+
 \begin{figure}
 \centering
-\includegraphics[width=0.5\linewidth]{scan_work_efficient_down_sweep}
+\includegraphics[width=0.6\linewidth]{scan_work_efficient_down_sweep}
 \caption{The down-sweep phase of a work efficient parallel scan \cite{scan_blelloch}.  (figure from GPU Gems 3 \cite{gpu_gems_3_chapter_39})}
 \label{fig:scan_work_efficient_down_sweep}
 \end{figure}
 
+The second phase sets the value of the root node to zero to prepare for the third phase, the down-sweep phase, which is illustrated in figure \ref{fig:scan_work_efficient_down_sweep}. The down-sweep phase again consists of several passes starting at the root node and repeating along all levels of the tree until the leaves. In each pass the values of the left child nodes are read and temporarily stored. The left child nodes are than replaced by the value of their parent nodes. The previous, temporarily stored values of the left child nodes are then added to the parent nodes' values and written to the right child node. As the parent nodes are not needed anymore after the sum for the right child has been calculated, the tree can again be traversed downwards in-place.
+Overall, for an input array of $n$ elements, this algorithm performs $n - 1$ adds during the up-sweep phase and the same amount of adds during the down-sweep phase \footnote{A perfect binary tree with $n$ leaves has a total of $2n - 1$ nodes. As only the non-leaf nodes perform additions, the number of leaf nodes can be subtracted resulting in $2n - 1 - n = n - 1$ nodes which perform an addition.}. Although almost twice as much work is performed when compared with the sequential CPU implementation, this algorithm can still be considered work-efficient according to the definition given in chapter \ref{sec:scan_cpu}.
+
+Listing \ref{lst:scan_work_efficient_host} shows the host code implementing the work-efficient tree based approach.
+
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=C++, caption=Host code for the efficient scan algorithm., label=lst:scan_work_efficient_host, firstline=73, lastline=120]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
+
+
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for the work efficient scan algorithm., label=lst:scan_work_efficient_kernel]{../src/scan/gpu/thesis/WorkEfficientScan.cl}
