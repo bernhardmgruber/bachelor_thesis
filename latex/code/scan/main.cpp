@@ -270,9 +270,9 @@ int main(int argc, char* argv[])
     cl_kernel kernel1 = clCreateKernel(program1, "NaiveScan", &error);
     cl_kernel kernel2_up = clCreateKernel(program2, "UpSweep", &error);
     cl_kernel kernel2_down = clCreateKernel(program2, "DownSweep", &error);
-    cl_kernel kernel3_scan = clCreateKernel(program3, "WorkEfficientScan", &error);
+    cl_kernel kernel3_scan = clCreateKernel(program3, "ScanBlocks", &error);
     cl_kernel kernel3_sums = clCreateKernel(program3, "AddSums", &error);
-    cl_kernel kernel4_scan = clCreateKernel(program4, "WorkEfficientVecScan", &error);
+    cl_kernel kernel4_scan = clCreateKernel(program4, "ScanBlocksVec", &error);
     cl_kernel kernel4_sums = clCreateKernel(program4, "AddSums", &error);
 
     // SCAN
