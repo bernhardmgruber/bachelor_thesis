@@ -1,19 +1,23 @@
 #define CONCAT(a, b) a ## b
-#define CONCAT_EXPANED(a, b) CONCAT(a, b)
+#define CONCAT_EXPANDED(a, b) CONCAT(a, b)
 
 #define UPSWEEP_STEP(left, right) right += left
 
-#define DOWNSWEEP_STEP_RND(left, right, tmp) \
+#define UPSWEEP_STEPS(left, right) \
+    UPSWEEP_STEP(CONCAT_EXPANDED(val1.s, left), CONCAT_EXPANDED(val1.s, right)); \
+    UPSWEEP_STEP(CONCAT_EXPANDED(val2.s, left), CONCAT_EXPANDED(val2.s, right))
+
+#define DOWNSWEEP_STEP_TMP(left, right, tmp) \
     int tmp = left;                          \
     left = right;                            \
     right += tmp
 
-#define DOWNSWEEP_STEP(left, right) DOWNSWEEP_STEP_RND(left, right, CONCAT_EXPANED(tmp, __COUNTER__))
+#define DOWNSWEEP_STEP(left, right) DOWNSWEEP_STEP_TMP(left, right, CONCAT_EXPANDED(tmp, __COUNTER__))
 
-/**
-* From: http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
-* Chapter: 39.2.2 A Work-Efficient Parallel Scan
-*/
+#define DOWNSWEEP_STEPS(left, right) \
+    DOWNSWEEP_STEP(CONCAT_EXPANDED(val1.s, left), CONCAT_EXPANDED(val1.s, right)); \
+    DOWNSWEEP_STEP(CONCAT_EXPANDED(val2.s, left), CONCAT_EXPANDED(val2.s, right))
+
 __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local int* shared)
 {
     uint globalId = get_global_id(0);
@@ -22,68 +26,37 @@ __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local i
 
     uint offset = 1;
 
-    //
-    // load input vectors
-    //
-
     int8 val1 = buffer[2 * globalId + 0];
     int8 val2 = buffer[2 * globalId + 1];
 
-    //
-    // scan input vectores
-    //
+    // upsweep vectors
+    UPSWEEP_STEPS(0, 1);
+    UPSWEEP_STEPS(2, 3);
+    UPSWEEP_STEPS(4, 5);
+    UPSWEEP_STEPS(6, 7);
 
-    // upsweep
-    UPSWEEP_STEP(val1.s0, val1.s1);
-    UPSWEEP_STEP(val2.s0, val2.s1);
-    UPSWEEP_STEP(val1.s2, val1.s3);
-    UPSWEEP_STEP(val2.s2, val2.s3);
-    UPSWEEP_STEP(val1.s4, val1.s5);
-    UPSWEEP_STEP(val2.s4, val2.s5);
-    UPSWEEP_STEP(val1.s6, val1.s7);
-    UPSWEEP_STEP(val2.s6, val2.s7);
+    UPSWEEP_STEPS(1, 3);
+    UPSWEEP_STEPS(5, 7);
 
-    UPSWEEP_STEP(val1.s1, val1.s3);
-    UPSWEEP_STEP(val2.s1, val2.s3);
-    UPSWEEP_STEP(val1.s5, val1.s7);
-    UPSWEEP_STEP(val2.s5, val2.s7);
+    UPSWEEP_STEPS(3, 7);
 
-    UPSWEEP_STEP(val1.s3, val1.s7);
-    UPSWEEP_STEP(val2.s3, val2.s7);
+    // move sums into shared memory block and clear last elements
+    shared[2 * localId + 0] = val1.s7;
+    shared[2 * localId + 1] = val2.s7;
 
-    // sums
-    int sum1 = val1.s7;
-    int sum2 = val2.s7;
-
-    // move sums into shared memory
-    shared[2 * localId + 0] = sum1;
-    shared[2 * localId + 1] = sum2;
-
-    // set last elements to zero
     val1.s7 = 0;
     val2.s7 = 0;
 
-    // downsweep
-    DOWNSWEEP_STEP(val1.s3, val1.s7);
-    DOWNSWEEP_STEP(val2.s3, val2.s7);
+    // downsweep vectors
+    DOWNSWEEP_STEPS(3, 7);
 
-    DOWNSWEEP_STEP(val1.s1, val1.s3);
-    DOWNSWEEP_STEP(val2.s1, val2.s3);
-    DOWNSWEEP_STEP(val1.s5, val1.s7);
-    DOWNSWEEP_STEP(val2.s5, val2.s7);
+    DOWNSWEEP_STEPS(1, 3);
+    DOWNSWEEP_STEPS(5, 7);
 
-    DOWNSWEEP_STEP(val1.s0, val1.s1);
-    DOWNSWEEP_STEP(val2.s0, val2.s1);
-    DOWNSWEEP_STEP(val1.s2, val1.s3);
-    DOWNSWEEP_STEP(val2.s2, val2.s3);
-    DOWNSWEEP_STEP(val1.s4, val1.s5);
-    DOWNSWEEP_STEP(val2.s4, val2.s5);
-    DOWNSWEEP_STEP(val1.s6, val1.s7);
-    DOWNSWEEP_STEP(val2.s6, val2.s7);
-
-    //
-    // scan the sums
-    //
+    DOWNSWEEP_STEPS(0, 1);
+    DOWNSWEEP_STEPS(2, 3);
+    DOWNSWEEP_STEPS(4, 5);
+    DOWNSWEEP_STEPS(6, 7);
 
     // build sum in place up the tree
     for (uint d = n >> 1; d > 0; d >>= 1)                    
@@ -98,12 +71,13 @@ __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local i
         }
         offset <<= 1;
     }
-
     barrier(CLK_LOCAL_MEM_FENCE);
+
+    // save sum and clear the last element
     if (localId == 0)
     {
         sums[get_group_id(0)] = shared[n - 1];
-        shared[n - 1] = 0;    // clear the last element
+        shared[n - 1] = 0;    
     }
 
     // traverse down tree & build scan
@@ -123,17 +97,11 @@ __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local i
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    //
     // apply the sums
-    //
-
     val1 += shared[2 * localId + 0];
     val2 += shared[2 * localId + 1];
 
-    //
     // write results to device memory
-    //
-
     buffer[2 * globalId + 0] = val1;
     buffer[2 * globalId + 1] = val2;
 }

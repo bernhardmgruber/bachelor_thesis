@@ -162,6 +162,103 @@ void scanCLRecursive(int* data, int* result, cl_uint n, cl_context context, cl_c
     error = clReleaseMemObject(buffer);
 }
 
+#if 0
+#define VECTOR_WIDTH 8
+...
+    size_t sumBufferSize = roundToMultiple(n / (workGroupSize * 2 * VECTOR_WIDTH), workGroupSize * 2 * VECTOR_WIDTH);
+    ...
+    size_t globalWorkSizes[] = { n / (2 * VECTOR_WIDTH) };
+    ...
+    if(n > workGroupSize * 2 * VECTOR_WIDTH)
+    {
+        scanCLRecursiveVector_r(sums, sumBufferSize, context, queue, scanBlocks, addSums, workGroupSize);
+        ...
+#endif // 0
+
+#if 0
+#define CONCAT(a, b) a ## b
+#define CONCAT_EXPANDED(a, b) CONCAT(a, b)
+
+#define UPSWEEP_STEP(left, right) right += left
+
+#define UPSWEEP_STEPS(left, right) \
+    UPSWEEP_STEP(CONCAT_EXPANDED(val1.s, left), CONCAT_EXPANDED(val1.s, right)); \
+    UPSWEEP_STEP(CONCAT_EXPANDED(val2.s, left), CONCAT_EXPANDED(val2.s, right))
+
+#define DOWNSWEEP_STEP_TMP(left, right, tmp) \
+    int tmp = left;                          \
+    left = right;                            \
+    right += tmp
+
+#define DOWNSWEEP_STEP(left, right) DOWNSWEEP_STEP_TMP(left, right, CONCAT_EXPANDED(tmp, __COUNTER__))
+
+#define DOWNSWEEP_STEPS(left, right) \
+    DOWNSWEEP_STEP(CONCAT_EXPANDED(val1.s, left), CONCAT_EXPANDED(val1.s, right)); \
+    DOWNSWEEP_STEP(CONCAT_EXPANDED(val2.s, left), CONCAT_EXPANDED(val2.s, right))
+
+__kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local int* shared)
+{
+    uint globalId = get_global_id(0);
+    uint localId = get_local_id(0);
+    uint n = get_local_size(0) * 2;
+
+    uint offset = 1;
+
+    int8 val1 = buffer[2 * globalId + 0];
+    int8 val2 = buffer[2 * globalId + 1];
+
+    // upsweep vectors
+    UPSWEEP_STEPS(0, 1);
+    UPSWEEP_STEPS(2, 3);
+    UPSWEEP_STEPS(4, 5);
+    UPSWEEP_STEPS(6, 7);
+
+    UPSWEEP_STEPS(1, 3);
+    UPSWEEP_STEPS(5, 7);
+
+    UPSWEEP_STEPS(3, 7);
+
+    // move sums into shared memory block and clear last elements
+    shared[2 * localId + 0] = val1.s7;
+    shared[2 * localId + 1] = val2.s7;
+
+    val1.s7 = 0;
+    val2.s7 = 0;
+
+    // downsweep vectors
+    DOWNSWEEP_STEPS(3, 7);
+
+    DOWNSWEEP_STEPS(1, 3);
+    DOWNSWEEP_STEPS(5, 7);
+
+    DOWNSWEEP_STEPS(0, 1);
+    DOWNSWEEP_STEPS(2, 3);
+    DOWNSWEEP_STEPS(4, 5);
+    DOWNSWEEP_STEPS(6, 7);
+
+    // scan block in local memory
+    ...
+
+    // apply the sums
+    val1 += shared[2 * localId + 0];
+    val2 += shared[2 * localId + 1];
+
+    // write results to device memory
+    buffer[2 * globalId + 0] = val1;
+    buffer[2 * globalId + 1] = val2;
+}
+
+__kernel void AddSums(__global int8* buffer, __global int* sums)
+{
+    uint globalId = get_global_id(0);
+
+    int val = sums[get_group_id(0)];
+
+    buffer[globalId * 2 + 0] += val;
+    buffer[globalId * 2 + 1] += val;
+}
+#endif // 0
+
 #define VECTOR_WIDTH 8
 
 void scanCLRecursiveVector_r(cl_mem values, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
@@ -172,21 +269,19 @@ void scanCLRecursiveVector_r(cl_mem values, cl_uint n, cl_context context, cl_co
 
     cl_mem sums = clCreateBuffer(context, CL_MEM_READ_WRITE, sumBufferSize * sizeof(int), nullptr, &error);
 
-    size_t globalWorkSizes[] = { n / (2 * VECTOR_WIDTH) };
-    size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
-
     error = clSetKernelArg(scanBlocks, 0, sizeof(cl_mem), &values);
     error = clSetKernelArg(scanBlocks, 1, sizeof(cl_mem), &sums);
-    error = clSetKernelArg(scanBlocks, 2, sizeof(int) * 2 * localWorkSizes[0], nullptr);
+    error = clSetKernelArg(scanBlocks, 2, sizeof(int) * 2 * workGroupSize, nullptr);
+
+    size_t globalWorkSizes[] = { n / (2 * VECTOR_WIDTH) };
+    size_t localWorkSizes[] = { workGroupSize };
 
     error = clEnqueueNDRangeKernel(queue, scanBlocks, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
 
-    if(n > localWorkSizes[0] * 2 * VECTOR_WIDTH)
+    if(n > workGroupSize * 2 * VECTOR_WIDTH)
     {
-        // the buffer containes more than one scanned block, scan the created sum buffer
         scanCLRecursiveVector_r(sums, sumBufferSize, context, queue, scanBlocks, addSums, workGroupSize);
 
-        // apply the sums to the buffer
         error = clSetKernelArg(addSums, 0, sizeof(cl_mem), &values);
         error = clSetKernelArg(addSums, 1, sizeof(cl_mem), &sums);
 

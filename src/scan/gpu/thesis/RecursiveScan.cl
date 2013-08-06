@@ -23,12 +23,12 @@ __kernel void ScanBlocks(__global int* buffer, __global int* sums, __local int* 
         }
         offset <<= 1;
     }
-
     barrier(CLK_LOCAL_MEM_FENCE);
+
+    // save sum and clear the last element
     if (localId == 0)
     {
         sums[get_group_id(0)] = shared[n - 1];
-        // clear the last element
         shared[n - 1] = 0;    
     }
 

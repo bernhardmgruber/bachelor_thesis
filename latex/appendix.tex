@@ -7,7 +7,7 @@ All times are in seconds.
 
 \subsubsection{Naive CPU}
 
-\begin{tabular}{r r r}
+\begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
 1 & 0 & 0 \\
 25 & 0.000018 & 0 \\
@@ -53,11 +53,11 @@ size & run $\mu$ & run $\sigma$ \\
 3800 & 560.915371 & 12.134538 \\
 3900 & 624.880278 & 0.970673 \\
 4000 & 657.499788 & 7.276395 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{OpenMP CPU}
 
-\begin{tabular}{r r r}
+\begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
 1 & 0.000201 & 0.000243 \\
 25 & 0.000038 & 0.000001 \\
@@ -103,11 +103,11 @@ size & run $\mu$ & run $\sigma$ \\
 3800 & 277.081415 & 1.662909 \\
 3900 & 302.396295 & 0.657581 \\
 4000 & 323.586431 & 2.265068 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{CBLAS CPU}
 
-\begin{tabular}{r r r}
+\begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
 1 & 0.000005 & 0.000007 \\
 25 & 0.00001 & 0 \\
@@ -153,11 +153,11 @@ size & run $\mu$ & run $\sigma$ \\
 3800 & 37.478187 & 0.154286 \\
 3900 & 39.98611 & 0.102763 \\
 4000 & 43.48911 & 0.097813 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{Naive GPU}
 
-\begin{tabular}{r r r r r r r r}
+\begin{longtable}{r r r r r r r r}
 size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
 1 & 0.00088 & 0.000671 & 0.000615 & 0.000291 & 0.000515 & 0.000098 & 0.002011 \\
 25 & 0.002313 & 0.001245 & 0.001516 & 0.000214 & 0.001091 & 0.000138 & 0.00492 \\
@@ -203,11 +203,11 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 3800 & 0.06071 & 0.001305 & 12.344899 & 0.000137 & 0.031608 & 0.004524 & 12.437216 \\
 3900 & 0.064896 & 0.001158 & 13.335906 & 0.000247 & 0.033453 & 0.004929 & 13.434255 \\
 4000 & 0.068064 & 0.001656 & 14.3872 & 0.000152 & 0.035069 & 0.00478 & 14.490333 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{Tiles GPU}
 
-\begin{tabular}{r r r r r r r r}
+\begin{longtable}{r r r r r r r r}
 size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
 1 & 0.002448 & 0.001914 & 0.000439 & 0.0003 & 0.000479 & 0.000025 & 0.003365 \\
 25 & 0.001442 & 0.000625 & 0.000323 & 0.000064 & 0.000495 & 0.000073 & 0.00226 \\
@@ -253,11 +253,11 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 3800 & 0.076639 & 0.001961 & 4.648022 & 0.000217 & 0.03249 & 0.004736 & 4.757151 \\
 3900 & 0.081102 & 0.002062 & 5.006632 & 0.000382 & 0.034148 & 0.00499 & 5.121882 \\
 4000 & 0.07853 & 0.014639 & 5.385155 & 0.000519 & 0.041405 & 0.007665 & 5.50509 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{Blocks GPU}
 
-\begin{tabular}{r r r r r r r r}
+\begin{longtable}{r r r r r r r r}
 size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
 1 & 0.004364 & 0.000277 & 0.001491 & 0.000528 & 0.001355 & 0.000095 & 0.007211 \\
 25 & 0.003867 & 0.001188 & 0.00127 & 0.000035 & 0.000983 & 0.000061 & 0.00612 \\
@@ -303,11 +303,11 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 3800 & 0.061369 & 0.001165 & 1.005228 & 0.000554 & 0.031837 & 0.004947 & 1.098435 \\
 3900 & 0.065239 & 0.001164 & 1.177487 & 0.000593 & 0.033592 & 0.005467 & 1.276318 \\
 4000 & 0.068455 & 0.001326 & 1.108897 & 0.000935 & 0.035007 & 0.006206 & 1.212359 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{Blocks and tiles GPU}
 
-\begin{tabular}{r r r r r r r r}
+\begin{longtable}{r r r r r r r r}
 size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
 1 & 0.00254 & 0.002182 & 0.000422 & 0.000221 & 0.00051 & 0.000015 & 0.003473 \\
 25 & 0.001337 & 0.000083 & 0.000347 & 0.000034 & 0.000729 & 0.000038 & 0.002413 \\
@@ -353,7 +353,7 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 3800 & 0.079499 & 0.001346 & 1.681469 & 0.000753 & 0.032934 & 0.004797 & 1.793902 \\
 3900 & 0.083834 & 0.001488 & 1.678507 & 0.000891 & 0.03473 & 0.005096 & 1.797071 \\
 4000 & 0.087218 & 0.001696 & 1.845283 & 0.001991 & 0.036915 & 0.006114 & 1.969416 \\
-\end{tabular}
+\end{longtable}
 
 \subsection{Scan chart data}
 \label{sec:scan_chart_data}
@@ -362,7 +362,7 @@ All times are in seconds.
 
 \subsubsection{CPU}
 
-\begin{tabular}{r r r}
+\begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
 2 & 0 & 0 \\
 3 & 0 & 0 \\
@@ -485,11 +485,11 @@ size & run $\mu$ & run $\sigma$ \\
 50859008 & 0.168645 & 0.00053 \\
 58421659 & 0.193453 & 0.001579 \\
 67108864 & 0.224562 & 0.002626 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{Naive GPU}
 
-\begin{tabular}{r r r r r r r r}
+\begin{longtable}{r r r r r r r r}
 size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
 2 & 0.000603 & 0.000644 & 0.00287 & 0.003888 & 0.000202 & 0.000144 & 0.003675 \\
 3 & 0.000167 & 0.000072 & 0.000145 & 0.000034 & 0.000123 & 0.000022 & 0.000435 \\
@@ -612,11 +612,11 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 50859008 & 0.115623 & 0.000036 & 0.617177 & 0.000047 & 0.104809 & 0.014136 & 0.837609 \\
 58421659 & 0.132686 & 0.000248 & 0.710046 & 0.000403 & 0.120879 & 0.016487 & 0.963611 \\
 67108864 & 0.15629 & 0.001054 & 0.830493 & 0.000917 & 0.145526 & 0.022774 & 1.132309 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{Work efficient GPU}
 
-\begin{tabular}{r r r r r r r r}
+\begin{longtable}{r r r r r r r r}
 size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
 2 & 0.000895 & 0.000134 & 0.002343 & 0.001949 & 0.000992 & 0.000673 & 0.00423 \\
 3 & 0.001085 & 0.000916 & 0.001305 & 0.000186 & 0.000379 & 0.000234 & 0.002768 \\
@@ -739,11 +739,11 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 50859008 & 0.121482 & 0.000155 & 0.309648 & 0.000392 & 0.107232 & 0.01705 & 0.538362 \\
 58421659 & 0.136899 & 0.001794 & 0.309203 & 0.001595 & 0.120313 & 0.016486 & 0.566415 \\
 67108864 & 0.153673 & 0.000171 & 0.310812 & 0.00034 & 0.139882 & 0.02116 & 0.604366 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{Recursive GPU}
 
-\begin{tabular}{r r r r r r r r}
+\begin{longtable}{r r r r r r r r}
 size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
 2 & 0.000288 & 0.00013 & 0.000421 & 0.000301 & 0.00014 & 0.000058 & 0.000849 \\
 3 & 0.000178 & 0.00008 & 0.000218 & 0.000047 & 0.000123 & 0.000018 & 0.000519 \\
@@ -866,11 +866,11 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 50859008 & 0.115892 & 0.000092 & 0.237734 & 0.000163 & 0.105428 & 0.014361 & 0.459054 \\
 58421659 & 0.132846 & 0.000322 & 0.273129 & 0.000092 & 0.120154 & 0.016219 & 0.526128 \\
 67108864 & 0.154645 & 0.000475 & 0.313463 & 0.000149 & 0.138141 & 0.018849 & 0.60625 \\
-\end{tabular}
+\end{longtable}
 
 \subsubsection{Recursive vectors GPU}
 
-\begin{tabular}{r r r r r r r r}
+\begin{longtable}{r r r r r r r r}
 size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
 2 & 0.002486 & 0.003328 & 0.000594 & 0.000608 & 0.00019 & 0.000125 & 0.00327 \\
 3 & 0.000147 & 0.000067 & 0.00017 & 0.00003 & 0.000103 & 0.000016 & 0.000421 \\
@@ -993,4 +993,4 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 50859008 & 0.115777 & 0.000481 & 0.065813 & 0.00017 & 0.116975 & 0.027013 & 0.298565 \\
 58421659 & 0.133311 & 0.000944 & 0.074655 & 0.001258 & 0.11999 & 0.016169 & 0.327956 \\
 67108864 & 0.153931 & 0.00066 & 0.087902 & 0.002758 & 0.141008 & 0.021359 & 0.382841 \\
-\end{tabular}
+\end{longtable}

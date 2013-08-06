@@ -58,7 +58,7 @@
 #include "../../ScanAlgorithm.h"
 #include "../../../common/CLAlgorithm.h"
 
-#define NUM_BANKS       (32)
+#define NUM_BANKS       (16)
 
 namespace gpu
 {

@@ -4,6 +4,8 @@
 Multiplying matrices of a large size is often part of heavy scientific calculations and therefore an important building block in every mathematics library. Unfortunately, with an increasing size of the matrices the computation of the product becomes desperately slow due to an asymptotic runtime complexity of $\mathcal{O}(n^3)$ for a naive attempt. Therefore, several improvements have been tried to speed up the calculation. Strassen's algorithm for example achieves a runtime complexity of $\mathcal{O}(n^{\log_2 7}) = \mathcal{O}(n^{2.807})$ \cite{strassen} which is faster than the naive version but still does not compute results within a satisfying time for larger matrixes.
 Nonetheless, modern computing systems can take advantage of one important aspect of the matrix multiplication which is it's embarrassing parallel nature. Each element of the output matrix can be computed completely independent. This potential may not only be used by today's CPU's vector extensions like SSE \footnote{Streaming SIMD Extensions, a vector instruction set extension by Intel supporting 128 bit wide registers to process 4 single precision floats in parallel.} or AVX \footnote{Advanced Vector Extensions, Intel's latest vector instruction set extension featuring 256 bit wide registers to process 8 single precision floats in parallel.}. Especially a GPU can make excellent use of the large number of independent pieces of work to perfectly utilize its hundreds or thousands of cores.
 
+Beside the implementation and optimization of the matrix multiplication on GPUs, this chapter will also introduce the reader to performance data of GPUs collected by an appropriate profiling tool (AMD's CodeXL will be used). This will allow a better understanding about an algorithms performance and how bottlenecks can be found and eliminated.
+
 \begin{figure}
 \centering
 \includegraphics[width=0.5\linewidth]{matrix_mul}
@@ -28,6 +30,13 @@ The algorithm itself is simple. Every element of the output matrix has to be cal
 The performance of this implementation is conceivably slow as one can see in figure \ref{fig:matrix_chart}. Multiplying matrices with an edge length of up to 700 elements can be done in a short time (below one second), but larger matrices require a huge period of time which is unsatisfying in most cases.
 Also a multithreaded version of the provided code in listing \ref{lst:matrix_cpu} (e.g. by using OpenMP and place a \lstinline!#pragma omp parallel for! above the outer for loop) does not provide a solution here, as we can see in figure \ref{fig:matrix_chart}.
 The highly optimized Fortan77 BLAS library \cite{blas_lib} achieves a significant better performance when compared with the simple CPU implementation provided here.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{matrix_chart}
+	\caption{Benchmark of several square matrix multiplication implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:matrix_mul_chart_data}.}
+	\label{fig:matrix_chart}
+\end{figure}
 
 \subsection{Naive GPU implementation}
 \label{sec:matrix_mul_naive}
@@ -137,13 +146,6 @@ Listing \ref{lst:matrix_block_local_kernel} shows the kernel code of the optimiz
 Although this approach can be seen as an optimization of the block only version from chapter \ref{sec:matrix_mul_vec} by using locally cached tiles, this kernel performs, contrary to expectations, slower than the original block only version (cf. benchmark chart, figure \ref{fig:matrix_chart}). The reason for this at first glance confusing behavior is easily detected when we have a look at the corresponding performance counters in table \ref{tbl:matrix_perf_counter}.
 First of all, the number of work items is equal to the block only approach and therefore also the number of resulting wavefronts the hardware has to process stays the same. The higher amount of index calculations of the kernel becomes notable in the huge increase of processed ALU instructions per work item which is almost twice as much as in the block only variant (44214 vs 23782). However, the use of local memory as a cache works successfully as can be seen at the number of fetches to global memory which has been reduced by a factor of \lstinline!TILE_SIZE! and the total number of fetched KiB which has been decreased to a fourth. So far the counter values indicate rather an increase in performance. The big penalty however comes from the high register and moreover the local memory consumption of the kernel which only allow one work group to run concurrently on a SM (the local memory usage of 32 KiB fills the entire available scratch pad memory). As a result the kernel can only run 12.5\% of the hardware supported number of wavefronts concurrently (occupancy). Memory request latency will therefore account for most of the consumed runtime. By reducing the work group size, the local memory consumption can be decreased. This would allow more wavefronts to run concurrently on the cost of more redundant global memory requests. However, this idea has not proven to be beneficial during benchmarks. Nevertheless, as hardware advances more registers and local memory will be available in the future maybe allowing this kernel to develop its full potential. 
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{matrix_chart}
-	\caption{Benchmark of several square matrix multiplication implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:matrix_mul_chart_data}.}
-	\label{fig:matrix_chart}
-\end{figure}
-
 \begin{table}
 	\begin{tabular*}{\textwidth}{l @{\extracolsep{\fill}} r r r r r r r}
 		Kernel         & Global size        & Work group     & Time  & Local mem & VGPRs & Occ. & Wavefronts \\
@@ -218,7 +220,7 @@ First of all, the number of work items is equal to the block only approach and t
 \end{table}
 
 \subsection{Further implementations}
-Beside the presented kernels further approaches have been implemented and benchmarked which will not be covered in detail. However some experiences may help future developers.
+Beside the presented kernels further approaches have been implemented and benchmarked which have not been covered. However some experiences may help future developers.
 
 \begin{description}
 	\item[1D vs 2D problem dimensions] \hfill \\
@@ -229,7 +231,7 @@ Beside the presented kernels further approaches have been implemented and benchm
 	Using vector types over an array (e.g. \lstinline!float4 a;! over \lstinline!float a[4];!) does make a difference. The blocked approach from chapter \ref{sec:matrix_mul_vec} has been implemented using arrays instead of vector types. Performance dropped by a factor of four.
 \end{description}
 
-Beside the presented implementations, several libraries exist supporting GPGPU accelerated matrix multiplication.
+Furthermore, several libraries exist supporting GPGPU accelerated matrix multiplication.
 
 \begin{description}
    \item[clAmdBlas \cite{cl_amd_blas}] \hfill \\
@@ -239,5 +241,4 @@ Beside the presented implementations, several libraries exist supporting GPGPU a
 \end{description}
 
 \subsection{Conclusion}
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-Multiplication of larger matrices does definitely benefit from GPU hardware.
+Multiplying matrices is an important part of many scientific applications and should therefore focus performance. Although several extremely tuned CPU libraries have established themselves there are still very few GPU accelerated routines available. We have seen that the matrix multiplication is embarrassingly easy to implement for the GPU as the parallelism is already part of the problems nature. However, there is still as much room for improvements on a GPU as there is on the CPU's side. By the help of profiling information (performance counters) bottlenecks of the presented implementations could be detected and tackled. We have seen the importance of avoiding redundant global memory requests by using the local memory as a programmer controlled cache. Furthermore, independent instructions are beneficial to allow for better ALU utilization by instruction level parallelism. Additionally, vector types and larger memory fetches and processed elements per work item reduce the general thread management overhead and may achieve a better utilization of the global memory subsystem. Finally, a fast GPU accelerated matrix multiplication could be implemented beating the already highly optimized BLAS library (CPU) by factor of 36 (43.49 vs 1.21 seconds)! This result definitely shows the potential of modern GPU hardware.
