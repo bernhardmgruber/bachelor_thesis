@@ -138,6 +138,9 @@
     <ClInclude Include="..\common\structs.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\dixxi\BitonicSort.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\gpugems\OddEvenTransition.cl">
@@ -208,6 +211,9 @@
     </None>
     <None Include="gpu\libCL\RadixSort.cl">
       <Filter>gpu\libCL</Filter>
+    </None>
+    <None Include="gpu\dixxi\BitonicSort.cl">
+      <Filter>gpu\dixxi</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

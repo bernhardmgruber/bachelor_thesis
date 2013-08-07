@@ -86,7 +86,7 @@ namespace gpu
                             }
 
                             size_t nThreads = size >> ninc;
-                            workGroupSize = std::min(workGroupSize, nThreads);
+                            workGroupSize = min(workGroupSize, nThreads);
                             kernel->setArg(0, buffer);
                             kernel->setArg(1, inc);          // INC passed to kernel
                             kernel->setArg(2, length << 1);  // DIR passed to kernel
