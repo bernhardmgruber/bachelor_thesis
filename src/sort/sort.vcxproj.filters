@@ -108,9 +108,6 @@
     <ClInclude Include="..\common\CPUAlgorithm.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\GPUAlgorithm.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\OpenCL.h">
       <Filter>common</Filter>
     </ClInclude>
@@ -140,6 +137,15 @@
     </ClInclude>
     <ClInclude Include="gpu\dixxi\BitonicSort.h">
       <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\BitonicSortFusion.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\dixxi\BitonicSortLocal.h">
+      <Filter>gpu\dixxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\CLAlgorithm.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -213,6 +219,12 @@
       <Filter>gpu\libCL</Filter>
     </None>
     <None Include="gpu\dixxi\BitonicSort.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\BitonicSortFusion.cl">
+      <Filter>gpu\dixxi</Filter>
+    </None>
+    <None Include="gpu\dixxi\BitonicSortLocal.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
   </ItemGroup>

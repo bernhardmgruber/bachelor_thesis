@@ -32,29 +32,43 @@
 #include "gpu/nvidia/BitonicSort.h"
 #include "gpu/dixxi/RadixSort.h"
 #include "gpu/dixxi/RadixSortAtomicCounters.h"
+#include "gpu/dixxi/BitonicSort.h"
+#include "gpu/dixxi/BitonicSortFusion.h"
+#include "gpu/dixxi/BitonicSortLocal.h"
 #include "gpu/amd_dixxi/RadixSort.h"
 #include "gpu/gpugems/OddEvenTransition.h"
 
 using namespace std;
 
+#define MAX_POWER_OF_TWO 26
+#define RESOLUTION 5
+
 int main()
 {
     try
     {
-        array<size_t, 13> sizes = { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25, 1<<26, 1<<27, 1<<28 };
-        //array<size_t, 1> sizes = { 1<<25 };
-        Runner<cl_uint, SortPlugin> runner(5, sizes.begin(), sizes.end());
+        //set<size_t> sizes;
+
+        //for(int i = 1 * RESOLUTION; i <= MAX_POWER_OF_TWO * RESOLUTION; i++)
+        //{
+        //    size_t s = (size_t)pow(2.0, (double)i / (double)RESOLUTION);
+        //    sizes.insert(s);
+        //}
+
+        //array<size_t, 13> sizes = { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25, 1<<26 };
+        array<size_t, 1> sizes = { 1<<26 };
+        Runner<cl_uint, SortPlugin> runner(1, sizes.begin(), sizes.end());
 
         runner.writeGPUDeviceInfo("gpuinfo.csv");
 
         runner.start("stats.csv");
 
         //runner.run<cpu::Quicksort>();
-        runner.run<cpu::QSort>();
+        //runner.run<cpu::QSort>();
         runner.run<cpu::STLSort>();
-        ////runner.run<cpu::TimSort>();
+        //runner.run<cpu::TimSort>();
         //runner.run<cpu::amd::RadixSort>();
-        runner.run<cpu::stereopsis::RadixSort>();
+        //runner.run<cpu::stereopsis::RadixSort>();
 
         //runner.run<gpu::bealto::ParallelSelectionSort>(CLRunType::GPU);
         //runner.run<gpu::bealto::ParallelSelectionSortLocal>(CLRunType::GPU);
@@ -82,6 +96,9 @@ int main()
 
         //runner.run<gpu::dixxi::RadixSort>(CLRunType::GPU);
         //runner.run<gpu::dixxi::RadixSortAtomicCounters>(CLRunType::GPU);
+        runner.run<gpu::dixxi::BitonicSort>(CLRunType::GPU);
+        //runner.run<gpu::dixxi::BitonicSortFusion>(CLRunType::GPU);
+        runner.run<gpu::dixxi::BitonicSortLocal>(CLRunType::GPU);
 
         //runner.run<gpu::gpugems::OddEvenTransition>(CLRunType::GPU);
 
@@ -92,8 +109,9 @@ int main()
     catch(const exception& e)
     {
         cerr << e.what() << endl;
-        return 1;
     }
+
+    getchar();
 
     return 0;
 }

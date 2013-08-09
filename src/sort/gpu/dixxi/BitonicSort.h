@@ -38,22 +38,32 @@ namespace gpu
 
                 void upload(size_t workGroupSize, T* data, size_t size) override
                 {
-                    buffer = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
-                    queue->enqueueWrite(buffer, data);
+                    bufferSize = roundToPowerOfTwo(size);
+
+                    buffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+
+                    if(bufferSize != size)
+                    {
+                        queue->enqueueWrite(buffer, data, 0, size * sizeof(T));
+                        queue->enqueueFill(buffer, numeric_limits<T>::max(), size * sizeof(T), bufferSize * sizeof(T));
+                    }
+                    else
+                        queue->enqueueWrite(buffer, data);
                 }
 
                 void run(size_t workGroupSize, size_t size) override
                 {
-                    for (cl_int box = 1; box < size; box <<= 1)
+                    for (cl_int startInc = 1; startInc < bufferSize; startInc <<= 1)
                     {
-                        for (cl_int distance = box; distance > 0; distance >>= 1)
+                        for (cl_int inc = startInc; inc > 0; inc >>= 1)
                         {
                             kernel->setArg(0, buffer);
-                            kernel->setArg(1, distance);          
-                            kernel->setArg(2, box << 1);  
+                            kernel->setArg(1, inc);          
+                            kernel->setArg(2, startInc << 1);  
 
-                            size_t globalWorkSizes[1] = { size / 2 };
-                            size_t localWorkSizes[1] = { min(workGroupSize, size / 2) };
+                            size_t nThreads = bufferSize / 2;
+                            size_t globalWorkSizes[1] = { nThreads };
+                            size_t localWorkSizes[1] = { min(workGroupSize, nThreads) };
 
                             queue->enqueueKernel(kernel, 1, globalWorkSizes, localWorkSizes);
                         }
@@ -62,7 +72,7 @@ namespace gpu
 
                 void download(T* result, size_t size) override
                 {
-                    queue->enqueueRead(buffer, result);
+                    queue->enqueueRead(buffer, result, 0, size * sizeof(T));
                     delete buffer;
                 }
 
@@ -76,6 +86,7 @@ namespace gpu
             private:
                 Kernel* kernel;
                 Buffer* buffer;
+                size_t bufferSize;
         };
     }
 }

@@ -50,12 +50,10 @@ namespace gpu
 
                 void run(size_t workGroupSize, size_t size) override
                 {
-                    //int mLastN = -1;
-
-                    for (size_t length=1; length<size; length<<=1)
+                    for (cl_uint length=1; length<size; length<<=1)
                     {
-                        int inc = length;
-                        std::list<int> strategy; // vector defining the sequence of reductions
+                        cl_uint inc = length;
+                        list<int> strategy; // list defining the sequence of reductions
                         {
                             int ii = inc;
                             while (ii>0)
@@ -66,8 +64,9 @@ namespace gpu
                                     break;
                                 }
                                 int d = 1; // default is 1 bit
-                                if (0) d = 1;
-#if 1
+                                if (0)
+                                    d = 1;
+#if 0
                                 // Force jump to 128
                                 else if (ii==256) d = 1;
                                 else if (ii==512 && (ALLOWB & 4)) d = 2;
@@ -129,7 +128,7 @@ namespace gpu
                             wg = min(wg, nThreads);
                             kernel->setArg(0, buffer);
                             kernel->setArg(1, inc); // INC passed to kernel
-                            kernel->setArg(2, (int)(length << 1)); // DIR passed to kernel
+                            kernel->setArg(2, (length << 1)); // DIR passed to kernel
 
                             if (doLocal > 0) // DOLOCAL values / thread
                                 kernel->setArg(3, doLocal * wg * sizeof(cl_int), nullptr);

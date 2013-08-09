@@ -84,10 +84,10 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\CLAlgorithm.h" />
     <ClInclude Include="..\common\ConsoleWriter.h" />
     <ClInclude Include="..\common\CPUAlgorithm.h" />
     <ClInclude Include="..\common\DeviceInfoWriter.h" />
-    <ClInclude Include="..\common\GPUAlgorithm.h" />
     <ClInclude Include="..\common\OpenCL.h" />
     <ClInclude Include="..\common\Runner.h" />
     <ClInclude Include="..\common\StatsWriter.h" />
@@ -118,6 +118,8 @@
     <ClInclude Include="gpu\bealto\ParallelSelectionSortLocal.h" />
     <ClInclude Include="gpu\clpp\RadixSort.h" />
     <ClInclude Include="gpu\dixxi\BitonicSort.h" />
+    <ClInclude Include="gpu\dixxi\BitonicSortFusion.h" />
+    <ClInclude Include="gpu\dixxi\BitonicSortLocal.h" />
     <ClInclude Include="gpu\dixxi\RadixSort.h" />
     <ClInclude Include="gpu\dixxi\RadixSortAtomicCounters.h" />
     <ClInclude Include="gpu\gpugems\OddEvenTransition.h" />
@@ -145,6 +147,8 @@
     <None Include="gpu\bealto\ParallelSelectionSortBlocks.cl" />
     <None Include="gpu\bealto\ParallelSelectionSortLocal.cl" />
     <None Include="gpu\dixxi\BitonicSort.cl" />
+    <None Include="gpu\dixxi\BitonicSortFusion.cl" />
+    <None Include="gpu\dixxi\BitonicSortLocal.cl" />
     <None Include="gpu\dixxi\RadixSort.cl" />
     <None Include="gpu\dixxi\RadixSortAtomicCounters.cl" />
     <None Include="gpu\gpugems\OddEvenTransition.cl" />
