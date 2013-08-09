@@ -147,6 +147,12 @@
     <ClInclude Include="..\common\CLAlgorithm.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\thesis\BitonicSort.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\thesis\BitonicSortFusion.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\gpugems\OddEvenTransition.cl">
@@ -227,6 +233,12 @@
     <None Include="gpu\dixxi\BitonicSortLocal.cl">
       <Filter>gpu\dixxi</Filter>
     </None>
+    <None Include="gpu\thesis\BitonicSort.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
+    <None Include="gpu\thesis\BitonicSortFusion.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="cpu">
@@ -267,6 +279,9 @@
     </Filter>
     <Filter Include="cpu\stereopsis">
       <UniqueIdentifier>{cb561845-27bd-442d-831d-52ce166ad954}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpu\thesis">
+      <UniqueIdentifier>{f15bae8a-05c8-4c13-b7b0-c42bd6a79abf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

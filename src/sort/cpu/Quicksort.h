@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 #include "../../common/CPUAlgorithm.h"
 #include "../SortAlgorithm.h"
 
@@ -38,6 +40,7 @@ namespace cpu
              */
             void sort_r(size_t start, size_t end)
             {
+                assert(!(start > end));
                 if (start >= end)
                     return;
 
@@ -48,7 +51,7 @@ namespace cpu
                 T pivot = data[(left + right) / 2];
 
                 // partition array
-                while (left <= right)
+                while (left < right)
                 {
                     while (data[left] < pivot)
                         left++;
@@ -56,13 +59,19 @@ namespace cpu
                         right--;
 
                     // swap
-                    if (left <= right)
+                    if (left < right)
                     {
                         swap(data[right], data[left]);
 
                         left++;
                         right--;
                     }
+                    else // left == right
+                    {
+                        assert(left == right);
+                        left++;
+                    }
+
                 }
 
                 // recursion

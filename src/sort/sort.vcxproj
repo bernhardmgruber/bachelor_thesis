@@ -126,6 +126,8 @@
     <ClInclude Include="gpu\libCL\RadixSort.h" />
     <ClInclude Include="gpu\nvidia\BitonicSort.h" />
     <ClInclude Include="gpu\nvidia\RadixSort.h" />
+    <ClInclude Include="gpu\thesis\BitonicSort.h" />
+    <ClInclude Include="gpu\thesis\BitonicSortFusion.h" />
     <ClInclude Include="SortAlgorithm.h" />
     <ClInclude Include="SortPlugin.h" />
   </ItemGroup>
@@ -156,6 +158,8 @@
     <None Include="gpu\nvidia\BitonicSort.cl" />
     <None Include="gpu\nvidia\RadixSort.cl" />
     <None Include="gpu\nvidia\Scan_b.cl" />
+    <None Include="gpu\thesis\BitonicSort.cl" />
+    <None Include="gpu\thesis\BitonicSortFusion.cl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\libs\clpp\clpp.vcxproj">

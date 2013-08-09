@@ -37,6 +37,8 @@
 #include "gpu/dixxi/BitonicSortLocal.h"
 #include "gpu/amd_dixxi/RadixSort.h"
 #include "gpu/gpugems/OddEvenTransition.h"
+#include "gpu/thesis/BitonicSort.h"
+#include "gpu/thesis/BitonicSortFusion.h"
 
 using namespace std;
 
@@ -55,16 +57,16 @@ int main()
         //    sizes.insert(s);
         //}
 
-        //array<size_t, 13> sizes = { 1<<10, 1<<15, 1<<17, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25, 1<<26 };
-        array<size_t, 1> sizes = { 1<<26 };
-        Runner<cl_uint, SortPlugin> runner(1, sizes.begin(), sizes.end());
+        array<size_t, 26> sizes = { 1<<1, 1<<2, 1<<3, 1<<4, 1<<5, 1<<6, 1<<7, 1<<8, 1<<9, 1<<10, 1<<11, 1<<12, 1<<13, 1<<14, 1<<15, 1<<16, 1<<17, 1<<18, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25, 1<<26 };
+        //array<size_t, 1> sizes = { 1<<3 };
+        Runner<cl_uint, SortPlugin> runner(3, sizes.begin(), sizes.end());
 
         runner.writeGPUDeviceInfo("gpuinfo.csv");
 
         runner.start("stats.csv");
 
-        //runner.run<cpu::Quicksort>();
-        //runner.run<cpu::QSort>();
+        runner.run<cpu::Quicksort>();
+        runner.run<cpu::QSort>();
         runner.run<cpu::STLSort>();
         //runner.run<cpu::TimSort>();
         //runner.run<cpu::amd::RadixSort>();
@@ -96,11 +98,14 @@ int main()
 
         //runner.run<gpu::dixxi::RadixSort>(CLRunType::GPU);
         //runner.run<gpu::dixxi::RadixSortAtomicCounters>(CLRunType::GPU);
-        runner.run<gpu::dixxi::BitonicSort>(CLRunType::GPU);
+        //runner.run<gpu::dixxi::BitonicSort>(CLRunType::GPU);
         //runner.run<gpu::dixxi::BitonicSortFusion>(CLRunType::GPU);
-        runner.run<gpu::dixxi::BitonicSortLocal>(CLRunType::GPU);
+        //runner.run<gpu::dixxi::BitonicSortLocal>(CLRunType::GPU);
 
         //runner.run<gpu::gpugems::OddEvenTransition>(CLRunType::GPU);
+
+        runner.run<gpu::thesis::BitonicSort>(CLRunType::GPU);
+        runner.run<gpu::thesis::BitonicSortFusion>(CLRunType::GPU);
 
         //runner.writeGPUDeviceInfo("gpuinfo.csv");
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sstream>
+#include <random>
 
 #include "SortAlgorithm.h"
 
@@ -23,9 +24,13 @@ class SortPlugin
         {
             T* data = new T[size]; // two size x size matrixes
 
-            generate(data, data + size, []()
+            default_random_engine generator;
+            uniform_int_distribution<T> dist; // range is [0;numeric_limits<T>::max()]
+
+            generate(data, data + size, [&]()
             {
-                return rand() % 100;
+                //return rand() % 100;
+                return dist(generator);
             });
 
             return data;
