@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <array>
+#include <set>
 
 #include "../common/Runner.h"
 #include "SortPlugin.h"
@@ -49,25 +50,25 @@ int main()
 {
     try
     {
-        //set<size_t> sizes;
+        set<size_t> sizes;
 
-        //for(int i = 1 * RESOLUTION; i <= MAX_POWER_OF_TWO * RESOLUTION; i++)
-        //{
-        //    size_t s = (size_t)pow(2.0, (double)i / (double)RESOLUTION);
-        //    sizes.insert(s);
-        //}
+        for(int i = 1 * RESOLUTION; i <= MAX_POWER_OF_TWO * RESOLUTION; i++)
+        {
+            size_t s = (size_t)pow(2.0, (double)i / (double)RESOLUTION);
+            sizes.insert(s);
+        }
 
-        array<size_t, 26> sizes = { 1<<1, 1<<2, 1<<3, 1<<4, 1<<5, 1<<6, 1<<7, 1<<8, 1<<9, 1<<10, 1<<11, 1<<12, 1<<13, 1<<14, 1<<15, 1<<16, 1<<17, 1<<18, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25, 1<<26 };
-        //array<size_t, 1> sizes = { 1<<3 };
+        //array<size_t, 26> sizes = { 1<<1, 1<<2, 1<<3, 1<<4, 1<<5, 1<<6, 1<<7, 1<<8, 1<<9, 1<<10, 1<<11, 1<<12, 1<<13, 1<<14, 1<<15, 1<<16, 1<<17, 1<<18, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23, 1<<24, 1<<25, 1<<26 };
+        //array<size_t, 1> sizes = { 194 };
         Runner<cl_uint, SortPlugin> runner(3, sizes.begin(), sizes.end());
 
         runner.writeGPUDeviceInfo("gpuinfo.csv");
 
         runner.start("stats.csv");
 
-        runner.run<cpu::Quicksort>();
-        runner.run<cpu::QSort>();
-        runner.run<cpu::STLSort>();
+        //runner.run<cpu::Quicksort>();
+        //runner.run<cpu::QSort>();
+        //runner.run<cpu::STLSort>();
         //runner.run<cpu::TimSort>();
         //runner.run<cpu::amd::RadixSort>();
         //runner.run<cpu::stereopsis::RadixSort>();
@@ -104,8 +105,8 @@ int main()
 
         //runner.run<gpu::gpugems::OddEvenTransition>(CLRunType::GPU);
 
-        runner.run<gpu::thesis::BitonicSort>(CLRunType::GPU);
-        runner.run<gpu::thesis::BitonicSortFusion>(CLRunType::GPU);
+        //runner.run<gpu::thesis::BitonicSort>(CLRunType::GPU);
+        //runner.run<gpu::thesis::BitonicSortFusion>(CLRunType::GPU);
 
         //runner.writeGPUDeviceInfo("gpuinfo.csv");
 

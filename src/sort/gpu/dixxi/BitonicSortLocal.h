@@ -44,7 +44,7 @@ namespace gpu
                 if(bufferSize != size)
                 {
                     queue->enqueueWrite(buffer, data, 0, size * sizeof(T));
-                    queue->enqueueFill(buffer, numeric_limits<T>::max(), size * sizeof(T), bufferSize * sizeof(T));
+                    queue->enqueueFill(buffer, numeric_limits<T>::max(), size * sizeof(T), (bufferSize - size) * sizeof(T));
                 }
                 else
                     queue->enqueueWrite(buffer, data);
