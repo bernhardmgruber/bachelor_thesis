@@ -25,7 +25,7 @@ namespace cpu
 
         void run(T* data, T* result, size_t size) override
         {
-            qsort(data, size, sizeof(T), [](const void* a, const void* b)
+            qsort(data, size, sizeof(T), [](const void* a, const void* b) -> int
             {
                 if (*((T*)a) < *((T*)b))
                     return -1;

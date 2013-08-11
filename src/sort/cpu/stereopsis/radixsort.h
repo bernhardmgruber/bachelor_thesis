@@ -7,19 +7,6 @@
 
 using namespace std;
 
-#define PREFETCH 1
-
-#if PREFETCH
-#include <xmmintrin.h>	// for prefetch
-#define pfval	64
-#define pfval2	128
-#define prefetch(x)	 _mm_prefetch((char*)(x + i + pfval), 0)
-#define prefetch2(x) _mm_prefetch((char*)(x + i + pfval2), 0)
-#else
-#define prefetch(x)
-#define prefetch2(x)
-#endif
-
 namespace cpu
 {
     namespace stereopsis
@@ -28,7 +15,7 @@ namespace cpu
         class RadixSort : public CPUAlgorithm<T>, public SortAlgorithm
         {
         public:
-            static const unsigned int RADIX_LENGTH = 16;
+            static const unsigned int RADIX_LENGTH = 4;
             static const unsigned int HISTOGRAM_BUCKETS = (1 << RADIX_LENGTH);
             static const unsigned int RADIX_MASK = (HISTOGRAM_BUCKETS - 1);
 
@@ -41,60 +28,56 @@ namespace cpu
 
             bool isInPlace() override
             {
-                return !(RUNS & 1u); // in place of RUNS is even
+                return !(RUNS & 1u); // in place if RUNS is even
             }
 
             void run(T* data, T* result, size_t size) override
             {
-                unsigned int* histograms = new unsigned int[RUNS * HISTOGRAM_BUCKETS];
-
-                memset(histograms, 0, RUNS * HISTOGRAM_BUCKETS * sizeof(unsigned int));
+                size_t* histograms = new size_t[RUNS * HISTOGRAM_BUCKETS];
+                memset(histograms, 0, RUNS * HISTOGRAM_BUCKETS * sizeof(size_t));
 
                 // 1.  parallel histogramming pass
-                for (size_t i = 0; i < size; i++) {
-                    prefetch(data);
-
-                    //uint32 fi = FloatFlip((uint32&)array[i]);
-
+                for (size_t i = 0; i < size; i++) 
+                {
+                    T element = data[i];
+                    
                     for(int r = 0; r < RUNS; r++)
-                        histograms[r * HISTOGRAM_BUCKETS + ((data[i] >> (r * RADIX_LENGTH)) & RADIX_MASK)]++;
-                }
-
-                // 2.  Sum the histograms -- each histogram entry records the number of values preceding itself.
-
-                unsigned int* sums = new unsigned int[RUNS];
-                memset(sums, 0, RUNS * sizeof(unsigned int));
-
-                for(size_t r = 0; r < RUNS; r++) {
-                    for (size_t i = 0; i < HISTOGRAM_BUCKETS; i++) {
-                        unsigned int tmp = histograms[r * HISTOGRAM_BUCKETS + i] + sums[r];
-                        histograms[r * HISTOGRAM_BUCKETS + i] = sums[r] - 1;
-                        sums[r] = tmp;
+                    {
+                        T pos = (element >> (r * RADIX_LENGTH)) & RADIX_MASK;
+                        histograms[r * HISTOGRAM_BUCKETS + pos]++;
                     }
                 }
 
-                // floatflip entire value on first run, read/write histogram
+                // 2.  Sum the histograms -- each histogram entry records the number of values preceding itself.
+                for(unsigned int r = 0; r < RUNS; r++) 
+                {
+                    size_t sum = 0;
+                    for (unsigned int i = 0; i < HISTOGRAM_BUCKETS; i++) 
+                    {
+                        size_t val = histograms[r * HISTOGRAM_BUCKETS + i];
+                        histograms[r * HISTOGRAM_BUCKETS + i] = sum;
+                        sum += val;
+                    }
+                }
+
                 T* src = data;
                 T* dst = result;
-                for(size_t r = 0; r < RUNS; r++) {
-                    for (size_t i = 0; i < size; i++) {
-
+                for(unsigned int r = 0; r < RUNS; r++) 
+                {
+                    for (size_t i = 0; i < size; i++) 
+                    {
                         T element = src[i];
+                        T pos = ((element >> (r * RADIX_LENGTH)) & RADIX_MASK);
 
-                        //if(r == 0)
-                        //  FloatFlipX(fi);
-
-                        size_t pos = ((element >> (r * RADIX_LENGTH)) & RADIX_MASK);
-
-                        prefetch2(src);
-                        dst[++histograms[r * HISTOGRAM_BUCKETS + pos]] = element;
+                        size_t& index = histograms[r * HISTOGRAM_BUCKETS + pos];
+                        dst[index] = element;
+                        index++;
                     }
 
                     swap(src, dst);
                 }
 
                 delete[] histograms;
-                delete[] sums;
             }
 
             virtual ~RadixSort() {}

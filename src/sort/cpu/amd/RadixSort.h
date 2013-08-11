@@ -109,65 +109,66 @@ namespace cpu
             static const unsigned int BUCKETS = (1 << RADIX);
             static const unsigned int RADIX_MASK = (BUCKETS - 1);
 
-            public:
-                const string getName() override
-                {
-                    return "RadixSort (AMD)";
-                }
+            static const unsigned int RUNS = (sizeof(T) * 8)  % RADIX == 0 ? (sizeof(T) * 8) / RADIX : (sizeof(T) * 8) / RADIX + 1;
 
-                bool isInPlace() override
-                {
-                    return false;
-                }
+        public:
+            const string getName() override
+            {
+                return "RadixSort (AMD)";
+            }
 
-                void run(T* data, T* result, size_t size) override
-                {
-                    unsigned int* histogram = new unsigned int[BUCKETS];
-                    T* tempData = new T[size];
+            bool isInPlace() override
+            {
+                return !(RUNS & 1u);
+            }
 
-                    memcpy(tempData, data, size * sizeof(T));
-                    for(size_t bits = 0; bits < sizeof(T) * RADIX ; bits += RADIX)
+            void run(T* data, T* result, size_t size) override
+            {
+                size_t* histogram = new size_t[BUCKETS];
+
+                T* src = data;
+                T* dst = result;
+
+                for(size_t bits = 0; bits < sizeof(T) * 8 ; bits += RADIX)
+                {
+                    // Initialize histogram bucket to zeros
+                    memset(histogram, 0, BUCKETS * sizeof(size_t));
+
+                    // Calculate 256 histogram for all element
+                    for(size_t i = 0; i < size; ++i)
                     {
-                        // Initialize histogram bucket to zeros
-                        memset(histogram, 0, BUCKETS * sizeof(T));
-
-                        // Calculate 256 histogram for all element
-                        for(size_t i = 0; i < size; ++i)
-                        {
-                            T element = tempData[i];
-                            T value = (element >> bits) & RADIX_MASK;
-                            histogram[value]++;
-                        }
-
-                        // Prescan the histogram bucket (exclusive scan)
-                        T sum = 0;
-                        for(size_t i = 0; i < BUCKETS; ++i)
-                        {
-                            T val = histogram[i];
-                            histogram[i] = sum;
-                            sum += val;
-                        }
-
-                        // Rearrange  the elements based on prescaned histogram
-                        for(size_t i = 0; i < size; ++i)
-                        {
-                            T element = tempData[i];
-                            T value = (element >> bits) & RADIX_MASK;
-                            unsigned int index = histogram[value];
-                            result[index] = tempData[i];
-                            histogram[value]++;
-                        }
-
-                        // Copy to tempData for further use
-                        if(bits != RADIX * 3)
-                            memcpy(tempData, result, size * sizeof(T));
+                        T element = src[i];
+                        T pos = (element >> bits) & RADIX_MASK;
+                        histogram[pos]++;
                     }
 
-                    delete[] tempData;
-                    delete[] histogram;
+                    // Prescan the histogram bucket (exclusive scan)
+                    size_t sum = 0;
+                    for(size_t i = 0; i < BUCKETS; ++i)
+                    {
+                        size_t val = histogram[i];
+                        histogram[i] = sum;
+                        sum += val;
+                    }
+
+                    // Rearrange  the elements based on prescaned histogram
+                    for(size_t i = 0; i < size; ++i)
+                    {
+                        T element = src[i];
+                        T pos = (element >> bits) & RADIX_MASK;
+
+                        size_t& index = histogram[pos];
+                        dst[index] = src[i];
+                        index++;
+                    }
+
+                    std::swap(src, dst);
                 }
 
-                virtual ~RadixSort() {}
+                delete[] histogram;
+            }
+
+            virtual ~RadixSort() {}
         };
 
     }
