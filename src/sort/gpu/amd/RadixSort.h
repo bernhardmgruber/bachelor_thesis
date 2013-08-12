@@ -101,183 +101,175 @@ namespace gpu
     namespace amd
     {
         /**
-         * From: http://developer.amd.com/tools/hc/AMDAPPSDK/samples/Pages/default.aspx
-         */
+        * From: http://developer.amd.com/tools/hc/AMDAPPSDK/samples/Pages/default.aspx
+        */
         template<typename T>
         class RadixSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             static const unsigned int RADIX = 4;
             static const unsigned int BUCKETS = (1 << RADIX);
 
-            public:
-                const string getName() override
+        public:
+            const string getName() override
+            {
+                return "Radix sort (AMD)";
+            }
+
+            bool isInPlace() override
+            {
+                return false;
+            }
+
+            void init() override
+            {
+                Program* program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
+                histogramKernel = program->createKernel("histogram");
+                permuteKernel = program->createKernel("permute");
+                delete program;
+            }
+
+            void upload(size_t workGroupSize, T* data, size_t size) override
+            {
+                //element count must be multiple of workGroupSize * BUCKETS
+                size_t mulFactor = workGroupSize * BUCKETS;
+
+                if(size < mulFactor)
+                    adaptedSize = mulFactor;
+                else
+                    adaptedSize = (size / mulFactor) * mulFactor;
+
+                numGroups = adaptedSize / mulFactor;
+
+                dSortedData = new T[adaptedSize]();
+
+                // each workgroup has it's own histogram
+                histogramSize = numGroups * workGroupSize * BUCKETS * sizeof(cl_uint);
+                histogramBins = new cl_uint[histogramSize]();
+
+                // Output for histogram kernel
+                unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, adaptedSize * sizeof(T));
+                histogramBinsBuf = context->createBuffer(CL_MEM_WRITE_ONLY, histogramSize);
+
+                // Input for permute kernel
+                scanedHistogramBinsBuf = context->createBuffer(CL_MEM_READ_ONLY, histogramSize);
+
+                // Final output
+                sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, adaptedSize * sizeof(T));
+
+                // Allocate and init memory used by host
+                unsortedData = new T[adaptedSize];
+                memcpy(unsortedData, data, size * sizeof(T));
+            }
+
+            void run(size_t workGroupSize, size_t size) override
+            {
+                for(cl_uint bits = 0; bits < sizeof(T) * 8; bits += RADIX)
                 {
-                    return "Radix sort (AMD)";
-                }
+                    // Calculate thread-histograms
+                    runHistogramKernel(queue, bits, workGroupSize);
 
-                bool isInPlace() override
-                {
-                    return false;
-                }
-
-                void init() override
-                {
-                    Program* program = context->createProgram("gpu/amd/RadixSort.cl", "-D T=" + getTypeName<T>());
-                    histogramKernel = program->createKernel("histogram");
-                    permuteKernel = program->createKernel("permute");
-                    delete program;
-                }
-
-                void upload(size_t workGroupSize, T* data, size_t size) override
-                {
-                    //element count must be multiple of workGroupSize * BUCKETS
-                    size_t mulFactor = workGroupSize * BUCKETS;
-
-                    if(size < mulFactor)
-                        adaptedSize = mulFactor;
-                    else
-                        adaptedSize = (size / mulFactor) * mulFactor;
-
-                    numGroups = adaptedSize / mulFactor;
-
-                    dSortedData = new T[adaptedSize]();
-
-                    // each workgroup has it's own histogram
-                    histogramSize = numGroups * workGroupSize * BUCKETS * sizeof(cl_uint);
-                    histogramBins = new cl_uint[histogramSize]();
-
-                    // Output for histogram kernel
-                    unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, adaptedSize * sizeof(T));
-                    histogramBinsBuf = context->createBuffer(CL_MEM_WRITE_ONLY, histogramSize);
-
-                    // Input for permute kernel
-                    scanedHistogramBinsBuf = context->createBuffer(CL_MEM_READ_ONLY, histogramSize);
-
-                    // Final output
-                    sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, adaptedSize * sizeof(T));
-
-                    // Allocate and init memory used by host
-                    unsortedData = new T[adaptedSize];
-                    memcpy(unsortedData, data, size * sizeof(T));
-                }
-
-                void run(size_t workGroupSize, size_t size) override
-                {
-                    for(size_t bits = 0; bits < sizeof(T) * RADIX; bits += RADIX)
+                    // Scan the histogram
+                    int sum = 0;
+                    for(size_t b = 0; b < BUCKETS; ++b)
                     {
-                        // Calculate thread-histograms
-                        runHistogramKernel(queue, bits, workGroupSize);
-
-                        /*cout << "before" << endl;
-                        for(int i = 0; i < numGroups; i++)
-                            for(int j = 0; j < workGroupSize; j++)
-                                printArr(histogramBins + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);*/
-
-                        // Scan the histogram
-                        int sum = 0;
-                        for(size_t b = 0; b < BUCKETS; ++b)
+                        for(size_t g = 0; g < numGroups; ++g)
                         {
-                            for(size_t g = 0; g < numGroups; ++g)
+                            for(size_t i = 0; i < workGroupSize; ++i)
                             {
-                                for(size_t i = 0; i < workGroupSize; ++i)
-                                {
-                                    int index = g * workGroupSize * BUCKETS + i * BUCKETS + b;
-                                    int value = histogramBins[index];
-                                    histogramBins[index] = sum;
-                                    sum += value;
-                                }
+                                size_t index = g * workGroupSize * BUCKETS + i * BUCKETS + b;
+                                cl_uint value = histogramBins[index];
+                                histogramBins[index] = sum;
+                                sum += value;
                             }
                         }
-
-                        /*cout << "after" << endl;
-                        for(int i = 0; i < numGroups; i++)
-                            for(int j = 0; j < workGroupSize; j++)
-                                printArr(histogramBins + i * workGroupSize * BUCKETS + j * BUCKETS, BUCKETS);*/
-
-                        // Permute the element to appropriate place
-                        runPermuteKernel(queue, bits, workGroupSize);
-
-                        // Current output now becomes the next input
-                        memcpy(unsortedData, dSortedData, adaptedSize * sizeof(cl_uint));
                     }
+
+                    printArr(histogramBins, BUCKETS * numGroups * workGroupSize);
+
+                    // Permute the element to appropriate place
+                    runPermuteKernel(queue, bits, workGroupSize);
+
+                    // Current output now becomes the next input
+                    memcpy(unsortedData, dSortedData, adaptedSize * sizeof(cl_uint));
                 }
+            }
 
-                void runHistogramKernel(CommandQueue* queue, int bits, size_t workGroupSize)
-                {
-                    queue->enqueueWrite(unsortedDataBuf, unsortedData);
+            void runHistogramKernel(CommandQueue* queue, cl_uint bits, size_t workGroupSize)
+            {
+                queue->enqueueWrite(unsortedDataBuf, unsortedData);
 
-                    size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_ushort));
+                size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_ushort));
 
-                    histogramKernel->setArg(0, unsortedDataBuf);
-                    histogramKernel->setArg(1, histogramBinsBuf);
-                    histogramKernel->setArg(2, bits);
-                    histogramKernel->setArg(3, localSize, nullptr); // allocate local histogram
+                histogramKernel->setArg(0, unsortedDataBuf);
+                histogramKernel->setArg(1, histogramBinsBuf);
+                histogramKernel->setArg(2, bits);
+                histogramKernel->setArg(3, localSize, nullptr); // allocate local histogram
 
-                    size_t globalThreads[] = { adaptedSize / BUCKETS };
-                    size_t localThreads[] = { workGroupSize };
+                size_t globalThreads[] = { adaptedSize / BUCKETS };
+                size_t localThreads[] = { workGroupSize };
 
-                    queue->enqueueKernel(histogramKernel, 1, globalThreads, localThreads);
-                    queue->enqueueBarrier();
+                queue->enqueueKernel(histogramKernel, 1, globalThreads, localThreads);
+                queue->enqueueBarrier();
 
-                    queue->enqueueRead(histogramBinsBuf, histogramBins);
-                }
+                queue->enqueueRead(histogramBinsBuf, histogramBins);
+            }
 
-                void runPermuteKernel(CommandQueue* queue, int bits, size_t workGroupSize)
-                {
-                    queue->enqueueWrite(scanedHistogramBinsBuf, histogramBins);
-                    queue->enqueueBarrier();
+            void runPermuteKernel(CommandQueue* queue, cl_uint bits, size_t workGroupSize)
+            {
+                queue->enqueueWrite(scanedHistogramBinsBuf, histogramBins);
+                queue->enqueueBarrier();
 
-                    permuteKernel->setArg(0, unsortedDataBuf);
-                    permuteKernel->setArg(1, scanedHistogramBinsBuf);
-                    permuteKernel->setArg(2, bits);
-                    permuteKernel->setArg(3, (workGroupSize * BUCKETS * sizeof(cl_ushort)), nullptr);
-                    permuteKernel->setArg(4, sortedDataBuf);
+                permuteKernel->setArg(0, unsortedDataBuf);
+                permuteKernel->setArg(1, scanedHistogramBinsBuf);
+                permuteKernel->setArg(2, bits);
+                permuteKernel->setArg(3, (workGroupSize * BUCKETS * sizeof(cl_ushort)), nullptr);
+                permuteKernel->setArg(4, sortedDataBuf);
 
-                    size_t globalThreads[] = { adaptedSize / BUCKETS };
-                    size_t localThreads[] = { workGroupSize };
-                    queue->enqueueKernel(permuteKernel, 1, globalThreads, localThreads);
+                size_t globalThreads[] = { adaptedSize / BUCKETS };
+                size_t localThreads[] = { workGroupSize };
+                queue->enqueueKernel(permuteKernel, 1, globalThreads, localThreads);
 
-                    queue->enqueueRead(sortedDataBuf, dSortedData);
-                }
+                queue->enqueueRead(sortedDataBuf, dSortedData);
+            }
 
-                void download(T* result, size_t size) override
-                {
-                    memcpy(result, dSortedData, size * sizeof(T));
+            void download(T* result, size_t size) override
+            {
+                memcpy(result, dSortedData, size * sizeof(T));
 
-                    delete[] unsortedData;
-                    delete[] dSortedData;
-                    delete[] histogramBins;
+                delete[] unsortedData;
+                delete[] dSortedData;
+                delete[] histogramBins;
 
-                    delete unsortedDataBuf;
-                    delete histogramBinsBuf;
-                    delete scanedHistogramBinsBuf;
-                    delete sortedDataBuf;
-                }
+                delete unsortedDataBuf;
+                delete histogramBinsBuf;
+                delete scanedHistogramBinsBuf;
+                delete sortedDataBuf;
+            }
 
-                void cleanup() override
-                {
-                    delete histogramKernel;
-                    delete permuteKernel;
-                }
+            void cleanup() override
+            {
+                delete histogramKernel;
+                delete permuteKernel;
+            }
 
-                virtual ~RadixSort() {}
+            virtual ~RadixSort() {}
 
-            private:
-                size_t numGroups;
-                size_t adaptedSize;
-                size_t histogramSize;
+        private:
+            size_t numGroups;
+            size_t adaptedSize;
+            size_t histogramSize;
 
-                T* unsortedData;
-                T* dSortedData;
-                cl_uint* histogramBins;
+            T* unsortedData;
+            T* dSortedData;
+            cl_uint* histogramBins;
 
-                Kernel* histogramKernel;
-                Kernel* permuteKernel;
+            Kernel* histogramKernel;
+            Kernel* permuteKernel;
 
-                Buffer* unsortedDataBuf;
-                Buffer* histogramBinsBuf;
-                Buffer* scanedHistogramBinsBuf;
-                Buffer* sortedDataBuf;
+            Buffer* unsortedDataBuf;
+            Buffer* histogramBinsBuf;
+            Buffer* scanedHistogramBinsBuf;
+            Buffer* sortedDataBuf;
         };
     }
 }

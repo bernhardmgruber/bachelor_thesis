@@ -4,19 +4,14 @@
 #pragma OPENCL EXTENSION cl_khr_local_int32_base_atomics : enable
 #pragma OPENCL EXTENSION cl_khr_global_int32_base_atomics : enable
 
-
-__kernel void ZeroHistogram(__global uint* histogram)
-{
-    histogram[get_global_id(0)] = 0;
-}
-
-__kernel void Histogram(__global const T* data, __global __write_only uint* histogram, __local uint* localHistogram, const uint bits)
+__kernel void Histogram(__global const T* data, __global uint* histogram, __local uint* localHistogram, const uint bits)
 {
     size_t id = get_global_id(0);
 
     // zero local histogram
     if(id < BUCKETS)
         localHistogram[id] = 0;
+    barrier(CLK_LOCAL_MEM_FENCE);
 
     // process elements and update local histogram
     T element = data[id];
@@ -37,7 +32,7 @@ __kernel void Scan(__global uint* histogram)
     }
 }
 
-__kernel void Permute(__global const T* data, __global __write_only T* result, __global uint* histogram, const uint bits)
+__kernel void Permute(__global const T* data, __global T* result, __global uint* histogram, const uint bits)
 {
     size_t id = get_global_id(0);
 

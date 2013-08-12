@@ -136,8 +136,8 @@
   <ItemGroup>
     <None Include="gpu\amd\BitonicSort.cl" />
     <None Include="gpu\amd\RadixSort.cl" />
-    <None Include="gpu\amd_dixxi\LocalScan.cl" />
     <None Include="gpu\amd_dixxi\RadixSort.cl" />
+    <None Include="gpu\amd_dixxi\RecursiveScan.cl" />
     <None Include="gpu\bealto\ParallelBitonicSortA.cl" />
     <None Include="gpu\bealto\ParallelBitonicSortB16.cl" />
     <None Include="gpu\bealto\ParallelBitonicSortB2.cl" />

@@ -54,12 +54,8 @@ namespace gpu
                     for(size_t bits = 0; bits < sizeof(T) * 8 ; bits += RADIX)
                     {
                         // zero histogram
-                        size_t globalWorkSizes[] = { BUCKETS };
-                        size_t localWorkSizes[] = { BUCKETS };
-                        assert(BUCKETS <= workGroupSize);
-                        zeroHistogramKernel->setArg(0, histogram);
-                        queue->enqueueKernel(zeroHistogramKernel, 1, globalWorkSizes, localWorkSizes);
-                        queue->enqueueBarrier();
+                        cl_uint zero = 0;
+                        queue->enqueueFill(histogram, zero);
 
                         unsigned int* lol = new unsigned int[size];
                         queue->enqueueRead(src, lol);
@@ -114,6 +110,7 @@ namespace gpu
                 void download(T* result, size_t size) override
                 {
                     queue->enqueueRead(dest, result);
+                    delete src;
                     delete dest;
                 }
 

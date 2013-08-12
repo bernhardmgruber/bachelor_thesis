@@ -101,208 +101,167 @@ namespace gpu
     namespace amd_dixxi
     {
         /**
-         * From: http://developer.amd.com/tools/hc/AMDAPPSDK/samples/Pages/default.aspx
-         * Modified algorithm by Bernhard Manfred Gruber.
-         */
+        * From: http://developer.amd.com/tools/hc/AMDAPPSDK/samples/Pages/default.aspx
+        * Modified algorithm by Bernhard Manfred Gruber.
+        */
         template<typename T>
         class RadixSort : public CLAlgorithm<T>, public SortAlgorithm
         {
             static const unsigned int RADIX = 4;
             static const unsigned int BUCKETS = (1 << RADIX);
 
-            public:
-                const string getName() override
+        public:
+            const string getName() override
+            {
+                return "Radix sort (AMD/dixxi)";
+            }
+
+            bool isInPlace() override
+            {
+                return false;
+            }
+
+            void init() override
+            {
+                Program* program = context->createProgram("gpu/amd_dixxi/RadixSort.cl", "-D T=" + getTypeName<T>());
+                histogramKernel = program->createKernel("histogram");
+                permuteKernel = program->createKernel("permute");
+                delete program;
+
+                program = context->createProgram("gpu/amd_dixxi/RecursiveScan.cl");
+                scanKernel = program->createKernel("WorkEfficientScan");
+                addKernel = program->createKernel("AddSums");
+                delete program;
+            }
+
+            void upload(size_t workGroupSize, T* data, size_t size) override
+            {
+                bufferSize = roundToMultiple(size, workGroupSize * BUCKETS);
+
+                // each thread has it's own histogram
+                numGroups = bufferSize / (workGroupSize * BUCKETS);
+                histogramSize = numGroups * workGroupSize * BUCKETS;
+                histogramSize = roundToMultiple(histogramSize, workGroupSize * 2);
+
+                srcBuffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+
+                if(bufferSize != size)
                 {
-                    return "Radix sort (AMD/dixxi)";
+                    queue->enqueueWrite(srcBuffer, data, 0, size * sizeof(T));
+                    queue->enqueueFill(srcBuffer, numeric_limits<T>::max(), size * sizeof(T), (bufferSize - size) * sizeof(T));
                 }
+                else
+                    queue->enqueueWrite(srcBuffer, data);
 
-                bool isInPlace() override
+                histogramBuffer = context->createBuffer(CL_MEM_READ_WRITE, histogramSize * sizeof(cl_uint));
+                dstBuffer = context->createBuffer(CL_MEM_READ_WRITE, bufferSize * sizeof(T));
+            }
+
+            void run(size_t workGroupSize, size_t size) override
+            {
+                size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_ushort));
+
+                size_t globalWorkSizes[] = { bufferSize / BUCKETS };
+                size_t localWorkSizes[] = { workGroupSize };
+
+                for(cl_uint bits = 0; bits < sizeof(T) * 8; bits += RADIX)
                 {
-                    return false;
-                }
-
-                void init() override
-                {
-                    Program* program = context->createProgram("gpu/amd_dixxi/RadixSort.cl", "-D T=" + getTypeName<T>());
-                    histogramKernel = program->createKernel("histogram");
-                    permuteKernel = program->createKernel("permute");
-                    delete program;
-
-                    program = context->createProgram("gpu/amd_dixxi/LocalScan.cl", "-D T=uint");
-                    scanKernel = program->createKernel("LocalScan");
-                    addKernel = program->createKernel("AddSums");
-                    delete program;
-                }
-
-                void upload(size_t workGroupSize, T* data, size_t size) override
-                {
-                    //element count must be multiple of workGroupSize * BUCKETS
-                    size_t multiple = workGroupSize * BUCKETS;
-
-                    if(size < multiple)
-                        adaptedSize = multiple;
-                    else
-                        adaptedSize = (size / multiple) * multiple;
-
-                    numGroups = adaptedSize / multiple;
-
-                    // each thread has it's own histogram
-                    histogramSize = numGroups * workGroupSize * BUCKETS * sizeof(cl_uint);
-
-                    unsortedDataBuf = context->createBuffer(CL_MEM_READ_ONLY, adaptedSize * sizeof(T));
-                    queue->enqueueWrite(unsortedDataBuf, data, 0, size * sizeof(T));
-                    if(adaptedSize > size)
-                    {
-                        T* zero = new T[adaptedSize - size];
-                        memset(zero, 0, (adaptedSize - size) * sizeof(T));
-                        queue->enqueueWrite(unsortedDataBuf, zero, size * sizeof(T), (adaptedSize - size) * sizeof(T));
-                        delete zero;
-                    }
-
-                    histogramBinsBuf = context->createBuffer(CL_MEM_READ_WRITE, histogramSize);
-                    sortedDataBuf = context->createBuffer(CL_MEM_WRITE_ONLY, adaptedSize * sizeof(T));
-                }
-
-                void run(size_t workGroupSize, size_t size) override
-                {
-                    for(size_t bits = 0; bits < sizeof(T) * RADIX; bits += RADIX)
-                    {
-                        // Calculate thread-histograms
-                        runHistogramKernel(queue, bits, workGroupSize);
-
-                        // Scan the histogram
-                        /*int sum = 0;
-                        for(size_t b = 0; b < BUCKETS; ++b)
-                        {
-                            for(size_t g = 0; g < numGroups; ++g)
-                            {
-                                for(size_t i = 0; i < workGroupSize; ++i)
-                                {
-                                    int index = g * workGroupSize * BUCKETS + i * BUCKETS + b;
-                                    int value = histogramBins[index];
-                                    histogramBins[index] = sum;
-                                    sum += value;
-                                }
-                            }
-                        }*/
-
-                        scan_r(queue->getContext(), queue, workGroupSize, histogramBinsBuf, true);
-                        queue->enqueueBarrier();
-
-                        // Permute the element to appropriate place
-                        runPermuteKernel(queue, bits, workGroupSize);
-
-                        queue->enqueueCopy(sortedDataBuf, unsortedDataBuf);
-                    }
-                }
-
-                void runHistogramKernel(CommandQueue* queue, int bits, size_t workGroupSize)
-                {
-                    size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_ushort));
-
-                    histogramKernel->setArg(0, unsortedDataBuf);
-                    histogramKernel->setArg(1, histogramBinsBuf);
+                    // Calculate thread-histograms
+                    histogramKernel->setArg(0, srcBuffer);
+                    histogramKernel->setArg(1, histogramBuffer);
                     histogramKernel->setArg(2, bits);
                     histogramKernel->setArg(3, localSize, nullptr); // allocate local histogram
 
-                    size_t globalThreads[] = { adaptedSize / BUCKETS };
-                    size_t localThreads[] = { workGroupSize };
+                    queue->enqueueKernel(histogramKernel, 1, globalWorkSizes, localWorkSizes);
 
-                    queue->enqueueKernel(histogramKernel, 1, globalThreads, localThreads);
-                    queue->enqueueBarrier();
-                }
+                    // Scan the histogram
+                    scan_r(workGroupSize, histogramBuffer, histogramSize, true);
 
-                void runPermuteKernel(CommandQueue* queue, int bits, size_t workGroupSize)
-                {
-                    permuteKernel->setArg(0, unsortedDataBuf);
-                    permuteKernel->setArg(1, histogramBinsBuf);
+                    cl_uint* lol = new cl_uint[histogramBuffer->getSize() / sizeof cl_uint];
+                    queue->enqueueRead(histogramBuffer, lol);
+                    printArr(lol, histogramBuffer->getSize() / sizeof cl_uint);
+                    delete[] lol;
+
+                    // Permute the element to appropriate place
+                    permuteKernel->setArg(0, srcBuffer);
+                    permuteKernel->setArg(1, histogramBuffer);
                     permuteKernel->setArg(2, bits);
-                    permuteKernel->setArg(3, (workGroupSize * BUCKETS * sizeof(cl_ushort)), nullptr);
-                    permuteKernel->setArg(4, sortedDataBuf);
+                    permuteKernel->setArg(3, localSize, nullptr);
+                    permuteKernel->setArg(4, dstBuffer);
 
-                    size_t globalThreads[] = { adaptedSize / BUCKETS };
-                    size_t localThreads[] = { workGroupSize };
-                    queue->enqueueKernel(permuteKernel, 1, globalThreads, localThreads);
+                    queue->enqueueKernel(permuteKernel, 1, globalWorkSizes, localWorkSizes);
+
+                    std::swap(srcBuffer, dstBuffer);
                 }
+            }
 
-                void scan_r(Context* context, CommandQueue* queue, size_t workGroupSize, Buffer* blocks, bool first)
+            /**
+            * Recursive vector scan
+            */
+            void scan_r(size_t workGroupSize, Buffer* values, size_t size, bool first)
+            {
+                size_t sumBufferSize = roundToMultiple(size / (workGroupSize * 2), workGroupSize * 2);
+
+                Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, sumBufferSize * sizeof(cl_uint));
+
+                scanKernel->setArg(0, values);
+                scanKernel->setArg(1, sums);
+                scanKernel->setArg(2, sizeof(cl_uint) * 2 * workGroupSize, nullptr);
+                scanKernel->setArg(3, (cl_int)first);
+
+                size_t globalWorkSizes[] = { size / 2 }; // each thread processed 2 elements
+                size_t localWorkSizes[] = { workGroupSize };
+
+                queue->enqueueKernel(scanKernel, 1, globalWorkSizes, localWorkSizes);
+
+                if(size > workGroupSize * 2)
                 {
-                    Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, roundToMultiple(blocks->getSize() / workGroupSize, workGroupSize * 2 * sizeof(cl_uint)));
+                    // the buffer containes more than one scanned block, scan the created sum buffer
+                    scan_r(workGroupSize, sums, sumBufferSize, false);
 
-                    size_t globalWorkSizes[] = { blocks->getSize() / sizeof(cl_uint) / 2 }; // the global work size is the half number of elements (each thread processed 2 elements)
-                    size_t localWorkSizes[] = { min(workGroupSize, globalWorkSizes[0]) };
+                    // apply the sums to the buffer
+                    addKernel->setArg(0, values);
+                    addKernel->setArg(1, sums);
+                    addKernel->setArg(2, (cl_int)first);
 
-                    scanKernel->setArg(0, blocks);
-                    scanKernel->setArg(1, sums);
-                    scanKernel->setArg(2, sizeof(cl_uint) * 2 * localWorkSizes[0], nullptr);
-                    scanKernel->setArg<cl_short>(3, first ? 1 : 0);
-                    queue->enqueueKernel(scanKernel, 1, globalWorkSizes, localWorkSizes);
-
-                    if(blocks->getSize() / sizeof(cl_uint) > localWorkSizes[0] * 2)
-                    {
-                        // the buffer containes more than one scanned block, scan the created sum buffer
-                        scan_r(context, queue, workGroupSize, sums, false);
-
-                        // get the remaining available local memory
-                        size_t totalGlobalWorkSize = blocks->getSize() / sizeof(cl_uint) / 2;
-                        size_t maxLocalMemSize = context->getInfo<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE); // FIXME: This does not work for some NVIDIA cards, raises OUT_OF_RESOURCES
-                        size_t maxGlobalWorkSize = maxLocalMemSize / sizeof(cl_int) * workGroupSize;
-
-                        size_t offset = 0;
-
-                        do
-                        {
-                            globalWorkSizes[0] = min(totalGlobalWorkSize - offset, maxGlobalWorkSize);
-                            localWorkSizes[0] = min(workGroupSize, globalWorkSizes[0]);
-                            size_t globalWorkOffsets[] = { offset };
-
-                            // apply the sums to the buffer
-                            addKernel->setArg(0, blocks);
-                            addKernel->setArg(1, sums);
-                            addKernel->setArg(2, min(sums->getSize(), maxLocalMemSize), nullptr);
-                            addKernel->setArg(3, (cl_short)first);
-                            queue->enqueueKernel(addKernel, 1, globalWorkSizes, localWorkSizes, globalWorkOffsets);
-
-                            offset += maxGlobalWorkSize;
-                        }
-                        while(offset < totalGlobalWorkSize);
-                    }
-
-                    delete sums;
+                    queue->enqueueKernel(addKernel, 1, globalWorkSizes, localWorkSizes);
                 }
 
-                void download(T* result, size_t size) override
-                {
-                    queue->enqueueRead(sortedDataBuf, result, 0, size);
+                delete sums;
+            }
 
-                    delete unsortedDataBuf;
-                    delete histogramBinsBuf;
-                    delete sortedDataBuf;
-                }
+            void download(T* result, size_t size) override
+            {
+                queue->enqueueRead(srcBuffer, result, 0, size);
 
-                void cleanup() override
-                {
-                    delete histogramKernel;
-                    delete permuteKernel;
-                    delete scanKernel;
-                    delete addKernel;
-                }
+                delete srcBuffer;
+                delete histogramBuffer;
+                delete dstBuffer;
+            }
 
-                virtual ~RadixSort() {}
+            void cleanup() override
+            {
+                delete histogramKernel;
+                delete permuteKernel;
+                delete scanKernel;
+                delete addKernel;
+            }
 
-            private:
-                size_t numGroups;
-                size_t adaptedSize;
-                size_t histogramSize;
+            virtual ~RadixSort() {}
 
-                Kernel* histogramKernel;
-                Kernel* permuteKernel;
-                Kernel* scanKernel;
-                Kernel* addKernel;
+        private:
+            size_t numGroups;
+            size_t bufferSize;
+            size_t histogramSize;
 
-                Buffer* unsortedDataBuf;
-                Buffer* histogramBinsBuf;
-                Buffer* sortedDataBuf;
+            Kernel* histogramKernel;
+            Kernel* permuteKernel;
+            Kernel* scanKernel;
+            Kernel* addKernel;
+
+            Buffer* srcBuffer;
+            Buffer* histogramBuffer;
+            Buffer* dstBuffer;
         };
     }
 }
