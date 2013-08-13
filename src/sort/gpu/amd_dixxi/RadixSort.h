@@ -101,7 +101,7 @@ namespace gpu
                     queue->finish();
 
                     // Scan the histogram
-                    scan_r(workGroupSize, histogramBuffer, histogramSize, true);
+                    scan_r(workGroupSize, histogramBuffer, histogramSize);
                     queue->finish();
 
                     //cout << "hist" << endl;
@@ -135,7 +135,7 @@ namespace gpu
             /**
             * Recursive vector scan
             */
-            void scan_r(size_t workGroupSize, Buffer* values, size_t size, bool first)
+            void scan_r(size_t workGroupSize, Buffer* values, size_t size)
             {
                 size_t sumBufferSize = roundToMultiple(size / (workGroupSize * 2), workGroupSize * 2);
 
@@ -144,7 +144,6 @@ namespace gpu
                 scanKernel->setArg(0, values);
                 scanKernel->setArg(1, sums);
                 scanKernel->setArg(2, sizeof(cl_uint) * 2 * workGroupSize, nullptr);
-                scanKernel->setArg(3, (cl_int)first);
 
                 size_t globalWorkSizes[] = { size / 2 }; // each thread processed 2 elements
                 size_t localWorkSizes[] = { workGroupSize };
@@ -154,12 +153,11 @@ namespace gpu
                 if(size > workGroupSize * 2)
                 {
                     // the buffer containes more than one scanned block, scan the created sum buffer
-                    scan_r(workGroupSize, sums, sumBufferSize, false);
+                    scan_r(workGroupSize, sums, sumBufferSize);
 
                     // apply the sums to the buffer
                     addKernel->setArg(0, values);
                     addKernel->setArg(1, sums);
-                    addKernel->setArg(2, (cl_int)first);
 
                     queue->enqueueKernel(addKernel, 1, globalWorkSizes, localWorkSizes);
                 }

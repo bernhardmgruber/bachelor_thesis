@@ -41,7 +41,8 @@ __kernel void histogram(__global const T* unsortedData, __global uint* histogram
 
     /* Copy calculated histogram bin to global memory */
     for(int i = 0; i < BUCKETS; ++i)
-        histograms[globalId * BUCKETS + i] = hist[i];
+        //histograms[globalId * BUCKETS + i] = hist[i];
+        histograms[get_global_size(0) * i + globalId] = hist[i];
 }
 
 /**
@@ -70,7 +71,8 @@ __kernel void permute(__global const T* unsortedData, __global T* sortedData, __
 
     /* Copy prescaned thread histograms to corresponding thread shared block */
     for(int i = 0; i < BUCKETS; ++i)
-        hist[i] = scanedHistograms[globalId * BUCKETS + i];
+        //hist[i] = scanedHistograms[globalId * BUCKETS + i];
+        hist[i] = scanedHistograms[get_global_size(0) * i + globalId];
 
     /* Permute elements to appropriate location */
     for(int i = 0; i < BLOCK_SIZE; ++i)
