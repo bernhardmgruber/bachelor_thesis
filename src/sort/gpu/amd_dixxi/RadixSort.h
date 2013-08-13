@@ -21,6 +21,7 @@ namespace gpu
             static const unsigned int RADIX = 4;
             static const unsigned int BUCKETS = (1 << RADIX);
             static const unsigned int BLOCK_SIZE = 16;
+            static const unsigned int VECTOR_WIDTH = 8; // for scan
 
         public:
             const string getName() override
@@ -47,8 +48,10 @@ namespace gpu
                 permuteKernel = program->createKernel("permute");
                 delete program;
 
-                program = context->createProgram("gpu/amd_dixxi/RecursiveScan.cl");
-                scanKernel = program->createKernel("WorkEfficientScan");
+                ss.clear();
+                ss << " -D VECTOR_WIDTH=" << VECTOR_WIDTH << " -D VECTOR_WIDTH_MINUS_ONE_HEX=" << hex << VECTOR_WIDTH - 1;
+                program = context->createProgram("gpu/amd_dixxi/RecursiveVecScan.cl", ss.str());
+                scanKernel = program->createKernel("WorkEfficientVecScan");
                 addKernel = program->createKernel("AddSums");
                 delete program;
             }
@@ -70,7 +73,7 @@ namespace gpu
 
                 // each thread has it's own histogram
                 histogramSize = (bufferSize / BLOCK_SIZE) * BUCKETS;
-                histogramSize = roundToMultiple(histogramSize, workGroupSize * 2);
+                histogramSize = roundToMultiple(histogramSize, workGroupSize * 2 * VECTOR_WIDTH);
 
                 histogramBuffer = context->createBuffer(CL_MEM_READ_WRITE, histogramSize * sizeof(cl_uint));
 
@@ -137,7 +140,7 @@ namespace gpu
             */
             void scan_r(size_t workGroupSize, Buffer* values, size_t size)
             {
-                size_t sumBufferSize = roundToMultiple(size / (workGroupSize * 2), workGroupSize * 2);
+                size_t sumBufferSize = roundToMultiple(size / (workGroupSize * 2 * VECTOR_WIDTH), workGroupSize * 2 * VECTOR_WIDTH);
 
                 Buffer* sums = context->createBuffer(CL_MEM_READ_WRITE, sumBufferSize * sizeof(cl_uint));
 
@@ -145,12 +148,12 @@ namespace gpu
                 scanKernel->setArg(1, sums);
                 scanKernel->setArg(2, sizeof(cl_uint) * 2 * workGroupSize, nullptr);
 
-                size_t globalWorkSizes[] = { size / 2 }; // each thread processed 2 elements
+                size_t globalWorkSizes[] = { size / (2 * VECTOR_WIDTH) }; // each thread processed 2 elements
                 size_t localWorkSizes[] = { workGroupSize };
 
                 queue->enqueueKernel(scanKernel, 1, globalWorkSizes, localWorkSizes);
 
-                if(size > workGroupSize * 2)
+                if(size > workGroupSize * 2 * VECTOR_WIDTH)
                 {
                     // the buffer containes more than one scanned block, scan the created sum buffer
                     scan_r(workGroupSize, sums, sumBufferSize);

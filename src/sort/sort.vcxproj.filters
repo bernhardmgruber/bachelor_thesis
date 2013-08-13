@@ -236,7 +236,7 @@
     <None Include="gpu\thesis\BitonicSortFusion.cl">
       <Filter>gpu\thesis</Filter>
     </None>
-    <None Include="gpu\amd_dixxi\RecursiveScan.cl">
+    <None Include="gpu\amd_dixxi\RecursiveVecScan.cl">
       <Filter>gpu\amd_dixxi</Filter>
     </None>
   </ItemGroup>
