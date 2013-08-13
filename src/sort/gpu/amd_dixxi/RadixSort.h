@@ -66,11 +66,14 @@ namespace gpu
                 histogramSize = roundToMultiple(histogramSize, workGroupSize * 2);
 
                 histogramBuffer = context->createBuffer(CL_MEM_READ_WRITE, histogramSize * sizeof(cl_uint));
+
+                //cout << "input" << endl;
+                //printArr(data, size);
             }
 
             void run(size_t workGroupSize, size_t size) override
             {
-                size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_ushort));
+                size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_uint));
 
                 size_t globalWorkSizes[] = { bufferSize / BLOCK_SIZE };
                 size_t localWorkSizes[] = { workGroupSize };
@@ -90,6 +93,12 @@ namespace gpu
                     scan_r(workGroupSize, histogramBuffer, histogramSize, true);
                     queue->finish();
 
+                    //cout << "hist" << endl;
+                    //T* hist = new T[histogramSize];
+                    //queue->enqueueRead(histogramBuffer, hist, 0, histogramSize * sizeof(T));
+                    //printArr(hist, histogramSize);
+                    //delete[] hist;
+
                     // Permute the element to appropriate place
                     permuteKernel->setArg(0, srcBuffer);
                     permuteKernel->setArg(1, histogramBuffer);
@@ -99,6 +108,12 @@ namespace gpu
 
                     queue->enqueueKernel(permuteKernel, 1, globalWorkSizes, localWorkSizes);
                     queue->finish();
+
+                    //cout << "intermediate" << endl;
+                    //T* lol = new T[size];
+                    //queue->enqueueRead(dstBuffer, lol, 0, size * sizeof(T));
+                    //printArr(lol, size);
+                    //delete[] lol;
 
                     std::swap(srcBuffer, dstBuffer);
                 }
@@ -142,6 +157,8 @@ namespace gpu
             void download(T* result, size_t size) override
             {
                 queue->enqueueRead(srcBuffer, result, 0, size * sizeof(T));
+
+                //printArr(result, size);
 
                 delete srcBuffer;
                 delete histogramBuffer;

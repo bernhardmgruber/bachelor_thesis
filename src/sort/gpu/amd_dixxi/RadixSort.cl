@@ -14,7 +14,7 @@
  * @param   bits            shift count
  * @param   sharedArray     shared array for thread-histogram bins
   */
-__kernel void histogram(__global const T* unsortedData, __global uint* buckets, uint bits, __local ushort* sharedArray)
+__kernel void histogram(__global const T* unsortedData, __global uint* buckets, uint bits, __local uint* sharedArray)
 {
     size_t localId = get_local_id(0);
     size_t globalId = get_global_id(0);
@@ -51,7 +51,7 @@ __kernel void histogram(__global const T* unsortedData, __global uint* buckets, 
  * @param   sharedBuckets       shared array for scaned buckets
  * @param   sortedData          array for sorted elements
  */
-__kernel void permute(__global const T* unsortedData, __global const uint* scanedBuckets, uint shiftCount, __local ushort* sharedBuckets, __global T* sortedData)
+__kernel void permute(__global const T* unsortedData, __global const uint* scanedBuckets, uint shiftCount, __local uint* sharedBuckets, __global T* sortedData)
 {
     size_t groupId = get_group_id(0);
     size_t localId = get_local_id(0);
