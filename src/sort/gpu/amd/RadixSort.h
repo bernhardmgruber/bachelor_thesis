@@ -169,14 +169,14 @@ namespace gpu
                     runHistogramKernel(queue, bits, workGroupSize);
 
                     // Scan the histogram
-                    int sum = 0;
+                    cl_uint sum = 0;
                     for(size_t b = 0; b < BUCKETS; ++b)
                     {
                         for(size_t g = 0; g < numGroups; ++g)
                         {
                             for(size_t i = 0; i < workGroupSize; ++i)
                             {
-                                size_t index = g * workGroupSize * BUCKETS + i * BUCKETS + b;
+                                size_t index = (g * workGroupSize + i) * BUCKETS + b;
                                 cl_uint value = histogramBins[index];
                                 histogramBins[index] = sum;
                                 sum += value;
@@ -184,7 +184,7 @@ namespace gpu
                         }
                     }
 
-                    printArr(histogramBins, BUCKETS * numGroups * workGroupSize);
+                    //printArr(histogramBins, BUCKETS * numGroups * workGroupSize);
 
                     // Permute the element to appropriate place
                     runPermuteKernel(queue, bits, workGroupSize);

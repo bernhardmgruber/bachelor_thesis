@@ -73,9 +73,6 @@ __kernel void WorkEfficientScan(__global T* buffer, __global T* sums, __local T*
     barrier(CLK_LOCAL_MEM_FENCE);
 
     // write results to device memory
-    buffer[2 * globalId]     = shared[2 * thid];
-    buffer[2 * globalId + 1] = shared[2 * thid + 1];
-
     if(first)
     {
         buffer[mapIndex(2 * globalId + 0)] = shared[2 * thid + 0];
