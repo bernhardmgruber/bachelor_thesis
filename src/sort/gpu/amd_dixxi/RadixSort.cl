@@ -2,8 +2,6 @@
 #error "RADIX has to be defined"
 #endif
 
-#pragma OPENCL EXTENSION cl_khr_byte_addressable_store : enable
-
 #define BUCKETS (1 << RADIX)
 #define RADIX_MASK (BUCKETS - 1)
 
@@ -14,32 +12,30 @@
  * @param   bits            shift count
  * @param   sharedArray     shared array for thread-histogram bins
   */
-__kernel void histogram(__global const T* unsortedData, __global uint* buckets, uint bits, __local uint* sharedArray)
+__kernel void histogram(__global const T* unsortedData, __global uint* histograms, uint bits, __local uint* sharedArray)
 {
     size_t localId = get_local_id(0);
     size_t globalId = get_global_id(0);
     size_t groupId = get_group_id(0);
     size_t groupSize = get_local_size(0);
 
+    sharedArray += localId * BUCKETS;
+
     /* Initialize shared array to zero */
     for(int i = 0; i < BUCKETS; ++i)
-        sharedArray[localId * BUCKETS + i] = 0;
-
-    barrier(CLK_LOCAL_MEM_FENCE);
+        sharedArray[i] = 0;
 
     /* Calculate thread-histograms */
     for(int i = 0; i < BLOCK_SIZE; ++i)
     {
         T value = unsortedData[globalId * BLOCK_SIZE + i];
         value = (value >> bits) & RADIX_MASK;
-        sharedArray[localId * BUCKETS + value]++;
+        sharedArray[value]++;
     }
-
-    barrier(CLK_LOCAL_MEM_FENCE);
 
     /* Copy calculated histogram bin to global memory */
     for(int i = 0; i < BUCKETS; ++i)
-        buckets[globalId * BUCKETS + i] = sharedArray[localId * BUCKETS + i];
+        histograms[globalId * BUCKETS + i] = sharedArray[i];
 }
 
 /**
@@ -51,18 +47,18 @@ __kernel void histogram(__global const T* unsortedData, __global uint* buckets, 
  * @param   sharedBuckets       shared array for scaned buckets
  * @param   sortedData          array for sorted elements
  */
-__kernel void permute(__global const T* unsortedData, __global const uint* scanedBuckets, uint shiftCount, __local uint* sharedBuckets, __global T* sortedData)
+__kernel void permute(__global const T* unsortedData, __global const uint* scanedHistograms, uint shiftCount, __local uint* shared, __global T* sortedData)
 {
     size_t groupId = get_group_id(0);
     size_t localId = get_local_id(0);
     size_t globalId = get_global_id(0);
     size_t groupSize = get_local_size(0);
 
+    shared += localId * BUCKETS;
+
     /* Copy prescaned thread histograms to corresponding thread shared block */
     for(int i = 0; i < BUCKETS; ++i)
-        sharedBuckets[localId * BUCKETS + i] = scanedBuckets[globalId * BUCKETS + i];
-
-    barrier(CLK_LOCAL_MEM_FENCE);
+        shared[i] = scanedHistograms[globalId * BUCKETS + i];
 
     /* Premute elements to appropriate location */
     for(int i = 0; i < BLOCK_SIZE; ++i)
@@ -70,12 +66,10 @@ __kernel void permute(__global const T* unsortedData, __global const uint* scane
         T value = unsortedData[globalId * BLOCK_SIZE + i];
         T radix = (value >> shiftCount) & RADIX_MASK;
 
-        uint index = sharedBuckets[localId * BUCKETS + radix];
+        uint index = shared[radix];
 
         sortedData[index] = value;
 
-        sharedBuckets[localId * BUCKETS + radix] = index + 1;
-
-        barrier(CLK_LOCAL_MEM_FENCE);
+        shared[radix] = index + 1;
     }
 }
