@@ -574,6 +574,18 @@ cl_mem Buffer::getCLBuffer()
     return buffer;
 }
 
+Buffer* Buffer::createSubBuffer(cl_mem_flags flags, size_t offset, size_t size)
+{
+    cl_buffer_region region;
+    region.origin = offset;
+    region.size = size;
+
+    cl_mem subBuffer = clCreateSubBuffer(buffer, flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &error);
+    checkError(__LINE__, __FUNCTION__);
+
+    return new Buffer(subBuffer, size);
+}
+
 #if OPENCL_VERSION >= 120
 //
 // class Image

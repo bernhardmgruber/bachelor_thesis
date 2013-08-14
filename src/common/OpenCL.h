@@ -583,6 +583,11 @@ public:
     */
     cl_mem getCLBuffer();
 
+    /**
+    * Creates a sub buffer object from this buffer.
+    */
+    Buffer* createSubBuffer(cl_mem_flags flags, size_t offset, size_t size);
+
 private:
     /** The internal OpenCL buffer. */
     cl_mem buffer;

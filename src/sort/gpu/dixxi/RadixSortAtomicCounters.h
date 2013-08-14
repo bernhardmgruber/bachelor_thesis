@@ -10,159 +10,166 @@ namespace gpu
         template<typename T>
         class RadixSortAtomicCounters : public CLAlgorithm<T>, public SortAlgorithm
         {
-            public:
-                const static size_t RADIX = 3; // there must be at least 8 counters available
-                const static size_t BUCKETS = 1<<RADIX;
+        public:
+            const static size_t RADIX = 3; // there must be at least 8 counters available
+            const static size_t BUCKETS = 1 << RADIX;
 
-                const string getName() override
-                {
-                    return "Radixsort Atomic Counters (dixxi)";
-                }
+            const string getName() override
+            {
+                return "Radixsort Atomic Counters (dixxi)";
+            }
 
-                bool isInPlace() override
-                {
-                    return false;
-                }
+            bool isInPlace() override
+            {
+                return false;
+            }
 
-                void init() override
-                {
-                    stringstream ss;
-                    ss << "-D T=" << getTypeName<T>() << " -D BUCKETS=" << BUCKETS;
-                    Program* program = context->createProgram("gpu/dixxi/RadixSortAtomicCounters.cl", ss.str());
+            void init() override
+            {
+                stringstream ss;
+                ss << "-D T=" << getTypeName<T>() << " -D RADIX=" << RADIX;
+                Program* program = context->createProgram("gpu/dixxi/RadixSortAtomicCounters.cl", ss.str());
 
-                    histogramKernel = program->createKernel("Histogram");
-                    scanKernel = program->createKernel("Scan");
-                    permuteKernel = program->createKernel("Permute");
-                    zeroHistogramKernel = program->createKernel("ZeroHistogram");
+                histogramKernel = program->createKernel("Histogram");
+                scanKernel = program->createKernel("Scan");
+                permuteKernel = program->createKernel("Permute");
 
-                    delete program;
+                delete program;
 
-                    histograms = new Buffer*[BUCKETS];
-                    for(size_t i = 0; i < BUCKETS; i++)
-                        histograms[i] = context->createBuffer(CL_MEM_READ_WRITE, sizeof(cl_uint));
-                    histogram = context->createBuffer(CL_MEM_READ_WRITE, BUCKETS * sizeof(cl_uint));
-                }
+                histogram = context->createBuffer(CL_MEM_READ_WRITE, BUCKETS * sizeof(cl_uint));
 
-                void upload(size_t workGroupSize, T* data, size_t size) override
-                {
-                    src = context->createBuffer(CL_MEM_READ_ONLY, sizeof(T) * size);
-                    queue->enqueueWrite(src, data);
-                    dest = context->createBuffer(CL_MEM_WRITE_ONLY, sizeof(T) * size);
-                }
+                //histograms = new Buffer*[BUCKETS];
+                //for(size_t i = 0; i < BUCKETS; i++)
+                //    histograms[i] = histogram->createSubBuffer(CL_MEM_READ_WRITE, i * sizeof(cl_uint), sizeof(cl_uint));
+            }
 
-                void run(size_t workGroupSize, size_t size) override
-                {
-                    for(size_t bits = 0; bits < sizeof(T) * 8 ; bits += RADIX)
-                    {
-                        // zero histogram
-                        size_t globalWorkSizes[] = { BUCKETS };
-                        size_t localWorkSizes[] = { BUCKETS };
-                        assert(BUCKETS <= workGroupSize);
-                        zeroHistogramKernel->setArg(0, histogram);
-                        queue->enqueueKernel(zeroHistogramKernel, 1, globalWorkSizes, localWorkSizes);
-                        queue->enqueueBarrier();
+            void upload(size_t workGroupSize, T* data, size_t size) override
+            {
+                src = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
+                queue->enqueueWrite(src, data);
+                dest = context->createBuffer(CL_MEM_READ_WRITE, sizeof(T) * size);
+            }
 
-                        unsigned int* lol = new unsigned int[size];
-                        queue->enqueueRead(src, lol);
+            void run(size_t workGroupSize, size_t size) override
+            {
+                run_r(workGroupSize, 0, (cl_uint)(size - 1), (cl_uint)(sizeof(T) * 8 - RADIX), (cl_uint)size);
+            }
 
-                        cout << "Src mem" << endl;
-                        printArr(lol, size);
+            void run_r(size_t workGroupSize, cl_uint start, cl_uint end, cl_uint bits, cl_uint size)
+            {
+                if(bits > sizeof(T) * 8 - RADIX)
+                    return; // handle underflow
 
-                        // calculate histogram
-                        globalWorkSizes[0] = size;
-                        localWorkSizes[0] = workGroupSize;
-                        histogramKernel->setArg(0, src);
-                        histogramKernel->setArg(1, histogram);
-                        histogramKernel->setArg(2, sizeof(cl_uint) * BUCKETS, nullptr);
-                        histogramKernel->setArg(3, bits);
-                        queue->enqueueKernel(histogramKernel, 1, globalWorkSizes, localWorkSizes);
-                        queue->enqueueBarrier();
+                // zero histogram
+                queue->enqueueFill(histogram, 0);
 
-                        queue->enqueueRead(histogram, lol);
-                        cout << "Histogram" << endl;
-                        printArr(lol, BUCKETS);
+                //unsigned int* lol = new unsigned int[size];
+                //queue->enqueueRead(src, lol);
 
-                        // scan the histogram (exclusive scan)
-                        scanKernel->setArg(0, histogram);
-                        queue->enqueueTask(scanKernel);
-                        queue->enqueueBarrier();
+                //cout << "Src mem" << endl;
+                //printArr(lol, size);
 
-                        queue->enqueueRead(histogram, lol);
-                        cout << "Scanned Histogram" << endl;
-                        printArr(lol, BUCKETS);
+                // calculate histogram
+                size_t globalWorkSizes[] = { roundToMultiple(end - start + 1, workGroupSize) };
+                size_t localWorkSizes[] = { workGroupSize };
 
-                        // copy histogram into counters
-                        for(size_t i = 0; i < BUCKETS; i++)
-                            queue->enqueueCopy(histogram, histograms[i], i * sizeof(cl_uint), 0, sizeof(cl_uint));
+                histogramKernel->setArg(0, src);
+                histogramKernel->setArg(1, histogram);
+                histogramKernel->setArg(2, start);
+                histogramKernel->setArg(3, end);
+                histogramKernel->setArg(4, bits);
 
-                        cout << "Histogram before permute" << endl;
-                        cl_uint h;
-                        for(size_t i = 0; i < BUCKETS; i++)
-                        {
-                            queue->enqueueRead(histograms[i], &h);
-                            cout << h << " ";
-                        }
-                        cout << endl;
+                queue->enqueueKernel(histogramKernel, 1, globalWorkSizes, localWorkSizes);
 
-                        // rearrange the elements based on scaned histogram
-                        globalWorkSizes[0] = size;
-                        localWorkSizes[0] = workGroupSize;
-                        permuteKernel->setArg(0, src);
-                        permuteKernel->setArg(1, dest);
-                        permuteKernel->setArg(2, bits);
-                        for(size_t i = 0; i < BUCKETS; i++)
-                            permuteKernel->setArg(3 + i, histograms[i]);
-                        queue->enqueueKernel(permuteKernel, 1, globalWorkSizes, localWorkSizes);
-                        queue->enqueueBarrier();
+                //queue->enqueueRead(histogram, lol);
+                //cout << "Histogram" << endl;
+                //printArr(lol, BUCKETS);
 
-                        /*queue->enqueueRead(src, lol);
-                        cout << "Src after permute" << endl;
-                        printArr(lol, size);
-                        queue->enqueueRead(dest, lol);
-                        cout << "Dest after permute" << endl;
-                        printArr(lol, size);*/
+                // scan the histogram (exclusive scan)
+                scanKernel->setArg(0, histogram);
+                queue->enqueueTask(scanKernel);
 
-                        cout << "Histogram after permute" << endl;
-                        for(size_t i = 0; i < BUCKETS; i++)
-                        {
-                            queue->enqueueRead(histograms[i], &h);
-                            cout << h << " ";
-                        }
-                        cout << endl;
+                //queue->enqueueRead(histogram, lol);
+                //cout << "Scanned Histogram" << endl;
+                //printArr(lol, BUCKETS);
 
-                        queue->enqueueCopy(dest, src);
-                        queue->enqueueBarrier();
-                    }
-                }
+                // copy histogram into counters
+                //for(size_t i = 0; i < BUCKETS; i++)
+                //    queue->enqueueCopy(histogram, histograms[i], i * sizeof(cl_uint), 0, sizeof(cl_uint));
 
-                void download(T* result, size_t size) override
-                {
-                    queue->enqueueRead(dest, result);
-                    delete dest;
-                }
+                //cout << "Histogram before permute" << endl;
+                //cl_uint h;
+                //for(size_t i = 0; i < BUCKETS; i++)
+                //{
+                //    queue->enqueueRead(histograms[i], &h);
+                //    cout << h << " ";
+                //}
+                //cout << endl;
 
-                void cleanup() override
-                {
-                    delete histogramKernel;
-                    delete scanKernel;
-                    delete permuteKernel;
-                    delete zeroHistogramKernel;
-                    for(size_t i = 0; i < BUCKETS; i++)
-                        delete histograms[i];
-                    delete[] histograms;
-                }
+                // rearrange the elements based on scaned histogram
+                permuteKernel->setArg(0, src);
+                permuteKernel->setArg(1, dest);
+                permuteKernel->setArg(2, histogram);
+                permuteKernel->setArg(3, start);
+                permuteKernel->setArg(4, end);
+                permuteKernel->setArg(5, bits);
 
-                virtual ~RadixSortAtomicCounters() {}
+                queue->enqueueKernel(permuteKernel, 1, globalWorkSizes, localWorkSizes);
 
-            private:
-                Kernel* histogramKernel;
-                Kernel* scanKernel;
-                Kernel* permuteKernel;
-                Kernel* zeroHistogramKernel;
-                Buffer* src;
-                Buffer* dest;
-                Buffer* histogram;
-                Buffer** histograms;
+                /*queue->enqueueRead(src, lol);
+                cout << "Src after permute" << endl;
+                printArr(lol, size);
+                queue->enqueueRead(dest, lol);
+                cout << "Dest after permute" << endl;
+                printArr(lol, size);*/
+
+                //cout << "Histogram after permute" << endl;
+                //for(size_t i = 0; i < BUCKETS; i++)
+                //{
+                //    queue->enqueueRead(histograms[i], &h);
+                //    cout << h << " ";
+                //}
+                //cout << endl;
+
+                std::swap(src, dest);
+
+                cl_uint hist[BUCKETS + 1];
+                hist[BUCKETS] = size;
+                queue->enqueueRead(histogram, hist);
+
+                for(int i = 0; i < BUCKETS; i++)
+                    run_r(workGroupSize, hist[i], hist[i + 1] - 1, bits >> RADIX, size);
+            }
+
+            void download(T* result, size_t size) override
+            {
+                queue->enqueueRead(src, result);
+
+                delete src;
+                delete dest;
+            }
+
+            void cleanup() override
+            {
+                delete histogramKernel;
+                delete scanKernel;
+                delete permuteKernel;
+                //for(size_t i = 0; i < BUCKETS; i++)
+                //    delete histograms[i];
+                //delete[] histograms;
+                delete histogram;
+            }
+
+            virtual ~RadixSortAtomicCounters() {}
+
+        private:
+            Kernel* histogramKernel;
+            Kernel* scanKernel;
+            Kernel* permuteKernel;
+            Buffer* src;
+            Buffer* dest;
+            Buffer* histogram;
+            Buffer** histograms;
         };
     }
 }
