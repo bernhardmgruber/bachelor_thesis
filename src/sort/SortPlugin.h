@@ -5,7 +5,7 @@
 
 #include "SortAlgorithm.h"
 
-#define FULL_VERIFY
+//#define FULL_VERIFY
 
 using namespace std;
 

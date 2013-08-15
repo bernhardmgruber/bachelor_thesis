@@ -31,15 +31,12 @@ __kernel void BitonicSortFusion2(__global uint* data, int inc, int dir)
     bool asc = ((dir & i) == 0); // asc/desc order
     data += i; // translate to first value
 
-    // Load
     uint x[2];
     for (int k=0; k<2; k++)
         x[k] = data[k*inc];
 
-    // Sort
     B2V(x,0);
 
-    // Store
     for (int k=0; k<2; k++)
         data[k*inc] = x[k];
 }
@@ -53,15 +50,12 @@ __kernel void BitonicSortFusion4(__global uint * data,int inc,int dir)
     bool asc = ((dir & i) == 0); // asc/desc order
     data += i; // translate to first value
 
-    // Load
     uint x[4];
     for (int k=0; k<4; k++)
         x[k] = data[k*inc];
 
-    // Sort
     B4V(x,0);
 
-    // Store
     for (int k=0; k<4; k++)
         data[k*inc] = x[k];
 }
@@ -75,15 +69,12 @@ __kernel void BitonicSortFusion8(__global uint * data,int inc,int dir)
     bool asc = ((dir & i) == 0); // asc/desc order
     data += i; // translate to first value
 
-    // Load
     uint x[8];
     for (int k=0; k<8; k++)
         x[k] = data[k*inc];
 
-    // Sort
     B8V(x,0);
 
-    // Store
     for (int k=0; k<8; k++)
         data[k*inc] = x[k];
 }
@@ -97,37 +88,12 @@ __kernel void BitonicSortFusion16(__global uint * data,int inc,int dir)
     bool asc = ((dir & i) == 0); // asc/desc order
     data += i; // translate to first value
 
-    // Load
     uint x[16];
     for (int k=0; k<16; k++)
         x[k] = data[k*inc];
 
-    // Sort
     B16V(x,0);
 
-    // Store
     for (int k=0; k<16; k++)
-        data[k*inc] = x[k];
-}
-
-__kernel void BitonicSortFusion32(__global uint * data,int inc,int dir)
-{
-    inc >>= 4;
-    int t = get_global_id(0); // thread index
-    int low = t & (inc - 1); // low order bits (below INC)
-    int i = ((t - low) << 5) + low; // insert 00000 at position INC
-    bool asc = ((dir & i) == 0); // asc/desc order
-    data += i; // translate to first value
-
-    // Load
-    uint x[32];
-    for (int k=0; k<32; k++)
-        x[k] = data[k*inc];
-
-    // Sort
-    B32V(x,0);
-
-    // Store
-    for (int k=0; k<32; k++)
         data[k*inc] = x[k];
 }

@@ -3,13 +3,11 @@
 #include "../../../common/CLAlgorithm.h"
 #include "../../SortAlgorithm.h"
 
-//#define THREAD_HIST_IN_REGISTERS
-
 using namespace std;
 
 namespace gpu
 {
-    namespace amd_dixxi
+    namespace thesis
     {
         /**
         * From: http://developer.amd.com/tools/hc/AMDAPPSDK/samples/Pages/default.aspx
@@ -18,15 +16,18 @@ namespace gpu
         template<typename T>
         class RadixSort : public CLAlgorithm<T>, public SortAlgorithm
         {
+            static_assert(is_same<T, cl_uint>::value, "Thesis algorithms only support 32 bit unsigned int");
+
             static const unsigned int RADIX = 4;
             static const unsigned int BUCKETS = (1 << RADIX);
             static const unsigned int BLOCK_SIZE = 32; // elements per thread
-            static const unsigned int VECTOR_WIDTH = 8; // for scan
+
+            static const unsigned int VECTOR_WIDTH = 8; // for recursive vector scan
 
         public:
             const string getName() override
             {
-                return "Radix sort (AMD/dixxi)";
+                return "Radix sort (THESIS AMD dixxi)";
             }
 
             bool isInPlace() override
@@ -36,22 +37,10 @@ namespace gpu
 
             void init() override
             {
-                stringstream ss;
-                ss << "-D T=" << getTypeName<T>() << " -D RADIX=" << RADIX << " -D BLOCK_SIZE=" << BLOCK_SIZE;
-
-#ifdef THREAD_HIST_IN_REGISTERS
-                ss << " -D THREAD_HIST_IN_REGISTERS";
-#endif
-
-                Program* program = context->createProgram("gpu/amd_dixxi/RadixSort.cl", ss.str());
-                histogramKernel = program->createKernel("histogram");
-                permuteKernel = program->createKernel("permute");
-                delete program;
-
-                ss.clear();
-                ss << " -D VECTOR_WIDTH=" << VECTOR_WIDTH << " -D VECTOR_WIDTH_MINUS_ONE_HEX=" << hex << VECTOR_WIDTH - 1;
-                program = context->createProgram("gpu/amd_dixxi/RecursiveVecScan.cl", ss.str());
-                scanKernel = program->createKernel("WorkEfficientVecScan");
+                Program* program = context->createProgram("gpu/thesis/RadixSort.cl");
+                histogramKernel = program->createKernel("Histogram");
+                permuteKernel = program->createKernel("Permute");
+                scanKernel = program->createKernel("ScanBlocksVec");
                 addKernel = program->createKernel("AddSums");
                 delete program;
             }
@@ -80,10 +69,6 @@ namespace gpu
 
             void run(size_t workGroupSize, size_t size) override
             {
-#ifndef THREAD_HIST_IN_REGISTERS
-                size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_uint));
-#endif
-
                 size_t globalWorkSizes[] = { bufferSize / BLOCK_SIZE };
                 size_t localWorkSizes[] = { workGroupSize };
 
@@ -93,9 +78,6 @@ namespace gpu
                     histogramKernel->setArg(0, srcBuffer);
                     histogramKernel->setArg(1, histogramBuffer);
                     histogramKernel->setArg(2, bits);
-#ifndef THREAD_HIST_IN_REGISTERS
-                    histogramKernel->setArg(3, localSize, nullptr); // allocate local histogram
-#endif
 
                     queue->enqueueKernel(histogramKernel, 1, globalWorkSizes, localWorkSizes);
 
@@ -107,9 +89,6 @@ namespace gpu
                     permuteKernel->setArg(1, dstBuffer);
                     permuteKernel->setArg(2, histogramBuffer);
                     permuteKernel->setArg(3, bits);
-#ifndef THREAD_HIST_IN_REGISTERS
-                    permuteKernel->setArg(4, localSize, nullptr);
-#endif
 
                     queue->enqueueKernel(permuteKernel, 1, globalWorkSizes, localWorkSizes);
 

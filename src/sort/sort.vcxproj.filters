@@ -153,6 +153,12 @@
     <ClInclude Include="gpu\thesis\BitonicSortFusion.h">
       <Filter>gpu\thesis</Filter>
     </ClInclude>
+    <ClInclude Include="gpu\thesis\RadixSort.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu\thesis\RadixSortLocal.h">
+      <Filter>gpu\thesis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gpu\gpugems\OddEvenTransition.cl">
@@ -238,6 +244,12 @@
     </None>
     <None Include="gpu\amd_dixxi\RecursiveVecScan.cl">
       <Filter>gpu\amd_dixxi</Filter>
+    </None>
+    <None Include="gpu\thesis\RadixSort.cl">
+      <Filter>gpu\thesis</Filter>
+    </None>
+    <None Include="gpu\thesis\RadixSortLocal.cl">
+      <Filter>gpu\thesis</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

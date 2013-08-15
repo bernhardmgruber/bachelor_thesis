@@ -8,13 +8,43 @@ The sort implementations provided by todays standard libraries are highly tuned 
 Another class of sorting methods are integer sorting algorithms. These algorithms do not use comparisons to determine the order of elements but rely on more flexible integer arithmetic applied to the keys which should be sorted. Therefore, they can achieve a better asymptotic runtime complexity than comparison based ones. Popular algorithms of this kind are radix sort, counting sort and bucket sort. All of them running with $\mathcal{O}(n + k)$ or $\mathcal{O}(n * k)$ (where k is a constant) in linear time.
 However, despite their key limitation, integer sorting algorithms also work on other kind of types as long as they can be represented as integers in binary (e.g. strings can be seen as byte array forming a (larger) integer).
 
-Considering parallelizability and an eventual GPU implementation, sorting lies between matrix multiplication and prefix sum offering some degree of parallelism depending on the chosen algorithm. The following chapter will focus on the implementation of two widely chosen algorithms for GPU sorting. These are the comparison based bitonic sorting network and the integer sorting algorithm radix sort. To reduce complexity (especially of the latter), the input arrays consist of unsigned integers.
+Considering parallelizability and an eventual GPU implementation, sorting lies between matrix multiplication and prefix sum offering some degree of parallelism depending on the chosen algorithm. The following chapter will focus on the implementation of two widely chosen algorithms for GPU sorting. These are the comparison based bitonic sorting network and the integer sorting algorithm radix sort. To reduce complexity (especially of the latter), the input arrays consists of unsigned 32 bit integers.
 
 
-\subsection{CPU Implementation}
+\subsection{CPU Implementations}
 
+\subsubsection{Standard library routines}
 
-quicksort, radix sort
+As the later GPU implementations should be compared with well implemented and wide-spread CPU ones, the first step is to measure the performance of the standard library's routines.
+Listing \ref{lst:sort_cpu_qsort} shows a typical usage of the \lstinline|qsort()| function provided by the stdlib header from C.
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using \lstinline!qsort()! from the C stdlib header., label=lst:sort_cpu_qsort, firstline=36, lastline=46]{code/sort/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+As qsort() is usually precompiled and part of the runtime library, a compare function has to be provided which is called for every comparison. This will probably slow down the run time when compared with the C++ \lstinline!std::sort()! which can use an existing overload of the $<$ operator or inline a provided compare function thanks to templates.
+Listing \ref{lst:sort_cpu_sort} shows a typical call to the \lstinline!std::sort()! function template from the C++ algorithm header.
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using \lstinline!std::sort()! from the C++ algorithm header., label=lst:sort_cpu_sort, firstline=48, lastline=51]{code/sort/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+As the $<$ operator is defined for unsigned integer types no custom compare function has to be provided and no additional overhead is created for comparing elements.
+The difference can be clearly seen in the benchmark chart in figure \ref{fig:sort_chart}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{sort_chart}
+\caption{Benchmark of several sort implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:sort_chart_data}.}
+\label{fig:sort_chart}
+\end{figure}
+
+\subsubsection{Radix sort}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using radix sort. The algorithm uses eight passes with analyzing four bits each. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_cpu_radixs, firstline=53, lastline=105]{code/sort/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
 
 \subsection{GPU Implementations}
 
@@ -35,6 +65,26 @@ kernel code/host code with explanation
 improvements
 runtime (diagram), $n * n \log^2(n)$, why still faster than CPU?
 
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Host code for a bitonic sort implementation. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}., label=lst:sort_bitonic_host, firstline=106, lastline=142]{code/sort/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for one iteration of a bitonic sort. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}. , label=lst:sort_bitonic_kernel,]{../src/sort/gpu/thesis/BitonicSort.cl}
+\lstset{basicstyle=\ttfamily{}}
+
+\subsubsection{Bitonic Sort using kernel fusion}
+
+
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Host code for a bitonic sort implementation using kernel fusion. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}., label=lst:sort_bitonic_fusion_host, firstline=144, lastline=209]{code/sort/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption={OpenCL code of several kernels performing 1,2,4 or 8 iterations of a bitonic sort. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}.} , label=lst:sort_bitonic_fusion_kernel,]{../src/sort/gpu/thesis/BitonicSortFusion.cl}
+\lstset{basicstyle=\ttfamily{}}
+
 \subsubsection{Radix Sort}
 \label{sec:sorting_radix}
 integer only
@@ -42,7 +92,24 @@ seems easy to parallelize, problems? (order of work item execution)
 
 kernel code/ host code (AMD/NVIDIA)
 
-runtime (diagram)
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Host code for a radix sort implementation. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_host, firstline=301, lastline=361]{code/sort/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL code for the histogram and permute kernels  of a radix sort. Each work item stores it's histogram in registers. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}. , label=lst:sort_radix_kernel, lastline=41]{../src/sort/gpu/thesis/RadixSort.cl}
+\lstset{basicstyle=\ttfamily{}}
+
+\subsubsection{Radix Sort using local memory}
+
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=C++, caption=Changes to the host code of listing \ref{lst:sort_radix_host} for a radix sort implementation using local memory to store each thread's histogram. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_host, firstline=425, lastline=429]{code/sort/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=OpenCL code for the histogram and permute kernels  of a radix sort. Each work item stores it's histogram in local memory. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}. , label=lst:sort_radix_local_kernel, lastline=46]{../src/sort/gpu/thesis/RadixSortLocal.cl}
+\lstset{basicstyle=\ttfamily{}}
 
 \subsection{Existing implementations}
 libCL

@@ -55,9 +55,9 @@ namespace gpu
 
             void run(size_t workGroupSize, size_t size) override
             {
-                for (cl_int startInc = 1; startInc < bufferSize; startInc <<= 1)
+                for (cl_uint startInc = 1; startInc < bufferSize; startInc <<= 1)
                 {
-                    for (cl_int inc = startInc; inc > 0; inc >>= 1)
+                    for (cl_uint inc = startInc; inc > 0; inc >>= 1)
                     {
                         kernel->setArg(0, buffer);
                         kernel->setArg(1, inc);          

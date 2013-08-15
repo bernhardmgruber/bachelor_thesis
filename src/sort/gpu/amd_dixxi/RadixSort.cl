@@ -5,8 +5,6 @@
 #define BUCKETS (1 << RADIX)
 #define RADIX_MASK (BUCKETS - 1)
 
-#define TB CONCAT_EXPANED(T, BUCKETS)
-
 /**
 * @brief   Calculates block-histogram bin whose bin size is 256
 * @param   unsortedData    array of unsorted elements

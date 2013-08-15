@@ -61,7 +61,7 @@ void scanCL(int* data, int* result, cl_uint n, cl_context context, cl_command_qu
 
         error = clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
 
-        swap(src, dst);
+        std::swap(src, dst);
     }
 
     error = clEnqueueReadBuffer(queue, src, true, 0, n * sizeof(int), result, 0, nullptr, nullptr);
@@ -88,7 +88,7 @@ void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, 
         error = clSetKernelArg(upSweep, 1, sizeof(cl_uint), &offset);
 
         size_t globalWorkSizes[] = { nodes };
-        size_t localWorkSizes[] = { min(workGroupSize, nodes) };
+        size_t localWorkSizes[] = { std::min(workGroupSize, nodes) };
 
         error = clEnqueueNDRangeKernel(queue, upSweep, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
     }
@@ -105,7 +105,7 @@ void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, 
         error = clSetKernelArg(downSweep, 1, sizeof(cl_uint), &offset);
 
         size_t globalWorkSizes[] = { nodes };
-        size_t localWorkSizes[] = { min(workGroupSize, nodes) };
+        size_t localWorkSizes[] = { std::min(workGroupSize, nodes) };
 
         error = clEnqueueNDRangeKernel(queue, downSweep, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
     }

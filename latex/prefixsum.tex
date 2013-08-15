@@ -24,7 +24,7 @@ b) each  output element is the sum of all elements preceding the corresponding i
 \end{equation*}
 
 Contrary to the matrix multiplication of the previous chapter \ref{sec:matrix_mul} the all-prefix-sums operation does not offer similarly trivial parallelism. Scanning an array is naturally sequential with a complexity of $\mathcal{O}(n)$. Although each output element could be calculated independently to gain parallelism, a lot of redundant work would be necessary raising the overall complexity to $\mathcal{O}(n^2)$ with the last element still taking $\mathcal{O}(n)$ time to calculate.
-The following chapter will focus on efficient and parallel implementations of an exclusive scan (except otherwise noted) using addition as operator on an input array of integers. This chapter is orientated towards the excellent Parallel Prefix Sum article from GPU Gems 3 \cite{gpu_gems_3_chapter_39}.
+The following chapter will focus on efficient and parallel implementations of an exclusive scan (except otherwise noted) using addition as operator on an input array of signed 32 bit integers. This chapter is orientated towards the excellent Parallel Prefix Sum article from GPU Gems 3 \cite{gpu_gems_3_chapter_39}.
 
 
 \subsection{CPU Implementation}
@@ -187,7 +187,7 @@ The remaining changes to the host code are straight forward. As the blocks get b
 Although the changes to the host code are quite small, the kernel needs a few more extensions as shown in listing \ref{lst:scan_recursive_vector_kernel}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_kernel, firstline=179, lastline=259]{code/scan/main.cpp}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types with a width of eight., label=lst:scan_recursive_vector_kernel, firstline=179, lastline=259]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 First of all, several macros are defined for the \lstinline!ScanBlocksVec! kernel to avoid redundant code for the up-sweep and down-sweep implementation on the vector types. The kernel begins, after querying topological informations, by copying two \lstinline!int8! vectors into registers. The up-sweep phase is completely executed on the work item's registers on both vectors resulting in a lot of independent instructions. After the up-sweep phase, the last vector elements hold the sum over both vectors which is then copied into the shared memory block. After the last elements are reset to zero, the down-sweep phase continues, finalizing the scan on the two vectors stored in registers. The remaining part of the kernel is equal to the one of the previous implementation in listing \ref{lst:scan_recursive_kernel} which calculates the scan of the block in shared memory and copies the block's sum into the \lstinline!sums! buffer. A final small addition is to offset the vectors by the sum of all previous vectors of preceding work items in this block. Notice that the value loaded from local memory is added to each vector element. Finally the vectors are written back to global memory.
