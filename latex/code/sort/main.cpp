@@ -50,7 +50,7 @@ void sortCPP(uint* data, size_t n)
     std::sort(data, data + n);
 }
 
-#define RADIX 4
+#define RADIX 16
 #define BUCKETS (1 << RADIX)
 #define RADIX_MASK (BUCKETS - 1)
 
@@ -298,7 +298,7 @@ void radixSortCL(uint* data, cl_uint n, cl_context context, cl_command_queue que
 }
 
 #if 0
-#define RADIX 4
+#define RADIX 16
 #define BUCKETS (1 << RADIX)
 #define RADIX_MASK (BUCKETS - 1)
 #define BLOCK_SIZE 32

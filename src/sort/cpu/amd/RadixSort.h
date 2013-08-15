@@ -105,7 +105,7 @@ namespace cpu
         template<typename T>
         class RadixSort : public CPUAlgorithm<T>, public SortAlgorithm
         {
-            static const unsigned int RADIX = 4;
+            static const unsigned int RADIX = 16;
             static const unsigned int BUCKETS = (1 << RADIX);
             static const unsigned int RADIX_MASK = (BUCKETS - 1);
 

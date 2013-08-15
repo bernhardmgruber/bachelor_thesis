@@ -15,7 +15,7 @@ namespace cpu
         class RadixSort : public CPUAlgorithm<T>, public SortAlgorithm
         {
         public:
-            static const unsigned int RADIX_LENGTH = 4;
+            static const unsigned int RADIX_LENGTH = 16;
             static const unsigned int HISTOGRAM_BUCKETS = (1 << RADIX_LENGTH);
             static const unsigned int RADIX_MASK = (HISTOGRAM_BUCKETS - 1);
 
