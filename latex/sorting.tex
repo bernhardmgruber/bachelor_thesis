@@ -51,7 +51,7 @@ The performance difference of radix sort to the previously presented comparison 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{sort_chart}
-\caption{Benchmark of several sort implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:sort_chart_data}.}
+\caption{Benchmark of several sort implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:sort_chart_data}. Both axis are of logarithmic scale.}
 \label{fig:sort_chart}
 \end{figure}
 
@@ -60,7 +60,7 @@ The performance difference of radix sort to the previously presented comparison 
 \subsubsection{Bitonic Sort}
 
 Many regular sorting algorithms do not fit into a GPU's massively parallel programming model by offering insufficient parallelism, requiring non-array data structures or begin based on recursion. However, a small subgroup of sorting approaches exists that fits the requirements of parallel hardware perfectly: sorting networks. A sorting network is a network of wires (one for each input) and comparators along these wires. Comparators connect two wires, compare their values and might swap them.
-Finding optimal sorting networks for a given number of inputs is difficult and still subject to research. However, in 1968 K. E. Batcher presented (beside others) an approach to create sorting networks achieving good results \cite{sort_bitonic}. His idea is based on efficiently merging a bitonic sequence into a sorted sequence, hence the name bitonic sorter. A bitonic sequence is a sequence that consists of two equally long subsequences where one is sorted ascending and the other descending. As two arbitrary elements form a bitonic sequence they can be merged into a sorted sequence. As two sequences sorted in opposite order also form a bitonic sequence they can again be merged into a sorted sequence. This allows us to create sorting networks of arbitrary size. Figure \ref{fig:bitonic_sort} shows a bitonic sorting network for 16 input elements. Nevertheless, to keep the code simple only networks for inputs which are a power of two will be created. The created networks consist of $\mathcal{O}(n  log^2 n)$ comparators. As $\frac{n}{2}$ comparators can be executed in parallel (cf. figure \ref{fig:bitonic_sort}), the runtime complexity of a bitonic sorter would be $\mathcal{O}(log^2 n)$ on a computer with at least $\frac{n}{2}$ processing elements.
+Finding optimal sorting networks for a given number of inputs is difficult and still subject to research. However, in 1968 K. E. Batcher presented (beside others) an approach to create sorting networks achieving good results \cite{sort_bitonic}. His idea is based on efficiently merging a bitonic sequence into a sorted sequence, hence the name bitonic sorter. A bitonic sequence is a sequence that consists of two equally long subsequences where one is sorted ascending and the other descending. As two arbitrary elements form a bitonic sequence they can be merged into a sorted sequence. As two sequences sorted in opposite order also form a bitonic sequence they can again be merged into a sorted sequence. This allows us to create sorting networks for any power of two inputs. Figure \ref{fig:bitonic_sort} shows a bitonic sorting network for 16 input elements. The created networks consist of $\mathcal{O}(n  log^2 n)$ comparators. As $\frac{n}{2}$ comparators can be executed in parallel (cf. figure \ref{fig:bitonic_sort}), the runtime complexity of a bitonic sorter would be $\mathcal{O}(log^2 n)$ on a computer with at least $\frac{n}{2}$ processing elements.
 
 \begin{figure}
 \centering
@@ -69,17 +69,33 @@ Finding optimal sorting networks for a given number of inputs is difficult and s
 \label{fig:bitonic_sort}
 \end{figure}
 
+Sorting inputs of any length is also possible with a bitonic sorting network. The network is constructed for the next larger power of two and all comparators affecting a wire of a (possible) input element larger than the actual input are omitted. This approach and a sample implementation is discussed in more detail in an online article by H.W. Lang \cite{sort_bitonic_arbitrary_n}. To keep the code simple the bitonic sorter implementation presented in this chapter will only focus on inputs with a power of two length.
+
 Listing \ref{lst:sort_bitonic_host} shows the host code of a bitonic sorter implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=C++, caption=Host code for a bitonic sort implementation. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}., label=lst:sort_bitonic_host, firstline=106, lastline=142]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
+At first the input's size is rounded up to a power of two (\lstinline!bufferSize!). A buffer read- and writable buffer is created with this size and the input data is written to it. If the input was smaller than the created buffer, the remaining part is filled with the maximum representable value of the input data type. This values should remain at the back side of the buffer during the sorting procedure and not disturb the actual input. As sorting networks are compare-and-swap-based no additional buffer is required. The input can be sorted in place.
+After the buffer is set up we can begin sorting the elements. As we can see in figure \ref{fig:bitonic_sort} each column of red boxes contains half as many comparisons as inputs, which can be executed in parallel. Therefore a kernel will be enqueued for every column of red boxes. The distance between two wires of a comparator is equal across all red boxes of a column and will be called \lstinline!inc!. The red boxes itself are combined in colums of alternating blue and green boxes. The width of these boxes (the number of wires they span) will be called \lstinline!boxWidth! and determines the initial \lstinline!inc! (which is a half of the width) of their contained columns of red boxes. Furthermore the \lstinline!boxWidth! allows each comparator to derive the sorting direction (ascending or descending) from the wires' indexes.
+The approach is implemented using two nested loops. The outer loop iterates the \lstinline!boxWidth!s which are powers of two starting with two until the last blue box which is equally long to the number of inputs. The inner loop iterates over the distances between two wires of the comparators inside the red box columns (\lstinline!inc!). This value starts with a half of the \lstinline!boxWidth! and decreases to the next lower power of two each loop until one.
+In each iteration of the inner loop a kernel is enqueued. Arguments are the inner loops \lstinline!inc!, the other loops \lstinline!boxWidth! and the buffer with the values. The global work size is the number of comparisons of the current red box column which is a half of the input size. The local work size can be chosen freely except it must not be larger than the global one.
+After all passes have been executed the sorted values can be read back from device memory.
 
+Listing \ref{lst:sort_bitonic_kernel} shows the corresponding kernel code for the described bitonic sorter implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for one iteration of a bitonic sort. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}. , label=lst:sort_bitonic_kernel,]{../src/sort/gpu/thesis/BitonicSort.cl}
 \lstset{basicstyle=\ttfamily{}}
+
+The kernel begins by calculating the index of the first wire for the comparator corresponding to the current work item. This is achieved by modifying the global id. The bits below the \lstinline!inc! bit (the lower part) stay the same. This value determines the wire index in the upper half of a red box. The bit at position \lstinline!inc! of the global id corresponds to the upper (0) or lower (1) half of the red box. This bit shall be zero to get the upper wire of the comparator. The remaining (upper) part of the global id above the \lstinline!inc! bit is a multiple of the width of a red box and therefore determines the index of the red box inside the column. The combined value is stored in \lstinline!i!.
+The next step is to decide upon the sorting order of the current comparator. This can be done by looking at the bit at position \lstinline!boxWidth! of the upper wire's index. If this bit is zero, the comparator belongs to a blue box and the sorting order is ascending. Otherwise we are in a green box and have to sort descending.
+Afterwards the two values at the input wires of the comparator are loaded from global memory. The positions are \lstinline!i! and \lstinline!i + inc!. If the values have to be swapped they are written back to global memory in opposite order.
+
+Looking at the performance data in figure \ref{fig:sort_chart} we can see that the GPU bitonic sorter performs equally well as C++'s \lstinline!std::sort()!. If we look very closely we can even see that the bitonic sorter's runtime raises a bit faster than the one of the CPU sorting algorithm. This can be explained simply by their runtime complexities which are $\mathcal{O}(n log^2 n)$ for the bitonic network and $\mathcal{O}(n log n)$ for \lstinline!std::sort()!.
+When profiling the code the first problem that can be noticed are the number of enqueued kernels which is 1053 for an input of $2^{26}$ elements. Furthermore, the work items are quite lightweight by only fetching and storing two values from global memory (fetch vs ALU instructions). The latter is not a problem as such but it is important to notice that here is still space for optimization. Fortunately, both issues can be solved by combining several separate kernel invocations into a larger, heavier kernel. This is also known as kernel fusion and topic of the next chapter.
+
 
 \subsubsection{Bitonic Sort using kernel fusion}
 

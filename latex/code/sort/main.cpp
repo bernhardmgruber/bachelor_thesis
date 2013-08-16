@@ -118,12 +118,10 @@ void bitonicSort(uint* data, cl_uint n, cl_context context, cl_command_queue que
         error = clEnqueueFillBuffer(queue, buffer, &max, sizeof(uint), n * sizeof(uint), (bufferSize - n) * sizeof(uint), 0, nullptr, nullptr);
     }
 
-    for (cl_uint startInc = 1; startInc < bufferSize; startInc <<= 1)
+    for (cl_uint boxwidth = 2; boxwidth <= bufferSize; boxwidth <<= 1)
     {
-        for (cl_uint inc = startInc; inc > 0; inc >>= 1)
+        for (cl_uint inc = boxwidth >> 1; inc > 0; inc >>= 1)
         {
-            cl_uint boxwidth = startInc << 1;
-
             error = clSetKernelArg(kernel, 0, sizeof(cl_mem), &buffer);
             error = clSetKernelArg(kernel, 1, sizeof(cl_uint), &inc);
             error = clSetKernelArg(kernel, 2, sizeof(cl_uint), &boxwidth);
