@@ -58,25 +58,24 @@ The performance difference of radix sort to the previously presented comparison 
 \subsection{GPU Implementations}
 
 \subsubsection{Bitonic Sort}
-parallelism on the cost of complexity
 
-Ken Batcher
+Many regular sorting algorithms do not fit into a GPU's massively parallel programming model by offering insufficient parallelism, requiring non-array data structures or begin based on recursion. However, a small subgroup of sorting approaches exists that fits the requirements of parallel hardware perfectly: sorting networks. A sorting network is a network of wires (one for each input) and comparators along these wires. Comparators connect two wires, compare their values and might swap them.
+Finding optimal sorting networks for a given number of inputs is difficult and still subject to research. However, in 1968 K. E. Batcher presented (beside others) an approach to create sorting networks achieving good results \cite{sort_bitonic}. His idea is based on efficiently merging a bitonic sequence into a sorted sequence, hence the name bitonic sorter. A bitonic sequence is a sequence that consists of two equally long subsequences where one is sorted ascending and the other descending. As two arbitrary elements form a bitonic sequence they can be merged into a sorted sequence. As two sequences sorted in opposite order also form a bitonic sequence they can again be merged into a sorted sequence. This allows us to create sorting networks of arbitrary size. Figure \ref{fig:bitonic_sort} shows a bitonic sorting network for 16 input elements. Nevertheless, to keep the code simple only networks for inputs which are a power of two will be created. The created networks consist of $\mathcal{O}(n  log^2 n)$ comparators. As $\frac{n}{2}$ comparators can be executed in parallel (cf. figure \ref{fig:bitonic_sort}), the runtime complexity of a bitonic sorter would be $\mathcal{O}(log^2 n)$ on a computer with at least $\frac{n}{2}$ processing elements.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\linewidth]{bitonic_sort}
-\caption{Example of a bitonic sorting network for 16 inputs \cite{wiki_bitonic_sort}.}
+\caption{Example of a bitonic sorting network for 16 inputs \cite{wiki_bitonic_sort}. The input elements start the left side of the network and travel through it to the right. Each arrow represents a comparator which compares the elements of the connected wires and swaps them if necessary so that the larger element is swapped to the wire the arrow points at. Each blue or green box is a separate bitonic merge receiving a bitonic sequence as input and outputting a sorted one (blue = ascending, green = descending). The red boxes contain the comparators and are equally structured. They compare the top half of the input (bitonic) sequence against the bottom half and create two bitonic sequences where each element of the upper bitonic sequence is smaller than or equal to every element in the bottom one. Further red boxes are than recursively applied to the two outputs until the sequence is sorted.}
 \label{fig:bitonic_sort}
 \end{figure}
 
-approach
-kernel code/host code with explanation
-improvements
-runtime (diagram), $n * n \log^2(n)$, why still faster than CPU?
+Listing \ref{lst:sort_bitonic_host} shows the host code of a bitonic sorter implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=C++, caption=Host code for a bitonic sort implementation. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}., label=lst:sort_bitonic_host, firstline=106, lastline=142]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
+
+
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for one iteration of a bitonic sort. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}. , label=lst:sort_bitonic_kernel,]{../src/sort/gpu/thesis/BitonicSort.cl}
