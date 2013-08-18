@@ -36,7 +36,6 @@ namespace gpu
                 kernel4 = program->createKernel("BitonicSortFusion4");
                 kernel8 = program->createKernel("BitonicSortFusion8");
                 kernel16 = program->createKernel("BitonicSortFusion16");
-                kernel32 = program->createKernel("BitonicSortFusion32");
                 delete program;
             }
 
@@ -63,13 +62,6 @@ namespace gpu
                     {
                         int ninc = 0;
                         Kernel* kernel;
-
-                        // kernel32 is highly inefficient as it needs scratch registers
-                        //if (inc >= 16 && ninc == 0)
-                        //{
-                        //    kernel = kernel32;
-                        //    ninc = 5;
-                        //}
 
                         if (inc >= 8 && ninc == 0)
                         {
@@ -122,7 +114,6 @@ namespace gpu
                 delete kernel4;
                 delete kernel8;
                 delete kernel16;
-                delete kernel32;
             }
 
             virtual ~BitonicSortFusion() {}
@@ -132,7 +123,6 @@ namespace gpu
             Kernel* kernel4;
             Kernel* kernel8;
             Kernel* kernel16;
-            Kernel* kernel32;
             Buffer* buffer;
             size_t bufferSize;
         };

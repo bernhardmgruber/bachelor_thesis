@@ -228,7 +228,7 @@ Beside the presented kernels further approaches have been implemented and benchm
 	\item[Using images and the texture units] \hfill \\
 	Using images instead of buffers as memory objects (without further specialization of access patterns) does not increase performance. Images may benefit from special hardware capabilities (e.g. texture units on a GPU provide different cache mechanisms).
 	\item[Vector types vs arrays] \hfill \\
-	Using vector types over an array (e.g. \lstinline!float4 a;! over \lstinline!float a[4];!) does make a difference. The blocked approach from chapter \ref{sec:matrix_mul_vec} has been implemented using arrays instead of vector types. Performance dropped by a factor of four.
+	Using vector types over an array (e.g. \lstinline!float4 a;! over \lstinline!float a[4];!) does make a difference. The blocked approach from chapter \ref{sec:matrix_mul_vec} has been implemented using arrays instead of vector types. Performance dropped by a factor of four. The reason for this is the size of a GPU's vector registers which is exactly large enough to hold a \lstinline!float4! value. Components of the vector type can only be addressed at compile time (via e.g. \lstinline!.y!). Arrays however can be addressed at runtime and therefore the compiler has to ensure that every array element is addressable. As a result an array of float values is placed into a consecutive block of registers where each element occupies only the first vector component of each register. This ensures fast array element access but on the cost of quadrupled variable size.
 \end{description}
 
 Furthermore, several libraries exist supporting GPGPU accelerated matrix multiplication.

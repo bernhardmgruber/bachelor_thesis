@@ -127,8 +127,8 @@ void bitonicSort(uint* data, cl_uint n, cl_context context, cl_command_queue que
             error = clSetKernelArg(kernel, 2, sizeof(cl_uint), &boxwidth);
 
             size_t nThreads = bufferSize / 2;
-            size_t globalWorkSizes[1] = { nThreads };
-            size_t localWorkSizes[1] = { min(workGroupSize, nThreads) };
+            size_t globalWorkSizes[] = { nThreads };
+            size_t localWorkSizes[] = { min(workGroupSize, nThreads) };
 
             error = clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
         }
@@ -154,34 +154,29 @@ void bitonicSortFusion(uint* data, cl_uint n, cl_context context, cl_command_que
         error = clEnqueueFillBuffer(queue, buffer, &max, sizeof(uint), n * sizeof(uint), (bufferSize - n) * sizeof(uint), 0, nullptr, nullptr);
     }
 
-    for (cl_uint startInc = 1; startInc < bufferSize; startInc <<= 1)
+    for (cl_uint boxwidth = 2; boxwidth <= bufferSize; boxwidth <<= 1)
     {
-        for (cl_uint inc = startInc; inc > 0; )
+        for (cl_uint inc = boxwidth >> 1; inc > 0; )
         {
-            cl_uint boxwidth = startInc << 1;
-
             int ninc = 0;
             cl_kernel kernel;
 
-            if (inc >= 8 && ninc == 0)
+            if (inc >= 8)
             {
                 kernel = kernel16;
                 ninc = 4;
             }
-
-            if (inc >= 4 && ninc == 0)
+            else if (inc >= 4)
             {
                 kernel = kernel8;
                 ninc = 3;
             }
-
-            if (inc >= 2 && ninc == 0)
+            else if (inc >= 2)
             {
                 kernel = kernel4;
                 ninc = 2;
             }
-
-            if (ninc == 0)
+            else
             {
                 kernel = kernel2;
                 ninc = 1;
@@ -192,8 +187,8 @@ void bitonicSortFusion(uint* data, cl_uint n, cl_context context, cl_command_que
             error = clSetKernelArg(kernel, 2, sizeof(cl_uint), &boxwidth);
 
             size_t nThreads = bufferSize >> ninc;
-            size_t globalWorkSizes[1] = { nThreads };
-            size_t localWorkSizes[1] = { min(workGroupSize, nThreads) };
+            size_t globalWorkSizes[] = { nThreads };
+            size_t localWorkSizes[] = { min(workGroupSize, nThreads) };
 
             error = clEnqueueNDRangeKernel(queue, kernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
 
