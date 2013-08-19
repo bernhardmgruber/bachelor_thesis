@@ -389,6 +389,49 @@ __kernel void Permute(__global const uint* src, __global uint* dst, __global con
 }
 #endif
 
+#if 0
+#define BLOCK_SIZE 128
+#define BLOCK_SIZE_16 (BLOCK_SIZE / 16)
+
+__kernel void Histogram(__global const uint16* data, __global uint* histograms, uint bits, __local uint* hist)
+{
+    ...
+    for(int i = 0; i < BLOCK_SIZE_16; ++i)
+    {
+        uint16 value = data[globalId * BLOCK_SIZE_16 + i];
+        uint16 pos = (value >> bits) & RADIX_MASK;
+
+        hist[pos.s0]++;
+        hist[pos.s1]++;
+        ...
+        hist[pos.sF]++;
+    }
+
+    ...
+}
+
+__kernel void Permute(__global const uint16* src, __global uint* dst, __global const uint* scannedHistograms, uint bits, __local uint* hist)
+{
+    ...
+    for(int i = 0; i < BLOCK_SIZE_16; ++i)
+    {
+        uint16 value = src[globalId * BLOCK_SIZE_16 + i];
+        uint16 pos = (value >> bits) & RADIX_MASK;
+
+        uint16 index;
+        index.s0 = hist[pos.s0]++;
+        index.s1 = hist[pos.s1]++;
+        ...
+        index.sF = hist[pos.sF]++;
+
+        dst[index.s0] = value.s0;
+        dst[index.s1] = value.s1;
+        ...
+        dst[index.sF] = value.sF;
+    }
+}
+#endif
+
 string readFile(string fileName)
 {
     ifstream file(fileName, ios::in);

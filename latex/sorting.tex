@@ -190,6 +190,20 @@ Benchmarking the changed code shows a subtle but noticeable difference in perfor
 \subsubsection{Radix Sort using local memory and vector loads}
 \label{sec:sorting_radix_local_vec}
 
+A further optimization of the presented radix sort implementation is to replace the many small global memory reads in both radix sort kernels by fewer but larger fetches. This can be achieved by declaring the pointers to the input buffers in both kernels to be of a vector type. Therefore the number of iterations of the fetching loops (and therefore the number of fetches) is reduced by a factor of the width of the used vector type. Disadvantages of using vector types may be increased register consumption and increased source code length (vector components cannot be iterated over).
+
+As this only concerns the kernel itself, no changes to the host code are required. Listing \ref{lst:sort_radix_local_vec_kernel} shows the changes to the previous radix sort implementation using local memory from listing \ref{lst:sort_radix_local_kernel}.
+
+\lstset{basicstyle=\ttfamily{}\scriptsize{}}
+\lstinputlisting[language=CL, caption=Changes to the OpenCL kernel code of listing \ref{lst:sort_radix_local_kernel} for a radix sort implementation using local memory to store each thread's histogram and vector types for loading values from global memory. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_vec_kernel, firstline=393, lastline=432]{code/sort/main.cpp}
+\lstset{basicstyle=\ttfamily{}}
+
+The first difference is the increase of the \lstinline!BLOCK_SIZE! constant which was 32 and has been raised to 128. It turned out that the larger memory requests now impose a smaller problem concerning the total runtime. Thus, more of them can be made inside each work item (may be specific to a GPU and should therefore be tested individually). To maximize memory throughput the largest supported vector type is chosen for the input buffer which is \lstinline!uint16!. As a result the fetching loops only need to iterate over a 16th of \lstinline!BLOCK_SIZE! input elements. The number of required iterations is placed in the macro \lstinline!BLOCK_SIZE_16!. In each loop iteration a full \lstinline!uint16! (64 byte) value is fetched from global memory and the target bucket in the histogram is calculated. Now comes the drawback of using vector types. As we cannot loop over the components of the fetched value, we have to write code for each histogram access using a different component separately.
+
+When we look at the benchmark chart in figure \ref{fig:sort_chart} we can see that our effort paid off. Compared with the version without vector fetches we could achieve a speedup of 1.5 (1.565 vs. 1.019 seconds). Beside a far better memory bus utilization also the amount of independent instruction increased leading to better ALU utilization.
+However, despite the optimizations the GPU radix sort implementation runs still slower than the original CPU code. Reasons are the slow global memory write accesses in both radix sort kernels and the relatively small \lstinline!RADIX! of four compared to 16 in the CPU variant which leads to eight passes on the GPU compared to only two on the CPU.
+
+
 \subsection{Existing implementations}
 libCL
 AMD APP SDK Samples

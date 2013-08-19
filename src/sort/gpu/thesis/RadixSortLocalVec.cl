@@ -2,7 +2,7 @@
 #define BUCKETS (1 << RADIX)
 #define RADIX_MASK (BUCKETS - 1)
 #define BLOCK_SIZE 128
-#define BLOCK_SIZE_16 8
+#define BLOCK_SIZE_16 (BLOCK_SIZE / 16)
 
 __kernel void Histogram(__global const uint16* data, __global uint* histograms, uint bits, __local uint* hist)
 {
