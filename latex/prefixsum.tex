@@ -205,7 +205,7 @@ However, if we have a closer look at the benchmark data in appendix chapter \ref
 \end{figure}
 
 \subsection{Further implementations}
-Beside the presented kernels further approaches have been implemented and benchmarked which have not been covered. However some experiences may help future developers.
+Beside the presented kernels a further approach has been implemented and benchmarked which has not been covered. However some experiences may help future developers.
 
 \begin{description}
 	\item[Bank conflict avoidance] \hfill \\
@@ -227,5 +227,5 @@ Furthermore, several libraries and sample codes exist supporting GPGPU accelerat
    Finally, scan is also part of NVIDIA's OpenCL example codes which can be downloaded from their website.
 \end{description}
 
-\subsection{Conclusion}
+\subsection{Summary and conclusion}
 In this chapter we have seen how a sequential algorithm like the all-prefix-sum can be parallelized for GPUs. A tree based approach using several passes delivered good results. Also the idea of solving the problem in smaller sub groups which are than merged into the global result proofed to be successful. Both concepts are common pattern when trying to port sequential CPU code to a GPU. However, we did also learn that using a GPU does not always result in a performance boost, despite their enormous power. So does the final scan only perform three times faster than the CPU implementation excluding memory transfer. If the time for copying the data to and from the GPU's main memory is included, we would be better off contenting with the CPU. This is a problem for many fast algorithms operating on larger chunks of memory. Nevertheless, a fast GPU implementation of such primitives can still be needed in cases where the input and output data is already present or consumed on the GPU. This is the case when input data is produced on the GPU (e.g. scanning image data from a rendering process) or present as input for other purposes (other algorithms, data for rendering). Also the output may be directly used by the GPU (e.g using scan as part of a filtering routine generating a list of objects to render). Even if a GPU algorithm would be slower in run time than a CPU version it might still outperform the CPU variant including memory transfer to and from the systems main memory.

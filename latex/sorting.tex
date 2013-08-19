@@ -185,7 +185,7 @@ Listing \ref{lst:sort_radix_local_kernel} shows the required changes to the kern
 
 Instead of declaring \lstinline!hist! as local variable inside the kernel, it is now passed as pointer to \lstinline!__local! memory as an argument to both kernels. The pointer has then to be offsetted to the current work item's histogram place. Except initialization to zero in the \lstinline!Histogram! kernel, the remaining code stays the same.
 
-Benchmarking the changed code shows a subtle but noticeable difference in performance. The initial 1.884 seconds of the original implementation from chapter \ref{sec:sorting_radix_sort} could be reduced to 1.565 seconds, simply adjusting the code to fit better to the GPUs hardware architecture. Although this code has executed faster in the benchmarks, newer GPUs might already provide scalar registers having no troubles storing an array of scalar data types.
+Benchmarking the changed code shows a subtle but noticeable difference in performance. The initial 1.884 seconds of the original implementation from chapter \ref{sec:sorting_radix} could be reduced to 1.565 seconds, simply adjusting the code to fit better to the GPUs hardware architecture. Although this code has executed faster in the benchmarks, newer GPUs might already provide scalar registers having no troubles storing an array of scalar data types.
 
 \subsubsection{Radix Sort using local memory and vector loads}
 \label{sec:sorting_radix_local_vec}
@@ -205,9 +205,28 @@ However, despite the optimizations the GPU radix sort implementation runs still 
 
 
 \subsection{Existing implementations}
-libCL
-AMD APP SDK Samples
-NVIDIA OpenCL Samples
-clpp
+Beside the presented kernels a further approach has been implemented and benchmarked which has not been covered. However some experiences may help future developers.
 
-\subsection{Conclusion}
+\begin{description}
+	\item[Odd-Even Transition \cite{gpu_gems_2_chapter_46}] \hfill \\
+	The odd-even transition sorting network from gpu gems 2 chapter 46 has been implemented. However, performance was significantly worse than the other covered algorithms.
+\end{description}
+
+Furthermore, several libraries and sample codes exist supporting GPGPU accelerated sorting routines.
+
+\begin{description}
+	\item[clpp \cite{clpp}] \hfill \\
+	The OpenCL Data Parallel Primitives Library is an open source and freely available library offering a few GPU primitives such as a scan and sort implementation. However, the project seems to be inactive (last release in July 2011).
+	\item[libCL \cite{libCL}] \hfill \\
+	libCL is an open-source library with the intention to provide a variety of all kinds of parallel algorithms. Although the list if functions is still small, it provides an implementation of radix sort.
+	\item[ArrayFire \cite{arrayfire}] \hfill \\
+	ArrayFire is a commercial GPU software acceleration library provided by AccelerEyes. It provides a lot of GPGPU accelerated algorithms using CUDA and OpenCL including a sorting routine.
+	\item[AMD \cite{amd_app_sdk}] \hfill \\
+	AMD also provides an example implementation of radix sort as part of their APP SDK. The presented implementations in this chapter are based upon the one by AMD. Furthermore, also a bitonic sort can be found.
+	\item[NVIDIA \cite{nvidia_opencl_samples}] \hfill \\
+	Finally, radix and bitonic sort are also part of NVIDIA's OpenCL example codes which can be downloaded from their website.
+\end{description}
+
+\subsection{Summary and conclusion}
+Sorting an array of elements is one of the most used routines of a programmer. Numerous algorithms and libraries (also standard libraries) exist targeting the CPU and providing highly optimized and ready-to-use sorting routines. However, the availability of GPU accelerated routines is still limited and mainly consists of some experimental libraries. In this chapter we have seen how to implement both, a comparison based and an integer based sorting algorithm using OpenCL. Contrary to traditional concepts, sorting networks where introduced offering a higher amount of parallelism on the cost of runtime complexity. The bitonic sorter has been discussed as example of how a sorting network can be constructed and operated for a given input size. Kernel fusion has been presented as a further way of optimizing algorithms consisting of multiple OpenCL kernels or kernel invocations. Radix sort has been introduced as example of a fast integer based sorting routine. Beside noticing the bad handling of arrays in registers, the final radix sort implementation once again showed the importance of global memory utilization.
+In conclusion, a fast comparison based sorting routine could be presented beating C++'s \lstinline!std::sort()! with a speedup of 2.37. Unfortunately, radix sorting is still faster on the CPU with the OpenCL implementation being more than twice as slow as the simple C++ variant.
