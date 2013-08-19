@@ -201,7 +201,6 @@ void bitonicSortFusion(uint* data, cl_uint n, cl_context context, cl_command_que
     clReleaseMemObject(buffer);
 }
 
-#define BLOCK_SIZE 32
 #define VECTOR_WIDTH 8
 
 void scanCLRecursiveVector_r(cl_mem values, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocksKernel, cl_kernel addSumsKernel, size_t workGroupSize)
@@ -234,64 +233,12 @@ void scanCLRecursiveVector_r(cl_mem values, cl_uint n, cl_context context, cl_co
     clReleaseMemObject(sums);
 }
 
-void radixSortCL(uint* data, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel histogramKernel, cl_kernel permuteKernel, cl_kernel scanBlocksKernel, cl_kernel addSumsKernel, size_t workGroupSize)
-{
-    cl_int error;
+#undef RADIX
+#undef BUCKETS
+#undef RADIX_MASK
+#undef VECTOR_WIDTH
 
-    size_t bufferSize = roundToMultiple(n, workGroupSize * BLOCK_SIZE);
-
-    cl_mem srcBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferSize * sizeof(uint), nullptr, &error);
-    cl_mem dstBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferSize * sizeof(uint), nullptr, &error);
-
-    error = clEnqueueWriteBuffer(queue, srcBuffer, false, 0, n * sizeof(uint), data, 0, nullptr, nullptr);
-
-    if(bufferSize != n)
-    {
-        cl_uint max = numeric_limits<uint>::max();
-        error = clEnqueueFillBuffer(queue, srcBuffer, &max, sizeof(uint), n * sizeof(uint), (bufferSize - n) * sizeof(uint), 0, nullptr, nullptr);
-    }
-
-    // each thread has it's own histogram
-    size_t histogramSize = (bufferSize / BLOCK_SIZE) * BUCKETS;
-    histogramSize = roundToMultiple(histogramSize, workGroupSize * 2 * VECTOR_WIDTH); // for scan
-
-    cl_mem histogramBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, histogramSize * sizeof(cl_uint), nullptr, &error);
-
-    size_t globalWorkSizes[] = { bufferSize / BLOCK_SIZE };
-    size_t localWorkSizes[] = { workGroupSize };
-
-    for(cl_uint bits = 0; bits < sizeof(uint) * 8; bits += RADIX)
-    {
-        // Calculate thread-histograms
-        error = clSetKernelArg(histogramKernel, 0, sizeof(cl_mem), &srcBuffer);
-        error = clSetKernelArg(histogramKernel, 1, sizeof(cl_mem), &histogramBuffer);
-        error = clSetKernelArg(histogramKernel, 2, sizeof(cl_uint), &bits);
-
-        error = clEnqueueNDRangeKernel(queue, histogramKernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
-
-        // Scan the histogram
-        scanCLRecursiveVector_r(histogramBuffer, histogramSize, context, queue, scanBlocksKernel, addSumsKernel, workGroupSize);
-
-        // Permute the element to appropriate place
-        error = clSetKernelArg(permuteKernel, 0, sizeof(cl_mem), &srcBuffer);
-        error = clSetKernelArg(permuteKernel, 1, sizeof(cl_mem), &dstBuffer);
-        error = clSetKernelArg(permuteKernel, 2, sizeof(cl_mem), &histogramBuffer);
-        error = clSetKernelArg(permuteKernel, 3, sizeof(cl_uint), &bits);
-
-        error = clEnqueueNDRangeKernel(queue, permuteKernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
-
-        std::swap(srcBuffer, dstBuffer);
-    }
-
-    clEnqueueReadBuffer(queue, srcBuffer, true, 0, n * sizeof(uint), data, 0, nullptr, nullptr);
-
-    clReleaseMemObject(srcBuffer);
-    clReleaseMemObject(dstBuffer);
-    clReleaseMemObject(histogramBuffer);
-}
-
-#if 0
-#define RADIX 16
+#define RADIX 4
 #define BUCKETS (1 << RADIX)
 #define RADIX_MASK (BUCKETS - 1)
 #define BLOCK_SIZE 32
@@ -314,7 +261,6 @@ void radixSortCL(uint* data, cl_uint n, cl_context context, cl_command_queue que
         error = clEnqueueFillBuffer(queue, srcBuffer, &max, sizeof(uint), n * sizeof(uint), (bufferSize - n) * sizeof(uint), 0, nullptr, nullptr);
     }
 
-    // each thread has it's own histogram
     size_t histogramSize = (bufferSize / BLOCK_SIZE) * BUCKETS;
     histogramSize = roundToMultiple(histogramSize, workGroupSize * 2 * VECTOR_WIDTH); // for scan
 
@@ -325,17 +271,14 @@ void radixSortCL(uint* data, cl_uint n, cl_context context, cl_command_queue que
 
     for(cl_uint bits = 0; bits < sizeof(uint) * 8; bits += RADIX)
     {
-        // Calculate thread-histograms
         error = clSetKernelArg(histogramKernel, 0, sizeof(cl_mem), &srcBuffer);
         error = clSetKernelArg(histogramKernel, 1, sizeof(cl_mem), &histogramBuffer);
         error = clSetKernelArg(histogramKernel, 2, sizeof(cl_uint), &bits);
 
         error = clEnqueueNDRangeKernel(queue, histogramKernel, 1, nullptr, globalWorkSizes, localWorkSizes, 0, nullptr, nullptr);
 
-        // Scan the histogram
         scanCLRecursiveVector_r(histogramBuffer, histogramSize, context, queue, scanBlocksKernel, addSumsKernel, workGroupSize);
 
-        // Permute the element to appropriate place
         error = clSetKernelArg(permuteKernel, 0, sizeof(cl_mem), &srcBuffer);
         error = clSetKernelArg(permuteKernel, 1, sizeof(cl_mem), &dstBuffer);
         error = clSetKernelArg(permuteKernel, 2, sizeof(cl_mem), &histogramBuffer);
@@ -352,7 +295,6 @@ void radixSortCL(uint* data, cl_uint n, cl_context context, cl_command_queue que
     clReleaseMemObject(dstBuffer);
     clReleaseMemObject(histogramBuffer);
 }
-#endif
 
 void radixSortCLLocal(uint* data, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel histogramKernel, cl_kernel permuteKernel, cl_kernel scanBlocksKernel, cl_kernel addSumsKernel, size_t workGroupSize)
 {
@@ -417,6 +359,8 @@ void radixSortCLLocal(uint* data, cl_uint n, cl_context context, cl_command_queu
 #if 0
     size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_uint));
     ...
+    for(cl_uint bits = 0; bits < sizeof(uint) * 8; bits += RADIX)
+        ...
         error = clSetKernelArg(histogramKernel, 3, localSize, nullptr);
         ...
         error = clSetKernelArg(permuteKernel, 4, localSize, nullptr);

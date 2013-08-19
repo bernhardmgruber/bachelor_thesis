@@ -106,6 +106,7 @@
     <ClInclude Include="gpu\amd\BitonicSort.h" />
     <ClInclude Include="gpu\amd\RadixSort.h" />
     <ClInclude Include="gpu\amd_dixxi\RadixSort.h" />
+    <ClInclude Include="gpu\amd_dixxi\RadixSortVec.h" />
     <ClInclude Include="gpu\bealto\ParallelBitonicSortA.h" />
     <ClInclude Include="gpu\bealto\ParallelBitonicSortB16.h" />
     <ClInclude Include="gpu\bealto\ParallelBitonicSortB2.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="gpu\thesis\BitonicSortFusion.h" />
     <ClInclude Include="gpu\thesis\RadixSort.h" />
     <ClInclude Include="gpu\thesis\RadixSortLocal.h" />
+    <ClInclude Include="gpu\thesis\RadixSortLocalVec.h" />
     <ClInclude Include="SortAlgorithm.h" />
     <ClInclude Include="SortPlugin.h" />
   </ItemGroup>
@@ -139,6 +141,7 @@
     <None Include="gpu\amd\BitonicSort.cl" />
     <None Include="gpu\amd\RadixSort.cl" />
     <None Include="gpu\amd_dixxi\RadixSort.cl" />
+    <None Include="gpu\amd_dixxi\RadixSortVec.cl" />
     <None Include="gpu\amd_dixxi\RecursiveVecScan.cl" />
     <None Include="gpu\bealto\ParallelBitonicSortA.cl" />
     <None Include="gpu\bealto\ParallelBitonicSortB16.cl" />
@@ -166,6 +169,7 @@
     <None Include="gpu\thesis\BitonicSortFusion.cl" />
     <None Include="gpu\thesis\RadixSort.cl" />
     <None Include="gpu\thesis\RadixSortLocal.cl" />
+    <None Include="gpu\thesis\RadixSortLocalVec.cl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\libs\clpp\clpp.vcxproj">

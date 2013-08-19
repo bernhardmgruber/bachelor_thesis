@@ -53,7 +53,7 @@ __kernel void histogram(__global const T* unsortedData, __global uint* histogram
 * @param   sharedBuckets       shared array for scaned buckets
 * @param   sortedData          array for sorted elements
 */
-__kernel void permute(__global const T* unsortedData, __global T* sortedData, __global const uint* scanedHistograms, uint shiftCount
+__kernel void permute(__global const T* unsortedData, __global T* sortedData, __global const uint* scanedHistograms, uint bits
 #ifndef THREAD_HIST_IN_REGISTERS
                       , __local uint* hist
 #endif
@@ -76,7 +76,7 @@ __kernel void permute(__global const T* unsortedData, __global T* sortedData, __
     for(int i = 0; i < BLOCK_SIZE; ++i)
     {
         T value = unsortedData[globalId * BLOCK_SIZE + i];
-        T radix = (value >> shiftCount) & RADIX_MASK;
+        T radix = (value >> bits) & RADIX_MASK;
 
         uint index = hist[radix]++;
 
