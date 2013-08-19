@@ -33,6 +33,7 @@ As the $<$ operator is defined for unsigned integer types no custom compare func
 The difference can be clearly seen in the benchmark chart in figure \ref{fig:sort_chart}. It takes \lstinline!qsort()! 14.746 seconds to sort a sequence of $2^{26}$ elements while \lstinline!std::sort()! only requires 9.039 seconds.
 
 \subsubsection{Radix sort}
+\label{sec:sorting_radix_cpu}
 
 In contrast to the comparison based \lstinline!qsort()! and \lstinline!std::sort()! radix sort operates on the binary representation of the input elements in several passes. Originally, in each pass a bit of each input element is selected (starting with the least significant bit). The input elements are then split into two sequences (called buckets) according to the selected bit. This is done by creating a histogram holding the number of elements having the same bit value for each bit combination (0 or 1). After the histogram has been created it is exclusively scanned. The scanned histogram now holds the start index for each bucket. The input elements are permuted and moved into their corresponding buckets according to the selected bit. Elements with an equal bit are written into the same bucket in the same order as they appeared in the pass' input (each pass is stable). An auxiliary array is usually needed for this permute step. This procedure is repeated for every bit of the input elements. 
 
@@ -130,13 +131,19 @@ Another idea would be to place the loaded values from the wires into local memor
 
 \subsubsection{Radix Sort}
 \label{sec:sorting_radix}
+
+We have already discussed radix sort in the CPU implementation chapter \ref{sec:sorting_radix_cpu}. Implementing radix sort for the GPU comes down again to three steps which are executed in passes. The first step is to create a histogram for the radix of the current pass. Secondly the histogram has to be scanned and finally the input values are permuted according to the scanned histogram. 
+Creating the histogram is easy. For each input element a work item is created which determines the histogram element which should be incremented. By using atomic operations which are available since OpenCL 1.1 (extension in OpenCL 1.0) the histogram can simply be stored in global memory and concurrently updated from all threads without errors. As global memory atomics are relatively slow, each work group should first compute a histogram in local memory which is then finally reduced to one in global memory.
+However, this kind of histogram is of little to no use during the fully parallel permute stage. The reason for this is that every work item must be able to determine the destination address for its value independently of other threads. Although it would be possible for all work items of the same histogram bucket to obtain different destination addresses again by using atomic increments on the histogram (similar to the CPU implementation where each bucket's histogram value is incremented after writing a value to this bucket), it does not work on a GPU. Because OpenCL does not guarantee the order in which work items are executed, work items with higher global id might write values to a bucket before work items with lower id do. As a consequence the permute pass would not be stable anymore which is crucial to not ruin the permutation of a previous pass.
+A solution to this problem can be found by thinking about the information a work item needs to find its correct destination address. Instead of the the start address of the region where all values of the same bucket should be written to (as in a single histogram), each work item needs to know how many threads having a value belonging to the same bucket have a smaller global id than the current work item.
+
 integer only
 seems easy to parallelize, problems? (order of work item execution)
 
 kernel code/ host code (AMD/NVIDIA)
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for a radix sort implementation. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_host, firstline=301, lastline=361]{code/sort/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for a radix sort implementation. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_host, firstline=294, lastline=354]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
