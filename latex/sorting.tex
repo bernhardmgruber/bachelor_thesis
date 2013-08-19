@@ -167,15 +167,25 @@ A further but more subtle issue can be seen in the disassembly of both kernels. 
 \subsubsection{Radix Sort using local memory}
 \label{sec:sorting_radix_local}
 
+Instead of placing each work item's histogram in it's own registers, local memory is used to store the array. Thus, wasted register space and instruction overhead necessary to access an array placed in registers is avoided. However, accessing local memory is usually slower and accesses might suffer from bank conflicts. This implementation will take the radix sort of the previous chapter \ref{sec:sorting_radix} and move the histogram from registers to local memory.
 
+Listing \ref{lst:sort_radix_local_host} shows the required changes to the host code from listing \ref{lst:sort_radix_host}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=C++, caption=Changes to the host code of listing \ref{lst:sort_radix_host} for a radix sort implementation using local memory to store each thread's histogram. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_host, firstline=360, lastline=366]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
+As local memory is shared inside a work group, we have to allocate a block of local memory large enough to hold all histograms of all work items of a work group. The local memory needs to be allocated in both kernels.
+
+Listing \ref{lst:sort_radix_local_kernel} shows the required changes to the kernel code from listing \ref{lst:sort_radix_kernel}.
+
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL code for the histogram and permute kernels  of a radix sort. Each work item stores it's histogram in local memory. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}. , label=lst:sort_radix_local_kernel, lastline=46]{../src/sort/gpu/thesis/RadixSortLocal.cl}
+\lstinputlisting[language=CL, caption=Changes to the OpenCL kernel code of listing \ref{lst:sort_radix_kernel} for a radix sort implementation using local memory to store each thread's histogram. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_kernel, firstline=370, lastline=389]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
+
+Instead of declaring \lstinline!hist! as local variable inside the kernel, it is now passed as pointer to \lstinline!__local! memory as an argument to both kernels. The pointer has then to be offsetted to the current work item's histogram place. Except initialization to zero in the \lstinline!Histogram! kernel, the remaining code stays the same.
+
+Benchmarking the changed code shows a subtle but noticeable difference in performance. The initial 1.884 seconds of the original implementation from chapter \ref{sec:sorting_radix_sort} could be reduced to 1.565 seconds, simply adjusting the code to fit better to the GPUs hardware architecture. Although this code has executed faster in the benchmarks, newer GPUs might already provide scalar registers having no troubles storing an array of scalar data types.
 
 \subsubsection{Radix Sort using local memory and vector loads}
 \label{sec:sorting_radix_local_vec}

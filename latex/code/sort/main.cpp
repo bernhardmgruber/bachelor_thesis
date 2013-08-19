@@ -366,6 +366,29 @@ void radixSortCLLocal(uint* data, cl_uint n, cl_context context, cl_command_queu
         error = clSetKernelArg(permuteKernel, 4, localSize, nullptr);
 #endif
 
+#if 0
+__kernel void Histogram(__global const uint* data, __global uint* histograms, uint bits, __local uint* hist)
+{
+    size_t globalId = get_global_id(0);
+    size_t localId = get_local_id(0);
+
+    hist += localId * BUCKETS;
+
+    for(int i = 0; i < BUCKETS; ++i)
+        hist[i] = 0;
+    ...
+}
+
+__kernel void Permute(__global const uint* src, __global uint* dst, __global const uint* scannedHistograms, uint bits, __local uint* hist)
+{
+    size_t globalId = get_global_id(0);
+    size_t localId = get_local_id(0);
+
+    hist += localId * BUCKETS;
+    ...
+}
+#endif
+
 string readFile(string fileName)
 {
     ifstream file(fileName, ios::in);
