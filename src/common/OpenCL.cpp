@@ -265,24 +265,27 @@ string Context::getInfo<string>(cl_device_info info)
     return string(buffer);
 }
 
-void* Context::getInfo(cl_device_info info)
+tuple<void*, size_t> Context::getInfo(cl_device_info info)
 {
     size_t neededSize;
     cl_int error = clGetDeviceInfo(device, info, 0, nullptr, &neededSize);
     checkError(error, __LINE__, __FUNCTION__);
 
+    if(neededSize == 0)
+        return make_tuple(nullptr, 0);
+
     void* value = operator new(neededSize);
     error = clGetDeviceInfo(device, info, neededSize, value, nullptr);
     checkError(error, __LINE__, __FUNCTION__);
 
-    return value;
+    return make_tuple(value, neededSize);
 }
 
 void* Context::getInfoWithDefaultOnError(cl_device_info info)
 {
     try
     {
-        return getInfo(info);
+        return get<0>(getInfo(info));
     }
     catch(...)
     {

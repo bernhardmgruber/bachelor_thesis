@@ -167,26 +167,30 @@ public:
         os << "CL_DEVICE_OPENCL_C_VERSION" << sep << context->getInfoWithDefaultOnError<string>(CL_DEVICE_OPENCL_C_VERSION) << endl;
 #ifdef CL_VERSION_1_2
         os << "CL_DEVICE_PARENT_DEVICE" << sep << context->getInfoWithDefaultOnError<cl_device_id>(CL_DEVICE_PARENT_DEVICE) << endl;
-        os << "CL_DEVICE_PARTITION_MAX_SUB_DEVICES" << sep << context->getInfoWithDefaultOnError<cl_device_id>(CL_DEVICE_PARTITION_MAX_SUB_DEVICES) << endl;
+        os << "CL_DEVICE_PARTITION_MAX_SUB_DEVICES" << sep << context->getInfoWithDefaultOnError<cl_uint>(CL_DEVICE_PARTITION_MAX_SUB_DEVICES) << endl;
 
-        //{
-        //    os << "CL_DEVICE_PARTITION_PROPERTIES" << sep;
-        //    cl_device_partition_property properties[] = context->getInfoWithDefaultOnError<cl_device_partition_property[]>(CL_DEVICE_PARTITION_PROPERTIES);
-        //    while(*properties != 0) {
-        //        switch(*properties) {
-        //        case CL_DEVICE_PARTITION_EQUALLY:
-        //            os << "CL_DEVICE_PARTITION_EQUALLY";
-        //            break;
-        //        case CL_DEVICE_PARTITION_BY_COUNTS:
-        //            os << "CL_DEVICE_PARTITION_BY_COUNTS";
-        //            break;
-        //        case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN:
-        //            os << "CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN";
-        //            break;
-        //        }
-        //        properties++;
-        //    }
-        //}
+        {
+            os << "CL_DEVICE_PARTITION_PROPERTIES" << sep;
+            auto tpl = context->getInfo(CL_DEVICE_PARTITION_PROPERTIES);
+            cl_device_partition_property* properties = (cl_device_partition_property*)get<0>(tpl);
+            size_t size = get<1>(tpl);
+            for(unsigned int i = 0; i < size / sizeof(cl_device_partition_property); i++) {
+                switch(properties[i]) {
+                case CL_DEVICE_PARTITION_EQUALLY:
+                    os << "CL_DEVICE_PARTITION_EQUALLY";
+                    break;
+                case CL_DEVICE_PARTITION_BY_COUNTS:
+                    os << "CL_DEVICE_PARTITION_BY_COUNTS";
+                    break;
+                case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN:
+                    os << "CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN";
+                    break;
+                }
+            }
+            if(properties)
+                delete properties;
+            os << endl;
+        }
 
         {
             os << "CL_DEVICE_PARTITION_AFFINITY_DOMAIN" << sep;
@@ -207,24 +211,28 @@ public:
             os << endl;
         }
 
-        //{
-        //    os << "CL_DEVICE_PARTITION_TYPE" << sep;
-        //    cl_device_partition_property properties[] = context->getInfoWithDefaultOnError<cl_device_partition_property[]>(CL_DEVICE_PARTITION_TYPE);
-        //    while(*properties != 0) {
-        //        switch(*properties) {
-        //        case CL_DEVICE_PARTITION_EQUALLY:
-        //            os << "CL_DEVICE_PARTITION_EQUALLY";
-        //            break;
-        //        case CL_DEVICE_PARTITION_BY_COUNTS:
-        //            os << "CL_DEVICE_PARTITION_BY_COUNTS";
-        //            break;
-        //        case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN:
-        //            os << "CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN";
-        //            break;
-        //        }
-        //        properties++;
-        //    }
-        //}
+        {
+            os << "CL_DEVICE_PARTITION_TYPE" << sep;
+            auto tpl = context->getInfo(CL_DEVICE_PARTITION_TYPE);
+            cl_device_partition_property* properties = (cl_device_partition_property*) get<0>(tpl);
+            size_t size = get<1>(tpl);
+            for(unsigned int i = 0; i < size / sizeof(cl_device_partition_property); i++) {
+                switch(properties[i]) {
+                case CL_DEVICE_PARTITION_EQUALLY:
+                    os << "CL_DEVICE_PARTITION_EQUALLY";
+                    break;
+                case CL_DEVICE_PARTITION_BY_COUNTS:
+                    os << "CL_DEVICE_PARTITION_BY_COUNTS";
+                    break;
+                case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN:
+                    os << "CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN";
+                    break;
+                }
+            }
+            if(properties)
+                delete properties;
+            os << endl;
+        }
 #endif
 
         os << "CL_DEVICE_PLATFORM" << sep << context->getInfoWithDefaultOnError<cl_platform_id>(CL_DEVICE_PLATFORM) << endl;

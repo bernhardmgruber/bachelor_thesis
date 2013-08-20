@@ -1,6 +1,7 @@
 #include <sstream>
 #include <iomanip>
 #include <stdlib.h>
+#include <stdexcept>
 #include <intrin.h>
 
 #include "utils.h"
@@ -109,5 +110,5 @@ const string runTypeToString(const RunType runType)
         return "OpenCL CPU";
     }
 
-    throw exception("Invalid RunType");
+    throw std::runtime_error("Invalid RunType");
 }

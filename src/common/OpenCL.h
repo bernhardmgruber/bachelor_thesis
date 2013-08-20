@@ -11,6 +11,7 @@
 #include <CL/cl_ext.h>
 #include <string>
 #include <vector>
+#include <tuple>
 #include <exception>
 
 using namespace std;
@@ -158,8 +159,10 @@ public:
 
     /**
     * Gets information about the requested property. The required size of the value is determined and allocated by this function. The user is responsible for freeing the returned buffer using the delete operator.
+    *
+    * @return Returns a tuple holding an allocated void* pointer to the retrieved value and a size_t storing the size of the value.
     */
-    void* getInfo(cl_device_info);
+    tuple<void*, size_t> getInfo(cl_device_info info);
 
     /**
     * Same as getInfo() but returns nullptr on error instread of throwing an exception.

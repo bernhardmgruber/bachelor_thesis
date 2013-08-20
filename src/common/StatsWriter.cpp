@@ -6,7 +6,7 @@ void StatsWriter::beginFile(string fileName, char separator)
 {
     sep = separator;
 
-    file = ofstream(fileName);
+    file.open(fileName);
     file.setf(ios::fixed);
 
     file << "Runner built on " << __DATE__ << " " << __TIME__ << endl;
@@ -97,5 +97,5 @@ void StatsWriter::writeRun(const CLRun& run)
     file << (run.fastest->uploadTimeMean + run.fastest->runTimeMean + run.fastest->downloadTimeMean) << sep;
     file << (run.fastest->exceptionOccured ? "EXCEPTION" : (run.fastest->verificationResult ? "SUCCESS" : "FAILED")) << endl;
 
-    file.flush();        
+    file.flush();
 }
