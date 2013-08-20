@@ -1,5 +1,105 @@
 \section{Appendix}
 
+\subsection{Benchmark environment}
+
+All benchmarks have been created using the following hardware configuration:
+
+\begin{itemize}
+	\item Windows 7 x64
+	\item Intel Core i5 M 480
+	\begin{itemize}
+		\item 2 physical cores (4 virtual with Hyper Threading)
+		\item 2.67 GHz (2.93 GHz with Turbo Boost)
+	\end{itemize}
+	\item 4 GiB main memory
+	\item AMD Radeon HD 5650
+	\begin{itemize}
+		\item 400 shader cores
+		\item 1 GiB memory
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{OpenCL device info of GPU}
+
+The following informations have been retrieved by calling \lstinline!clGetDeviceInfo()! with all defined constants in OpenCL 1.2. For a complete list and further explanation please visit the corresponding API documentation at Khronos' web site.
+
+\begin{longtable}{p{0.55\linewidth} p{0.45\linewidth}}
+\textbf{Flag} & \textbf{Value} \\
+CL\_DEVICE\_ADDRESS\_BITS & 32 \\
+CL\_DEVICE\_AVAILABLE & 1 \\
+CL\_DEVICE\_BUILT\_IN\_KERNELS &  \\
+CL\_DEVICE\_COMPILER\_AVAILABLE & 1 \\
+CL\_DEVICE\_DOUBLE\_FP\_CONFIG &  \\
+CL\_DEVICE\_ENDIAN\_LITTLE & 1 \\
+CL\_DEVICE\_ERROR\_CORRECTION\_SUPPORT & 0 \\
+CL\_DEVICE\_EXECUTION\_CAPABILITIES & CL\_EXEC\_KERNEL  \\
+CL\_DEVICE\_EXTENSIONS & cl\_khr\_global\_int32\_base\_atomics \newline cl\_khr\_global\_int32\_extended\_atomics \newline cl\_khr\_local\_int32\_base\_atomics \newline cl\_khr\_local\_int32\_extended\_atomics \newline cl\_khr\_3d\_image\_writes \newline cl\_khr\_byte\_addressable\_store \newline cl\_khr\_gl\_sharing \newline cl\_ext\_atomic\_counters\_32 \newline cl\_amd\_device\_attribute\_query \newline cl\_amd\_vec3 \newline cl\_amd\_printf \newline cl\_amd\_media\_ops \newline cl\_amd\_media\_ops2 \newline cl\_amd\_popcnt \newline cl\_khr\_d3d10\_sharing \\
+CL\_DEVICE\_GLOBAL\_MEM\_CACHE\_SIZE & 0 \\
+CL\_DEVICE\_GLOBAL\_MEM\_CACHE\_TYPE & CL\_NONE \\
+CL\_DEVICE\_GLOBAL\_MEM\_CACHELINE\_SIZE & 0 \\
+CL\_DEVICE\_GLOBAL\_MEM\_SIZE & 1073741824 \\
+CL\_DEVICE\_HALF\_FP\_CONFIG &  \\
+CL\_DEVICE\_HOST\_UNIFIED\_MEMORY & 0 \\
+CL\_DEVICE\_IMAGE\_SUPPORT & 1 \\
+CL\_DEVICE\_IMAGE2D\_MAX\_HEIGHT & 16384 \\
+CL\_DEVICE\_IMAGE2D\_MAX\_WIDTH & 16384 \\
+CL\_DEVICE\_IMAGE3D\_MAX\_DEPTH & 2048 \\
+CL\_DEVICE\_IMAGE3D\_MAX\_HEIGHT & 2048 \\
+CL\_DEVICE\_IMAGE3D\_MAX\_WIDTH & 2048 \\
+CL\_DEVICE\_IMAGE\_MAX\_BUFFER\_SIZE & 65536 \\
+CL\_DEVICE\_IMAGE\_MAX\_ARRAY\_SIZE & 2048 \\
+CL\_DEVICE\_LINKER\_AVAILABLE & 0 \\
+CL\_DEVICE\_LOCAL\_MEM\_SIZE & 32768 \\
+CL\_DEVICE\_LOCAL\_MEM\_TYPE & CL\_LOCAL \\
+CL\_DEVICE\_MAX\_CLOCK\_FREQUENCY & 450 \\
+CL\_DEVICE\_MAX\_COMPUTE\_UNITS & 5 \\
+CL\_DEVICE\_MAX\_CONSTANT\_ARGS & 8 \\
+CL\_DEVICE\_MAX\_CONSTANT\_BUFFER\_SIZE & 65536 \\
+CL\_DEVICE\_MAX\_MEM\_ALLOC\_SIZE & 536870912 \\
+CL\_DEVICE\_MAX\_PARAMETER\_SIZE & 1024 \\
+CL\_DEVICE\_MAX\_READ\_IMAGE\_ARGS & 128 \\
+CL\_DEVICE\_MAX\_SAMPLERS & 16 \\
+CL\_DEVICE\_MAX\_WORK\_GROUP\_SIZE & 256 \\
+CL\_DEVICE\_MAX\_WORK\_ITEM\_DIMENSIONS & 3 \\
+CL\_DEVICE\_MAX\_WORK\_ITEM\_SIZES & 256,256,256 \\
+CL\_DEVICE\_MAX\_WRITE\_IMAGE\_ARGS & 8 \\
+CL\_DEVICE\_MEM\_BASE\_ADDR\_ALIGN & 2048 \\
+CL\_DEVICE\_MIN\_DATA\_TYPE\_ALIGN\_SIZE & 128 \\
+CL\_DEVICE\_NAME & Redwood \\
+CL\_DEVICE\_NATIVE\_VECTOR\_WIDTH\_CHAR & 16 \\
+CL\_DEVICE\_NATIVE\_VECTOR\_WIDTH\_SHORT & 8 \\
+CL\_DEVICE\_NATIVE\_VECTOR\_WIDTH\_INT & 4 \\
+CL\_DEVICE\_NATIVE\_VECTOR\_WIDTH\_LONG & 2 \\
+CL\_DEVICE\_NATIVE\_VECTOR\_WIDTH\_FLOAT & 4 \\
+CL\_DEVICE\_NATIVE\_VECTOR\_WIDTH\_DOUBLE & 0 \\
+CL\_DEVICE\_NATIVE\_VECTOR\_WIDTH\_HALF & 0 \\
+CL\_DEVICE\_OPENCL\_C\_VERSION & OpenCL C 1.2  \\
+CL\_DEVICE\_PARENT\_DEVICE & 0 \\
+CL\_DEVICE\_PARTITION\_MAX\_SUB\_DEVICES & 5 \\
+CL\_DEVICE\_PARTITION\_PROPERTIES &  \\
+CL\_DEVICE\_PARTITION\_AFFINITY\_DOMAIN &  \\
+CL\_DEVICE\_PARTITION\_TYPE &  \\
+CL\_DEVICE\_PREFERRED\_VECTOR\_WIDTH\_CHAR & 16 \\
+CL\_DEVICE\_PREFERRED\_VECTOR\_WIDTH\_SHORT & 8 \\
+CL\_DEVICE\_PREFERRED\_VECTOR\_WIDTH\_INT & 4 \\
+CL\_DEVICE\_PREFERRED\_VECTOR\_WIDTH\_LONG & 2 \\
+CL\_DEVICE\_PREFERRED\_VECTOR\_WIDTH\_FLOAT & 4 \\
+CL\_DEVICE\_PREFERRED\_VECTOR\_WIDTH\_DOUBLE & 0 \\
+CL\_DEVICE\_PREFERRED\_VECTOR\_WIDTH\_HALF & 0 \\
+CL\_DEVICE\_PRINTF\_BUFFER\_SIZE & 1048576 \\
+CL\_DEVICE\_PREFERRED\_INTEROP\_USER\_SYNC & 1 \\
+CL\_DEVICE\_PROFILE & FULL\_PROFILE \\
+CL\_DEVICE\_PROFILING\_TIMER\_RESOLUTION & 1 \\
+CL\_DEVICE\_QUEUE\_PROPERTIES & CL\_QUEUE\_PROFILING\_ENABLE  \\
+CL\_DEVICE\_REFERENCE\_COUNT & 1 \\
+CL\_DEVICE\_SINGLE\_FP\_CONFIG & CL\_FP\_INF\_NAN \newline CL\_FP\_ROUND\_TO\_NEAREST \newline CL\_FP\_ROUND\_TO\_ZERO \newline CL\_FP\_ROUND\_TO\_INF \newline CP\_FP\_FMA \\
+CL\_DEVICE\_TYPE & CL\_DEVICE\_TYPE\_GPU \\
+CL\_DEVICE\_VENDOR & Advanced Micro Devices, Inc. \\
+CL\_DEVICE\_VENDOR\_ID & 4098 \\
+CL\_DEVICE\_VERSION & OpenCL 1.2 AMD-APP (1124.2) \\
+CL\_DRIVER\_VERSION & 1124.2 (VM) \\
+\end{longtable}
+
 \subsection{Matrix multiplication chart data}
 \label{sec:matrix_mul_chart_data}
 
