@@ -52,7 +52,7 @@ The performance difference of radix sort to the previously presented comparison 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{sort_chart}
-\caption{Benchmark of several sort implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:sort_chart_data}. Both axis are of logarithmic scale.}
+\caption{Benchmark of several sort implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:sort_chart_data}. Both axis are of logarithmic scale. Integer sorting algorithms (radix sort) are drawn in dashed lines.}
 \label{fig:sort_chart}
 \end{figure}
 
@@ -229,4 +229,4 @@ Furthermore, several libraries and sample codes exist supporting GPGPU accelerat
 
 \subsection{Summary and conclusion}
 Sorting an array of elements is one of the most used routines of a programmer. Numerous algorithms and libraries (also standard libraries) exist targeting the CPU and providing highly optimized and ready-to-use sorting routines. However, the availability of GPU accelerated routines is still limited and mainly consists of some experimental libraries. In this chapter we have seen how to implement both, a comparison based and an integer based sorting algorithm using OpenCL. Contrary to traditional concepts, sorting networks where introduced offering a higher amount of parallelism on the cost of runtime complexity. The bitonic sorter has been discussed as example of how a sorting network can be constructed and operated for a given input size. Kernel fusion has been presented as a further way of optimizing algorithms consisting of multiple OpenCL kernels or kernel invocations. Radix sort has been introduced as example of a fast integer based sorting routine. Beside noticing the bad handling of arrays in registers, the final radix sort implementation once again showed the importance of global memory utilization.
-In conclusion, a fast comparison based sorting routine could be presented beating C++'s \lstinline!std::sort()! with a speedup of 2.37. Unfortunately, radix sorting is still faster on the CPU with the OpenCL implementation being more than twice as slow as the simple C++ variant.
+In conclusion, a fast comparison based sorting routine could be presented beating C++'s \lstinline!std::sort()! with a speedup of 2.37 (9.039 vs. 3.808 seconds on $2^{26}$ elements). Unfortunately, radix sorting is still faster on the CPU with the OpenCL implementation being more than twice as slow as the simple C++ variant.
