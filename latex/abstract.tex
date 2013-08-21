@@ -1,3 +1,7 @@
 \section*{Abstract}
 
-This thesis provides a quick introduction into programming for GPUs using OpenCL. It then continues with several implementations of standard algorithms for the GPU to solve problems like sorting arrays or multiplying matrices. Each GPU implementation is compared and benchmarked with one or more traditional CPU approaches. As GPUs and CPUs feature different hardware architectures appropriate algorithms have been chosen to exploit the underlying platform at best.
+This thesis provides a quick introduction into programming for GPUs using OpenCL. After a historical overview of how graphic cards have evolved, the peculiarities of GPU and CPU hardware is discussed in detail. Based on this knowledge OpenCL is introduced as an API supporting all kinds of processing hardware. A deep look into OpenCL's execution and memory model which allows handling heterogeneous hardware is rounded off by a simple yet full example code.
+
+The thesis then continues with several implementations of standard algorithms for the GPU. The chosen problems start with matrix multiplication and go along with all-prefix sum and sorting. As the first problem already offers parallelism naturally performance analysis and optimization is focused during the first implementation chapter. The all-prefix sum and sorting are both problems more difficult to be split into independent pieces of work. Techniques will be discussed to tackle such kind of problems.
+
+Each GPU implementation is benchmarked and compared with one or more traditional CPU approaches. As GPUs and CPUs feature different hardware architectures appropriate algorithms and optimizations have been chosen to solve the problems by exploiting the underlying platform at best.
