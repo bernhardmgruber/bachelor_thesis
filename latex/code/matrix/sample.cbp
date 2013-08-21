@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="program" />
+		<Option title="matrix" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -35,6 +35,10 @@
 		<Linker>
 			<Add library="opencl" />
 		</Linker>
+		<Unit filename="../../../src/matrix/gpu/thesis/Mult.cl" />
+		<Unit filename="../../../src/matrix/gpu/thesis/MultBlock.cl" />
+		<Unit filename="../../../src/matrix/gpu/thesis/MultBlockLocal.cl" />
+		<Unit filename="../../../src/matrix/gpu/thesis/MultLocal.cl" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

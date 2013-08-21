@@ -3,7 +3,7 @@
 #define RADIX_MASK (BUCKETS - 1)
 #define BLOCK_SIZE 32
 
-__kernel void Histogram(__global const uint* data, __global uint* histograms, uint bits, __local uint* hist)
+__kernel void Histogram(__global uint* data, __global uint* histograms, uint bits, __local uint* hist)
 {
     size_t globalId = get_global_id(0);
     size_t localId = get_local_id(0);
@@ -24,7 +24,7 @@ __kernel void Histogram(__global const uint* data, __global uint* histograms, ui
         histograms[get_global_size(0) * i + globalId] = hist[i];
 }
 
-__kernel void Permute(__global const uint* src, __global uint* dst, __global const uint* scannedHistograms, uint bits, __local uint* hist)
+__kernel void Permute(__global uint* src, __global uint* dst, __global uint* scannedHistograms, uint bits, __local uint* hist)
 {
     size_t globalId = get_global_id(0);
     size_t localId = get_local_id(0);
@@ -106,7 +106,7 @@ __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local i
     DOWNSWEEP_STEPS(6, 7);
 
     // build sum in place up the tree
-    for (uint d = n >> 1; d > 0; d >>= 1)                    
+    for (uint d = n >> 1; d > 0; d >>= 1)
     {
         barrier(CLK_LOCAL_MEM_FENCE);
         if (localId < d)
@@ -124,11 +124,11 @@ __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local i
     if (localId == 0)
     {
         sums[get_group_id(0)] = shared[n - 1];
-        shared[n - 1] = 0;    
+        shared[n - 1] = 0;
     }
 
     // traverse down tree & build scan
-    for (uint d = 1; d < n; d *= 2) 
+    for (uint d = 1; d < n; d *= 2)
     {
         offset >>= 1;
         barrier(CLK_LOCAL_MEM_FENCE);

@@ -33,7 +33,7 @@ The following chapter will focus on efficient and parallel implementations of an
 Implementing a sequential, single threaded scan for the CPU is simple. The first output element is initialized to zero. We than loop over the remaining output elements and set each one to the value of its predecessor plus the corresponding input element. Listing \ref{lst:scan_cpu} shows an example of a scan implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=A simple C++ implementation of an exclusive scan for the CPU., label=lst:scan_cpu, firstline=34, lastline=39]{code/scan/main.cpp}
+\lstinputlisting[language=C++, caption=A simple C++ implementation of an exclusive scan for the CPU., label=lst:scan_cpu, firstline=34, lastline=38]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 This code performs exactly $n - 1$ additions which is the minimum number of additions required to produce an exclusive scan of an array with $n$ elements. Concerning the following parallel scan implementations later in this chapter we would like them to be work-efficient. This means that the parallel implementation should have the same work complexity of $\mathcal{O}(n)$ as the sequential one.
@@ -67,10 +67,10 @@ By now the algorithm assumes that in each pass all input elements are read befor
 Listing \ref{lst:scan_naive_host} shows an example host code implementing this approach.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the naive scan algorithm., label=lst:scan_naive_host, firstline=41, lastline=71]{code/scan/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for the naive scan algorithm., label=lst:scan_naive_host, firstline=40, lastline=63]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
-At first, two buffers with the size of the input are created. Both of them have to be read- and writable as they are read from and written to alternatingly when executing the passes. The source buffer is filled with the input data. Although this algorithm is independent from the chosen work group size, we have to round the number of enqueued work items (one for each input element) up to be a multiple of the work group size. This \lstinline!adjustedWorkSize! will be the size of the enqueued ND range. After this short setup the passes are executed. Each pass corresponds to a power of two (loop variable \lstinline!offset!, cf. figure \ref{fig:scan_naive}) which corresponds to the offset of an element to the predecessor that should be added to it. This offset is raised to the next power of two each pass until it is larger than the problem size. The kernel is executed once for each pass, given the source and destination buffer, the offset and the original problem size as arguments. At the end of a pass the source and destination buffers are swapped (only the handles, not the actual contents). After the last pass has been executed, the result is read from the source buffer (the last pass wrote to the destination buffer which was swapped with the source buffer at the end of the loop).
+At first, two buffers with the size of the input are created. Both of them have to be read- and writable as they are read from and written to alternatingly when executing the passes. The source buffer is filled with the input data. Although this algorithm is independent from the chosen work group size, we have to round the number of enqueued work items (one for each input element) up to be a multiple of the work group size which will be the size of the enqueued ND range. After this short setup the passes are executed. Each pass corresponds to a power of two (loop variable \lstinline!offset!, cf. figure \ref{fig:scan_naive}) which corresponds to the offset of an element to the predecessor that should be added to it. This offset is raised to the next power of two each pass until it is larger than the problem size. The kernel is executed once for each pass, given the source and destination buffer, the offset and the original problem size as arguments. At the end of a pass the source and destination buffers are swapped (only the handles, not the actual contents). After the last pass has been executed, the result is read from the source buffer (the last pass wrote to the destination buffer which was swapped with the source buffer at the end of the loop).
 Listing \ref{lst:scan_naive_kernel} shows the kernel code corresponding to the host code from listing \ref{lst:scan_naive_host}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
@@ -110,7 +110,7 @@ Overall, for an input array of $n$ elements, this algorithm performs $n - 1$ add
 Listing \ref{lst:scan_work_efficient_host} shows the host code implementing the work-efficient tree based approach after Blelloch \cite{scan_blelloch}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the work-efficient scan algorithm., label=lst:scan_work_efficient_host, firstline=73, lastline=116]{code/scan/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for the work-efficient scan algorithm., label=lst:scan_work_efficient_host, firstline=65, lastline=98]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 Contrary to the previous algorithms, this implementation will use two kernels, one for the up-sweep and one for the down-sweep phase. 
@@ -151,7 +151,7 @@ Although this algorithm is not tied to a specific work group size it performs be
 Listing \ref{lst:scan_recursive_host} shows the host code of this recursive scan algorithm.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm., label=lst:scan_recursive_host, firstline=118, lastline=163]{code/scan/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm., label=lst:scan_recursive_host, firstline=100, lastline=131]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 This implementation again uses two kernels, one for scanning the blocks in local memory and one for applying the offsets from the scanned temporary buffer to the original one. The host code consists of two parts, the setup code and the actual recursion. The setup is performed in \lstinline!scanCLRecursive! which starts by rounding the input data size up to be a multiple of twice the size of a work group, because each work item processes two values. Then a buffer is created and the input data written to it. This buffer is then passed to the recursive scan procedure \lstinline!scanCLRecursive_r!. The recursion starts by computing the size of the temporary buffer \lstinline!sums! that will hold the values of the root nodes (the sums over each block). As each thread processes two input elements and each work group computes one sum over a block, this temporary buffer's size is the problem size divided by two times the work group size. The result is then rounded up to be a multiple of this value, so it can be recursively scanned again with this algorithm. After the size has been determined, the \lstinline!sums! buffer can be created. No initialization or memory transfer is required is the buffer is entirely accessed by the kernels. Afterwards, the block scan kernel can be set up. It takes the original input buffer as well as the buffer for the sums as arguments. Furthermore local memory is allocated to cache the block calculated by each work group. As each work item reads two input elements, the global work size is half the number of input elements. After the kernel has been enqueued, we have to check whether the input data for this recursion consisted of more than one block. If this is the case we scan the temporary buffer (containing more than 1 value) by recursively calling \lstinline!scanCLRecursive_r! on this buffer. After scanning the temporary \lstinline!sums! buffer completed, the sums can be applied to the original buffer. Therefore another kernel is enqueued given both buffers as arguments. The global and local work size are equal to the previous kernel on the same recursion level.
@@ -159,7 +159,7 @@ This implementation again uses two kernels, one for scanning the blocks in local
 Listing \ref{lst:scan_recursive_kernel} shows the kernel code for the recursive scan implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm., label=lst:scan_recursive_kernel, firstline=1, lastline=65]{../src/scan/gpu/thesis/RecursiveScan.cl}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm., label=lst:scan_recursive_kernel, firstline=1, lastline=55]{../src/scan/gpu/thesis/RecursiveScan.cl}
 \lstset{basicstyle=\ttfamily{}}
 
 The \lstinline!ScanBlocks! kernel starts with querying some values from OpenCL. Beside the global and local id, also the size \lstinline!n! of the block of the current work group is determined. Each thread than loads two values of the block into local memory. The following code then implements the tree based scan approach by Blelloch which has already been discussed in the previous chapter \ref{sec:scan_work_efficient}. The three phases (up-sweep, set-last-zero and down-sweep) are executed across all threads of the work group on the block in local memory. The only difference is, that the computed value of the root node after the up-sweep phase is moved to the \lstinline!sums! buffer at the index of the current work group. After the block has been scanned completely, it is copied back from local to global memory.
@@ -178,7 +178,7 @@ With this modification, each work group does not load only a block of two times 
 Listing \ref{lst:scan_recursive_vector_host} shows the differences of the host code of the this vector type implementation compared with the previous one.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_host, firstline=166, lastline=175]{code/scan/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_host, firstline=134, lastline=143]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 The first on most important step is to define the width of the vectors used. OpenCL supports vector types with the lengths of 2, 4, 8 or 16. The larger this \lstinline!VECTOR_WIDTH! is chosen, the larger is the reduction of the input buffer in each recursion. However, as a side effect the consumed registers per work item increase leading to a lower occupancy of the kernel. The ideal vector width may be hardware specific and is subject to corresponding benchmarks. This implementation will use a \lstinline!VECTOR_WIDTH! of 8.
@@ -187,7 +187,7 @@ The remaining changes to the host code are straight forward. As the blocks get b
 Although the changes to the host code are quite small, the kernel needs a few more extensions as shown in listing \ref{lst:scan_recursive_vector_kernel}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types with a width of eight., label=lst:scan_recursive_vector_kernel, firstline=179, lastline=259]{code/scan/main.cpp}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types with a width of eight., label=lst:scan_recursive_vector_kernel, firstline=147, lastline=224]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 First of all, several macros are defined for the \lstinline!ScanBlocksVec! kernel to avoid redundant code for the up-sweep and down-sweep implementation on the vector types. The kernel begins, after querying topological informations, by copying two \lstinline!int8! vectors into registers. The up-sweep phase is completely executed on the work item's registers on both vectors resulting in a lot of independent instructions. After the up-sweep phase, the last vector elements hold the sum over both vectors which is then copied into the shared memory block. After the last elements are reset to zero, the down-sweep phase continues, finalizing the scan on the two vectors stored in registers. The remaining part of the kernel is equal to the one of the previous implementation in listing \ref{lst:scan_recursive_kernel} which calculates the scan of the block in shared memory and copies the block's sum into the \lstinline!sums! buffer. A final small addition is to offset the vectors by the sum of all previous vectors of preceding work items in this block. Notice that the value loaded from local memory is added to each vector element. Finally the vectors are written back to global memory.

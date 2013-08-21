@@ -18,8 +18,7 @@
     DOWNSWEEP_STEP(CONCAT_EXPANDED(val1.s, left), CONCAT_EXPANDED(val1.s, right)); \
     DOWNSWEEP_STEP(CONCAT_EXPANDED(val2.s, left), CONCAT_EXPANDED(val2.s, right))
 
-__kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local int* shared)
-{
+__kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local int* shared) {
     uint globalId = get_global_id(0);
     uint localId = get_local_id(0);
     uint n = get_local_size(0) * 2;
@@ -59,14 +58,11 @@ __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local i
     DOWNSWEEP_STEPS(6, 7);
 
     // build sum in place up the tree
-    for (uint d = n >> 1; d > 0; d >>= 1)                    
-    {
+    for (uint d = n >> 1; d > 0; d >>= 1) {
         barrier(CLK_LOCAL_MEM_FENCE);
-        if (localId < d)
-        {
+        if (localId < d) {
             uint ai = offset*(2*localId+1)-1;
             uint bi = offset*(2*localId+2)-1;
-
             shared[bi] += shared[ai];
         }
         offset <<= 1;
@@ -74,19 +70,16 @@ __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local i
     barrier(CLK_LOCAL_MEM_FENCE);
 
     // save sum and clear the last element
-    if (localId == 0)
-    {
+    if (localId == 0) {
         sums[get_group_id(0)] = shared[n - 1];
-        shared[n - 1] = 0;    
+        shared[n - 1] = 0;
     }
 
     // traverse down tree & build scan
-    for (uint d = 1; d < n; d *= 2) 
-    {
+    for (uint d = 1; d < n; d *= 2) {
         offset >>= 1;
         barrier(CLK_LOCAL_MEM_FENCE);
-        if (localId < d)
-        {
+        if (localId < d) {
             uint ai = offset*(2*localId+1)-1;
             uint bi = offset*(2*localId+2)-1;
 
@@ -101,13 +94,11 @@ __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local i
     val1 += shared[2 * localId + 0];
     val2 += shared[2 * localId + 1];
 
-    // write results to device memory
     buffer[2 * globalId + 0] = val1;
     buffer[2 * globalId + 1] = val2;
 }
 
-__kernel void AddSums(__global int8* buffer, __global int* sums)
-{
+__kernel void AddSums(__global int8* buffer, __global int* sums) {
     uint globalId = get_global_id(0);
 
     int val = sums[get_group_id(0)];
@@ -198,7 +189,7 @@ __kernel void ScanBlocksVecOptim(__global int8* buffer, __global int* sums, __lo
     //
 
     // build sum in place up the tree
-    for (uint d = n >> 1; d > 0; d >>= 1)                    
+    for (uint d = n >> 1; d > 0; d >>= 1)
     {
         barrier(CLK_LOCAL_MEM_FENCE);
         if (localId < d)
@@ -219,11 +210,11 @@ __kernel void ScanBlocksVecOptim(__global int8* buffer, __global int* sums, __lo
         uint index = n - 1 + CONFLICT_FREE_OFFSET(n - 1);
         sums[get_group_id(0)] = shared[index];
         // clear the last element
-        shared[index] = 0;    
+        shared[index] = 0;
     }
 
     // traverse down tree & build scan
-    for (uint d = 1; d < n; d *= 2) 
+    for (uint d = 1; d < n; d *= 2)
     {
         offset >>= 1;
         barrier(CLK_LOCAL_MEM_FENCE);

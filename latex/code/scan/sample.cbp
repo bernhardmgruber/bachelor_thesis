@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="program" />
+		<Option title="scan" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -35,6 +35,10 @@
 		<Linker>
 			<Add library="opencl" />
 		</Linker>
+		<Unit filename="../../../src/scan/gpu/thesis/NaiveScan.cl" />
+		<Unit filename="../../../src/scan/gpu/thesis/RecursiveScan.cl" />
+		<Unit filename="../../../src/scan/gpu/thesis/RecursiveVecScan.cl" />
+		<Unit filename="../../../src/scan/gpu/thesis/WorkEfficientScan.cl" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

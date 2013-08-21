@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="program" />
+		<Option title="sort" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -35,6 +35,11 @@
 		<Linker>
 			<Add library="opencl" />
 		</Linker>
+		<Unit filename="../../../src/sort/gpu/thesis/BitonicSort.cl" />
+		<Unit filename="../../../src/sort/gpu/thesis/BitonicSortFusion.cl" />
+		<Unit filename="../../../src/sort/gpu/thesis/RadixSort.cl" />
+		<Unit filename="../../../src/sort/gpu/thesis/RadixSortLocal.cl" />
+		<Unit filename="../../../src/sort/gpu/thesis/RadixSortLocalVec.cl" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

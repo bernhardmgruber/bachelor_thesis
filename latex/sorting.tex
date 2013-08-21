@@ -19,14 +19,14 @@ As the later GPU implementations should be compared with well implemented and wi
 Listing \ref{lst:sort_cpu_qsort} shows a typical usage of the \lstinline|qsort()| function provided by the stdlib header from C.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using \lstinline!qsort()! from the C stdlib header., label=lst:sort_cpu_qsort, firstline=36, lastline=46]{code/sort/main.cpp}
+\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using \lstinline!qsort()! from the C stdlib header., label=lst:sort_cpu_qsort, firstline=36, lastline=44]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 As qsort() is usually precompiled and part of the runtime library, a compare function has to be provided which is called for every comparison. This will probably slow down the run time when compared with the C++ \lstinline!std::sort()! which can use an existing overload of the $<$ operator or inline a provided compare function thanks to templates.
 Listing \ref{lst:sort_cpu_sort} shows a typical call to the \lstinline!std::sort()! function template from the C++ algorithm header.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using \lstinline!std::sort()! from the C++ algorithm header., label=lst:sort_cpu_sort, firstline=48, lastline=51]{code/sort/main.cpp}
+\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using \lstinline!std::sort()! from the C++ algorithm header., label=lst:sort_cpu_sort, firstline=46, lastline=48]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 As the $<$ operator is defined for unsigned integer types no custom compare function has to be provided and no additional overhead is created for comparing elements.
@@ -42,7 +42,7 @@ By only selecting one bit in each pass 32 passes are required to sort the input 
 The CPU radix sort implementation used in the benchmarks is provided in listing \ref{lst:sort_cpu_radix}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using radix sort. The algorithm uses eight passes analyzing four bits each. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_cpu_radix, firstline=53, lastline=105]{code/sort/main.cpp}
+\lstinputlisting[language=C++, caption=Sorting an array of unsigned integers using radix sort. The algorithm uses eight passes analyzing four bits each. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_cpu_radix, firstline=50, lastline=93]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 The implementation uses a relatively high radix of 16 (\lstinline!RADIX!) which allows radix sort to finish in two passes. As a consequence, the histogram consists of $2^{16}$ elements (\lstinline!BUCKETS!) occupying 256 KiB of memory but has to be scanned only two times.
@@ -75,7 +75,7 @@ Sorting inputs of any length is also possible with a bitonic sorting network. Th
 Listing \ref{lst:sort_bitonic_host} shows the host code of a bitonic sorter implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for a bitonic sort implementation. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}., label=lst:sort_bitonic_host, firstline=106, lastline=140]{code/sort/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for a bitonic sort implementation. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}., label=lst:sort_bitonic_host, firstline=95, lastline=120]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 At first the input's size is rounded up to a power of two (\lstinline!bufferSize!). A buffer read- and writable buffer is created with this size and the input data is written to it. If the input was smaller than the created buffer, the remaining part is filled with the maximum representable value of the input data type. This values should remain at the back side of the buffer during the sorting procedure and not disturb the actual input. As sorting networks are compare-and-swap-based no additional buffer is required. The input can be sorted in place.
@@ -107,7 +107,7 @@ This idea can be taken further to combine even more invocations into a single ke
 Listing \ref{lst:sort_bitonic_fusion_host} shows the changes to the previous bitonic sorter host implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Changes to the host code from listing \ref{lst:sort_bitonic_host} for a bitonic sort implementation using kernel fusion. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}., label=lst:sort_bitonic_fusion_host, firstline=157, lastline=197]{code/sort/main.cpp}
+\lstinputlisting[language=C++, caption=Changes to the host code from listing \ref{lst:sort_bitonic_host} for a bitonic sort implementation using kernel fusion. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}., label=lst:sort_bitonic_fusion_host, firstline=122, lastline=166]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 The outer and inner loop enqueuing the kernels stay the same. However, if the increment \lstinline!inc! is large enough a fused kernel can be used which processes more than one column of red boxes with multiple increments (decreasing powers of two). The largest fused kernel being used is \lstinline!kernel16! which processes 16 input values and fuses four invocations with four different increments. Larger kernels are still possible but showed to consume to much registers to increase performance (register spilling). Nevertheless, larger kernels may be beneficial on newer hardware with more available registers. By using \lstinline!kernel16! the inner loop's \lstinline!inc! variable can be incremented to the fourth lower power of two instead of the next one, which is controlled by the \lstinline!ninc! variable. Kernels with eight, four and two inputs follow analogously. The kernel with two inputs is actually the original one used before kernel fusion.
@@ -140,7 +140,7 @@ A solution to this problem can be found by thinking about the information a work
 Listing \ref{lst:sort_radix_host} shows the host code for an OpenCL radix sort implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for a radix sort implementation. The code is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_host, firstline=241, lastline=297]{code/sort/main.cpp}
+\lstinputlisting[language=C++, caption=Host code for a radix sort implementation. The code is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_host, firstline=197, lastline=243]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 At the top of the source code several macros define constants. The first three should already be known from the previous CPU implementation in chapter \ref{sec:sorting_radix_cpu}. A major difference is the relatively small radix used with the GPU implementation. This is justified by the huge amount of memory required to store a histogram of $2^{RADIX}$ for each work item. New is the \lstinline!BLOCK_SIZE! constant which defines how many elements each work item processes. Its value of 32 has been determined by benchmarks and may be specific to the used GPU. The \lstinline!VECTOR_WIDTH! macro defines the width of the vector types used in the scan kernel (cf. vector scan implementation in chapter \ref{sec:scan_vector}). 
@@ -153,7 +153,7 @@ After all passes have been executed the resulting sorted sequence can be read fr
 Listing \ref{lst:sort_radix_kernel} shows the corresponding kernel code.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL code for the histogram and permute kernels  of a radix sort. Each work item stores it's histogram in registers. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}. , label=lst:sort_radix_kernel, lastline=41]{../src/sort/gpu/thesis/RadixSort.cl}
+\lstinputlisting[language=CL, caption=OpenCL code for the histogram and permute kernels  of a radix sort. Each work item stores it's histogram in registers. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}. , label=lst:sort_radix_kernel, lastline=33]{../src/sort/gpu/thesis/RadixSort.cl}
 \lstset{basicstyle=\ttfamily{}}
 
 The \lstinline!Histogram! kernel begins by querying the global id of the work item and setting up a zero initialized array for holding the histogram values. Each work item then processes \lstinline!BLOCK_SIZE! elements of the input buffer. For each element the bits corresponding to the current pass' bit offset are extracted to increment the appropriate bucket of the work item's histogram. After processing the input elements has finished, the histogram is split into its buckets and moved to global memory.
@@ -172,7 +172,7 @@ Instead of placing each work item's histogram in it's own registers, local memor
 Listing \ref{lst:sort_radix_local_host} shows the required changes to the host code from listing \ref{lst:sort_radix_host}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Changes to the host code of listing \ref{lst:sort_radix_host} for a radix sort implementation using local memory to store each thread's histogram. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_host, firstline=360, lastline=366]{code/sort/main.cpp}
+\lstinputlisting[language=C++, caption=Changes to the host code of listing \ref{lst:sort_radix_host} for a radix sort implementation using local memory to store each thread's histogram. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_host, firstline=291, lastline=297]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 As local memory is shared inside a work group, we have to allocate a block of local memory large enough to hold all histograms of all work items of a work group. The local memory needs to be allocated in both kernels.
@@ -180,7 +180,7 @@ As local memory is shared inside a work group, we have to allocate a block of lo
 Listing \ref{lst:sort_radix_local_kernel} shows the required changes to the kernel code from listing \ref{lst:sort_radix_kernel}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=Changes to the OpenCL kernel code of listing \ref{lst:sort_radix_kernel} for a radix sort implementation using local memory to store each thread's histogram. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_kernel, firstline=370, lastline=389]{code/sort/main.cpp}
+\lstinputlisting[language=CL, caption=Changes to the OpenCL kernel code of listing \ref{lst:sort_radix_kernel} for a radix sort implementation using local memory to store each thread's histogram. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_kernel, firstline=301, lastline=318]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 Instead of declaring \lstinline!hist! as local variable inside the kernel, it is now passed as pointer to \lstinline!__local! memory as an argument to both kernels. The pointer has then to be offsetted to the current work item's histogram place. Except initialization to zero in the \lstinline!Histogram! kernel, the remaining code stays the same.
@@ -195,7 +195,7 @@ A further optimization of the presented radix sort implementation is to replace 
 As this only concerns the kernel itself, no changes to the host code are required. Listing \ref{lst:sort_radix_local_vec_kernel} shows the changes to the previous radix sort implementation using local memory from listing \ref{lst:sort_radix_local_kernel}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=Changes to the OpenCL kernel code of listing \ref{lst:sort_radix_local_kernel} for a radix sort implementation using local memory to store each thread's histogram and vector types for loading values from global memory. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_vec_kernel, firstline=393, lastline=432]{code/sort/main.cpp}
+\lstinputlisting[language=CL, caption=Changes to the OpenCL kernel code of listing \ref{lst:sort_radix_local_kernel} for a radix sort implementation using local memory to store each thread's histogram and vector types for loading values from global memory. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_vec_kernel, firstline=322, lastline=353]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 The first difference is the increase of the \lstinline!BLOCK_SIZE! constant which was 32 and has been raised to 128. It turned out that the larger memory requests now impose a smaller problem concerning the total runtime. Thus, more of them can be made inside each work item (may be specific to a GPU and should therefore be tested individually). To maximize memory throughput the largest supported vector type is chosen for the input buffer which is \lstinline!uint16!. As a result the fetching loops only need to iterate over a 16th of \lstinline!BLOCK_SIZE! input elements. The number of required iterations is placed in the macro \lstinline!BLOCK_SIZE_16!. In each loop iteration a full \lstinline!uint16! (64 byte) value is fetched from global memory and the target bucket in the histogram is calculated. Now comes the drawback of using vector types. As we cannot loop over the components of the fetched value, we have to write code for each histogram access using a different component separately.
