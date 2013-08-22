@@ -49,9 +49,9 @@ The implementation uses a relatively high radix of 16 (\lstinline!RADIX!) which 
 
 The performance difference of radix sort to the previously presented comparison based algorithm is significant as seen in figure \ref{fig:sort_chart}. Although the high radix of 16 causes a large overhead on small input sizes (as the full $2^{16}$ element histogram has to be scanned independently of the input size), radix sort shows its strength on larger inputs. It catches up to \lstinline!std::sort()! at approximately 10,000 elements and then outdistances the library routine largely sorting $2^{26}$ elements in 0.884 seconds (compared to 9.039 seconds of \lstinline!std::sort()!).
 
-\begin{figure}
+\begin{figure}[h]
 \centering
-\includegraphics[width=\linewidth]{sort_chart}
+\includegraphics[width=\textwidth]{sort_chart}
 \caption{Benchmark of several sort implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:sort_chart_data}. Both axis are of logarithmic scale. Integer sorting algorithms (radix sort) are drawn in dashed lines.}
 \label{fig:sort_chart}
 \end{figure}
@@ -89,6 +89,8 @@ Listing \ref{lst:sort_bitonic_kernel} shows the corresponding kernel code for th
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for one iteration of a bitonic sort. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}. , label=lst:sort_bitonic_kernel,]{../src/sort/gpu/thesis/BitonicSort.cl}
 \lstset{basicstyle=\ttfamily{}}
+
+\pagebreak
 
 The kernel begins by calculating the index of the first wire for the comparator corresponding to the current work item. This is achieved by modifying the global id. The bits below the \lstinline!inc! bit (the lower part) stay the same. This value determines the wire index in the upper half of a red box. The bit at position \lstinline!inc! of the global id corresponds to the upper (0) or lower (1) half of the red box. This bit shall be zero to get the upper wire of the comparator. The remaining (upper) part of the global id above the \lstinline!inc! bit is a multiple of the width of a red box and therefore determines the index of the red box inside the column. The combined value is stored in \lstinline!i!.
 The next step is to decide upon the sorting order of the current comparator. This can be done by looking at the bit at position \lstinline!boxWidth! of the upper wire's index. If this bit is zero, the comparator belongs to a blue box and the sorting order is ascending. Otherwise we are in a green box and have to sort descending.
@@ -137,6 +139,8 @@ Creating the histogram is easy. For each input element a work item is created wh
 However, this kind of histogram is of little to no use during the fully parallel permute stage. The reason for this is that every work item must be able to determine the destination address for its value independently of other threads. Although it would be possible for all work items of the same histogram bucket to obtain different destination addresses again by using atomic increments on the histogram (similar to the CPU implementation where each bucket's histogram value is incremented after writing a value to this bucket), it does not work on a GPU. Because OpenCL does not guarantee the order in which work items are executed, work items with higher global id might write values to a bucket before work items with lower id do. As a consequence the permute pass would not be stable anymore which is crucial to not ruin the permutation of a previous pass.
 A solution to this problem can be found by thinking about the information a work item needs to find its correct destination address. In addition to the the start address of the region where all values of the same bucket should be written to (as in a single histogram), each work item also needs to know how many work items having a value belonging to the same bucket have a smaller global id than the current work item. This can be solved by spreading the histogram down to all individual work items. As each work item now owns a separate histogram memory consumption raises enormously. Therefore, multiple input values are processed in each work item. The histograms, after they have been created by the work items, are moved to global memory as such that the histogram entries of the same bucket across all work items lie consecutively and ascendingly in memory followed by the next group of buckets and so forth. As a result, the scan step can simply scan the whole block of histogram memory without any special cases. Therefore, the vector scan kernel developed in chapter \ref{sec:scan_vector} can be fully reused as building block for this radix sort implementation. 
 
+\pagebreak
+
 Listing \ref{lst:sort_radix_host} shows the host code for an OpenCL radix sort implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
@@ -158,6 +162,8 @@ Listing \ref{lst:sort_radix_kernel} shows the corresponding kernel code.
 
 The \lstinline!Histogram! kernel begins by querying the global id of the work item and setting up a zero initialized array for holding the histogram values. Each work item then processes \lstinline!BLOCK_SIZE! elements of the input buffer. For each element the bits corresponding to the current pass' bit offset are extracted to increment the appropriate bucket of the work item's histogram. After processing the input elements has finished, the histogram is split into its buckets and moved to global memory.
 
+\pagebreak
+
 The \lstinline!Permute! kernel begins with copying the scanned histogram back from global memory into registers. Each histogram bucket now contains the number of elements belonging into this bucket from work items with lower global id. Then the work item again reads in the \lstinline!BLOCK_SIZE! input elements for which the scanned histogram is now available. Each value is written to the destination buffer at the start address of the corresponding bucket for this work item. The address is incremented afterwards.
 
 Considering performance (cf. figure \ref{fig:sort_chart}), the radix sort GPU implementation is roughly equally fast as the fused bitonic sort. When looked closely one can even see that radix sort's runtime increases a little bit slower than the one of the bitonic sorter. However, the GPU radix sort cuts off at the last few input sizes as the GPUs global memory is exhausted and the driver starts to swap GPU memory into the systems main memory. Nevertheless, the GPU implementation is far behind the CPU variant with 1.884 seconds at $2^{25}$ elements compared to 0.884 seconds on the CPU.
@@ -174,6 +180,8 @@ Listing \ref{lst:sort_radix_local_host} shows the required changes to the host c
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=C++, caption=Changes to the host code of listing \ref{lst:sort_radix_host} for a radix sort implementation using local memory to store each thread's histogram. The implementation is based on the radix sort sample shipped with AMD APP SDK \cite{amd_app_sdk}., label=lst:sort_radix_local_host, firstline=291, lastline=297]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
+
+\pagebreak
 
 As local memory is shared inside a work group, we have to allocate a block of local memory large enough to hold all histograms of all work items of a work group. The local memory needs to be allocated in both kernels.
 
@@ -204,7 +212,7 @@ When we look at the benchmark chart in figure \ref{fig:sort_chart} we can see th
 However, despite the optimizations the GPU radix sort implementation runs still slower than the original CPU code. Reasons are the slow global memory write accesses in both radix sort kernels and the relatively small \lstinline!RADIX! of four compared to 16 in the CPU variant which leads to eight passes on the GPU compared to only two on the CPU.
 
 
-\subsection{Existing implementations}
+\subsection{Further implementations}
 Beside the presented kernels a further approach has been implemented and benchmarked which has not been covered. However some experiences may help future developers.
 
 \begin{description}

@@ -1,6 +1,6 @@
-\section{Appendix}
+%\section{Appendix}
 
-\subsection{Utility functions}
+\section{Utility functions}
 \label{sec:utility_functions}
 
 Listing \ref{lst:utility} shows the definition of often used utility functions.
@@ -9,7 +9,7 @@ Listing \ref{lst:utility} shows the definition of often used utility functions.
 \lstinputlisting[language=C++, caption=Utility functions used in host codes throughout the thesis, label=lst:utility]{code/utility.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
-\subsection{Benchmark environment}
+\section{Benchmark environment}
 \label{sec:becnhmark_env}
 
 
@@ -30,11 +30,11 @@ All benchmarks have been created using the following hardware configuration:
 	\end{itemize}
 \end{itemize}
 
-\subsubsection{OpenCL device info of GPU}
+\subsection*{OpenCL device info of GPU}
 
 The following informations have been retrieved by calling \lstinline!clGetDeviceInfo()! with all defined constants in OpenCL 1.2. For a complete list and further explanation please visit the corresponding API documentation at Khronos' web site.
 
-\begin{longtable}{p{0.55\linewidth} p{0.45\linewidth}}
+\begin{longtable}{p{0.58\textwidth} p{0.36\textwidth}}
 \textbf{Flag} & \textbf{Value} \\
 CL\_DEVICE\_ADDRESS\_BITS & 32 \\
 CL\_DEVICE\_AVAILABLE & 1 \\
@@ -111,12 +111,12 @@ CL\_DEVICE\_VERSION & OpenCL 1.2 AMD-APP (1124.2) \\
 CL\_DRIVER\_VERSION & 1124.2 (VM) \\
 \end{longtable}
 
-\subsection{Matrix multiplication chart data}
+\section{Matrix multiplication chart data}
 \label{sec:matrix_mul_chart_data}
 
 All times are in seconds.
 
-\subsubsection{Naive CPU}
+\subsection*{Naive CPU}
 
 \begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
@@ -166,7 +166,7 @@ size & run $\mu$ & run $\sigma$ \\
 4000 & 657.499788 & 7.276395 \\
 \end{longtable}
 
-\subsubsection{OpenMP CPU}
+\subsection*{OpenMP CPU}
 
 \begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
@@ -216,7 +216,7 @@ size & run $\mu$ & run $\sigma$ \\
 4000 & 323.586431 & 2.265068 \\
 \end{longtable}
 
-\subsubsection{CBLAS CPU}
+\subsection*{CBLAS CPU}
 
 \begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
@@ -266,10 +266,10 @@ size & run $\mu$ & run $\sigma$ \\
 4000 & 43.48911 & 0.097813 \\
 \end{longtable}
 
-\subsubsection{Naive GPU}
+\subsection*{Naive GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 1 & 0.00088 & 0.000671 & 0.000615 & 0.000291 & 0.000515 & 0.000098 & 0.002011 \\
 25 & 0.002313 & 0.001245 & 0.001516 & 0.000214 & 0.001091 & 0.000138 & 0.00492 \\
 50 & 0.000605 & 0.000246 & 0.000515 & 0.000122 & 0.000537 & 0.000069 & 0.001656 \\
@@ -316,10 +316,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 4000 & 0.068064 & 0.001656 & 14.3872 & 0.000152 & 0.035069 & 0.00478 & 14.490333 \\
 \end{longtable}
 
-\subsubsection{Tiles GPU}
+\subsection*{Tiles GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 1 & 0.002448 & 0.001914 & 0.000439 & 0.0003 & 0.000479 & 0.000025 & 0.003365 \\
 25 & 0.001442 & 0.000625 & 0.000323 & 0.000064 & 0.000495 & 0.000073 & 0.00226 \\
 50 & 0.00142 & 0.000421 & 0.00036 & 0.000063 & 0.000495 & 0.000036 & 0.002275 \\
@@ -366,10 +366,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 4000 & 0.07853 & 0.014639 & 5.385155 & 0.000519 & 0.041405 & 0.007665 & 5.50509 \\
 \end{longtable}
 
-\subsubsection{Blocks GPU}
+\subsection*{Blocks GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 1 & 0.004364 & 0.000277 & 0.001491 & 0.000528 & 0.001355 & 0.000095 & 0.007211 \\
 25 & 0.003867 & 0.001188 & 0.00127 & 0.000035 & 0.000983 & 0.000061 & 0.00612 \\
 50 & 0.003267 & 0.000632 & 0.001104 & 0.000112 & 0.000957 & 0.000024 & 0.005328 \\
@@ -416,10 +416,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 4000 & 0.068455 & 0.001326 & 1.108897 & 0.000935 & 0.035007 & 0.006206 & 1.212359 \\
 \end{longtable}
 
-\subsubsection{Blocks and tiles GPU}
+\subsection*{Blocks and tiles GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 1 & 0.00254 & 0.002182 & 0.000422 & 0.000221 & 0.00051 & 0.000015 & 0.003473 \\
 25 & 0.001337 & 0.000083 & 0.000347 & 0.000034 & 0.000729 & 0.000038 & 0.002413 \\
 50 & 0.001564 & 0.000064 & 0.000373 & 0.000034 & 0.000752 & 0.000006 & 0.002688 \\
@@ -466,12 +466,12 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 4000 & 0.087218 & 0.001696 & 1.845283 & 0.001991 & 0.036915 & 0.006114 & 1.969416 \\
 \end{longtable}
 
-\subsection{Scan chart data}
+\section{Scan chart data}
 \label{sec:scan_chart_data}
 
 All times are in seconds.
 
-\subsubsection{CPU}
+\subsection*{CPU}
 
 \begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
@@ -598,10 +598,10 @@ size & run $\mu$ & run $\sigma$ \\
 67108864 & 0.224562 & 0.002626 \\
 \end{longtable}
 
-\subsubsection{Naive GPU}
+\subsection*{Naive GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.000603 & 0.000644 & 0.00287 & 0.003888 & 0.000202 & 0.000144 & 0.003675 \\
 3 & 0.000167 & 0.000072 & 0.000145 & 0.000034 & 0.000123 & 0.000022 & 0.000435 \\
 4 & 0.000156 & 0.000066 & 0.001097 & 0.001337 & 0.00013 & 0.00002 & 0.001383 \\
@@ -725,10 +725,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 67108864 & 0.15629 & 0.001054 & 0.830493 & 0.000917 & 0.145526 & 0.022774 & 1.132309 \\
 \end{longtable}
 
-\subsubsection{Work efficient GPU}
+\subsection*{Work efficient GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.000895 & 0.000134 & 0.002343 & 0.001949 & 0.000992 & 0.000673 & 0.00423 \\
 3 & 0.001085 & 0.000916 & 0.001305 & 0.000186 & 0.000379 & 0.000234 & 0.002768 \\
 4 & 0.000624 & 0.000281 & 0.002355 & 0.000761 & 0.000559 & 0.000321 & 0.003539 \\
@@ -852,10 +852,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 67108864 & 0.153673 & 0.000171 & 0.310812 & 0.00034 & 0.139882 & 0.02116 & 0.604366 \\
 \end{longtable}
 
-\subsubsection{Recursive GPU}
+\subsection*{Recursive GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.000288 & 0.00013 & 0.000421 & 0.000301 & 0.00014 & 0.000058 & 0.000849 \\
 3 & 0.000178 & 0.00008 & 0.000218 & 0.000047 & 0.000123 & 0.000018 & 0.000519 \\
 4 & 0.000152 & 0.000045 & 0.000169 & 0.000015 & 0.000115 & 0.000018 & 0.000436 \\
@@ -979,10 +979,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 67108864 & 0.154645 & 0.000475 & 0.313463 & 0.000149 & 0.138141 & 0.018849 & 0.60625 \\
 \end{longtable}
 
-\subsubsection{Recursive vectors GPU}
+\subsection*{Recursive vectors GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.002486 & 0.003328 & 0.000594 & 0.000608 & 0.00019 & 0.000125 & 0.00327 \\
 3 & 0.000147 & 0.000067 & 0.00017 & 0.00003 & 0.000103 & 0.000016 & 0.000421 \\
 4 & 0.001092 & 0.001137 & 0.000212 & 0.000024 & 0.000119 & 0.000013 & 0.001423 \\
@@ -1106,12 +1106,12 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 67108864 & 0.153931 & 0.00066 & 0.087902 & 0.002758 & 0.141008 & 0.021359 & 0.382841 \\
 \end{longtable}
 
-\subsection{Sorting chart data}
+\section{Sorting chart data}
 \label{sec:sort_chart_data}
 
 All times are in seconds.
 
-\subsubsection{qsort CPU}
+\subsection*{qsort CPU}
 
 \begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
@@ -1238,7 +1238,7 @@ size & run $\mu$ & run $\sigma$ \\
 67108864 & 14.746326 & 0.018624 \\
 \end{longtable}
 
-\subsubsection{std::sort CPU}
+\subsection*{std::sort CPU}
 
 \begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
@@ -1365,7 +1365,7 @@ size & run $\mu$ & run $\sigma$ \\
 67108864 & 9.039201 & 0.028916 \\
 \end{longtable}
 
-\subsubsection{Radix sort CPU}
+\subsection*{Radix sort CPU}
 
 \begin{longtable}{r r r}
 size & run $\mu$ & run $\sigma$ \\
@@ -1492,10 +1492,10 @@ size & run $\mu$ & run $\sigma$ \\
 67108864 & 0.883718 & 0.003137 \\
 \end{longtable}
 
-\subsubsection{Bitonic sort GPU}
+\subsection*{Bitonic sort GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.000617 & 0.000682 & 0.000413 & 0.000452 & 0.000195 & 0.000152 & 0.001225 \\
 3 & 0.000507 & 0.000295 & 0.000216 & 0.000053 & 0.000132 & 0.000024 & 0.000855 \\
 4 & 0.000636 & 0.000667 & 0.000726 & 0.000782 & 0.000138 & 0.000041 & 0.0015 \\
@@ -1619,10 +1619,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 67108864 & 0.168921 & 0.000706 & 7.368706 & 0.00126 & 0.142028 & 0.02603 & 7.679656 \\
 \end{longtable}
 
-\subsubsection{Bitonic sort fusion GPU}
+\subsection*{Bitonic sort fusion GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.000665 & 0.000662 & 0.000406 & 0.000189 & 0.000233 & 0.000034 & 0.001305 \\
 3 & 0.000315 & 0.000131 & 0.000361 & 0.000221 & 0.00015 & 0.000057 & 0.000826 \\
 4 & 0.000171 & 0.00006 & 0.000163 & 0.000016 & 0.000137 & 0.000025 & 0.00047 \\
@@ -1746,10 +1746,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 67108864 & 0.171194 & 0.002508 & 3.499619 & 0.000892 & 0.137139 & 0.018402 & 3.807952 \\
 \end{longtable}
 
-\subsubsection{Radix sort GPU}
+\subsection*{Radix sort GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.008247 & 0.010146 & 0.007434 & 0.006401 & 0.001197 & 0.001214 & 0.016878 \\
 3 & 0.001721 & 0.00192 & 0.0023 & 0.000297 & 0.000424 & 0.000217 & 0.004445 \\
 4 & 0.000268 & 0.000055 & 0.002127 & 0.000037 & 0.000131 & 0.000009 & 0.002526 \\
@@ -1873,10 +1873,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 67108864 & 0.168205 & 0.00081 & 12.083137 & 0.221756 & 0.176184 & 0.021037 & 12.427527 \\
 \end{longtable}
 
-\subsubsection{Radix sort local GPU}
+\subsection*{Radix sort local GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.001786 & 0.001731 & 0.001764 & 0.000397 & 0.000129 & 0.000021 & 0.003678 \\
 3 & 0.001178 & 0.001347 & 0.001469 & 0.000015 & 0.000118 & 0.000008 & 0.002765 \\
 4 & 0.001206 & 0.001354 & 0.001618 & 0.000233 & 0.000162 & 0.000028 & 0.002986 \\
@@ -2000,10 +2000,10 @@ size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\m
 67108864 & 0.171438 & 0.002116 & 8.084061 & 0.2756 & 0.186766 & 0.037673 & 8.442265 \\
 \end{longtable}
 
-\subsubsection{Radix sort local vector GPU}
+\subsection*{Radix sort local vector GPU}
 
 \begin{longtable}{r r r r r r r r}
-size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & up run down $\sigma$ \\
+size & upload $\mu$  & upload $\sigma$ & run $\mu$ & run $\sigma$ & download $\mu$ & download $\sigma$ & $\Sigma \mu$ \\
 2 & 0.001235 & 0.001166 & 0.004878 & 0.002071 & 0.00028 & 0.000145 & 0.006393 \\
 3 & 0.000384 & 0.000057 & 0.004413 & 0.001343 & 0.000194 & 0.000042 & 0.004991 \\
 4 & 0.000637 & 0.000155 & 0.004049 & 0.000467 & 0.000435 & 0.000068 & 0.005122 \\

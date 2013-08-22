@@ -21,7 +21,9 @@ With the upcoming specification of WebCL currently only available as a working d
 
 OpenCL is not an API alone. As it allows programs to run on hardware that may have certain restrictions or offer different features than a classical CPU, traditional languages like C++, Java or C\# can not be used to write those programs. Therefore, the OpenCL standard includes the specification of a separate language that is used to write small programs that are executed on a hardware device. These programs are called kernels and are written in the OpenCL C language, which is a restricted version of C99 with extensions for vectorization and handling OpenCL's abstract memory model.
 
-The allow OpenCL to support many different hardware platforms it consists of the following components:
+\pagebreak
+
+To allow OpenCL to support many different hardware platforms it consists of the following components:
 
 \begin{description}
 	\item[API] \hfill \\
@@ -154,7 +156,7 @@ To closer adapt to GPU hardware architectures, the NDRange can be equally divide
 \begin{figure} 
 \centering
 \includegraphics[width=0.6\linewidth]{NDRange}
-\caption{The n-dimensional range consisting of GSx * GSy work groups. Each work group consists of LSx * LSy work items. A work item has two indexes in each dimension, the local index (relative to the work group) and a global index (relative to the NDRange).}
+\caption{The two-dimensional NDRange consisting of GSx * GSy work groups. Each work group consists of LSx * LSy work items. A work item has two indexes in each dimension, the local index (relative to the work group) and a global index (relative to the NDRange), as well as the indexes of the group it is part of.}
 \label{fig:NDRange}
 \end{figure}
 
@@ -165,13 +167,11 @@ The language kernels are written in is OpenCL C, which is derived from C99 and e
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \begin{lstlisting}[caption={An example of a \lstinline!__kernel! function's signature.},label={lst:kernel_example}]
-__kernel void matrixMultiplication(int n, int m, const __global float* matrixA, const __global float* matrixB, __global float* output)
-{
+__kernel void matrixMultiplication(int n, int m, __global const float* matrixA, __global const float* matrixB, __global float* output) {
 // kernel code ...
 }
 \end{lstlisting}
 \lstset{basicstyle=\ttfamily{}}
-
 
 \subsection{Memory}
 Many applications often have to work with large amounts of data. As the data that can be passed to a kernel function by value is restricted to a small size, OpenCL offers the possibility to allocate larger blocks of memory represented as a memory object which is valid inside a context and moved to a device when necessary. At the very top OpenCL defines two basic types of memory, buffers and images. Buffers can be seen as a continuous block of memory equivalent to an array in C allocated by a call to \lstinline!malloc()!. Images in contrast are abstract memory objects which can make use of device specific hardware acceleration and optimization when being read from or written to. Images do not have to be supported by a device. \cite[p.23f]{opencl_book}
@@ -214,6 +214,8 @@ OpenCL defines four different types of memory which are shown in figure \ref{fig
 
 The following piece of code in listing \ref{lst:opencl_example} shows a minimal OpenCL application with a kernel that calculates the sum of two input vectors. To keep the code simple no error handling is performed, only the error code is retrieved. The codes in the subsequent implementation chapters will completely go without error handling or error code retrieval.
 
+\pagebreak
+
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=C++,caption=A minimalistic working OpenCL application which calculates the sum vector of two large input vectors.,label=lst:opencl_example]{code/sample/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
@@ -225,5 +227,5 @@ To create an actual kernel object within the created context we first have to cr
 On a successful build, the kernel object (which can be seen as entry point into the program) can be finally retrieved by calling \lstinline!clCreateKernel()! and specifying the compiled program as well as the name of the \lstinline!__kernel! function. \\
 Before we can execute the kernel we have to allocate storage for the input and output data. Three arrays are allocated on the host with a size of \lstinline!N!. The first two are filled with data. To move the data to the GPU three buffer objects have to be created using \lstinline!clCreateBuffer()! having the same size as the corresponding host arrays. Note that the two input buffers are created as read only and the output buffer as write only by setting appropriate flags. To initiate the copy operations from the host to the GPU device, buffer write operations have to be enqueued on the command queue using \lstinline!clEnqueueWriteBuffer()!. Arguments are the command queue, the buffer to write to, a boolean specifying if the write operation should be blocking, the offset and length of the region to be written to, a pointer to the host memory from which should be read and several further arguments concerning events which will not be covered. By specifying \lstinline!false! for the blocking write parameter, the write operation is execute asynchronously to the host program. Therefore the provided host pointers (\lstinline!a! and \lstinline!b!) have to be available at least until the first blocking OpenCL call. \\
 Now it is time to setup and execute the kernel. The three buffer objects on which the kernel will operate are set as the kernel's arguments via \lstinline!clSetKernelArg()!. The second parameter specifies the index of the argument in the order they appear in the kernel function's signature. Finally the kernel can be enqueued to be executed using \lstinline!clEnqueueuNDRangeKernel()!. The problem is one-dimensional with a global work size of \lstinline!N!. The local work size is not specified and therefore determined by OpenCL. Similar to the buffer writes, the kernel enqueue operation is also executed asynchronously. However, the arguments do not have to be available anymore after \lstinline!clSetKernelArg()! returns as they are copied by the OpenCL implementation. Furthermore, as the kernel depends on the buffer objects as inputs, the kernel is not executed until all buffer operations on the inputs have completed. \\
-The last step is to read the results of the kernel invocation back to host memory via \lstinline!clEnqueueReadBuffer()! having the same arguments as corresponding write function. This time however, the synchronization boolean is set to \lstinline!true!. Therefore the function call blocks until the read operation has finished. Afterwards the result on the host may be further processed (e.g. printed). \\
+The last step is to read the results back to host memory via \lstinline!clEnqueueReadBuffer()! having the same arguments as corresponding write function. This time however, the synchronization boolean is set to \lstinline!true!. Therefore the function call blocks until the read operation has finished. Afterwards the result on the host may be further processed (e.g. printed). \\
 When OpenCL resources are no longer needed, they should be released using their corresponding \lstinline!clRelease*()! API functions.

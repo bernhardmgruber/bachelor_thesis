@@ -46,7 +46,7 @@ The benchmark of this algorithm in figure \ref{fig:scan_chart} confirms the line
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{scan_chart}
+\includegraphics[width=\textwidth]{scan_chart}
 \caption{Benchmark of several prefix sum implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:scan_chart_data}. Note that both axis are of logarithmic scale.}
 \label{fig:scan_chart}
 \end{figure}
@@ -76,6 +76,8 @@ Listing \ref{lst:scan_naive_kernel} shows the kernel code corresponding to the h
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for the naive scan algorithm., label=lst:scan_naive_kernel]{../src/scan/gpu/thesis/NaiveScan.cl}
 \lstset{basicstyle=\ttfamily{}}
+
+\pagebreak
 
 The kernel starts by querying the id of the current element. If this id is larger than the actual problem size, the kernel returns. This case can happen when the problem size has been rounded up to be a multiple of the chosen work group size. If the id addresses a valid input element, we determine if this element has a predecessor at the current pass' offset. If this is the case, the input element is read from the source buffer, added to its predecessor (also read from the source buffer) and written to the destination buffer. If the predecessor offset is to large, the input element remains the same, but has to be copied if it was just calculated in the last pass to keep the buffers consistent.
 
@@ -211,6 +213,8 @@ Beside the presented kernels a further approach has been implemented and benchma
 	\item[Bank conflict avoidance] \hfill \\
 	The GPU Gems 3 chapter about scan \cite{gpu_gems_3_chapter_39} also talks about avoiding bank conflicts occurring in the kernel in chapter \ref{sec:scan_work_efficient} where blocks are scanned in local memory. Both recursive scan implementations (chapters \ref{sec:scan_recursive} and \ref{sec:scan_vector}) have been implemented using the presented approach to avoid bank conflicts. However, the time required to calculate the conflict free offsets to local memory compensates for the time won by faster local memory access.
 \end{description}
+
+\pagebreak
 
 Furthermore, several libraries and sample codes exist supporting GPGPU accelerated scans.
 
