@@ -1,11 +1,17 @@
 \documentclass[10pt,a4paper,oneside]{scrartcl}
 
 % packages
+\usepackage{scrhack}
 \usepackage{fullpage}
 \usepackage{graphicx}
-\usepackage[style=numeric,backend=bibtex8]{biblatex}
+\usepackage[style=numeric,backend=bibtex8,urldate=iso8601]{biblatex}
 \usepackage{listings}
 \usepackage{courier}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{longtable}
+\usepackage[iso]{datetime}
 
 % basic latex configuration
 \setlength{\parskip}{\baselineskip}
@@ -15,7 +21,7 @@
 \addbibresource{references.bib}
 
 % graphics
-\graphicspath{ {./images/} {./charts/} }
+\graphicspath{ {./images/} }
 
 % language listings
 \lstdefinelanguage{CL}[ANSI]{C}
@@ -32,7 +38,7 @@
 
 \lstset
 {
-	tabsize=4,
+	tabsize=2,
 	captionpos=b,
 	basicstyle=\ttfamily{},
 	aboveskip=\parskip,
@@ -46,43 +52,61 @@
 % backgroundcolor=\color{lightgray}
 }
 
-
-\title{GPGPU Computing with OpenCL}
-\subtitle{Comparing GPU accelerated standard algorithms with traditonal CPU implementations}
+\title{GPGPU accelerated visualization of complex geometries}
+%\subtitle{}
 \author{Bernhard Manfred Gruber}
 \date{\today}
 
 \begin{document}
 
 \maketitle
+\thispagestyle{empty}
+\clearpage
+
+\pagenumbering{Roman}
 
 \include{declaration}
 
-\include{acknowledgement}
+%\include{acknowledgement}
 
 \include{abstract}
 
 \tableofcontents
 
+\clearpage
+
+\pagenumbering{arabic}
+
 \include{introduction}
 
-\include{opencl}
+\include{fundamentals}
 
-\include{matrixmul}
+\include{prototype}
 
-\include{prefixsum}
+\include{opencl_caster}
 
-\include{sorting}
+\include{results}
 
-\include{conclusion}
+\include{summary}
 
 \addcontentsline{toc}{section}{List of figures}
+\renewcommand\listfigurename{List of figures}
 \listoffigures
 
+\clearpage
+
 \addcontentsline{toc}{section}{List of listings}
+\renewcommand\lstlistlistingname{List of listings} 
 \lstlistoflistings
 
+\clearpage
+
 \addcontentsline{toc}{section}{References}
+%\appto{\bibsetup}{\emergencystretch=1em}
+\setcounter{biburllcpenalty}{9000}
 \printbibliography[title=References]
+
+\appendix
+\include{appendix}
 
 \end{document}
