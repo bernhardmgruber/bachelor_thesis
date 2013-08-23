@@ -47,7 +47,8 @@ The benchmark of this algorithm in figure \ref{fig:scan_chart} confirms the line
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{scan_chart}
-\caption{Benchmark of several prefix sum implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:scan_chart_data}. Note that both axis are of logarithmic scale.}
+\caption{Benchmark of several prefix sum implementations. %The chart is based on the benchmark data in appendix chapter \ref{sec:scan_chart_data}.
+Note that both axis are of logarithmic scale.}
 \label{fig:scan_chart}
 \end{figure}
 
@@ -133,7 +134,8 @@ The \lstinline!UpSweep! kernel starts by querying the buffer index of the curren
 
 The \lstinline!DownSweep! kernel initializes the same way as it's preceding one by determining the element's index and the current pass' stride. This time, the stride is the distance between the indexes of the parent nodes. It is used to determine if the current work item corresponds to the parent node of the current pass. If this the case, the value of the parent node is read and temporarily stored. Then the value of the left child node (given by \lstinline!offset!) is added the parent node (which becomes the right child node). Finally the previous, temporarily stored value of the parent node is passed down to the left child node.
 
-When having a look at the benchmark results for this algorithm in figure \ref{fig:scan_chart} we can see that our efforts have payed off. The initial 1132 ms of the naive GPU implementation have shrunk to 604 ms on an array of $2^{26}$ elements. Furthermore, this implementation is now work-efficient and therefore avoiding unnecessary additions. Additionally, as all intermediate results are stored in-place, the algorithm does not waste memory by double buffering such as the naive approach. However, the algorithm requires the input to be a power of two, which becomes more disadvantages with larger input sizes. This can be clearly seen in the performance data table of the work-efficient scan in appendix chapter \ref{sec:scan_chart_data}, where the time required for the calculation is equal for all problem sizes that are round up to the same power of two. This also explains the stepped shape of the runtime curve.
+When having a look at the benchmark results for this algorithm in figure \ref{fig:scan_chart} we can see that our efforts have payed off. The initial 1132 ms of the naive GPU implementation have shrunk to 604 ms on an array of $2^{26}$ elements. Furthermore, this implementation is now work-efficient and therefore avoiding unnecessary additions. Additionally, as all intermediate results are stored in-place, the algorithm does not waste memory by double buffering such as the naive approach. However, the algorithm requires the input to be a power of two, which becomes more disadvantages with larger input sizes. %This can be clearly seen in the performance data table of the work-efficient scan in appendix chapter \ref{sec:scan_chart_data}, where the time required for the calculation is equal for all problem sizes that are round up to the same power of two. This also explains the stepped shape of the runtime curve.
+This can be clearly seen at the stepped shape of the runtime curve which rises at every new power of two as the time required for the calculation is equal for all problem sizes that are round up to the same power of two.
 
 \subsection{Recursively scanning blocks in local memory}
 \label{sec:scan_recursive}
@@ -197,12 +199,15 @@ First of all, several macros are defined for the \lstinline!ScanBlocksVec! kerne
 The \lstinline!AddSums! kernel only changes by the type of the buffer which now consists of \lstinline!int8!s. Also notice here, that the value of \lstinline!val! loaded from the \lstinline!sums! is added to all vector elements of the two vector elements of \lstinline!buffer!.
 
 When having a look at the benchmark results in figure \ref{fig:scan_chart} we can clearly see a difference to the previous, non-vector implementation. The 604 ms of the non-vector implementation could be reduced by 37\% to 383 ms for a problem size of $2^{26}$ input elements. This is already an amazing result for a sequential problem such as scan. Nevertheless, the initial CPU scan time of 225 ms is still out of reach.
-However, if we have a closer look at the benchmark data in appendix chapter \ref{sec:scan_chart_data} we might notice that the final recursive vector scan implementation actually beat the CPU implementation when it comes down to run time. It took only 87 ms to scan the $2^{26}$ elements on the GPU. Upload and download have the larger shares of the total time required of the GPU scan, contributing 154 and 141 ms for transferring the 256 MiB to and from the GPU's main memory. This means that 77 \% of the total run time is wasted on memory transfers, which is a huge problem for many memory intensive algorithms like scan. Figure \ref{fig:scan_mem_transfer_chart} shows a detailed look on the upload, run and download phase of the recursive vector scan implementation.
+%However, if we have a closer look at the benchmark data in appendix chapter \ref{sec:scan_chart_data} we might notice that the final recursive vector scan implementation actually beat the CPU implementation when it comes down to run time. 
+However, if one has a closer look at the benchmark data one can see that the final recursive vector scan implementation actually beat the CPU implementation when it comes down to run time. It took only 87 ms to scan the $2^{26}$ elements on the GPU. Upload and download have the larger shares of the total time required of the GPU scan, contributing 154 and 141 ms for transferring the 256 MiB to and from the GPU's main memory. This means that 77 \% of the total run time is wasted on memory transfers, which is a huge problem for many memory intensive algorithms like scan. Figure \ref{fig:scan_mem_transfer_chart} shows a detailed view on the upload, run and download phase of the recursive vector scan implementation.
 
 \begin{figure}
 \centering
 \includegraphics[width=1.0\linewidth]{scan_vector_chart}
-\caption{A closer look to the benchmark of the recursive vector scan from chapter \ref{sec:scan_vector}. It points out how much time is wasted by memory transfers. The chart is based on the benchmark data in appendix chapter \ref{sec:scan_chart_data}. Note that both axis are of logarithmic scale. }
+\caption{A closer look to the benchmark of the recursive vector scan from chapter \ref{sec:scan_vector}. It points out how much time is wasted by memory transfers.
+%The chart is based on the benchmark data in appendix chapter \ref{sec:scan_chart_data}.
+Note that both axis are of logarithmic scale. }
 \label{fig:scan_mem_transfer_chart}
 \end{figure}
 

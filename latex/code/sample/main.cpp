@@ -19,7 +19,6 @@ int main(int argc, char* argv[]) {
     "    size_t id = get_global_id(0);"
     "    c[id] = a[id] + b[id];"
     "}";
-
     cl_program program = clCreateProgramWithSource(context, 1, &source, nullptr, &error);
     error = clBuildProgram(program, 1, &device, "", nullptr, nullptr);
 

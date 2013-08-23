@@ -35,7 +35,8 @@ The highly optimized Fortan77 BLAS library \cite{blas_lib} achieves a significan
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{matrix_chart}
-	\caption{Benchmark of several square matrix multiplication implementations. The chart is based on the benchmark data in appendix chapter \ref{sec:matrix_mul_chart_data}.}
+	\caption{Benchmark of several square matrix multiplication implementations. %The chart is based on the benchmark data in appendix chapter \ref{sec:matrix_mul_chart_data}.
+	}
 	\label{fig:matrix_chart}
 \end{figure}
 
@@ -95,7 +96,7 @@ Listing \ref{lst:matrix_local_kernel} shows the kernel code of the optimized mat
 \lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a single element of the output matrix per wok item. The input matrixes are split into tiles which are cached in local memory. The implementation is based on J. Tompson and K. Schlachter \cite{preso}., label=lst:matrix_local_kernel,]{../src/matrix/gpu/thesis/MultLocal.cl}
 \lstset{basicstyle=\ttfamily{}}
 
-When compared with the first, naive OpenCL kernel run on the GPU, the optimization using locally cached tiles achieves a nice speedup of 2.63 at a problem size of 4000 as we can see in figure \ref{fig:matrix_chart} and the detailed benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}.
+When compared with the first, naive OpenCL kernel run on the GPU, the optimization using locally cached tiles achieves a nice speedup of 2.63 at a problem size of 4000 as we can see in figure \ref{fig:matrix_chart}. % and the detailed benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}.
 
 We can also see some improvements on the performance counters in table \ref{tbl:matrix_perf_counter}. Although the general thread management overhead remains constant (equal number of work items, work groups and therefore wave fronts) and the kernel occupancy still stays at perfect 100\% we notice a major decrease in general ALU instructions. Moreover and most importantly, fetch instructions to global memory have been reduced to a sixteenth part (due to the used \lstinline!TILE_SIZE! of 16). Despite this reduction, the eventually fetched data from global memory could only be reduced by a factor of 2.4 due to bad cache behavior.
 In addition to fewer memory requests and ALU instructions a third and probably more unnoticed optimization occurred. As \lstinline!TILE_SIZE! is a compile time constant the compiler is now able to fully unroll and vectorize the inner for loop which results in more independent instructions available to the compiler to generate better filled VLIWs. This can be seen by an almost doubling of the ALU packing counter's value.
@@ -123,7 +124,8 @@ Listing \ref{lst:matrix_block_kernel} shows the kernel code of the optimized mat
 
 \pagebreak
 
-Compared with the naive GPU version we achieve an amazing speedup of 11.95 at a problem size of 4000 when we have a look at the chart in figure \ref{fig:matrix_chart} and the benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}. The kernel also performs 4.54 times faster than the optimized version using locally cached tiles in chapter \ref{sec:matrix_mul_local}.
+Compared with the naive GPU version we achieve an amazing speedup of 11.95 at a problem size of 4000 when we have a look at the chart in figure \ref{fig:matrix_chart}. % and the benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}.
+The kernel also performs 4.54 times faster than the optimized version using locally cached tiles in chapter \ref{sec:matrix_mul_local}.
 
 Also the performance counters in table \ref{tbl:matrix_perf_counter} show interesting changes. Most notable is the change of global work size from $4000 \times 4000$ to $1008 \times 1008$ which accounts mostly for the achieved speedup. Although the kernel now processes 16 elements instead of one, the number if needed instructions per work item only increased by a factor of 1.19 (from 20019 to 23782). Furthermore, the number of total fetch instructions per work item remained the same (a work item now issues four instructions but fetches four times more data per instruction) resulting in equal management work for the fetch unit (which is still busy at 99.4\%) but higher throughput. Additionally, as each work item processes four independent output elements, the amount of independent instructions increased leading to an almost doubling in ALU packing performance. The only major drawback of this version is that the high number of needed registers (VGPRs) limits the amount of wavefronts that can be concurrently executed on a SM. This can be seen clearly at the lower occupancy of only 37.5\%. As a result, memory latency may not be hided well enough. However, this problem is specific to the amount of available registers which increases as GPGPU computing becomes an important design factor for GPU hardware vendors.
 
