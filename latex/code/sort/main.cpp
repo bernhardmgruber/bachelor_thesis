@@ -92,14 +92,17 @@ void radixSort(uint* data, size_t n) {
 	delete[] aux;
 }
 
-void bitonicSort(uint* data, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize) {
+void bitonicSort(uint* data, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel kernel, size_t workGroupSize) {
 	size_t adjustedSize = roundToPowerOfTwo(n);
-	cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(int), nullptr, nullptr);
+	cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(uint),
+			nullptr, nullptr);
 
 	clEnqueueWriteBuffer(queue, buffer, false, 0, n * sizeof(uint), data, 0, nullptr, nullptr);
 	if(adjustedSize != n) {
 		cl_uint max = numeric_limits<uint>::max();
-		clEnqueueFillBuffer(queue, buffer, &max, sizeof(uint), n * sizeof(uint), (adjustedSize - n) * sizeof(uint), 0, nullptr, nullptr);
+		clEnqueueFillBuffer(queue, buffer, &max, sizeof(uint), n * sizeof(uint),
+				(adjustedSize - n) * sizeof(uint), 0, nullptr, nullptr);
 	}
 
 	for (cl_uint boxwidth = 2; boxwidth <= adjustedSize; boxwidth <<= 1) {
@@ -119,14 +122,17 @@ void bitonicSort(uint* data, cl_uint n, cl_context context, cl_command_queue que
 	clReleaseMemObject(buffer);
 }
 
-void bitonicSortFusion(uint* data, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel kernel2, cl_kernel kernel4, cl_kernel kernel8, cl_kernel kernel16, size_t workGroupSize) {
+void bitonicSortFusion(uint* data, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel kernel2, cl_kernel kernel4, cl_kernel kernel8, cl_kernel kernel16, size_t workGroupSize) {
 	size_t adjustedSize = roundToPowerOfTwo(n);
-	cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(uint), nullptr, nullptr);
+	cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(uint),
+			nullptr, nullptr);
 
 	clEnqueueWriteBuffer(queue, buffer, false, 0, n * sizeof(uint), data, 0, nullptr, nullptr);
 	if(adjustedSize != n) {
 		cl_uint max = numeric_limits<uint>::max();
-		clEnqueueFillBuffer(queue, buffer, &max, sizeof(uint), n * sizeof(uint), (adjustedSize - n) * sizeof(uint), 0, nullptr, nullptr);
+		clEnqueueFillBuffer(queue, buffer, &max, sizeof(uint), n * sizeof(uint),
+				(adjustedSize - n) * sizeof(uint), 0, nullptr, nullptr);
 	}
 
 	for (cl_uint boxwidth = 2; boxwidth <= adjustedSize; boxwidth <<= 1) {
@@ -169,11 +175,11 @@ void bitonicSortFusion(uint* data, cl_uint n, cl_context context, cl_command_que
 
 void scanCLRecursiveVector_r(cl_mem values, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocksKernel, cl_kernel addSumsKernel, size_t workGroupSize) {
 	size_t sumCount = roundToMultiple(n / (workGroupSize * 2 * VECTOR_WIDTH), workGroupSize * 2 * VECTOR_WIDTH);
-	cl_mem sums = clCreateBuffer(context, CL_MEM_READ_WRITE, sumCount * sizeof(int), nullptr, nullptr);
+	cl_mem sums = clCreateBuffer(context, CL_MEM_READ_WRITE, sumCount * sizeof(uint), nullptr, nullptr);
 
 	clSetKernelArg(scanBlocksKernel, 0, sizeof(cl_mem), &values);
 	clSetKernelArg(scanBlocksKernel, 1, sizeof(cl_mem), &sums);
-	clSetKernelArg(scanBlocksKernel, 2, sizeof(int) * 2 * workGroupSize, nullptr);
+	clSetKernelArg(scanBlocksKernel, 2, sizeof(uint) * 2 * workGroupSize, nullptr);
 	size_t globalWS[] = { n / (2 * VECTOR_WIDTH) };
 	size_t localWS[] = { workGroupSize };
 	clEnqueueNDRangeKernel(queue, scanBlocksKernel, 1, nullptr, globalWS, localWS, 0, nullptr, nullptr);
@@ -200,20 +206,26 @@ void scanCLRecursiveVector_r(cl_mem values, cl_uint n, cl_context context, cl_co
 #define BLOCK_SIZE 32
 #define VECTOR_WIDTH 8
 
-void radixSortCL(uint* data, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel histogramKernel, cl_kernel permuteKernel, cl_kernel scanBlocksKernel, cl_kernel addSumsKernel, size_t workGroupSize) {
+void radixSortCL(uint* data, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel histogramKernel, cl_kernel permuteKernel, cl_kernel scanBlocksKernel,
+		cl_kernel addSumsKernel, size_t workGroupSize) {
 	size_t adjustedSize = roundToMultiple(n, workGroupSize * BLOCK_SIZE);
-	cl_mem srcBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(uint), nullptr, nullptr);
-	cl_mem dstBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(uint), nullptr, nullptr);
+	cl_mem srcBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(uint),
+			nullptr, nullptr);
+	cl_mem dstBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(uint),
+			nullptr, nullptr);
 
 	clEnqueueWriteBuffer(queue, srcBuffer, false, 0, n * sizeof(uint), data, 0, nullptr, nullptr);
 	if(adjustedSize != n) {
 		cl_uint max = numeric_limits<uint>::max();
-		clEnqueueFillBuffer(queue, srcBuffer, &max, sizeof(uint), n * sizeof(uint), (adjustedSize - n) * sizeof(uint), 0, nullptr, nullptr);
+		clEnqueueFillBuffer(queue, srcBuffer, &max, sizeof(uint), n * sizeof(uint),
+				(adjustedSize - n) * sizeof(uint), 0, nullptr, nullptr);
 	}
 
 	size_t histogramSize = (adjustedSize / BLOCK_SIZE) * BUCKETS;
 	histogramSize = roundToMultiple(histogramSize, workGroupSize * 2 * VECTOR_WIDTH); // for scan
-	cl_mem histogramBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, histogramSize * sizeof(cl_uint), nullptr, nullptr);
+	cl_mem histogramBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, histogramSize * sizeof(cl_uint),
+			nullptr, nullptr);
 
 	size_t globalWS[] = { adjustedSize / BLOCK_SIZE };
 	size_t localWS[] = { workGroupSize };
@@ -224,7 +236,8 @@ void radixSortCL(uint* data, cl_uint n, cl_context context, cl_command_queue que
 		clSetKernelArg(histogramKernel, 2, sizeof(cl_uint), &bits);
 		clEnqueueNDRangeKernel(queue, histogramKernel, 1, nullptr, globalWS, localWS, 0, nullptr, nullptr);
 
-		scanCLRecursiveVector_r(histogramBuffer, histogramSize, context, queue, scanBlocksKernel, addSumsKernel, workGroupSize);
+		scanCLRecursiveVector_r(histogramBuffer, histogramSize, context, queue, scanBlocksKernel,
+				addSumsKernel, workGroupSize);
 
 		clSetKernelArg(permuteKernel, 0, sizeof(cl_mem), &srcBuffer);
 		clSetKernelArg(permuteKernel, 1, sizeof(cl_mem), &dstBuffer);
@@ -290,7 +303,7 @@ void radixSortCLLocal(uint* data, cl_uint n, cl_context context, cl_command_queu
 #if 0
 	size_t localSize = (workGroupSize * BUCKETS * sizeof(cl_uint));
 	...
-	for(cl_uint bits = 0; bits < sizeof(uint) * 8; bits += RADIX) {
+	for(cl_uint bits = ...) {
 		...
 		clSetKernelArg(histogramKernel, 3, localSize, nullptr);
 		...
@@ -308,8 +321,8 @@ __kernel void Histogram(__global uint* data, __global uint* histograms, uint bit
 	...
 }
 
-__kernel void Permute(__global uint* src, __global uint* dst, __global uint* scannedHistograms, uint bits, __local uint* hist)
-{
+__kernel void Permute(__global uint* src, __global uint* dst, __global uint* scannedHistograms, uint bits,
+		__local uint* hist) {
 	size_t globalId = get_global_id(0);
 	size_t localId = get_local_id(0);
 
@@ -335,7 +348,8 @@ __kernel void Histogram(__global uint16* data, __global uint* histograms, uint b
 	...
 }
 
-__kernel void Permute(__global uint16* src, __global uint* dst, __global uint* scannedHistograms, uint bits, __local uint* hist) {
+__kernel void Permute(__global uint16* src, __global uint* dst, __global uint* scannedHistograms,
+		uint bits, __local uint* hist) {
 	...
 	for(int i = 0; i < BLOCK_SIZE_16; ++i) {
 		uint16 value = src[globalId * BLOCK_SIZE_16 + i];
@@ -368,8 +382,6 @@ string readFile(string fileName)
 
 int main(int argc, char* argv[])
 {
-	cl_int error;
-
 	// get the first available platform
 	cl_platform_id platform;
 	clGetPlatformIDs(1, &platform, nullptr);

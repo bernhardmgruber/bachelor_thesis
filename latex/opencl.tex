@@ -168,8 +168,9 @@ The language kernels are written in is OpenCL C, which is derived from C99 and e
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \begin{lstlisting}[caption={An example of a \lstinline!__kernel! function's signature.},label={lst:kernel_example}]
-__kernel void matrixMultiplication(int n, int m, __global const float* matrixA, __global const float* matrixB, __global float* output) {
-// kernel code ...
+__kernel void matrixMultiplication(int n, int m,
+	__global const float* matrixA, __global const float* matrixB, __global float* output) {
+	// kernel code ...
 }
 \end{lstlisting}
 \lstset{basicstyle=\ttfamily{}}

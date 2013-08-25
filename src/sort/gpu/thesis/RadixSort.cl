@@ -17,7 +17,8 @@ __kernel void Histogram(__global uint* data, __global uint* histograms, uint bit
 		histograms[get_global_size(0) * i + globalId] = hist[i];
 }
 
-__kernel void Permute(__global uint* src, __global uint* dst, __global uint* scannedHistograms, uint bits) {
+__kernel void Permute(__global uint* src, __global uint* dst, __global uint* scannedHistograms,
+		uint bits) {
 	size_t globalId = get_global_id(0);
 
 	uint hist[BUCKETS];

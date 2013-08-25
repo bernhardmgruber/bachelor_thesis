@@ -37,7 +37,8 @@ void scan(int* data, int* result, size_t n) {
 		result[i] = result[i - 1] + data[i - 1];
 }
 
-void scanCL(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize) {
+void scanCL(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel kernel, size_t workGroupSize) {
 	size_t bufferSize = n * sizeof(int);
 	cl_mem src = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferSize, nullptr, nullptr);
 	cl_mem dst = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferSize, nullptr, nullptr);
@@ -62,7 +63,8 @@ void scanCL(int* data, int* result, cl_uint n, cl_context context, cl_command_qu
 	clReleaseMemObject(dst);
 }
 
-void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel upSweep, cl_kernel downSweep, size_t workGroupSize) {
+void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel upSweep, cl_kernel downSweep, size_t workGroupSize) {
 	size_t adjustedSize = roundToPowerOfTwo(n);
 	cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(int), nullptr, nullptr);
 
@@ -80,7 +82,8 @@ void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, 
 
 	// set last element to zero
 	cl_uint zero = 0;
-	clEnqueueWriteBuffer(queue, buffer, false, (adjustedSize - 1) * sizeof(cl_uint), sizeof(cl_uint), &zero, 0, nullptr, nullptr);
+	clEnqueueWriteBuffer(queue, buffer, false, (adjustedSize - 1) * sizeof(cl_uint), sizeof(cl_uint),
+			&zero, 0, nullptr, nullptr);
 
 	// downsweep
 	nodes = 1;
@@ -97,7 +100,8 @@ void scanCLWorkEfficient(int* data, int* result, cl_uint n, cl_context context, 
 	clReleaseMemObject(buffer);
 }
 
-void scanCLRecursive_r(cl_mem values, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize) {
+void scanCLRecursive_r(cl_mem values, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize) {
 	size_t sumCount = roundToMultiple(n / (workGroupSize * 2), workGroupSize * 2);
 	cl_mem sums = clCreateBuffer(context, CL_MEM_READ_WRITE, sumCount * sizeof(int), nullptr, nullptr);
 
@@ -119,7 +123,8 @@ void scanCLRecursive_r(cl_mem values, cl_uint n, cl_context context, cl_command_
 	clReleaseMemObject(sums);
 }
 
-void scanCLRecursive(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize) {
+void scanCLRecursive(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize) {
 	size_t adjustedSize = roundToMultiple(n, workGroupSize * 2);
 	cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(int), nullptr, nullptr);
 
@@ -133,7 +138,8 @@ void scanCLRecursive(int* data, int* result, cl_uint n, cl_context context, cl_c
 #if 0
 #define VECTOR_WIDTH 8
 ...
-	size_t sumCount = roundToMultiple(n / (workGroupSize * 2 * VECTOR_WIDTH), workGroupSize * 2 * VECTOR_WIDTH);
+	size_t sumCount = roundToMultiple(n / (workGroupSize * 2 * VECTOR_WIDTH),
+		workGroupSize * 2 * VECTOR_WIDTH);
 	...
 	size_t globalWS[] = { n / (2 * VECTOR_WIDTH) };
 	...
@@ -154,8 +160,8 @@ void scanCLRecursive(int* data, int* result, cl_uint n, cl_context context, cl_c
 	UPSWEEP_STEP(CONCAT_EXPANDED(val2.s, left), CONCAT_EXPANDED(val2.s, right))
 
 #define DOWNSWEEP_STEP_TMP(left, right, tmp) \
-	int tmp = left;						  \
-	left = right;							\
+	int tmp = left; \
+	left = right; \
 	right += tmp
 
 #define DOWNSWEEP_STEP(left, right) DOWNSWEEP_STEP_TMP(left, right, CONCAT_EXPANDED(tmp, __COUNTER__))

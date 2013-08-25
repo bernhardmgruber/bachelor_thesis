@@ -26,7 +26,8 @@ void matrixMul(float* a, float* b, float* c, size_t n) {
 	}
 }
 
-void matrixMulCL(float* a, float* b, float* c, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize) {
+void matrixMulCL(float* a, float* b, float* c, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel kernel, size_t workGroupSize) {
 	size_t bufferSize = n * n * sizeof(float);
 
 	cl_mem aBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY, bufferSize, nullptr, nullptr);
@@ -54,7 +55,8 @@ void matrixMulCL(float* a, float* b, float* c, cl_uint n, cl_context context, cl
 
 #define TILE_SIZE 16
 
-void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel kernel) {
+void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context context, cl_command_queue queue,
+		cl_kernel kernel) {
 	cl_uint adjustedSize = roundToMultiple(n, TILE_SIZE);
 	size_t bufferSize = adjustedSize * adjustedSize * sizeof(float);
 	cl_mem aBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY, bufferSize, nullptr, nullptr);
@@ -69,8 +71,10 @@ void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context contex
 		float zero = 0.0f;
 		clEnqueueFillBuffer(queue, aBuffer, &zero, sizeof(float), 0, bufferSize, 0, nullptr, nullptr);
 		clEnqueueFillBuffer(queue, bBuffer, &zero, sizeof(float), 0, bufferSize, 0, nullptr, nullptr);
-		clEnqueueWriteBufferRect(queue, aBuffer, false, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, n * sizeof(float), 0, a, 0, nullptr, nullptr);
-		clEnqueueWriteBufferRect(queue, bBuffer, false, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, n * sizeof(float), 0, b, 0, nullptr, nullptr);
+		clEnqueueWriteBufferRect(queue, aBuffer, false, bufferOffset, hostOffset, sizes,
+				adjustedSize * sizeof(float), 0, n * sizeof(float), 0, a, 0, nullptr, nullptr);
+		clEnqueueWriteBufferRect(queue, bBuffer, false, bufferOffset, hostOffset, sizes,
+				adjustedSize * sizeof(float), 0, n * sizeof(float), 0, b, 0, nullptr, nullptr);
 	} else {
 		clEnqueueWriteBuffer(queue, aBuffer, false, 0, bufferSize, a, 0, nullptr, nullptr);
 		clEnqueueWriteBuffer(queue, bBuffer, false, 0, bufferSize, b, 0, nullptr, nullptr);
@@ -85,7 +89,8 @@ void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context contex
 	clEnqueueNDRangeKernel(queue, kernel, 2, nullptr, globalWS, localWS, 0, nullptr, nullptr);
 
 	if(adjustedSize != n)
-		clEnqueueReadBufferRect(queue, cBuffer, true, bufferOffset, hostOffset, sizes, adjustedSize * sizeof(float), 0, n * sizeof(float), 0, c, 0, nullptr, nullptr);
+		clEnqueueReadBufferRect(queue, cBuffer, true, bufferOffset, hostOffset, sizes,
+				adjustedSize * sizeof(float), 0, n * sizeof(float), 0, c, 0, nullptr, nullptr);
 	else
 		clEnqueueReadBuffer(queue, cBuffer, true, 0, bufferSize, c, 0, nullptr, nullptr);
 

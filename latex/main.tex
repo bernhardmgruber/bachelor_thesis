@@ -12,6 +12,7 @@
 \usepackage{amsmath}
 \usepackage{longtable}
 \usepackage[iso]{datetime}
+\usepackage{pdfpages}
 
 % basic latex configuration
 \setlength{\parskip}{\baselineskip}
@@ -59,9 +60,10 @@
 
 \begin{document}
 
-\maketitle
-\thispagestyle{empty}
-\clearpage
+\includepdf[pages=-]{titlepage}
+%\maketitle
+%\thispagestyle{empty}
+%\clearpage
 
 \pagenumbering{Roman}
 
