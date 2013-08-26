@@ -1,7 +1,43 @@
-\section{Fundamental principles}
+\section{Fundamentals}
 
 \subsection{Raycasting}
 
-\subsection{Acceleration structures}
+vs. raytracing
+vs. conventional rendering
+
+principle
+
+image with camera and image plane
+
+advantages/disadvantages of rendering with ray casting
+
+\subsubsection{Acceleration structures}
+
+why do we need acceleration structures?
+
+kd trees
+bounding volume hierarchy
+BSP
+
+regular grid
+
+traversing
+
+\subsubsection{Packet casting}
+
+different traversing
+
+frustum culling
+cache coherence (of adjacent rays)
+SIMD
+
 
 \subsection{Boolean raycasting}
+
+works equal to CSG (Constructive Solid Geometry), except resulting mesh is never explicitly generated
+
+water-tight
+
+\subsection{OpenCL}
+
+GPU hw architecture, how do kernels work? NDRange, buffers
