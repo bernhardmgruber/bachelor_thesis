@@ -167,9 +167,9 @@ A kernel is executed on a command queue by calling \lstinline!clEnqueueNDRangeKe
 The language kernels are written in is OpenCL C, which is derived from C99 and extended by OpenCL specifics like vector data types, built in functions and additional key words. A kernel function must have the \lstinline!__kernel! attribute and must have void as it's return type. The function's name identifies the kernel to the host. A kernel may have parameters which are declared in the function's signature. An example kernel function for a matrix multiplication is given in listing \ref{lst:kernel_example}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\begin{lstlisting}[caption={An example of a \lstinline!__kernel! function's signature.},label={lst:kernel_example}]
-__kernel void matrixMultiplication(int n, int m,
-	__global const float* matrixA, __global const float* matrixB, __global float* output) {
+\begin{lstlisting}[caption={An example of a kernel function's signature.},label={lst:kernel_example},language=CL]
+__kernel void matrixMultiplication(int n, int m, __global const float* matrixA,
+		__global const float* matrixB, __global float* output) {
 	// kernel code ...
 }
 \end{lstlisting}
