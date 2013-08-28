@@ -7,7 +7,7 @@ Ray casting is primarily an imaging technique and was first described by Scott R
 
 \begin{figure}
 \centering
-\includegraphics[width=0.6\linewidth]{raycasting}
+\includegraphics[width=0.6\textwidth]{raycasting}
 \caption{Principle of ray casting.}
 \label{fig:raycasting}
 \end{figure}
@@ -25,11 +25,26 @@ Regular grids are a type of data structure frequently used in ray casting/tracin
 
 Building a regular grid data structure is simple. Initially, a bounding box is created around the scene. This box is then divided into equally sized cubes (which may force the box to be enlarged a bit to fit a whole number of cubes in each dimension) which are called cells. For each object (triangle) of the scene all spanned cells are calculated and the cells store a reference to the triangle.
 
-During ray casting, the rays have to traverse the cells of the grid in order to find potential geometry they might intersect with. A fast algorithm for traversing regular grids using a single ray is given by John Amanatides and Andrew Woo \cite{3DDDA}. Their algorithm is a slight modification of the DDA (digital differential analyzer) which is used for the rasterization of lines. As finding the pixels (squares inside a regular 2D grid) which are covered by a line is actually the same problem as finding the voxels hit by a ray, this adapted 3D DDA algorithm can be used for efficient traversal of regular grids. Furthermore, as the algorithm's start point can be determined and the voxels (grid cells) are traversed incrementally, no depth sorting has to be performed across the hit cells and the traversal can be stopped on the first found intersection.
+\begin{figure}
+\centering
+\includegraphics[width=0.3\textwidth]{cell_traverser}
+\caption{Traversing the cells of the grid using a DDA variant until an intersection has been found.}
+\label{fig:cell_traverser}
+\end{figure}
 
+During ray casting, the rays have to traverse the cells of the grid in order to find potential geometry they might intersect with (cf. figure \ref{fig:cell_traverser}). A fast algorithm for traversing regular grids using a single ray is given by John Amanatides and Andrew Woo \cite{3DDDA}. Their algorithm is a slight modification of the DDA (digital differential analyzer) which is used for the rasterization of lines. As finding the pixels (squares inside a regular 2D grid) which are covered by a line is actually the same problem as finding the voxels hit by a ray, this adapted 3D DDA algorithm can be used for efficient traversal of regular grids. Furthermore, as the algorithm's start point can be determined and the voxels (grid cells) are traversed incrementally, no depth sorting has to be performed across the hit cells and the traversal can be stopped on the first found intersection.
 
 
 \subsection{Boolean raycasting}
+
+The scenario of 
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{boolean_casting}
+\caption{Ray traversing through a scene containing one stock and two subtraction volumes. By inverting the stock into a subtraction volume (invert normal vectors of surface), the counting algorithm is simplified. The ray starts with a counter value of minus one (inside the inverted stock volume), is decremented on every volume entry (yellow point) and incremented on ever volume exit (blue point). If the counter reaches the value zero, the surface has been found.}
+\label{fig:boolean_casting} 
+\end{figure}
 
 works equal to CSG (Constructive Solid Geometry), except resulting mesh is never explicitly generated
 
