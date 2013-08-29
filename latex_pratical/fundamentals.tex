@@ -37,18 +37,16 @@ During ray casting, the rays have to traverse the cells of the grid in order to 
 
 \subsection{Boolean raycasting}
 
-The scenario of 
+Enlight focuses on subtractive manufacturing. Therefore, the scene is composed of an initial stock volume from which further volumes are subtracted (cf. goals in chapter \ref{sec:about_enlight}). This scenario can be typically found in CSG (Constructive Solid Geometry) modeling, where complex models are build from boolean combinations of simpler models. CSG models can be efficiently rendered using ray casting, by using a tree with the volumes as leaves and the boolean operations applied to them as nodes. The rays are then traversed through the scenes and have to resolve the tree on every volume entry or exit. Enlight only supports a subset of CSG by only allowing boolean subtraction from the initial stock volume. However, by inverting the stock volume (inverting the surface normals)) and defining the world space as being filled instead of empty, the problem can be even more simplified as the scene now only consists of subtraction volumes.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{boolean_casting}
-\caption{Ray traversing through a scene containing one stock and two subtraction volumes. By inverting the stock into a subtraction volume (invert normal vectors of surface), the counting algorithm is simplified. The ray starts with a counter value of minus one (inside the inverted stock volume), is decremented on every volume entry (yellow point) and incremented on ever volume exit (blue point). If the counter reaches the value zero, the surface has been found.}
+\includegraphics[width=0.8\textwidth]{boolean_casting}
+\caption{Ray traversing through a scene containing one stock and two subtraction volumes. By inverting the stock (in the left figure) into a subtraction volume (invert normal vectors of surface, figure on the right), the counting algorithm is simplified. The ray starts with a counter value of minus one (inside the inverted stock volume), is decremented on every volume entry (yellow dot) and incremented on ever volume exit (blue dot). If the counter reaches the value zero, the surface has been found.}
 \label{fig:boolean_casting} 
 \end{figure}
 
-works equal to CSG (Constructive Solid Geometry), except resulting mesh is never explicitly generated
-
-water-tight
+The algorithm for ray casting a scene composed of subtraction volumes is illustrated in figure \ref{fig:boolean_casting}. Every ray starts outside the initial scene and maintains a counter which determines the number of subtraction volumes, the ray is inside of/has entered. As outside of the original scene is inside the inverted stock, this value is initialized with minus one (inside one volume). The ray is then traversed through the scene. On every intersection where the ray enters a volume, the counter is further decremented (the ray is now inside even more volumes). On every exit, the counter is incremented (the ray is now inside one less volume) and checked if it has become zero. A counter value of zero on a volume exit corresponds to an intersection with the surface of the resulting model.
 
 \subsubsection{Packet casting}
 
