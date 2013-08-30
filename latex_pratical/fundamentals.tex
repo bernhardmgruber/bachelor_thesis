@@ -37,6 +37,7 @@ During ray casting, the rays have to traverse the cells of the grid in order to 
 
 
 \subsection{Boolean raycasting}
+\label{sec:boolean_raycasting}
 
 Enlight focuses on subtractive manufacturing. Therefore, the scene is composed of an initial stock volume from which further volumes are subtracted (cf. goals in chapter \ref{sec:about_enlight}). This scenario can be typically found in CSG (Constructive Solid Geometry) modeling, where complex models are build from boolean combinations of simpler models. CSG models can be efficiently rendered using ray casting, by using a tree with the volumes as leaves and the boolean operations applied to them as nodes. The rays are then traversed through the scenes and have to resolve the tree on every volume entry or exit. Enlight only supports a subset of CSG by only allowing boolean subtraction from the initial stock volume. However, by inverting the stock volume (inverting the surface normals)) and defining the world space as being filled instead of empty, the problem can be even more simplified as the scene now only consists of subtraction volumes.
 
@@ -50,6 +51,7 @@ Enlight focuses on subtractive manufacturing. Therefore, the scene is composed o
 The algorithm for ray casting a scene composed of subtraction volumes is illustrated in figure \ref{fig:boolean_casting}. Every ray starts outside the initial scene and maintains a counter which determines the number of subtraction volumes, the ray is inside of/has entered. As outside of the original scene is inside the inverted stock, this value is initialized with minus one (inside one volume). The ray is then traversed through the scene. On every intersection where the ray enters a volume, the counter is further decremented (the ray is now inside even more volumes). On every exit, the counter is incremented (the ray is now inside one less volume) and checked if it has become zero. A counter value of zero on a volume exit corresponds to an intersection with the surface of the resulting model.
 
 \subsection{Packet casting}
+\label{sec:packet_casting}
 
 A common technique for accelerating ray casting and tracing is to accumulate squares of adjacent rays into ray packets and traversing the packets through the scene. This technique has several advantages. Most importantly, a part of the parallelism between individual rays (which can be processed completely independent) is moved down into the traversing and intersection algorithms. As adjacent rays are likely to traverse through the same parts of the acceleration structure (e.g. the same cells of a grid) and hit the same triangles, the corresponding routines can be executed in a data parallel fashion on multiple rays. Modern CPUs and GPUs benefit from these scenarios and offer corresponding SIMD instructions (CPU) or an appropriate hardware architecture (GPU). Furthermore, coherent traversal and intersection improves caching behavior via temporal locality\footnote{Temporal locality refers to accessing the same location in memory frequently within a short time.}.
 

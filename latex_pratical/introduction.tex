@@ -39,9 +39,11 @@ Beside the goals from the initial proposal, several derived goals and restrictio
 	\item Furthermore, the internal data structure should be able to handle up to 100,000 subtraction volumes.
 	\item The visualization should be interactive. Interactivity is described in the proposal by referring to an article by David Kasik et al. with at least ten frames per second \cite{interactive_framerate}.
 	\item The visualization should be as precise as possible.
+	\item The ray casted image should also contain depth values in order to merge it with OpenGL rendered geometries.
 \end{itemize}
 
-\subsection{Goals of the internship}
+\subsection{Initial situation and goals of the internship}
+\label{sec:goals}
 
 The internship started on 2013-04-04 and lasted until 2013-06-30. As the project had already been running for two years at the time of joining the RISC Software GmbH, the major work of the project has already been done. The created application is console based offering a variety of commands. Several mesh formats (STL, PLY and PTM) have been implemented to allow loading geometry from the file system. The triangles are processed and already organized in a special kind of data structure (discussed in chapter \ref{sec:data_structure}). An additional window is used to show a preview of the loaded meshes using OpenGL (no subtraction of the volumes). Rotating and zooming the preview is also possible using cursor draging and mouse wheel scrolling. Via corresponding commands on the console ray casting can be enabled which opens a second window showing the ray casted result. The underlying ray casting implementation runs on the CPU and does already perform well. A further CUDA implementation was in progress.
 
@@ -61,7 +63,7 @@ According to the job description on the internship agreement, the primary object
 
 After this short introduction to the company and the organizational part of Enlight,  chapter \ref{sec:fundamentals} will continue with technical fundamentals about the knowledge fields Enlight encompasses. After a short overview about ray casting and acceleration structures, a specialized ray casting algorithm will be discussed using object entry and exit counting to determine the visual surface. A final coverage of GPGPU computing with OpenCL finishes this chapter, providing the information required to understand the subsequent algorithmic designs and presented implementations.
 
-In chapter \ref{sec:existing_prototype} a general overview of the existing application infrastructure is given. After the big-picture application design is shown, the used data structure for ray casting is explained in detail. Furthermore, the algorithm for adding newly loaded subtraction volumes to the data structure is presented, as the chosen strategy has a great impact on the ray casting algorithms which is discussed at last.
+In chapter \ref{sec:existing_prototype} a general overview of the existing application infrastructure is given. After the big-picture application design is shown, the used data structure for ray casting is explained in more detail. Furthermore, the algorithm for adding newly loaded subtraction volumes to the data structure is presented, as the chosen strategy has a great impact on the ray casting algorithms which is discussed at last.
 
 The main chapter \ref{sec:opencl_caster} then presents the implemented OpenCL infrastructure as well as several ray caster implementations. This chapter is organized chronologically showing the progress and evolution of the algorithms during the internship. It starts with the creation of an OpenCL environment and continues with several ray caster implementations and versions of them. The chapter ends with porting the created code to a new prototype and integrating out of core capability.
 
