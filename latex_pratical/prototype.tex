@@ -20,12 +20,9 @@ The central class containing most of the application logic is \lstinline!DebugVi
 \subsection{Ray casting data structure}
 \label{sec:data_structure}
 
-regular grid
-
-macro/micro cells
-
-triangles in cells, pointer to sweep volumes
-
+The used data structure for holding the geometry and accelerating the ray casting algorithm is implemented by several classes. To start with, the \lstinline!RegularGrid! class is a simple container for cells. It also stores some meta information such as the grids bounding box, the number of cells in each dimension and the size of a cell. The cells are stored in a continuous array. Therefore, 3-dimensional cell coordinates have to be mapped to the linear memory region. \\
+The cells themselves are simple bounding boxes containing references (pointers) to the triangles (called facets) contained within the cells. Although the bounding box is implicitly given by the cell's coordinates inside the grid and the grid's bounding box, the box is kept precalculated as it is often needed by the ray casting algorithm. \\
+A \lstinline!Facet! itself then consists of its three vertices, a normal as well as the \lstinline!structure! pointer. The latter references the mesh (subtraction volume) this facet originates from. The importance of this value is later elaborated when discussing the details of the intersection routine in chapter \ref{sec:adapted_ray_casting}.
 
 \subsection{Classification}
 \label{sec:classification}
@@ -48,7 +45,7 @@ description of classification algorithm (principle)
 \label{fig:classification_sub}
 \end{figure}
 
-\subsection{Adapted ray casting algorithm}
+\subsection{Adapted intersection algorithm}
 \label{sec:adapted_ray_casting}
 
 consequences of classification on raycasting algorithm
