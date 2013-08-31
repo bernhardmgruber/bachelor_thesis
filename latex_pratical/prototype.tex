@@ -27,16 +27,37 @@ A \lstinline!Facet! itself then consists of its three vertices, a normal as well
 \subsection{Classification}
 \label{sec:classification}
 
-
-
-description of classification algorithm (principle)
+When a mesh is added to the grid, the triangles of the mesh have to be mapped to the cells of the grid. After the mapping is complete, the cells can be classified to one of three categories. Cells which are occupied with triangles of the mesh surface are surface cells. Cells inside the mesh are inside cells and contain no triangles. Cells outside the mesh are outside cells and also contain no triangles. For the ray casting algorithm, only surface cells are relevant. Figure \ref{fig:classification} illustrates the classification of a mesh.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{classification}
-\caption{Principle of classifying cells of the grid.}
+\caption{Principle of classifying cells of the grid according to the added mesh. Only surface cells are relevant for ray casting.}
 \label{fig:classification}
 \end{figure}
+
+When a new mesh is added to the grid, the mesh is again classified and merged into the existing cell classification. Limiting the modifiability of the scene to only allowing the addition of further subtraction volumes makes the rules for merging a new mesh into the grid easy as seen in table \ref{tbl:classification_rules}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{2}{|c|}{\multirow{2}{*}{merge}} & \multicolumn{3}{c|}{Cell class of subtraction volume} \\
+\cline{3-5}
+\multicolumn{2}{|c|}{} & outside & surface & inside \\
+ \hline
+\multirow{3}{*}{Cell class before} & outside & outside & outside & outside \\
+\cline{2-5}
+ & surface & surface & surface & outside \\
+\cline{2-5}
+ & inside & inside & surface & outside \\
+\hline
+\end{tabular}
+\caption{Table of different merge scenarios and their outcome.}
+\label{tbl:classification_rules}
+\end{table}
+
+Cells which are outside the added subtraction volume stay the same. Surface cells of the added volume become surface cells except they where outside cells before. And cells inside a subtraction volume always become outside cells. The result of merging a subtraction volume into the grid is visualized in figure \ref{fig:classification_sub}.
 
 \begin{figure}
 \centering
@@ -44,6 +65,11 @@ description of classification algorithm (principle)
 \caption{Classification result after adding a subtraction volume. }
 \label{fig:classification_sub}
 \end{figure}
+
+As we can see, cells which where surface cells before and contained triangles have now become outside cells and are therefore no longer relevant for ray casting. As a result, the increase of triangles in the surface cells by adding new geometry has been compensated by exclusion of some surface cells. This reduction of potential triangles for intersection with an increasing number of subtraction volumes is vital, as it enables scalability, allowing even scenes with thousands of subtraction volumes to be ray casted efficiently. In fact, some scenes can even be casted faster with an increasing number of subtraction volumes as the number of relevant triangles (surface cells) decreases.
+
+However, this kind of reduction has a significant consequence on the ray casting algorithm. As subtraction volumes are divided into grid cells and some of them discarded, the volumes are no longer water tight. This is a problem for entry/exit counting ray casting algorithms such as the one discussed in chapter \ref{sec:boolean_raycasting}. Therefore, an adapted version of this algorithm has to be developed, capable of handling open volumes. Chapter \ref{sec:adapted_ray_casting} discusses a method of getting around this problem.
+
 
 \subsection{Adapted intersection algorithm}
 \label{sec:adapted_ray_casting}
