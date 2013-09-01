@@ -1,6 +1,12 @@
 \section{OpenCL ray casters}
 \label{sec:opencl_caster}
 
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{enlight_opencl_class_diagram}
+\caption{Simplified class diagram of the OpenCL ray casting driver.}
+\label{fig:enlight_opencl_class_diagram}
+\end{figure}
 
 \subsection{OpenCL driver}
 
@@ -42,9 +48,9 @@ First full ray caster attempt, uses grid
 
 flattening grid into arrays for OpenCL buffers, host/device data structures
 
-\subsubsection{Traversing grid using 3DDA}
+\subsubsection{Traversing grid using 3DDDA}
 
-explain 3DDA
+explain 3DDDA
 
 \subsection{SingleBooleanRayCaster}
 
@@ -62,9 +68,15 @@ reduce intersection counting to cell only
 
 therefore, inside counter has to be determined at cell entry using secondary rays to each structure
 
-\subsubsection{Double support}
+\subsection{Double support}
 
 via preprocessor, remain compatible with GPUs not supporting double
+
+\subsection{OpenCL source embedding}
+
+custom build step
+
+convert source files to header and compile into executable
 
 \subsection{SinglePrimaryBooleanCellRayCaster}
 
