@@ -39,6 +39,10 @@ On the right side of the class diagram (figure \ref{fig:enlight_opencl_class_dia
 
 \subsection{TestGradientCaster}
 
+The first caster is a proof of concept to test the functionality of the OpenCL environment. It does not use the grid, loaded geometries or the camera's current values. The \lstinline!TestGradientCaster! only loads the OpenCL kernel source code from a file and compiles it using corresponding helper methods from \lstinline!AbstractCLCaster! inside the overridden \lstinline!setupCaster! method. The \lstinline!updateGrid! method is also overridden but empty, as no grid buffers have to be created and uploaded. Inside the \lstinline!cast! method, an output buffer is created capable of holding a \lstinline!cl_float4! value (red, green, blue, depth) for each pixel of the requested output image (determined by the fields \lstinline!width! and \lstinline!height! of \lstinline!CameraValues!, of which an instance is passed to the \lstinline!cast! method). Then, the loaded kernel is enqueued on the command queue for execution on the GPU. The global work size of the kernel is only one dimensional and the number of output pixels rounded up to be a multiple of the maximum allowed work group size. Each kernel invocation then derives the output pixels x and y coordinate from the global id of the work item and writes a color value to the output buffer. The red channel of the color is the x coordinate divided by the output image width, the green channel is the y coordinate divided by the height and the blue and depth channel are set to zero. After the kernel has executed, the result is read back to the host into an allocated \lstinline!cl_float4! array, which is then returned by the \lstinline!cast! method. The \lstinline!OpenCLCasterWrapper! converts this array into an instance of \lstinline!PixelGrid! which is then passed back to the main application for display.
+
+The resulting gradient of the TestGradientCaster is shown in figure \ref{fig:testgradient}.
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{testgradient}
@@ -46,17 +50,8 @@ On the right side of the class diagram (figure \ref{fig:enlight_opencl_class_dia
 \label{fig:testgradient}
 \end{figure}
 
-The first caster is a proof of concept to test the functionality of the OpenCL environment. It does not use the grid, loaded geometries or the camera's current values. The \lstinline!TestGradientCaster! only loads the OpenCL kernel source code from a file and compiles it using corresponding helper methods from \lstinline!AbstractCLCaster! inside the overridden \lstinline!setupCaster! method. The \lstinline!updateGrid! method is also overridden but empty, as no grid buffers have to be created and uploaded. Inside the \lstinline!cast! method, an output buffer is created capable of holding a \lstinline!cl_float4! value (red, green, blue, depth) for each pixel of the requested output image (determined by the fields \lstinline!width! and \lstinline!height! of \lstinline!CameraValues!, of which an instance is passed to the \lstinline!cast! method). Then, the loaded kernel is enqueued on the command queue for execution on the GPU. The global work size of the kernel is only one dimensional and the number of output pixels rounded up to be a multiple of the maximum allowed work group size. Each kernel invocation then derives the output pixels x and y coordinate from the global id of the work item and writes a color value to the output buffer. The red channel of the color is the x coordinate divided by the output image width, the green channel is the y coordinate divided by the height and the blue and depth channel are set to zero. After the kernel has executed, the result is read back to the host into an allocated \lstinline!cl_float4! array, which is then returned by the \lstinline!cast! method. The \lstinline!OpenCLCasterWrapper! converts this array into an instance of \lstinline!PixelGrid! which is then passed back to the main application for display.
-
 
 \subsection{TestCameraCaster}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.5\textwidth]{testcamera}
-\caption{Screenshot of the OpenCL kernel output of the TestCameraCaster.}
-\label{fig:testcamera}
-\end{figure}
 
 The next test caster is based on the \lstinline!TestGradientCaster!. The goal of this caster is to test the creation of rays according to the current camera settings. Therefore, the \lstinline!CameraValues! instance passed to the \lstinline!cast! method is converted into a \lstinline!RayCreationParameters! structure, which is passed as an argument to the kernel. This structure contains selected fields of the model view and projection matrix as well as several precalculated values which are used to create the ray direction vectors for a given x and y coordinate on the image plane. The kernel itself stores the vertices of 12 triangles forming a simple cube placed at the coordinate space origin in constant memory (a special part of the global memory). The kernel is enqueued with a two dimensional global work size of the output images width and height (both rounded up to be a multiple of the configured work group size). Each work item than calculates the ray direction of the ray traveling through the pixel of the work group item's x and y coordinate on the image plane. With the origin at the camera position, this ray is then intersected with the 12 triangles of the cube. The intersection routine used is an adapted version of the "Fast, Minimum Storage Ray/Triangle Intersection" (name of the paper) approach presented by Tomas Möller and Ben Trumbore. \cite{triangle_intersection}. The intersections are depth sorted to find the correct intersection point and hit triangle. A color value for the pixel is then calculated using the dot product of the ray's direction vector and the surface normal of the hit triangle. After the kernel has run, the resulting buffer is processed as by the TestGradientCaster.
 
@@ -68,6 +63,16 @@ The next test caster is based on the \lstinline!TestGradientCaster!. The goal of
 %
 %paper + explanation
 
+The resulting image of a cube which rotates synchronously with the OpenGL visualization of the loaded scene is shown in figure \ref{fig:testcamera}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{testcamera}
+\caption{Screenshot of the OpenCL kernel output of the TestCameraCaster.}
+\label{fig:testcamera}
+\end{figure}
+
+
 \subsection{SelfTestCaster}
 
 The self test caster is a simple test of the structures used in host application and OpenCL interaction. More specifically, the SelfTestCaster calculates the size of all structures used in memory transfers between the host and the GPU on the host and enqueues a kernel retrieving the corresponding values on the device side. These values are compared against each other and an error is yielded if any pair of them is not equal.
@@ -77,17 +82,43 @@ As the kernel does not create an output image, an empty buffer is allocated on t
 
 \subsection{SingleRayCaster}
 
-First full ray caster attempt, uses grid
+The SingleRayCaster is the first full ray casting attempt. It is based on the TestCameraCaster considering the host code, the ray creation inside the work items and the triangle intersection routine. However, instead of using statically coded geometry inside the kernel, the grid containing the loaded geometries from the main application is used. Therefore, an appropriate memory layout has to be defined which fits well to the concept of OpenCL buffers. To traverse the grid, the 3D DDA algorithm presented in chapter \ref{sec:regular_grids} has to be implemented. No counting is performed and no distinction of triangles from different structures and their facing (normal vector) is made.
 
-\subsubsection{Data structure for grid}
+As the data structure holding the grid on the host application is to some degree hierarchical (grid uses dynamically allocated array of cells, cells hold arrays of pointers to facets), the first step before any transfer to the GPU can happen is to flatten the data structure into corresponding OpenCL buffers. Figure \ref{fig:buffer_layout} shows how the grid data structure can be represented using linear arrays by substituting pointers by indexes.
 
-flattening grid into arrays for OpenCL buffers, host/device data structures
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{buffer_layout}
+\caption{Layout of the OpenCL buffers used to store the flattened grid.}
+\label{fig:buffer_layout}
+\end{figure}
 
-\subsubsection{Traversing grid using 3DDDA}
+Three buffers are required to store the grid. The first on is rather small and only stores meta information about the grid. It contains a single instance of the \lstinline!SubGridCL! struct which contains the \lstinline!cellCount! member. This cell count holds the extents of the grid in all three dimensions and therefore determines the number of cells.
+The second buffer stores the cells as a large array of \lstinline!\CellCL! structures. Each of them may have multiple facets associated with them. Therefore, each cell has a \lstinline!facetStart! index which points to the first of \lstinline!facetCount! triangle belonging to this cell in the triangle buffer.
+The third buffer then holds a huge array of triangles which contain the geometric information about the scene.
 
-explain 3DDDA
+Flattening the grid into these three buffers has to be done every time a surface cell changes (e.g. by loading a new subtraction volume). When an update of the grid has occurred, the main application calls the \lstinline!OpenCLCasterWrapper!s \lstinline!update! method and passes the reference to the new grid. The grid is then flattened by the \lstinline!SubGrid! class, filling its members \lstinline!subGrid!, \lstinline!cells! and \lstinline!triangles!, which are exactly the contents of the three required OpenCL buffers. The \lstinline!SubGrid! instance is then passed to the currently loaded caster by calling the \lstinline!updateGrid! method. This method is implemented in \lstinline!AbstractCLCaster! and creates the actual OpenCL buffer objects and transfers the content of the \lstinline!SubGrid! to the GPU.
+
+The kernel itself is again enqueued with a two-dimensional global work size of the size of the output image (one work item per pixel) rounded up to a multiple of the configured work group size. The kernel code for this first full ray casting approach starts equally as the TestCameraCaster. Each work item initially determines its ray direction. Then, the grid has to be traversed using the adapted 3D DDA algorithm based on John Amanatides and Andrew Woo presented in chapter \ref{sec:regular_grids} \cite{3DDDA}. This algorithm basically works by calculating the entry point of the ray into the grid as well as the corresponding cell of this entry point. Then, increment values for each dimension are calculated which are used to determine the next cell from the current one (details can be found corresponding paper). The collection of routines implementing this algorithm will be called cell traverser. After initialization, the ray casting kernel polls cells from this cell traverser until an intersection has been found or the grid has been fully traversed. For each cell returned by the cell traverser, all triangles inside this cell (determined by the \lstinline!facetStart! and \lstinline!facetCount! members)) are loaded from the triangle buffer and intersected using the same routine as in the TestCameraCaster. The intersection with the smallest distance to the ray origin (camera position) is selected as triangles are stored with no particular order guaranteeing depth sorted iteration. Cells however are returned in correct order by the cell traverser. Therefore, the traversal can be aborted if an intersection has been found inside a cell. The colorization of the output pixel is done equally to the TestCameraCaster by taking the dot product between the ray direction and the hit surface's normal.
+
+The resulting gradient of the SingleRayCaster is shown in figure \ref{fig:single}. Although the generated image is far from being a correct visualization, one can clearly recognize the shape of the cylinder head used as ray casting input (cf. the existing CPU caster result in figure \ref{fig:cylinder_head}).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{single}
+\caption{Screenshot of the OpenCL kernel output of the SingleRayCaster. The fringes sticking out of the cylinder head (especially visible at the top left) are due to hits on triangles of the subtraction volumes as the nearest triangle hit (regardless of which volume) is taken for the pixel's color. These errors will disappear when cell based counting is implemented.}
+\label{fig:single}
+\end{figure}
+
 
 \subsection{SingleBooleanRayCaster}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{singleboolean}
+\caption{Screenshot of the OpenCL kernel output of the SingleBooleanRayCaster.}
+\label{fig:singlebooleangle}
+\end{figure}
 
 does calculate all intersections inside a cell
 
@@ -98,6 +129,13 @@ loop over intersections and alter ray global counter
 problem with intersection buffer
 
 \subsection{SingleBooleanCellRayCaster}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{singlebooleancell}
+\caption{Screenshot of the OpenCL kernel output of the SingleBooleanCellRayCaster.}
+\label{fig:singlebooleancell}
+\end{figure}
 
 reduce intersection counting to cell only
 
@@ -115,9 +153,23 @@ convert source files to header and compile into executable
 
 \subsection{SinglePrimaryBooleanCellRayCaster}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{singleprimary}
+\caption{Screenshot of the OpenCL kernel output of the SinglePrimaryBooleanCellRayCaster.}
+\label{fig:singleprimary}
+\end{figure}
+
 merging inside counter determination with intersection precalculation, secondary rays are now only created if primary ray does not hit a structure (achieves more stability)
 
 \subsection{PacketRayCaster}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{packet}
+\caption{Screenshot of the OpenCL kernel output of the PacketRayCaster.}
+\label{fig:packet}
+\end{figure}
 
 Motivation, huge performance boost on CPU, keep rays more coherent (fits GPUs hardware profile)
 
