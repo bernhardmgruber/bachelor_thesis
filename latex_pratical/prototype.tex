@@ -4,6 +4,18 @@
 At the beginning of the internship the existing code base (which was shortly described in chapter \ref{sec:goals}) was analyzed in order to understand how the ray casting application has been organized and implemented. The application is written in C++ using Microsoft Visual Studio 2010 and 2012 in 64 bit mode. Beside the provided compilers from Microsoft, also Intel's C++ compiler is used during development to benefit from stronger optimization. The code makes heavy use of C++11 features and AVX SIMD instructions, thus limiting the application to rather up-to-date compilers (supporting C++11) and newer hardware (AVX is supported since Intel's Sandy Bridge and AMD's Bulldozer series). Furthermore, OpenMP is used as technology for high level parallelization, OpenGL for visualization and the MFC (Microsoft Foundation Class, a C++ wrapper of the Win32 API) for window and input management.
 Considering the implemented algorithms, simply single ray casting (for subtraction volumes as shown in chapter \ref{sec:boolean_raycasting}) using the 3D DDA algorithm discussed in chapter \ref{sec:regular_grids} has been used in the beginning. However, the initial approach has then been replaced by a highly optimized and parallel packet ray caster using the slice traversing algorithm presented in chapter \ref{sec:packet_casting}. The single ray variant can still be found in the code but is not used anymore.
 
+\begin{figure}
+\centering
+\includegraphics[width=0.49\textwidth]{cylinder_head_stock_gl}
+\includegraphics[width=0.49\textwidth]{cylinder_head_stock_cast_cpu}
+\includegraphics[width=0.49\textwidth]{cylinder_head_sub_gl}
+\includegraphics[width=0.49\textwidth]{cylinder_head_sub_cast_cpu}
+\includegraphics[width=0.49\textwidth]{cylinder_head_gl}
+\includegraphics[width=0.49\textwidth]{cylinder_head_cast_cpu}
+\caption{Screenshots of the existing prototype. The windows on the left show the OpenGL visualizations of the loaded meshes. The windows on the right show the ray casting result using the existing CPU packet ray caster. The first row only shows the loaded stock volume. The second row shows the stock volume and one subtraction volume. The OpenGL visualization also shows the grid (Note that the grid only has to cover the stock volume). The third row shows several subtraction volumes cut out of the stock forming a cylinder head.}
+\label{fig:cylinder_head}
+\end{figure}
+
 \subsection{Structure}
 
 Figure \ref{fig:enlight_class_diagram} shows a simplified class diagram of the most relevant classes which are used in the existing ray casting implementation and have been dealt with when extending the existing infrastructure by the new OpenCL ray caster.
@@ -27,12 +39,13 @@ A \lstinline!Facet! itself then consists of its three vertices, a normal as well
 \subsection{Classification}
 \label{sec:classification}
 
-When a mesh is added to the grid, the triangles of the mesh have to be mapped to the cells of the grid. After the mapping is complete, the cells can be classified to one of three categories. Cells which are occupied with triangles of the mesh surface are surface cells. Cells inside the mesh are inside cells and contain no triangles. Cells outside the mesh are outside cells and also contain no triangles. For the ray casting algorithm, only surface cells are relevant. Figure \ref{fig:classification} illustrates the classification of a mesh.
+When a mesh is added to the grid, the triangles of the mesh have to be mapped to the cells of the grid. After the mapping is complete, the cells can be classified to one of three categories. Cells which are occupied with triangles of the mesh surface are surface cells. Cells inside the mesh are inside cells and contain no triangles. Cells outside the mesh are outside cells and also contain no triangles. For the ray casting algorithm, only surface cells are relevant. The left image in figure \ref{fig:classification} illustrates the classification of a mesh.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth]{classification}
-\caption{Principle of classifying cells of the grid according to the added mesh. Only surface cells are relevant for ray casting.}
+\includegraphics[width=0.4\textwidth]{classification_sub}
+\caption{Principle of classifying cells of the grid according to the added mesh. Only surface cells are relevant for ray casting. The image on the left shows the classified stock volume. The image on the right shows the classification result after a subtraction volume has been added.}
 \label{fig:classification}
 \end{figure}
 
@@ -57,14 +70,7 @@ When a new mesh is added to the grid, the mesh is again classified and merged in
 \label{tbl:classification_rules}
 \end{table}
 
-Cells which are outside the added subtraction volume stay the same. Surface cells of the added volume become surface cells except they where outside cells before. And cells inside a subtraction volume always become outside cells. The result of merging a subtraction volume into the grid is visualized in figure \ref{fig:classification_sub}.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.4\textwidth]{classification_sub}
-\caption{Classification result after adding a subtraction volume. }
-\label{fig:classification_sub}
-\end{figure}
+Cells which are outside the added subtraction volume stay the same. Surface cells of the added volume become surface cells except they where outside cells before. And cells inside a subtraction volume always become outside cells. The result of merging a subtraction volume into the grid is visualized in the right image in figure \ref{fig:classification}.
 
 As we can see, cells which where surface cells before and contained triangles have now become outside cells and are therefore no longer relevant for ray casting. As a result, the increase of triangles in the surface cells by adding new geometry has been compensated by exclusion of some surface cells. This reduction of potential triangles for intersection with an increasing number of subtraction volumes is vital, as it enables scalability, allowing even scenes with thousands of subtraction volumes to be ray casted efficiently. In fact, some scenes can even be casted faster with an increasing number of subtraction volumes as the number of relevant triangles (surface cells) decreases.
 
