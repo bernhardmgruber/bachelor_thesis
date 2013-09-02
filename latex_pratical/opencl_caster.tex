@@ -1,6 +1,22 @@
 \section{OpenCL ray casters}
 \label{sec:opencl_caster}
 
+Before altering the existing prototype after its analysis, a separate branch in SVN has been created to allow experimenting with the existing code without disturbing the other members of the team. Before development could be started, further tools had to be installed. As the GPU provided by RISC was from NVIDIA, NVIDIA's CUDA Toolkit (version 5.0) was installed which contains the required OpenCL header files and libraries. Furthermore, the OpenCL C++ wrapper provided by Khronos (cl.hpp) was downloaded from their website. Several weeks later, also Intel's SDK for OpenCL Applications 2013 was added, which provided a limited OpenCL debugger some smaller extensions to Visual Studio. Then, a separate project was added to the existing Visual Studio solution and the necessary include and library paths configured in order to use OpenCL.
+
+\subsection{OpenCL ray casting driver}
+
+Implementing a ray caster with OpenCL started by designing a small infrastructure which should fulfill some requirements:
+
+\begin{itemize}
+	\item Only one class should be needed by \lstinline!DebugView! (the main application class) in order to communicate with the OpenCL ray caster.
+	\item As the OpenCL ray casters will be developed incrementally and several different ideas exists, it should be possible to write multiple, interchangeable casters.
+	\item It should be possible to reload an OpenCL caster at run time. As loading larger scenes may take up to some minutes and the OpenCL source code is read in and compiled at run time, this feature allows it to change the OpenCL source code of a caster at run time and reload it without having to relaunch the host application.
+	\item Several options should be adjustable by the main application via the console (which may trigger a recompilation of the kernels or a reconfiguration of the OpenCL environment).
+	\item If a ray caster crashes or OpenCL experiences any problems, it should be possible to relaunch the complete OpenCL environment without having to restart the whole application. 
+\end{itemize}
+
+Derived from these requirements, a simple architecture has been designed which is shown in the simplified class diagram in figure \ref{fig:enlight_opencl_class_diagram}.
+
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{enlight_opencl_class_diagram}
@@ -8,23 +24,27 @@
 \label{fig:enlight_opencl_class_diagram}
 \end{figure}
 
-\subsection{OpenCL driver}
+The central class and entry point of the OpenCL ray casting environment is the \lstinline!OpenCLCasterWrapper! class. An instance of this class is maintained by \lstinline!DebugView!, similar to the \lstinline!RayCasterWrapper! (cf. figure \ref{fig:enlight_class_diagram}). The \lstinline!OpenCLCasterWrapper! offers several methods for interacting with an OpenCL caster. Most importantly, it offers an \lstinline!update! method taking a reference to the \lstinline!RegularGrid! maintained by the main application which holds all relevant data of the scene. This method has to be called at least once before ray casting can be done. The \lstinline!raycast! method performs the main work of generating an image. The created image with depth information is also stored inside an object of \lstinline!PixelGrid! and passed back to the main application. \\
+For managing the underlying ray casting implementations, each caster is assigned a name. This assignment is managed by the \lstinline!CasterFactory!, which is used by the \lstinline!OpenCLCasterWrapper! to provide a list of available implementations and to allow selection and creation of casters by their name. The currently loaded caster is pointed to by the \lstinline!caster! member of the \lstinline!OpenCLCasterWrapper!. Furthermore, a reload method is provided for recreating the currently loaded caster. \\
+Additionally, several options may be set by the main application using the console. The \lstinline!OpenCLCasterWrapper! offers further methods for configuring several values such as the used floating point precision, work group size, OpenCL platform and device as well as enabling out of core casting and adjusting the out of core buffer size (cf. chapter \ref{sec:out_of_core}).
 
-big picture, class diagram
+The \lstinline!SubGrid! class is responsible for holding the full or a part of the grid. and for transforming the grid's representation into buffers which can be pushed to the GPU. Details to both usages will be discussed with the caster implementations requiring this functionality.
 
-where does the OpenCL driver integrate into the existing prototype?
+The \lstinline!Timer! class is a small helper class for measuring durations. It is used to print to the time required for certain operations inside the driver such as ray casting a frame, compiling a kernel or ray casting an out of core mesh in multiple passes.
 
-include files (do not export dependencies)
+The second most important class is \lstinline!AbstractCLCaster!. It is the base of all ray caster classes and is responsible for setting up the OpenCL environment for each caster. Every ray caster implementation has to inherit from this class and must implement the both pure virtual functions \lstinline!setupCaster! and \lstinline!cast!. While \lstinline!cast! is called directly from the \lstinline!OpenCLCasterWrapper!, \lstinline!setupCaster! is a template method inside \lstinline!AbstractCLCaster! and is called during the casters construction, after OpenCL has been initialized. The derived caster implementation should create its kernels and further resources here. The \lstinline!updateGrid! method is already implemented in the base class, as it works equally for all ray casting implementations which require the grid on the GPU (all non-test casters). Furthermore, \lstinline!AbstractCLCaster! offers a variety of utility methods which can be used by derived casters.
 
-\subsection{Extensions of host application}
+On the right side of the class diagram (figure \ref{fig:enlight_opencl_class_diagram}) are several structures. \lstinline!CameraValues! is used to transport relevant camera information from the \lstinline!OpenCLCasterWrapper! into the caster implementations. This avoids dragging the \lstinline!Camera! class and its dependencies deeper into the OpenCL project (The grid is also converted into one or multiple instances of \lstinline!SubGrid! before it is passed into the caster implementations in order to reduce avoidable dependencies). The remaining structures are all used as data transfer objects between the OpenCL ray casters on the host application and the GPU. Therefore, only types defined in the corresponding OpenCL header are used (e.g. \lstinline!cl_uint!, \lstinline!cl_float3!). 
 
-console commands
 
 \subsection{TestGradientCaster}
 
-Proof of concept, testing OpenCL functionality, enqueuing first kernel, retrieving result as image, returning image to host application for display
+The first caster is a proof of concept to test the functionality of the OpenCL environment. It does not use the grid, loaded geometries or the camera's current values. The \lstinline!TestGradientCaster! only loads the OpenCL kernel source code from a file and compiles it using corresponding helper methods from \lstinline!AbstractCLCaster! inside the overridden \lstinline!setupCaster! method. The \lstinline!updateGrid! method is also overridden but empty, as no grid buffers have to be created and uploaded. Inside the \lstinline!cast! method, an output buffer is created capable of holding a \lstinline!cl_float4! value (red, green, blue, depth) for each pixel of the requested output image (determined by the fields \lstinline!width! and \lstinline!height! of \lstinline!CameraValues!, of which an instance is passed to the \lstinline!cast! method). Then, the loaded kernel is enqueued on the command queue for execution on the GPU. The result is read back to the host into an allocated \lstinline!cl_float4! array, which is then returned by the \lstinline!cast! method.
+
 
 \subsection{TestCameraCaster}
+
+The next test caster is based on the \lstinline!TestGradientCaster!. The goal of this caster is to test the creation of rays according to the current camera settings. Therefore, the \lstinline!CameraValues! instance passed to the \lstinline!cast! method is converted into a \lstinline!RayCreationParameters! structure, which is passed as an argument to the kernel. This structure contains selected fields of the modelview and projection matrix as well as several precalculated values which are used to create the ray direction vectors for a given x and y coordinate on the image plane.
 
 Integration of camera position and perspective, ray factory, first ray casting attempt, grid not used yet, primitive geometry (cube) statically stored in kernel,
 
@@ -102,6 +122,7 @@ removing legacy code, integrating new C++ component framework (CWC, Michael Hava
 port of OpenCL driver
 
 \subsection{Out of core casting}
+\label{sec:out_of_core}
 
 Motivation, older GPUs, large models
 
