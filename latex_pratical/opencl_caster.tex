@@ -113,13 +113,6 @@ The resulting gradient of the SingleRayCaster is shown in figure \ref{fig:single
 
 \subsection{SingleBooleanRayCaster}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.5\textwidth]{singleboolean}
-\caption{Screenshot of the OpenCL kernel output of the SingleBooleanRayCaster.}
-\label{fig:singlebooleangle}
-\end{figure}
-
 does calculate all intersections inside a cell
 
 depth-order intersections with sorting algorithm
@@ -128,7 +121,18 @@ loop over intersections and alter ray global counter
 
 problem with intersection buffer
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{singleboolean}
+\caption{Screenshot of the OpenCL kernel output of the SingleBooleanRayCaster.}
+\label{fig:singlebooleangle}
+\end{figure}
+
 \subsection{SingleBooleanCellRayCaster}
+
+reduce intersection counting to cell only
+
+therefore, inside counter has to be determined at cell entry using secondary rays to each structure
 
 \begin{figure}[h]
 \centering
@@ -136,10 +140,6 @@ problem with intersection buffer
 \caption{Screenshot of the OpenCL kernel output of the SingleBooleanCellRayCaster.}
 \label{fig:singlebooleancell}
 \end{figure}
-
-reduce intersection counting to cell only
-
-therefore, inside counter has to be determined at cell entry using secondary rays to each structure
 
 \subsection{Double support}
 
@@ -153,6 +153,8 @@ convert source files to header and compile into executable
 
 \subsection{SinglePrimaryBooleanCellRayCaster}
 
+merging inside counter determination with intersection precalculation, secondary rays are now only created if primary ray does not hit a structure (achieves more stability)
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{singleprimary}
@@ -160,9 +162,17 @@ convert source files to header and compile into executable
 \label{fig:singleprimary}
 \end{figure}
 
-merging inside counter determination with intersection precalculation, secondary rays are now only created if primary ray does not hit a structure (achieves more stability)
-
 \subsection{PacketRayCaster}
+
+Motivation, huge performance boost on CPU, keep rays more coherent (fits GPUs hardware profile)
+
+required changes
+
+Slice traverser
+
+replaces 3DDA, paper, describe algorithm
+
+drawbacks of GPU implementation (loads of syncronizations)
 
 \begin{figure}[h]
 \centering
@@ -170,16 +180,6 @@ merging inside counter determination with intersection precalculation, secondary
 \caption{Screenshot of the OpenCL kernel output of the PacketRayCaster.}
 \label{fig:packet}
 \end{figure}
-
-Motivation, huge performance boost on CPU, keep rays more coherent (fits GPUs hardware profile)
-
-required changes
-
-\subsubsection{Slice traverser}
-
-replaces 3DDA, paper, describe algorithm
-
-drawbacks of GPU implementation (loads of syncronizations)
 
 \subsection{Migration to new host application}
 \label{sec:migration}
