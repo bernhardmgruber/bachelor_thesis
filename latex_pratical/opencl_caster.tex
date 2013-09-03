@@ -43,7 +43,7 @@ The first caster is a proof of concept to test the functionality of the OpenCL e
 
 The resulting gradient of the TestGradientCaster is shown in figure \ref{fig:testgradient}.
 
-\begin{figure}[h]
+\begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{testgradient}
 \caption{Screenshot of the OpenCL kernel output of the TestGradientCaster.}
@@ -65,7 +65,7 @@ The next test caster is based on the \lstinline!TestGradientCaster!. The goal of
 
 The resulting image of a cube which rotates synchronously with the OpenGL visualization of the loaded scene is shown in figure \ref{fig:testcamera}.
 
-\begin{figure}[h]
+\begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{testcamera}
 \caption{Screenshot of the OpenCL kernel output of the TestCameraCaster.}
@@ -86,7 +86,7 @@ The SingleRayCaster is the first full ray casting attempt. It is based on the Te
 
 As the data structure holding the grid on the host application is to some degree hierarchical (grid uses dynamically allocated array of cells, cells hold arrays of pointers to facets), the first step before any transfer to the GPU can happen is to flatten the data structure into corresponding OpenCL buffers. Figure \ref{fig:buffer_layout} shows how the grid data structure can be represented using linear arrays by substituting pointers by indexes.
 
-\begin{figure}[h]
+\begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{buffer_layout}
 \caption{Layout of the OpenCL buffers used to store the flattened grid.}
@@ -101,9 +101,9 @@ Flattening the grid into these three buffers has to be done every time a surface
 
 The kernel itself is again enqueued with a two-dimensional global work size of the size of the output image (one work item per pixel) rounded up to a multiple of the configured work group size. The kernel code for this first full ray casting approach starts equally as the TestCameraCaster. Each work item initially determines its ray direction. Then, the grid has to be traversed using the adapted 3D DDA algorithm based on John Amanatides and Andrew Woo presented in chapter \ref{sec:regular_grids} \cite{3DDDA}. This algorithm basically works by calculating the entry point of the ray into the grid as well as the corresponding cell of this entry point. Then, increment values for each dimension are calculated which are used to determine the next cell from the current one (details can be found corresponding paper). The collection of routines implementing this algorithm will be called cell traverser. After initialization, the ray casting kernel polls cells from this cell traverser until an intersection has been found or the grid has been fully traversed. For each cell returned by the cell traverser, all triangles inside this cell (determined by the \lstinline!facetStart! and \lstinline!facetCount! members)) are loaded from the triangle buffer and intersected using the same routine as in the TestCameraCaster. The intersection with the smallest distance to the ray origin (camera position) is selected as triangles are stored with no particular order guaranteeing depth sorted iteration. Cells however are returned in correct order by the cell traverser. Therefore, the traversal can be aborted if an intersection has been found inside a cell. The colorization of the output pixel is done equally to the TestCameraCaster by taking the dot product between the ray direction and the hit surface's normal.
 
-The resulting gradient of the SingleRayCaster is shown in figure \ref{fig:single}. Although the generated image is far from being a correct visualization, one can clearly recognize the shape of the cylinder head used as ray casting input (cf. the existing CPU caster result in figure \ref{fig:cylinder_head}).
+The output of the SingleRayCaster is shown in figure \ref{fig:single}. Although the generated image is far from being a correct visualization, one can clearly recognize the shape of the cylinder head used as ray casting input (cf. the existing CPU caster result in figure \ref{fig:cylinder_head}).
 
-\begin{figure}[h]
+\begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{single}
 \caption{Screenshot of the OpenCL kernel output of the SingleRayCaster. The fringes sticking out of the cylinder head (especially visible at the top left) are due to hits on triangles of the subtraction volumes as the nearest triangle hit (regardless of which volume) is taken for the pixel's color. These errors will disappear when cell based counting is implemented.}
@@ -112,29 +112,40 @@ The resulting gradient of the SingleRayCaster is shown in figure \ref{fig:single
 
 
 \subsection{SingleBooleanRayCaster}
+\label{sec:single_boolean}
 
-does calculate all intersections inside a cell
+The SingleBooleanRayCaster extends the previous SingleRayCaster by using a counter for each ray which counts the number of volume entries and exits. The counting is done along the full traversal as discussed in chapter \ref{sec:boolean_raycasting}. As parts of the geometry are missing because of the classification of the grid (only the triangles of surface cells are stored in the grid and transfered to the GPU), this caster will probably produce erroneous results. However, this implementation would work if the complete geometry was present in the grid. This caster can be seen as an evolutionary step between the already presented SingleRayCaster and the SingleBooleanCellRayCaster, which will be able to handle open geometries.
 
-depth-order intersections with sorting algorithm
+The SingleBooleanRayCaster class is equal to the one of the previous SingleRayCaster. Also the kernel code starts off equally by calculating the ray direction for each work item/pixel and traversing this ray through the grid. Beside declaring the counter and initializing it with minus one, the only code that has changed it is the intersection routine of the ray with a cell polled by the cell traverser. The code still has to iterate over all triangles inside the cell and intersect the ray with each of them. However, instead of keeping the nearest intersection to the ray origin so far, we have to intermediately store all intersections of the ray with any triangle inside the cell. And here we hit a big problem in GPGPU computing with OpenCL, the lack of dynamic allocation.
 
-loop over intersections and alter ray global counter
+Every kind of memory which is needed during a kernel execution has to be allocated beforehand. This accounts for both, global and local memory. Registers are handled a bit differently. Before a new work group is scheduled for execution on a streaming multiprocessor, all required registers for all work items of the work group have to be allocated in the register block on the SM. The number of registers required for a work item must therefore be determined in advance by the compiler (for all possible branches of the program, including all local variables) and is a decisive factor for how many work groups may be concurrently executed on a SM.
 
-problem with intersection buffer
+Let's consider the available options by an example. We take a common, small screen resolution of $1024 \times 768$ pixels. For each pixel a ray is created which needs a separate intersection buffer. As we do not know in advance how many intersections may maximally occur inside a cell, we have to define an allowed maximum. Let's say this value is a hundred (we actually had a long discussion about this in the office and thought about an even higher value, but a hundred proved to be sufficient in all used test scenes). Finally, we have to determine the size of the information required to hold an intermediate intersection for further processing. This must be at least the index of the hit facet (an unsigned integer), the distance of the intersection point from the ray's origin (a floating point value) and a boolean value (padded to four bytes) whether the ray enters the volume of the hit triangle or not. Details about the chosen information follow shortly. These three values make up twelve bytes. Let's calculate the total amount of memory required to hold a hundred intermediate intersection results per work item: $1024 * 768 * 100 * 12 = 943718400 B = 900 MiB$, which is a huge amount of memory for a GPU just for storing temporary data of an algorithm. Furthermore, this value does not include the actual processed data, the grid with its cells and triangles. Consequently, storing the intermediate intersections in global memory is not acceptable. \\
+Using local (shared) memory for storing the intermediate intersections per work item would also be possible. However, local memory is quite small with sizes of 16, 32 or 48 KiB per SM. As each work item requires 1.2 KiB ($12 * 100$) the largest local memory configuration would only allow 40 work items to run concurrently on a SM which is an extremely poor occupancy considering the high amount of potentially concurrently executed threads per SM (e.g. 2048 on a NVIDIA Kepler GPU \cite[p.7]{kepler_arch}). \\
+The third option is using registers. Although 1.2 KiB per work item do not fit most GPU's hardware limits (NVIDIA Kepler limits a thread to 63 (GK104) or 255 (GK110) 32 bit registers \cite{kepler_arch}), the kernel can still be launched. This shortage of registers is handled by compiler and driver by spilling the not available memory into global memory. As global memory is far slower accessed, register spilling usually causes a loss in performance. However, as the spilled area is rather small (several tens or hundreds of kilobytes) and the area is always accessed by the same SM, this part of global memory benefits strongly from the L1 cache on the SM and may still achieve good performance on reads and writes (Paulius Micikevicius from NVIDIA held a detailed presentation about this subject in CUDA \cite{register_spilling}).
 
-\begin{figure}[h]
+As a result of this small analysis, it has been determined that the intersection buffer will be kept as local array inside the kernel. It is then up to the compiler to try to fit the array into registers or spill it into global memory. This buffer is then used to store all intersections of the ray with triangles inside the current cell. Afterwards, the intersections inside the buffer have to be sorted according to their distance to the ray's origin as the counter has to be altered in the same order as the ray hits the triangles. OpenCL does not provide a sorting routine of any kind. Thus, a sorting algorithm has to be implemented. As the maximum size of the intersection buffer is defined as a hundred, a simple insertion sort will be used as it performs well on small arrays and has very little overhead considering additional variables. After the buffer has been sorted, all intersections are iterated again (this time in the order they ray hits them) and the counter is incremented or decremented according to the hit triangles facing. If the counter reaches the value zero, the surface triangle has been found. The triangle id of the intermediately stored intersection is used to resolve the full triangle (with normal) and recalculate the exact intersection position. This information is then used to calculate the color value of the output pixel.
+
+\begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{singleboolean}
 \caption{Screenshot of the OpenCL kernel output of the SingleBooleanRayCaster.}
-\label{fig:singlebooleangle}
+\label{fig:singleboolean}
 \end{figure}
+
+The output of the SingleBooleanRayCaster is shown in figure \ref{fig:singleboolean}. The image does not look much better than the one of the SingleRayCaster and is still incorrect as the grid contains open geometries leading to invalid counting. However, by implementing counting an important step towards a working implementation has been made.
 
 \subsection{SingleBooleanCellRayCaster}
 
-reduce intersection counting to cell only
+The SingleBooleanCellRayCaster takes the previously described SingleBooleanRayCaster from chapter \ref{sec:single_boolean} and moves the counter initialization from before the cell traversal into the cell itself as explained in chapter \ref{sec:adapted_ray_casting}. The main unknown is thus the number of subtraction volumes the ray (in particular its entry point) is inside of at its cell entry. We have therefore to decide for each subtraction volume if the entry point lies inside the volume or not. A simple solution is to take any triangle of a subtraction volume and create a vector (secondary ray) from the entry point to a point on this triangle, which has to lie inside the current cell. According to the enclosed angle of the triangle's normal and the created secondary ray, it can be decided if the entry point is inside or outside of the subtraction volume the triangle belongs to. However, as multiple triangles of the same volume may be potentially hit by the secondary ray, it has to be ensured, that the secondary ray is not intersected by another triangle of the same volume (this case can lead to wrong decisions, as e.g. the secondary ray may select a triangle of the back size of volume and also intersect the front). The resulting initial counter value is initialized with zero and decremented for each subtraction volume the entry point is inside off.
 
-therefore, inside counter has to be determined at cell entry using secondary rays to each structure
+The concrete implementation of this approach makes use of additional data provided in the \lstinline!TriangleCL! structure and is further based on an assumption guaranteed by the grid creation code of the main application. The \lstinline!clippedCentroid! member of the triangle structure (cf. class diagram in figure \ref{fig:enlight_opencl_class_diagram}) contains the centroid of the resulted polygon after the corresponding triangle has been clipped to its cell's bounding box. This value is calculated by the \lstinline!SubGrid! class when the grid of the main application is flattened into the OpenCL buffers. Furthermore, each triangle has a \lstinline!structureId! member which is an identifier being equal among all triangles inside a cell belonging to the same subtraction volume (structure). It is additionally guaranteed, that triangles belonging to the same structure are stored continuously in the triangle buffer. Based on these circumstances the counter initialization algorithm is implemented as follows.
 
-\begin{figure}[h]
+Inside each work item, for each cell returned by the cell traverser, all triangles of the cell are iterated. Additional variables keep track of the current structure id, the current distance to the nearest triangle of the current structure and its normal. In each loop where the structure changes, a secondary ray is created from the primary ray's entry to clipped centroid of the current triangle of the loop which has caused the structure change. The distance from the entry point to the clipped centroid as well as this triangle's normal is kept. All following triangles (of the same structure) are then intersected with the created secondary ray. In case of an intersection, the distance to the nearest intersection of the secondary ray is updated as well as the normal by the one of the new, intersected triangle. Before the next structure change, the normal of the nearest triangle intersecting the created secondary ray can be used to determine if the entry point lies inside or outside of the current structure. If it is inside, the counter is decremented. The triangle iterating continues with the next structure analogously. After all triangles of the cell have been iterated, the initial counter value holds the number of subtraction volumes the primary ray's entry point is inside of. The algorithm can now continue equally as the SingleBooleanRayCaster by intersecting all triangles, sorting them by their depth and processing the counter along the ray to find the surface hit.
+
+The SingleBooleanCellRayCaster is the first ray casting approach able to deliver correct results. The output image of the kernel is shown in figure \ref{fig:singlebooleancell}. Apart from a few wrong pixels which occur because of numeric instability of the used float data type (the do not occur on the CPU caster which uses double), the result already makes a satisfying impression. Considering the code however, there is still room for improvement as the kernel iterates all triangles of the cell twice. One time to determine the inside counter and one time for the intersections. Furthermore, the few invalid pixels may be eliminated if double precision would be used on the GPU too. These two subjects will be addressed in subsequent chapters.
+
+\begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{singlebooleancell}
 \caption{Screenshot of the OpenCL kernel output of the SingleBooleanCellRayCaster.}
