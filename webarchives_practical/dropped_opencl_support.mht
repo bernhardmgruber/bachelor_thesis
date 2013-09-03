@@ -1,0 +1,5713 @@
+Content-Type: multipart/related; start=<op.mhtml.1378252492244.23ae694767547752@192.168.1.3>; boundary=----------nPo73OT5icM67NWGuZrZDU
+Content-Location: http://ompf2.com/viewtopic.php?f=8&t=1019
+Subject: =?utf-8?Q?ompf2.com=20=E2=80=A2=20View=20topic=20-=20CUDA=205.0?=
+MIME-Version: 1.0
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=viewtopic.htm
+Content-Type: text/html; charset=UTF-8; name=viewtopic.htm
+Content-ID: <op.mhtml.1378252492244.23ae694767547752@192.168.1.3>
+Content-Location: http://ompf2.com/viewtopic.php?f=8&t=1019
+Content-Transfer-Encoding: Quoted-Printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.=
+org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" dir=3D"ltr" lang=3D"en-gb" =
+xml:lang=3D"en-gb">
+<head>
+
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8"=
+ />
+<meta http-equiv=3D"content-style-type" content=3D"text/css" />
+<meta http-equiv=3D"content-language" content=3D"en-gb" />
+<meta http-equiv=3D"imagetoolbar" content=3D"no" />
+<meta name=3D"resource-type" content=3D"document" />
+<meta name=3D"distribution" content=3D"global" />
+<meta name=3D"keywords" content=3D"" />
+<meta name=3D"description" content=3D"" />
+
+<title>ompf2.com &bull; View topic - CUDA 5.0</title>
+
+<link rel=3D"alternate" type=3D"application/atom+xml" title=3D"Feed - om=
+pf2.com" href=3D"http://ompf2.com/feed.php" /><link rel=3D"alternate" ty=
+pe=3D"application/atom+xml" title=3D"Feed - New Topics" href=3D"http://o=
+mpf2.com/feed.php?mode=3Dtopics" /><link rel=3D"alternate" type=3D"appli=
+cation/atom+xml" title=3D"Feed - Forum - Tools, Demos &amp; Sources" hre=
+f=3D"http://ompf2.com/feed.php?f=3D8" /><link rel=3D"alternate" type=3D"=
+application/atom+xml" title=3D"Feed - Topic - CUDA 5.0" href=3D"http://o=
+mpf2.com/feed.php?f=3D8&amp;t=3D1019" />
+
+<!--
+	phpBB style name: prosilver
+	Based on style:   prosilver (this is the default phpBB3 style)
+	Original author:  Tom Beddard ( http://www.subBlue.com/ )
+	Modified by:
+-->
+
+<script type=3D"text/javascript">
+// <![CDATA[
+	var jump_page =3D 'Enter the page number you wish to go to:';
+	var on_page =3D '1';
+	var per_page =3D '10';
+	var base_url =3D './viewtopic.php?f=3D8&amp;t=3D1019&amp;sid=3D7cd148ff=
+9613fdaf95a9ffe03b6457d9';
+	var style_cookie =3D 'phpBBstyle';
+	var style_cookie_settings =3D '; path=3D/; domain=3Dompf2.com';
+	var onload_functions =3D new Array();
+	var onunload_functions =3D new Array();
+
+	=
+
+
+	/**
+	* Find a member
+	*/
+	function find_username(url)
+	{
+		popup(url, 760, 570, '_usersearch');
+		return false;
+	}
+
+	/**
+	* New function for handling multiple calls to window.onload and window.=
+unload by pentapenguin
+	*/
+	window.onload =3D function()
+	{
+		for (var i =3D 0; i < onload_functions.length; i++)
+		{
+			eval(onload_functions[i]);
+		}
+	};
+
+	window.onunload =3D function()
+	{
+		for (var i =3D 0; i < onunload_functions.length; i++)
+		{
+			eval(onunload_functions[i]);
+		}
+	};
+
+// ]]>
+</script>
+<script type=3D"text/javascript" src=3D"./styles/prosilver/template/styl=
+eswitcher.js"></script>
+<script type=3D"text/javascript" src=3D"./styles/prosilver/template/foru=
+m_fn.js"></script>
+
+<link href=3D"./styles/prosilver/theme/print.css" rel=3D"stylesheet" typ=
+e=3D"text/css" media=3D"print" title=3D"printonly" />
+<link href=3D"./style.php?id=3D1&amp;lang=3Den&amp;sid=3D7cd148ff9613fda=
+f95a9ffe03b6457d9" rel=3D"stylesheet" type=3D"text/css" media=3D"screen,=
+ projection" />
+
+<link href=3D"./styles/prosilver/theme/normal.css" rel=3D"stylesheet" ty=
+pe=3D"text/css" title=3D"A" />
+<link href=3D"./styles/prosilver/theme/medium.css" rel=3D"alternate styl=
+esheet" type=3D"text/css" title=3D"A+" />
+<link href=3D"./styles/prosilver/theme/large.css" rel=3D"alternate style=
+sheet" type=3D"text/css" title=3D"A++" />
+
+
+
+</head>
+
+<body id=3D"phpbb" class=3D"section-viewtopic ltr">
+
+<div id=3D"wrap">
+	<a id=3D"top" name=3D"top" accesskey=3D"t"></a>
+	<div id=3D"page-header">
+		<div class=3D"headerbar">
+			<div class=3D"inner"><span class=3D"corners-top"><span></span></span>=
+
+
+			<div id=3D"site-description">
+				<a href=3D"./index.php?sid=3D7cd148ff9613fdaf95a9ffe03b6457d9" title=
+=3D"Board index" id=3D"logo"><img src=3D"./styles/prosilver/imageset/sit=
+e_logo.gif" width=3D"149" height=3D"52" alt=3D"" title=3D"" /></a>
+				<h1>ompf2.com</h1>
+				<p>Permanent replacement for ompf.org - Now with blog!</p>
+				<p class=3D"skiplink"><a href=3D"#start_here">Skip to content</a></p=
+>
+			</div>
+
+		=
+
+			<div id=3D"search-box">
+				<form action=3D"./search.php?sid=3D7cd148ff9613fdaf95a9ffe03b6457d9"=
+ method=3D"get" id=3D"search">
+				<fieldset>
+					<input name=3D"keywords" id=3D"keywords" type=3D"text" maxlength=3D=
+"128" title=3D"Search for keywords" class=3D"inputbox search" value=3D"S=
+earch=E2=80=A6" onclick=3D"if(this.value=3D=3D'Search=E2=80=A6')this.val=
+ue=3D'';" onblur=3D"if(this.value=3D=3D'')this.value=3D'Search=E2=80=A6'=
+;" />
+					<input class=3D"button2" value=3D"Search" type=3D"submit" /><br />
+					<a href=3D"./search.php?sid=3D7cd148ff9613fdaf95a9ffe03b6457d9" tit=
+le=3D"View the advanced search options">Advanced search</a> <input type=3D=
+"hidden" name=3D"sid" value=3D"7cd148ff9613fdaf95a9ffe03b6457d9" />
+
+				</fieldset>
+				</form>
+			</div>
+		=
+
+
+			<span class=3D"corners-bottom"><span></span></span></div>
+		</div>
+
+		<div class=3D"navbar">
+			<div class=3D"inner"><span class=3D"corners-top"><span></span></span>=
+
+
+			<ul class=3D"linklist navlinks">
+				<li class=3D"icon-home"><a href=3D"./index.php?sid=3D7cd148ff9613fda=
+f95a9ffe03b6457d9" accesskey=3D"h">Board index</a>  <strong>&#8249;</str=
+ong> <a href=3D"./viewforum.php?f=3D12&amp;sid=3D7cd148ff9613fdaf95a9ffe=
+03b6457d9">Raytracing</a> <strong>&#8249;</strong> <a href=3D"./viewforu=
+m.php?f=3D8&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">Tools, Demos &am=
+p; Sources</a></li>
+
+				<li class=3D"rightside"><a href=3D"#" onclick=3D"fontsizeup(); retur=
+n false;" onkeypress=3D"return fontsizeup(event);" class=3D"fontsize" ti=
+tle=3D"Change font size">Change font size</a></li>
+
+				<li class=3D"rightside"><a href=3D"./viewtopic.php?f=3D8&amp;t=3D101=
+9&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9&amp;view=3Dprint" title=3D"=
+Print view" accesskey=3D"p" class=3D"print">Print view</a></li>
+			</ul>
+
+			=
+
+
+			<ul class=3D"linklist rightside">
+<li class=3D"icon-blog"><a href=3D"./blog.php?sid=3D7cd148ff9613fdaf95a9=
+ffe03b6457d9" title=3D"Blog">Blog</a></li>
+				<li class=3D"icon-faq"><a href=3D"./faq.php?sid=3D7cd148ff9613fdaf95=
+a9ffe03b6457d9" title=3D"Frequently Asked Questions">FAQ</a></li>
+				<li class=3D"icon-register"><a href=3D"./ucp.php?mode=3Dregister&amp=
+;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">Register</a></li>
+					<li class=3D"icon-logout"><a href=3D"./ucp.php?mode=3Dlogin&amp;sid=
+=3D7cd148ff9613fdaf95a9ffe03b6457d9" title=3D"Login" accesskey=3D"x">Log=
+in</a></li>
+				=
+
+			</ul>
+
+			<span class=3D"corners-bottom"><span></span></span></div>
+		</div>
+
+	</div>
+
+	<a name=3D"start_here"></a>
+	<div id=3D"page-body">
+		=
+
+<h2><a href=3D"./viewtopic.php?f=3D8&amp;t=3D1019&amp;sid=3D7cd148ff9613=
+fdaf95a9ffe03b6457d9">CUDA 5.0</a></h2>
+<!-- NOTE: remove the style=3D"display: none" when you want to have the =
+forum description on the topic body --><div style=3D"display: none !impo=
+rtant;">Show-off, reference material &amp; tools.<br /></div>
+
+<div class=3D"topic-actions">
+
+	<div class=3D"buttons">
+	=
+
+		<div class=3D"reply-icon"><a href=3D"./posting.php?mode=3Dreply&amp;f=3D=
+8&amp;t=3D1019&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9" title=3D"Post=
+ a reply"><span></span>Post a reply</a></div>
+	=
+
+	</div>
+
+	=
+
+		<div class=3D"search-box">
+			<form method=3D"get" id=3D"topic-search" action=3D"./search.php?sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9">
+			<fieldset>
+				<input class=3D"inputbox search tiny"  type=3D"text" name=3D"keyword=
+s" id=3D"search_keywords" size=3D"20" value=3D"Search this topic=E2=80=A6=
+" onclick=3D"if(this.value=3D=3D'Search this topic=E2=80=A6')this.value=3D=
+'';" onblur=3D"if(this.value=3D=3D'')this.value=3D'Search this topic=E2=80=
+=A6';" />
+				<input class=3D"button2" type=3D"submit" value=3D"Search" />
+				<input type=3D"hidden" name=3D"t" value=3D"1019" />
+<input type=3D"hidden" name=3D"sf" value=3D"msgonly" />
+<input type=3D"hidden" name=3D"sid" value=3D"7cd148ff9613fdaf95a9ffe03b6=
+457d9" />
+
+			</fieldset>
+			</form>
+		</div>
+	=
+
+		<div class=3D"pagination">
+			12 posts
+			 &bull; <a href=3D"#" onclick=3D"jumpto(); return false;" title=3D"Cl=
+ick to jump to page=E2=80=A6">Page <strong>1</strong> of <strong>2</stro=
+ng></a> &bull; <span><strong>1</strong><span class=3D"page-sep">, </span=
+><a href=3D"./viewtopic.php?f=3D8&amp;t=3D1019&amp;sid=3D7cd148ff9613fda=
+f95a9ffe03b6457d9&amp;start=3D10">2</a></span>
+		</div>
+	=
+
+
+</div>
+<div class=3D"clear"></div>
+
+
+	<div id=3D"p2344" class=3D"post bg2">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 class=3D"first"><a href=3D"#p2344">CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2344&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2344"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D56&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9" style=3D"color: #A=
+A0000;" class=3D"username-coloured">toxie</a></strong> &raquo; Tue Oct 1=
+6, 2012 9:47 am </p>
+
+			=
+
+
+			<div class=3D"content">out now: <!-- m --><a class=3D"postlink" href=3D=
+"http://developer.nvidia.com/cuda/cuda-downloads">http://developer.nvidi=
+a.com/cuda/cuda-downloads</a><!-- m --></div>
+
+			<div id=3D"sig2344" class=3D"signature"><span style=3D"font-weight: b=
+old"><span style=3D"font-size: 80%; line-height: 116%;">Better you leave=
+ here with your head still full of kitty cats and puppy dogs.</span></sp=
+an></div>
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2344">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D56&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9" style=3D"color: #AA0000;" class=3D"use=
+rname-coloured">toxie</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 69</dd><dd><strong>Joined:</strong> Mon No=
+v 28, 2011 12:30 pm</dd><dd><strong>Location:</strong> germany</dd>
+			<dd>
+				<ul class=3D"profile-icons">
+					<li class=3D"web-icon"><a href=3D"http://ainc.de" title=3D"WWW: htt=
+p://ainc.de"><span>Website</span></a></li>
+				</ul>
+			</dd>
+		=
+
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2345" class=3D"post bg1">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2345">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2345&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2345"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D73&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">spectral</a></stro=
+ng> &raquo; Tue Oct 16, 2012 6:42 pm </p>
+
+			=
+
+
+			<div class=3D"content">Thanks Toxie,<br /><br />But it sounds that th=
+ere is no more OpenCL support in this SDK. I have try the Visual Profile=
+r and it does not detect OpenCL.<br />I have contact NVidia and they tel=
+l that it is normal that OpenCL is not supported !</div>
+
+			<div id=3D"sig2345" class=3D"signature"><span style=3D"font-weight: b=
+old"><span style=3D"color: #BF0000">Spectral</span></span><br /><span st=
+yle=3D"font-weight: bold"><span style=3D"color: #BF0000">OMPF 2 global m=
+oderator</span></span></div>
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2345">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D73&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9">spectral</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 333</dd><dd><strong>Joined:</strong> Wed N=
+ov 30, 2011 2:27 pm</dd>
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2356" class=3D"post bg2">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2356">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2356&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2356"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D56&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9" style=3D"color: #A=
+A0000;" class=3D"username-coloured">toxie</a></strong> &raquo; Wed Oct 1=
+7, 2012 12:29 pm </p>
+
+			=
+
+
+			<div class=3D"content">Indeed OpenCL is not really the major focus an=
+ymore, but rather CUDA and OpenGL (4.3) compute shaders..</div>
+
+			<div id=3D"sig2356" class=3D"signature"><span style=3D"font-weight: b=
+old"><span style=3D"font-size: 80%; line-height: 116%;">Better you leave=
+ here with your head still full of kitty cats and puppy dogs.</span></sp=
+an></div>
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2356">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D56&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9" style=3D"color: #AA0000;" class=3D"use=
+rname-coloured">toxie</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 69</dd><dd><strong>Joined:</strong> Mon No=
+v 28, 2011 12:30 pm</dd><dd><strong>Location:</strong> germany</dd>
+			<dd>
+				<ul class=3D"profile-icons">
+					<li class=3D"web-icon"><a href=3D"http://ainc.de" title=3D"WWW: htt=
+p://ainc.de"><span>Website</span></a></li>
+				</ul>
+			</dd>
+		=
+
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2359" class=3D"post bg1">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2359">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2359&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2359"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D73&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">spectral</a></stro=
+ng> &raquo; Wed Oct 17, 2012 6:35 pm </p>
+
+			=
+
+
+			<div class=3D"content"><blockquote><div><cite>toxie wrote:</cite>Inde=
+ed OpenCL is not really the major focus anymore, but rather CUDA and Ope=
+nGL (4.3) compute shaders..</div></blockquote><br /><br />It seems.. I u=
+nderstand for CUDA but I don't understand why OpenGL contains compute sh=
+ader now... is there some advantages over CUDA or OpenCL !<br />Or it is=
+ just yet another 'level' over open gl ?</div>
+
+			<div id=3D"sig2359" class=3D"signature"><span style=3D"font-weight: b=
+old"><span style=3D"color: #BF0000">Spectral</span></span><br /><span st=
+yle=3D"font-weight: bold"><span style=3D"color: #BF0000">OMPF 2 global m=
+oderator</span></span></div>
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2359">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D73&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9">spectral</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 333</dd><dd><strong>Joined:</strong> Wed N=
+ov 30, 2011 2:27 pm</dd>
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2360" class=3D"post bg2">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2360">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2360&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2360"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D65&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">graphicsMan</a></s=
+trong> &raquo; Wed Oct 17, 2012 6:56 pm </p>
+
+			=
+
+
+			<div class=3D"content">From what I could tell, it allows low-overhead=
+ scheduling of the shader in the same GL context.  That means that it ma=
+y be possible to avoid driver context switches if you want to do lightwe=
+ight compute during graphics intensive work.</div>
+
+			=
+
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2360">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D65&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9">graphicsMan</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 127</dd><dd><strong>Joined:</strong> Mon N=
+ov 28, 2011 7:28 pm</dd>
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2368" class=3D"post bg1">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2368">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2368&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2368"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D81&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">Dade</a></strong> =
+&raquo; Thu Oct 18, 2012 9:01 am </p>
+
+			=
+
+
+			<div class=3D"content"><blockquote><div><cite>toxie wrote:</cite>Inde=
+ed OpenCL is not really the major focus anymore, but rather CUDA and Ope=
+nGL (4.3) compute shaders..</div></blockquote><br /><br />Sorry, does th=
+is mean NVIDIA is not going to support OpenCL any more ?</div>
+
+			=
+
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2368">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D81&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9">Dade</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 144</dd><dd><strong>Joined:</strong> Fri D=
+ec 02, 2011 8:00 am</dd>
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2369" class=3D"post bg2">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2369">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2369&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2369"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D73&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">spectral</a></stro=
+ng> &raquo; Thu Oct 18, 2012 9:16 am </p>
+
+			=
+
+
+			<div class=3D"content"><blockquote><div><cite>Dade wrote:</cite><bloc=
+kquote><div><cite>toxie wrote:</cite>Indeed OpenCL is not really the maj=
+or focus anymore, but rather CUDA and OpenGL (4.3) compute shaders..</di=
+v></blockquote><br /><br />Sorry, does this mean NVIDIA is not going to =
+support OpenCL any more ?</div></blockquote><br /><br /><br />I'm not su=
+re... and honestly it is not a good strategy to sell their hardware. Dev=
+elopers are still able to use some API to use either CUDA or OpenCL for =
+their application (Just an API and a few #define in the kernels), it is =
+not really difficult. What they will do is simply force peoples to use s=
+oftwares that does not support NVidia hardware ! And with low OpenCL sup=
+port we will have poor OpenCL software on NVidia !<br /><br />BTW, here =
+is the answer I have got from NVidia about the non support of OpenCL in =
+5.0 toolkit :<br /><br /><blockquote class=3D"uncited"><div>Thanks for c=
+ontacting Nvidia!<br /><br />This is by design. The visual profiler (and=
+ the new nvprof profiler) do not support OpenCL in the 5.0 toolkit. You =
+can use the visual profiler from the 4.2 toolkit to get OpenCL support. =
+Sorry for any inconvenience!<br /></div></blockquote><br /><br />I'm sti=
+ll thinking that it will be better for NVidia to provide a very good sup=
+port for OpenCL, this way users will prefer using NVidia GPUs if they pe=
+rforms better (It is my case now). But we need a debugger and a profiler=
+.<br /><br />Just my advice.</div>
+
+			<div id=3D"sig2369" class=3D"signature"><span style=3D"font-weight: b=
+old"><span style=3D"color: #BF0000">Spectral</span></span><br /><span st=
+yle=3D"font-weight: bold"><span style=3D"color: #BF0000">OMPF 2 global m=
+oderator</span></span></div>
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2369">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D73&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9">spectral</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 333</dd><dd><strong>Joined:</strong> Wed N=
+ov 30, 2011 2:27 pm</dd>
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2371" class=3D"post bg1">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2371">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2371&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2371"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D56&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9" style=3D"color: #A=
+A0000;" class=3D"username-coloured">toxie</a></strong> &raquo; Thu Oct 1=
+8, 2012 3:07 pm </p>
+
+			=
+
+
+			<div class=3D"content"><blockquote><div><cite>Dade wrote:</cite><bloc=
+kquote><div><cite>toxie wrote:</cite>Indeed OpenCL is not really the maj=
+or focus anymore, but rather CUDA and OpenGL (4.3) compute shaders..</di=
+v></blockquote><br /><br />Sorry, does this mean NVIDIA is not going to =
+support OpenCL any more ?</div></blockquote><br /><br />I don't think so=
+, it's still supported, but i would say that the focus is on supporting =
+mainly CUDA and GL compute..</div>
+
+			<div id=3D"sig2371" class=3D"signature"><span style=3D"font-weight: b=
+old"><span style=3D"font-size: 80%; line-height: 116%;">Better you leave=
+ here with your head still full of kitty cats and puppy dogs.</span></sp=
+an></div>
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2371">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D56&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9" style=3D"color: #AA0000;" class=3D"use=
+rname-coloured">toxie</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 69</dd><dd><strong>Joined:</strong> Mon No=
+v 28, 2011 12:30 pm</dd><dd><strong>Location:</strong> germany</dd>
+			<dd>
+				<ul class=3D"profile-icons">
+					<li class=3D"web-icon"><a href=3D"http://ainc.de" title=3D"WWW: htt=
+p://ainc.de"><span>Website</span></a></li>
+				</ul>
+			</dd>
+		=
+
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2375" class=3D"post bg2">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2375">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2375&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2375"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D73&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">spectral</a></stro=
+ng> &raquo; Fri Oct 19, 2012 8:10 am </p>
+
+			=
+
+
+			<div class=3D"content">Here is another reply form NVidia that confirm=
+ what Toxie wrote :<br /><br /><blockquote class=3D"uncited"><div>Now we=
+ are focusing our efforts on CUDA at this point, this bug is not fixed i=
+n this release and will be evaluated for the next.<br /><br />Today CUDA=
+ 5.0 is very efficient and is very convenient to use. A customer will ge=
+t immediate support when using CUDA. If CUDA is an option for you, it wi=
+ll be a good choice.<br /></div></blockquote></div>
+
+			<div id=3D"sig2375" class=3D"signature"><span style=3D"font-weight: b=
+old"><span style=3D"color: #BF0000">Spectral</span></span><br /><span st=
+yle=3D"font-weight: bold"><span style=3D"color: #BF0000">OMPF 2 global m=
+oderator</span></span></div>
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2375">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D73&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9">spectral</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 333</dd><dd><strong>Joined:</strong> Wed N=
+ov 30, 2011 2:27 pm</dd>
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<div id=3D"p2377" class=3D"post bg1">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<div class=3D"postbody">
+			=
+
+
+			<h3 ><a href=3D"#p2377">Re: CUDA 5.0</a></h3>
+			<p class=3D"author"><a href=3D"./viewtopic.php?p=3D2377&amp;sid=3D7cd=
+148ff9613fdaf95a9ffe03b6457d9#p2377"><img src=3D"./styles/prosilver/imag=
+eset/icon_post_target.gif" width=3D"11" height=3D"9" alt=3D"Post" title=3D=
+"Post" /></a>by <strong><a href=3D"./memberlist.php?mode=3Dviewprofile&a=
+mp;u=3D81&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">Dade</a></strong> =
+&raquo; Fri Oct 19, 2012 9:22 am </p>
+
+			=
+
+
+			<div class=3D"content">BTW, AMD has recently released CODE XL : a goo=
+d CPU and OpenCL profiler/debugger. I have done some test and it is a qu=
+ite useful tool (when it doesn't crash ... it happens often on my Linux =
+box).</div>
+
+			=
+
+
+		</div>
+
+		=
+
+			<dl class=3D"postprofile" id=3D"profile2377">
+			<dt>
+				<a href=3D"./memberlist.php?mode=3Dviewprofile&amp;u=3D81&amp;sid=3D=
+7cd148ff9613fdaf95a9ffe03b6457d9">Dade</a>
+			</dt>
+
+			=
+
+
+		<dd>&nbsp;</dd>
+
+		<dd><strong>Posts:</strong> 144</dd><dd><strong>Joined:</strong> Fri D=
+ec 02, 2011 8:00 am</dd>
+
+		</dl>
+	=
+
+
+		<div class=3D"back2top"><a href=3D"#wrap" class=3D"top" title=3D"Top">=
+Top</a></div>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr class=3D"divider" />
+
+	<form id=3D"viewtopic" method=3D"post" action=3D"./viewtopic.php?f=3D8&=
+amp;t=3D1019&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">
+
+	<fieldset class=3D"display-options" style=3D"margin-top: 0; ">
+		<a href=3D"./viewtopic.php?f=3D8&amp;t=3D1019&amp;sid=3D7cd148ff9613fd=
+af95a9ffe03b6457d9&amp;start=3D10" class=3D"right-box right">Next</a>
+		<label>Display posts from previous: <select name=3D"st" id=3D"st"><opt=
+ion value=3D"0" selected=3D"selected">All posts</option><option value=3D=
+"1">1 day</option><option value=3D"7">7 days</option><option value=3D"14=
+">2 weeks</option><option value=3D"30">1 month</option><option value=3D"=
+90">3 months</option><option value=3D"180">6 months</option><option valu=
+e=3D"365">1 year</option></select></label>
+		<label>Sort by <select name=3D"sk" id=3D"sk"><option value=3D"a">Autho=
+r</option><option value=3D"t" selected=3D"selected">Post time</option><o=
+ption value=3D"s">Subject</option></select></label> <label><select name=3D=
+"sd" id=3D"sd"><option value=3D"a" selected=3D"selected">Ascending</opti=
+on><option value=3D"d">Descending</option></select> <input type=3D"submi=
+t" name=3D"sort" value=3D"Go" class=3D"button2" /></label>
+		=
+
+	</fieldset>
+
+	</form>
+	<hr />
+
+
+<div class=3D"topic-actions">
+	<div class=3D"buttons">
+	=
+
+		<div class=3D"reply-icon"><a href=3D"./posting.php?mode=3Dreply&amp;f=3D=
+8&amp;t=3D1019&amp;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9" title=3D"Post=
+ a reply"><span></span>Post a reply</a></div>
+	=
+
+	</div>
+
+	=
+
+		<div class=3D"pagination">
+			12 posts
+			 &bull; <a href=3D"#" onclick=3D"jumpto(); return false;" title=3D"Cl=
+ick to jump to page=E2=80=A6">Page <strong>1</strong> of <strong>2</stro=
+ng></a> &bull; <span><strong>1</strong><span class=3D"page-sep">, </span=
+><a href=3D"./viewtopic.php?f=3D8&amp;t=3D1019&amp;sid=3D7cd148ff9613fda=
+f95a9ffe03b6457d9&amp;start=3D10">2</a></span>
+		</div>
+	=
+
+</div>
+
+
+	<p></p><p><a href=3D"./viewforum.php?f=3D8&amp;sid=3D7cd148ff9613fdaf95=
+a9ffe03b6457d9" class=3D"left-box left" accesskey=3D"r">Return to Tools,=
+ Demos &amp; Sources</a></p>
+
+	<form method=3D"post" id=3D"jumpbox" action=3D"./viewforum.php?sid=3D7c=
+d148ff9613fdaf95a9ffe03b6457d9" onsubmit=3D"if(this.f.value =3D=3D -1){r=
+eturn false;}">
+
+	=
+
+		<fieldset class=3D"jumpbox">
+	=
+
+			<label for=3D"f" accesskey=3D"j">Jump to:</label>
+			<select name=3D"f" id=3D"f" onchange=3D"if(this.options[this.selected=
+Index].value !=3D -1){ document.forms['jumpbox'].submit() }">
+			=
+
+				<option value=3D"-1">Select a forum</option>
+			<option value=3D"-1">------------------</option>
+				<option value=3D"12">Raytracing</option>
+			=
+
+				<option value=3D"3">&nbsp; &nbsp;General Development</option>
+			=
+
+				<option value=3D"14">&nbsp; &nbsp;&nbsp; &nbsp;GPU</option>
+			=
+
+				<option value=3D"15">&nbsp; &nbsp;&nbsp; &nbsp;My First...</option>
+			=
+
+				<option value=3D"4">&nbsp; &nbsp;!Real Time</option>
+			=
+
+				<option value=3D"16">&nbsp; &nbsp;&nbsp; &nbsp;Off-line</option>
+			=
+
+				<option value=3D"17">&nbsp; &nbsp;&nbsp; &nbsp;Production</option>
+			=
+
+				<option value=3D"5">&nbsp; &nbsp;Visuals</option>
+			=
+
+				<option value=3D"6">&nbsp; &nbsp;Links &amp; Papers</option>
+			=
+
+				<option value=3D"7">&nbsp; &nbsp;Data Sets</option>
+			=
+
+				<option value=3D"8" selected=3D"selected">&nbsp; &nbsp;Tools, Demos =
+&amp; Sources</option>
+			=
+
+				<option value=3D"9">&nbsp; &nbsp;Considered Harmfull</option>
+			=
+
+				<option value=3D"13">Logistics</option>
+			=
+
+				<option value=3D"10">&nbsp; &nbsp;Scratchpad</option>
+			=
+
+				<option value=3D"11">&nbsp; &nbsp;ompf2</option>
+			=
+
+			</select>
+			<input type=3D"submit" value=3D"Go" class=3D"button2" />
+		</fieldset>
+	</form>
+
+
+	<h3>Who is online</h3>
+	<p>Users browsing this forum: No registered users and 2 guests</p>
+</div>
+
+<div id=3D"page-footer">
+
+	<div class=3D"navbar">
+		<div class=3D"inner"><span class=3D"corners-top"><span></span></span>
+
+		<ul class=3D"linklist">
+			<li class=3D"icon-home"><a href=3D"./index.php?sid=3D7cd148ff9613fdaf=
+95a9ffe03b6457d9" accesskey=3D"h">Board index</a></li>
+				=
+
+			<li class=3D"rightside"><a href=3D"./memberlist.php?mode=3Dleaders&am=
+p;sid=3D7cd148ff9613fdaf95a9ffe03b6457d9">The team</a> &bull; <a href=3D=
+"./ucp.php?mode=3Ddelete_cookies&amp;sid=3D7cd148ff9613fdaf95a9ffe03b645=
+7d9">Delete all board cookies</a> &bull; All times are UTC </li>
+		</ul>
+
+		<span class=3D"corners-bottom"><span></span></span></div>
+	</div>
+
+	<div class=3D"copyright">Powered by <a href=3D"http://www.phpbb.com/">p=
+hpBB</a>&reg; Forum Software &copy; phpBB Group
+		=
+
+	</div>
+</div>
+
+</div>
+
+<div>
+	<a id=3D"bottom" name=3D"bottom" accesskey=3D"z"></a>
+	=
+
+</div>
+
+</body>
+</html>
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=styleswitcher.js
+Content-Type: application/javascript; name=styleswitcher.js
+Content-Location: http://ompf2.com/styles/prosilver/template/styleswitcher.js
+Content-Transfer-Encoding: Base64
+
+CmZ1bmN0aW9uIGZvbnRzaXpldXAoZXZlbnQpCnsKCS8vIFNraXAgdGFiczsgOSBi
+ZWluZyB0aGUgQVNDSUkgY29kZSBmb3IgYSB0YWIKCWlmIChldmVudCAmJiBnZXRL
+ZXlDb2RlKGV2ZW50KSA9PSA5KQoJewoJCXJldHVybiB0cnVlOwoJfQoKCXZhciBh
+Y3RpdmUgPSBnZXRBY3RpdmVTdHlsZVNoZWV0KCk7CgoJc3dpdGNoIChhY3RpdmUp
+Cgl7CgkJY2FzZSAnQS0tJzoKCQkJc2V0QWN0aXZlU3R5bGVTaGVldCgnQS0nKTsK
+CQlicmVhazsKCgkJY2FzZSAnQS0nOgoJCQlzZXRBY3RpdmVTdHlsZVNoZWV0KCdB
+Jyk7CgkJYnJlYWs7CgoJCWNhc2UgJ0EnOgoJCQlzZXRBY3RpdmVTdHlsZVNoZWV0
+KCdBKycpOwoJCWJyZWFrOwoKCQljYXNlICdBKyc6CgkJCXNldEFjdGl2ZVN0eWxl
+U2hlZXQoJ0ErKycpOwoJCWJyZWFrOwoKCQljYXNlICdBKysnOgoJCQlzZXRBY3Rp
+dmVTdHlsZVNoZWV0KCdBJyk7CgkJYnJlYWs7CgoJCWRlZmF1bHQ6CgkJCXNldEFj
+dGl2ZVN0eWxlU2hlZXQoJ0EnKTsKCQlicmVhazsKCX0KCglyZXR1cm4gZmFsc2U7
+Cn0KCmZ1bmN0aW9uIGZvbnRzaXplZG93bihldmVudCkKewoJLy8gU2tpcCB0YWJz
+CglpZiAoZXZlbnQgJiYgZ2V0S2V5Q29kZShldmVudCkgPT0gOSkKCXsKCQlyZXR1
+cm4gdHJ1ZTsKCX0KCgl2YXIgYWN0aXZlID0gZ2V0QWN0aXZlU3R5bGVTaGVldCgp
+OwoKCXN3aXRjaCAoYWN0aXZlKQoJewoJCWNhc2UgJ0ErKycgOiAKCQkJc2V0QWN0
+aXZlU3R5bGVTaGVldCgnQSsnKTsKCQlicmVhazsKCgkJY2FzZSAnQSsnIDogCgkJ
+CXNldEFjdGl2ZVN0eWxlU2hlZXQoJ0EnKTsKCQlicmVhazsKCgkJY2FzZSAnQScg
+OiAKCQkJc2V0QWN0aXZlU3R5bGVTaGVldCgnQS0nKTsKCQlicmVhazsKCgkJY2Fz
+ZSAnQS0nIDogCgkJCXNldEFjdGl2ZVN0eWxlU2hlZXQoJ0EtLScpOwoJCWJyZWFr
+OwoKCQljYXNlICdBLS0nIDogCgkJYnJlYWs7CgoJCWRlZmF1bHQgOgoJCQlzZXRB
+Y3RpdmVTdHlsZVNoZWV0KCdBLS0nKTsKCQlicmVhazsKCX0KCglyZXR1cm4gZmFs
+c2U7Cn0KCmZ1bmN0aW9uIGdldEtleUNvZGUoZXZlbnQpCnsKCS8vIElFIGRvZXNu
+J3QgZmlyZSB0aGUgb25rZXlwcmVzcyBldmVudCBmb3IgdGFicwoJLy8gUmVmZXJl
+bmNlOiBodHRwOi8vd3d3LnF1aXJrc21vZGUub3JnL2pzL2tleXMuaHRtbAoKCXZh
+ciBjb2RlID0gKGV2ZW50LmtleUNvZGUpID8gZXZlbnQua2V5Q29kZSA6IDA7CgoJ
+Ly8gUHJvYmFibHkgdXNpbmcgRkYKCWlmICghY29kZSAmJiBldmVudC5jaGFyQ29k
+ZSkKCXsKCQljb2RlID0gZXZlbnQuY2hhckNvZGU7Cgl9CgoJcmV0dXJuIGNvZGU7
+Cn0KCmZ1bmN0aW9uIHNldEFjdGl2ZVN0eWxlU2hlZXQodGl0bGUpCnsKCXZhciBp
+LCBhLCBtYWluOwoKCWZvciAoaSA9IDA7IChhID0gZG9jdW1lbnQuZ2V0RWxlbWVu
+dHNCeVRhZ05hbWUoJ2xpbmsnKVtpXSk7IGkrKykKCXsKCQlpZiAoYS5nZXRBdHRy
+aWJ1dGUoJ3JlbCcpLmluZGV4T2YoJ3N0eWxlJykgIT0gLTEgJiYgYS5nZXRBdHRy
+aWJ1dGUoJ3RpdGxlJykpCgkJewoJCQlhLmRpc2FibGVkID0gdHJ1ZTsKCQkJaWYg
+KGEuZ2V0QXR0cmlidXRlKCd0aXRsZScpID09IHRpdGxlKQoJCQl7CgkJCQlhLmRp
+c2FibGVkID0gZmFsc2U7CgkJCX0KCQl9Cgl9Cn0KCmZ1bmN0aW9uIGdldEFjdGl2
+ZVN0eWxlU2hlZXQoKQp7Cgl2YXIgaSwgYTsKCglmb3IgKGkgPSAwOyAoYSA9IGRv
+Y3VtZW50LmdldEVsZW1lbnRzQnlUYWdOYW1lKCdsaW5rJylbaV0pOyBpKyspCgl7
+CgkJaWYgKGEuZ2V0QXR0cmlidXRlKCdyZWwnKS5pbmRleE9mKCdzdHlsZScpICE9
+IC0xICYmIGEuZ2V0QXR0cmlidXRlKCd0aXRsZScpICYmICFhLmRpc2FibGVkKQoJ
+CXsKCQkJcmV0dXJuIGEuZ2V0QXR0cmlidXRlKCd0aXRsZScpOwoJCX0KCX0KCgly
+ZXR1cm4gbnVsbDsKfQoKZnVuY3Rpb24gZ2V0UHJlZmVycmVkU3R5bGVTaGVldCgp
+CnsKCXJldHVybiAoJ0EtJyk7Cn0KCmZ1bmN0aW9uIGNyZWF0ZUNvb2tpZShuYW1l
+LCB2YWx1ZSwgZGF5cykKewoJaWYgKGRheXMpCgl7CgkJdmFyIGRhdGUgPSBuZXcg
+RGF0ZSgpOwoJCWRhdGUuc2V0VGltZShkYXRlLmdldFRpbWUoKSArIChkYXlzKjI0
+KjYwKjYwKjEwMDApKTsKCQl2YXIgZXhwaXJlcyA9ICc7IGV4cGlyZXM9JyArIGRh
+dGUudG9HTVRTdHJpbmcoKTsKCX0KCWVsc2UKCXsKCQlleHBpcmVzID0gJyc7Cgl9
+CgoJZG9jdW1lbnQuY29va2llID0gbmFtZSArICc9JyArIHZhbHVlICsgZXhwaXJl
+cyArIHN0eWxlX2Nvb2tpZV9zZXR0aW5nczsKfQoKZnVuY3Rpb24gcmVhZENvb2tp
+ZShuYW1lKQp7Cgl2YXIgbmFtZUVRID0gbmFtZSArICc9JzsKCXZhciBjYSA9IGRv
+Y3VtZW50LmNvb2tpZS5zcGxpdCgnOycpOwoKCWZvciAodmFyIGkgPSAwOyBpIDwg
+Y2EubGVuZ3RoOyBpKyspCgl7CgkJdmFyIGMgPSBjYVtpXTsKCgkJd2hpbGUgKGMu
+Y2hhckF0KDApID09ICcgJykKCQl7CgkJCWMgPSBjLnN1YnN0cmluZygxLCBjLmxl
+bmd0aCk7CgkJfQoKCQlpZiAoYy5pbmRleE9mKG5hbWVFUSkgPT0gMCkKCQl7CgkJ
+CXJldHVybiBjLnN1YnN0cmluZyhuYW1lRVEubGVuZ3RoLCBjLmxlbmd0aCk7CgkJ
+fQoJfQoKCXJldHVybiBudWxsOwp9CgpmdW5jdGlvbiBsb2FkX2Nvb2tpZSgpCnsK
+CXZhciBjb29raWUgPSByZWFkQ29va2llKCdzdHlsZV9jb29raWUnKTsKCXZhciB0
+aXRsZSA9IGNvb2tpZSA/IGNvb2tpZSA6IGdldFByZWZlcnJlZFN0eWxlU2hlZXQo
+KTsKCXNldEFjdGl2ZVN0eWxlU2hlZXQodGl0bGUpOwp9CgpmdW5jdGlvbiB1bmxv
+YWRfY29va2llKCkKewoJdmFyIHRpdGxlID0gZ2V0QWN0aXZlU3R5bGVTaGVldCgp
+OwoJY3JlYXRlQ29va2llKCdzdHlsZV9jb29raWUnLCB0aXRsZSwgMzY1KTsKfQoK
+b25sb2FkX2Z1bmN0aW9ucy5wdXNoKCdsb2FkX2Nvb2tpZSgpJyk7Cm9udW5sb2Fk
+X2Z1bmN0aW9ucy5wdXNoKCd1bmxvYWRfY29va2llKCknKTsKCi8qCnZhciBjb29r
+aWUgPSByZWFkQ29va2llKCJzdHlsZSIpOwp2YXIgdGl0bGUgPSBjb29raWUgPyBj
+b29raWUgOiBnZXRQcmVmZXJyZWRTdHlsZVNoZWV0KCk7CnNldEFjdGl2ZVN0eWxl
+U2hlZXQodGl0bGUpOwoqLwo=
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=forum_fn.js
+Content-Type: application/javascript; name=forum_fn.js
+Content-Location: http://ompf2.com/styles/prosilver/template/forum_fn.js
+Content-Transfer-Encoding: Base64
+
+LyoqCiogcGhwQkIzIGZvcnVtIGZ1bmN0aW9ucwoqLwoKLyoqCiogV2luZG93IHBv
+cHVwCiovCmZ1bmN0aW9uIHBvcHVwKHVybCwgd2lkdGgsIGhlaWdodCwgbmFtZSkK
+ewoJaWYgKCFuYW1lKQoJewoJCW5hbWUgPSAnX3BvcHVwJzsKCX0KCgl3aW5kb3cu
+b3Blbih1cmwucmVwbGFjZSgvJmFtcDsvZywgJyYnKSwgbmFtZSwgJ2hlaWdodD0n
+ICsgaGVpZ2h0ICsgJyxyZXNpemFibGU9eWVzLHNjcm9sbGJhcnM9eWVzLCB3aWR0
+aD0nICsgd2lkdGgpOwoJcmV0dXJuIGZhbHNlOwp9CgovKioKKiBKdW1wIHRvIHBh
+Z2UKKi8KZnVuY3Rpb24ganVtcHRvKCkKewoJdmFyIHBhZ2UgPSBwcm9tcHQoanVt
+cF9wYWdlLCBvbl9wYWdlKTsKCglpZiAocGFnZSAhPT0gbnVsbCAmJiAhaXNOYU4o
+cGFnZSkgJiYgcGFnZSA9PSBNYXRoLmZsb29yKHBhZ2UpICYmIHBhZ2UgPiAwKQoJ
+ewoJCWlmIChiYXNlX3VybC5pbmRleE9mKCc/JykgPT0gLTEpCgkJewoJCQlkb2N1
+bWVudC5sb2NhdGlvbi5ocmVmID0gYmFzZV91cmwgKyAnP3N0YXJ0PScgKyAoKHBh
+Z2UgLSAxKSAqIHBlcl9wYWdlKTsKCQl9CgkJZWxzZQoJCXsKCQkJZG9jdW1lbnQu
+bG9jYXRpb24uaHJlZiA9IGJhc2VfdXJsLnJlcGxhY2UoLyZhbXA7L2csICcmJykg
+KyAnJnN0YXJ0PScgKyAoKHBhZ2UgLSAxKSAqIHBlcl9wYWdlKTsKCQl9Cgl9Cn0K
+Ci8qKgoqIE1hcmsvdW5tYXJrIGNoZWNrbGlzdAoqIGlkID0gSUQgb2YgcGFyZW50
+IGNvbnRhaW5lciwgbmFtZSA9IG5hbWUgcHJlZml4LCBzdGF0ZSA9IHN0YXRlIFt0
+cnVlL2ZhbHNlXQoqLwpmdW5jdGlvbiBtYXJrbGlzdChpZCwgbmFtZSwgc3RhdGUp
+CnsKCXZhciBwYXJlbnQgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChpZCk7Cglp
+ZiAoIXBhcmVudCkKCXsKCQlldmFsKCdwYXJlbnQgPSBkb2N1bWVudC4nICsgaWQp
+OwoJfQoKCWlmICghcGFyZW50KQoJewoJCXJldHVybjsKCX0KCgl2YXIgcmIgPSBw
+YXJlbnQuZ2V0RWxlbWVudHNCeVRhZ05hbWUoJ2lucHV0Jyk7CgkKCWZvciAodmFy
+IHIgPSAwOyByIDwgcmIubGVuZ3RoOyByKyspCgl7CQoJCWlmIChyYltyXS5uYW1l
+LnN1YnN0cigwLCBuYW1lLmxlbmd0aCkgPT0gbmFtZSkKCQl7CgkJCXJiW3JdLmNo
+ZWNrZWQgPSBzdGF0ZTsKCQl9Cgl9Cn0KCi8qKgoqIFJlc2l6ZSB2aWV3YWJsZSBh
+cmVhIGZvciBhdHRhY2hlZCBpbWFnZSBvciB0b3BpYyByZXZpZXcgcGFuZWwgKHBv
+c3NpYmx5IG90aGVycyB0byBjb21lKQoqIGUgPSBlbGVtZW50CiovCmZ1bmN0aW9u
+IHZpZXdhYmxlQXJlYShlLCBpdHNlbGYpCnsKCWlmICghZSkgcmV0dXJuOwoJaWYg
+KCFpdHNlbGYpCgl7CgkJZSA9IGUucGFyZW50Tm9kZTsKCX0KCQoJaWYgKCFlLnZh
+SGVpZ2h0KQoJewoJCS8vIFN0b3JlIHZpZXdhYmxlIGFyZWEgaGVpZ2h0IGJlZm9y
+ZSBjaGFuZ2luZyBzdHlsZSB0byBhdXRvCgkJZS52YUhlaWdodCA9IGUub2Zmc2V0
+SGVpZ2h0OwoJCWUudmFNYXhIZWlnaHQgPSBlLnN0eWxlLm1heEhlaWdodDsKCQll
+LnN0eWxlLmhlaWdodCA9ICdhdXRvJzsKCQllLnN0eWxlLm1heEhlaWdodCA9ICdu
+b25lJzsKCQllLnN0eWxlLm92ZXJmbG93ID0gJ3Zpc2libGUnOwoJfQoJZWxzZQoJ
+ewoJCS8vIFJlc3RvcmUgdmlld2FibGUgYXJlYSBoZWlnaHQgdG8gdGhlIGRlZmF1
+bHQKCQllLnN0eWxlLmhlaWdodCA9IGUudmFIZWlnaHQgKyAncHgnOwoJCWUuc3R5
+bGUub3ZlcmZsb3cgPSAnYXV0byc7CgkJZS5zdHlsZS5tYXhIZWlnaHQgPSBlLnZh
+TWF4SGVpZ2h0OwoJCWUudmFIZWlnaHQgPSBmYWxzZTsKCX0KfQoKLyoqCiogU2V0
+IGRpc3BsYXkgb2YgcGFnZSBlbGVtZW50Ciogc1stMSwwLDFdID0gaGlkZSx0b2dn
+bGUgZGlzcGxheSxzaG93CiogdHlwZSA9IHN0cmluZzogaW5saW5lLCBibG9jaywg
+aW5saW5lLWJsb2NrIG9yIG90aGVyIENTUyAiZGlzcGxheSIgdHlwZQoqLwpmdW5j
+dGlvbiBkRShuLCBzLCB0eXBlKQp7CglpZiAoIXR5cGUpCgl7CgkJdHlwZSA9ICdi
+bG9jayc7Cgl9CgoJdmFyIGUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChuKTsK
+CWlmICghcykKCXsKCQlzID0gKGUuc3R5bGUuZGlzcGxheSA9PSAnJyB8fCBlLnN0
+eWxlLmRpc3BsYXkgPT0gdHlwZSkgPyAtMSA6IDE7Cgl9CgllLnN0eWxlLmRpc3Bs
+YXkgPSAocyA9PSAxKSA/IHR5cGUgOiAnbm9uZSc7Cn0KCi8qKgoqIEFsdGVybmF0
+ZSBkaXNwbGF5IG9mIHN1YlBhbmVscwoqLwpmdW5jdGlvbiBzdWJQYW5lbHMocCkK
+ewoJdmFyIGksIGUsIHQ7CgoJaWYgKHR5cGVvZihwKSA9PSAnc3RyaW5nJykKCXsK
+CQlzaG93X3BhbmVsID0gcDsKCX0KCglmb3IgKGkgPSAwOyBpIDwgcGFuZWxzLmxl
+bmd0aDsgaSsrKQoJewoJCWUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChwYW5l
+bHNbaV0pOwoJCXQgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChwYW5lbHNbaV0g
+KyAnLXRhYicpOwoKCQlpZiAoZSkKCQl7CgkJCWlmIChwYW5lbHNbaV0gPT0gc2hv
+d19wYW5lbCkKCQkJewoJCQkJZS5zdHlsZS5kaXNwbGF5ID0gJ2Jsb2NrJzsKCQkJ
+CWlmICh0KQoJCQkJewoJCQkJCXQuY2xhc3NOYW1lID0gJ2FjdGl2ZXRhYic7CgkJ
+CQl9CgkJCX0KCQkJZWxzZQoJCQl7CgkJCQllLnN0eWxlLmRpc3BsYXkgPSAnbm9u
+ZSc7CgkJCQlpZiAodCkKCQkJCXsKCQkJCQl0LmNsYXNzTmFtZSA9ICcnOwoJCQkJ
+fQoJCQl9CgkJfQoJfQp9CgovKioKKiBDYWxsIHByaW50IHByZXZpZXcKKi8KZnVu
+Y3Rpb24gcHJpbnRQYWdlKCkKewoJaWYgKGlzX2llKQoJewoJCXByaW50UHJldmll
+dygpOwoJfQoJZWxzZQoJewoJCXdpbmRvdy5wcmludCgpOwoJfQp9CgovKioKKiBT
+aG93L2hpZGUgZ3JvdXBzIG9mIGJsb2NrcwoqIGMgPSBDU1Mgc3R5bGUgbmFtZQoq
+IGUgPSBjaGVja2JveCBlbGVtZW50CiogdCA9IHRvZ2dsZSBkaXNwYXkgc3RhdGUg
+KHVzZWQgdG8gc2hvdyAnZ3JpcC1zaG93JyBpbWFnZSBpbiB0aGUgcHJvZmlsZSBi
+bG9jayB3aGVuIGhpZGluZyB0aGUgcHJvZmlsZXMpIAoqLwpmdW5jdGlvbiBkaXNw
+bGF5QmxvY2tzKGMsIGUsIHQpCnsKCXZhciBzID0gKGUuY2hlY2tlZCA9PSB0cnVl
+KSA/ICAxIDogLTE7CgoJaWYgKHQpCgl7CgkJcyAqPSAtMTsKCX0KCgl2YXIgZGl2
+cyA9IGRvY3VtZW50LmdldEVsZW1lbnRzQnlUYWdOYW1lKCJESVYiKTsKCglmb3Ig
+KHZhciBkID0gMDsgZCA8IGRpdnMubGVuZ3RoOyBkKyspCgl7CgkJaWYgKGRpdnNb
+ZF0uY2xhc3NOYW1lLmluZGV4T2YoYykgPT0gMCkKCQl7CgkJCWRpdnNbZF0uc3R5
+bGUuZGlzcGxheSA9IChzID09IDEpID8gJ25vbmUnIDogJ2Jsb2NrJzsKCQl9Cgl9
+Cn0KCmZ1bmN0aW9uIHNlbGVjdENvZGUoYSkKewoJLy8gR2V0IElEIG9mIGNvZGUg
+YmxvY2sKCXZhciBlID0gYS5wYXJlbnROb2RlLnBhcmVudE5vZGUuZ2V0RWxlbWVu
+dHNCeVRhZ05hbWUoJ0NPREUnKVswXTsKCgkvLyBOb3QgSUUgYW5kIElFOSsKCWlm
+ICh3aW5kb3cuZ2V0U2VsZWN0aW9uKQoJewoJCXZhciBzID0gd2luZG93LmdldFNl
+bGVjdGlvbigpOwoJCS8vIFNhZmFyaQoJCWlmIChzLnNldEJhc2VBbmRFeHRlbnQp
+CgkJewoJCQlzLnNldEJhc2VBbmRFeHRlbnQoZSwgMCwgZSwgZS5pbm5lclRleHQu
+bGVuZ3RoIC0gMSk7CgkJfQoJCS8vIEZpcmVmb3ggYW5kIE9wZXJhCgkJZWxzZQoJ
+CXsKCQkJLy8gd29ya2Fyb3VuZCBmb3IgYnVnICMgNDI4ODUKCQkJaWYgKHdpbmRv
+dy5vcGVyYSAmJiBlLmlubmVySFRNTC5zdWJzdHJpbmcoZS5pbm5lckhUTUwubGVu
+Z3RoIC0gNCkgPT0gJzxCUj4nKQoJCQl7CgkJCQllLmlubmVySFRNTCA9IGUuaW5u
+ZXJIVE1MICsgJyZuYnNwOyc7CgkJCX0KCgkJCXZhciByID0gZG9jdW1lbnQuY3Jl
+YXRlUmFuZ2UoKTsKCQkJci5zZWxlY3ROb2RlQ29udGVudHMoZSk7CgkJCXMucmVt
+b3ZlQWxsUmFuZ2VzKCk7CgkJCXMuYWRkUmFuZ2Uocik7CgkJfQoJfQoJLy8gU29t
+ZSBvbGRlciBicm93c2VycwoJZWxzZSBpZiAoZG9jdW1lbnQuZ2V0U2VsZWN0aW9u
+KQoJewoJCXZhciBzID0gZG9jdW1lbnQuZ2V0U2VsZWN0aW9uKCk7CgkJdmFyIHIg
+PSBkb2N1bWVudC5jcmVhdGVSYW5nZSgpOwoJCXIuc2VsZWN0Tm9kZUNvbnRlbnRz
+KGUpOwoJCXMucmVtb3ZlQWxsUmFuZ2VzKCk7CgkJcy5hZGRSYW5nZShyKTsKCX0K
+CS8vIElFCgllbHNlIGlmIChkb2N1bWVudC5zZWxlY3Rpb24pCgl7CgkJdmFyIHIg
+PSBkb2N1bWVudC5ib2R5LmNyZWF0ZVRleHRSYW5nZSgpOwoJCXIubW92ZVRvRWxl
+bWVudFRleHQoZSk7CgkJci5zZWxlY3QoKTsKCX0KfQoKLyoqCiogUGxheSBxdWlj
+a3RpbWUgZmlsZSBieSBkZXRlcm1pbmluZyBpdCdzIHdpZHRoL2hlaWdodAoqIGZy
+b20gdGhlIGRpc3BsYXllZCByZWN0YW5nbGUgYXJlYQoqLwpmdW5jdGlvbiBwbGF5
+X3F0X2ZpbGUob2JqKQp7Cgl2YXIgcmVjdGFuZ2xlID0gb2JqLkdldFJlY3Rhbmds
+ZSgpOwoKCWlmIChyZWN0YW5nbGUpCgl7CgkJcmVjdGFuZ2xlID0gcmVjdGFuZ2xl
+LnNwbGl0KCcsJyk7CgkJdmFyIHgxID0gcGFyc2VJbnQocmVjdGFuZ2xlWzBdKTsK
+CQl2YXIgeDIgPSBwYXJzZUludChyZWN0YW5nbGVbMl0pOwoJCXZhciB5MSA9IHBh
+cnNlSW50KHJlY3RhbmdsZVsxXSk7CgkJdmFyIHkyID0gcGFyc2VJbnQocmVjdGFu
+Z2xlWzNdKTsKCgkJdmFyIHdpZHRoID0gKHgxIDwgMCkgPyAoeDEgKiAtMSkgKyB4
+MiA6IHgyIC0geDE7CgkJdmFyIGhlaWdodCA9ICh5MSA8IDApID8gKHkxICogLTEp
+ICsgeTIgOiB5MiAtIHkxOwoJfQoJZWxzZQoJewoJCXZhciB3aWR0aCA9IDIwMDsK
+CQl2YXIgaGVpZ2h0ID0gMDsKCX0KCglvYmoud2lkdGggPSB3aWR0aDsKCW9iai5o
+ZWlnaHQgPSBoZWlnaHQgKyAxNjsKCglvYmouU2V0Q29udHJvbGxlclZpc2libGUo
+dHJ1ZSk7CglvYmouUGxheSgpOwp9CgovKioKKiBDaGVjayBpZiB0aGUgbm9kZU5h
+bWUgb2YgZWxlbSBpcyBuYW1lCiogQGF1dGhvciBqUXVlcnkKKi8KZnVuY3Rpb24g
+aXNfbm9kZV9uYW1lKGVsZW0sIG5hbWUpCnsKCXJldHVybiBlbGVtLm5vZGVOYW1l
+ICYmIGVsZW0ubm9kZU5hbWUudG9VcHBlckNhc2UoKSA9PSBuYW1lLnRvVXBwZXJD
+YXNlKCk7Cn0KCi8qKgoqIENoZWNrIGlmIGVsZW0gaXMgaW4gYXJyYXksIHJldHVy
+biBwb3NpdGlvbgoqIEBhdXRob3IgalF1ZXJ5CiovCmZ1bmN0aW9uIGlzX2luX2Fy
+cmF5KGVsZW0sIGFycmF5KQp7Cglmb3IgKHZhciBpID0gMCwgbGVuZ3RoID0gYXJy
+YXkubGVuZ3RoOyBpIDwgbGVuZ3RoOyBpKyspCgkJLy8gPT09IGlzIGNvcnJlY3Qg
+KElFKQoJCWlmIChhcnJheVtpXSA9PT0gZWxlbSkKCQkJcmV0dXJuIGk7CgoJcmV0
+dXJuIC0xOwp9CgovKioKKiBGaW5kIEVsZW1lbnQsIHR5cGUgYW5kIGNsYXNzIGlu
+IHRyZWUKKiBOb3QgdXNlZCwgYnV0IG1heSBjb21lIGluIGhhbmR5IGZvciB0aG9z
+ZSBub3QgdXNpbmcgSlF1ZXJ5CiogQGF1dGhvciBqUXVlcnkuZmluZCwgTWVpayBT
+aWV2ZXJ0c2VuCiovCmZ1bmN0aW9uIGZpbmRfaW5fdHJlZShub2RlLCB0YWcsIHR5
+cGUsIGNsYXNzX25hbWUpCnsKCXZhciByZXN1bHQsIGVsZW1lbnQsIGkgPSAwLCBs
+ZW5ndGggPSBub2RlLmNoaWxkTm9kZXMubGVuZ3RoOwoKCWZvciAoZWxlbWVudCA9
+IG5vZGUuY2hpbGROb2Rlc1swXTsgaSA8IGxlbmd0aDsgZWxlbWVudCA9IG5vZGUu
+Y2hpbGROb2Rlc1srK2ldKQoJewoJCWlmICghZWxlbWVudCB8fCBlbGVtZW50Lm5v
+ZGVUeXBlICE9IDEpIGNvbnRpbnVlOwoKCQlpZiAoKCF0YWcgfHwgaXNfbm9kZV9u
+YW1lKGVsZW1lbnQsIHRhZykpICYmICghdHlwZSB8fCBlbGVtZW50LnR5cGUgPT0g
+dHlwZSkgJiYgKCFjbGFzc19uYW1lIHx8IGlzX2luX2FycmF5KGNsYXNzX25hbWUs
+IChlbGVtZW50LmNsYXNzTmFtZSB8fCBlbGVtZW50KS50b1N0cmluZygpLnNwbGl0
+KC9ccysvKSkgPiAtMSkpCgkJewoJCQlyZXR1cm4gZWxlbWVudDsKCQl9CgoJCWlm
+IChlbGVtZW50LmNoaWxkTm9kZXMubGVuZ3RoKQoJCQlyZXN1bHQgPSBmaW5kX2lu
+X3RyZWUoZWxlbWVudCwgdGFnLCB0eXBlLCBjbGFzc19uYW1lKTsKCgkJaWYgKHJl
+c3VsdCkgcmV0dXJuIHJlc3VsdDsKCX0KfQoKdmFyIGluX2F1dG9jb21wbGV0ZSA9
+IGZhbHNlOwp2YXIgbGFzdF9rZXlfZW50ZXJlZCA9ICcnOwoKLyoqCiogQ2hlY2sg
+ZXZlbnQga2V5CiovCmZ1bmN0aW9uIHBocGJiX2NoZWNrX2tleShldmVudCkKewoJ
+Ly8gS2V5Y29kZSBpcyBhcnJheSBkb3duIG9yIHVwPwoJaWYgKGV2ZW50LmtleUNv
+ZGUgJiYgKGV2ZW50LmtleUNvZGUgPT0gNDAgfHwgZXZlbnQua2V5Q29kZSA9PSAz
+OCkpCgkJaW5fYXV0b2NvbXBsZXRlID0gdHJ1ZTsKCgkvLyBNYWtlIHN1cmUgd2Ug
+YXJlIG5vdCB3aXRoaW4gYW4gImF1dG9jb21wbGV0aW9uIiBmaWVsZAoJaWYgKGlu
+X2F1dG9jb21wbGV0ZSkKCXsKCQkvLyBJZiByZXR1cm4gcHJlc3NlZCBhbmQga2V5
+IGNoYW5nZWQgd2UgcmVzZXQgdGhlIGF1dG9jb21wbGV0aW9uCgkJaWYgKCFsYXN0
+X2tleV9lbnRlcmVkIHx8IGxhc3Rfa2V5X2VudGVyZWQgPT0gZXZlbnQud2hpY2gp
+CgkJewoJCQlpbl9hdXRvY29tcGxldGlvbiA9IGZhbHNlOwoJCQlyZXR1cm4gdHJ1
+ZTsKCQl9Cgl9CgoJLy8gS2V5Y29kZSBpcyBub3QgcmV0dXJuLCB0aGVuIHJldHVy
+bi4gOykKCWlmIChldmVudC53aGljaCAhPSAxMykKCXsKCQlsYXN0X2tleV9lbnRl
+cmVkID0gZXZlbnQud2hpY2g7CgkJcmV0dXJuIHRydWU7Cgl9CgoJcmV0dXJuIGZh
+bHNlOwp9CgovKioKKiBVc3VhbGx5IHVzZWQgZm9yIG9ua2V5cHJlc3MgZXZlbnQs
+IHRvIHN1Ym1pdCBhIGZvcm0gb24gZW50ZXIKKi8KZnVuY3Rpb24gc3VibWl0X2Rl
+ZmF1bHRfYnV0dG9uKGV2ZW50LCBzZWxlY3RvciwgY2xhc3NfbmFtZSkKewoJLy8g
+QWRkIHdoaWNoIGZvciBrZXkgZXZlbnRzCglpZiAoIWV2ZW50LndoaWNoICYmICgo
+ZXZlbnQuY2hhckNvZGUgfHwgZXZlbnQuY2hhckNvZGUgPT09IDApID8gZXZlbnQu
+Y2hhckNvZGUgOiBldmVudC5rZXlDb2RlKSkKCQlldmVudC53aGljaCA9IGV2ZW50
+LmNoYXJDb2RlIHx8IGV2ZW50LmtleUNvZGU7CgoJaWYgKHBocGJiX2NoZWNrX2tl
+eShldmVudCkpCgkJcmV0dXJuIHRydWU7CgoJdmFyIGN1cnJlbnQgPSBzZWxlY3Rv
+clsncGFyZW50Tm9kZSddOwoKCS8vIFNlYXJjaCBwYXJlbnQgZm9ybSBlbGVtZW50
+Cgl3aGlsZSAoY3VycmVudCAmJiAoIWN1cnJlbnQubm9kZU5hbWUgfHwgY3VycmVu
+dC5ub2RlVHlwZSAhPSAxIHx8ICFpc19ub2RlX25hbWUoY3VycmVudCwgJ2Zvcm0n
+KSkgJiYgY3VycmVudCAhPSBkb2N1bWVudCkKCQljdXJyZW50ID0gY3VycmVudFsn
+cGFyZW50Tm9kZSddOwoKCS8vIEZpbmQgdGhlIGlucHV0IHN1Ym1pdCBidXR0b24g
+d2l0aCB0aGUgY2xhc3MgbmFtZQoJLy9jdXJyZW50ID0gZmluZF9pbl90cmVlKGN1
+cnJlbnQsICdpbnB1dCcsICdzdWJtaXQnLCBjbGFzc19uYW1lKTsKCXZhciBpbnB1
+dF90YWdzID0gY3VycmVudC5nZXRFbGVtZW50c0J5VGFnTmFtZSgnaW5wdXQnKTsK
+CWN1cnJlbnQgPSBmYWxzZTsKCglmb3IgKHZhciBpID0gMCwgZWxlbWVudCA9IGlu
+cHV0X3RhZ3NbMF07IGkgPCBpbnB1dF90YWdzLmxlbmd0aDsgZWxlbWVudCA9IGlu
+cHV0X3RhZ3NbKytpXSkKCXsKCQlpZiAoZWxlbWVudC50eXBlID09ICdzdWJtaXQn
+ICYmIGlzX2luX2FycmF5KGNsYXNzX25hbWUsIChlbGVtZW50LmNsYXNzTmFtZSB8
+fCBlbGVtZW50KS50b1N0cmluZygpLnNwbGl0KC9ccysvKSkgPiAtMSkKCQkJY3Vy
+cmVudCA9IGVsZW1lbnQ7Cgl9CgoJaWYgKCFjdXJyZW50KQoJCXJldHVybiB0cnVl
+OwoKCS8vIFN1Ym1pdCBmb3JtCgljdXJyZW50LmZvY3VzKCk7CgljdXJyZW50LmNs
+aWNrKCk7CglyZXR1cm4gZmFsc2U7Cn0KCi8qKgoqIEFwcGx5IG9ua2V5cHJlc3Mg
+ZXZlbnQgZm9yIGZvcmNpbmcgZGVmYXVsdCBzdWJtaXQgYnV0dG9uIG9uIEVOVEVS
+IGtleSBwcmVzcwoqIFRoZSBqUXVlcnkgc25pcHBldCB1c2VkIGlzIGJhc2VkIG9u
+IGh0dHA6Ly9ncmVhdHdlYmd1eS5jb20vcHJvZ3JhbW1pbmcvZG9tL2RlZmF1bHQt
+aHRtbC1idXR0b24tc3VibWl0LW9uLWVudGVyLXdpdGgtanF1ZXJ5LwoqIFRoZSBu
+b24talF1ZXJ5IGNvZGUgaXMgYSBtaW1pY2sgb2YgdGhlIGpRdWVyeSBjb2RlIDsp
+CiovCmZ1bmN0aW9uIGFwcGx5X29ua2V5cHJlc3NfZXZlbnQoKQp7CgkvLyBqUXVl
+cnkgY29kZSBpbiBjYXNlIGpRdWVyeSBpcyB1c2VkCglpZiAoanF1ZXJ5X3ByZXNl
+bnQpCgl7CgkJalF1ZXJ5KCdmb3JtIGlucHV0W3R5cGU9dGV4dF0sIGZvcm0gaW5w
+dXRbdHlwZT1wYXNzd29yZF0nKS5saXZlKCdrZXlwcmVzcycsIGZ1bmN0aW9uIChl
+KQoJCXsKCQkJdmFyIGRlZmF1bHRfYnV0dG9uID0galF1ZXJ5KHRoaXMpLnBhcmVu
+dHMoJ2Zvcm0nKS5maW5kKCdpbnB1dFt0eXBlPXN1Ym1pdF0uZGVmYXVsdC1zdWJt
+aXQtYWN0aW9uJyk7CgkJCQoJCQlpZiAoIWRlZmF1bHRfYnV0dG9uIHx8IGRlZmF1
+bHRfYnV0dG9uLmxlbmd0aCA8PSAwKQoJCQkJcmV0dXJuIHRydWU7CgoJCQlpZiAo
+cGhwYmJfY2hlY2tfa2V5KGUpKQoJCQkJcmV0dXJuIHRydWU7CgoJCQlpZiAoKGUu
+d2hpY2ggJiYgZS53aGljaCA9PSAxMykgfHwgKGUua2V5Q29kZSAmJiBlLmtleUNv
+ZGUgPT0gMTMpKQoJCQl7CgkJCQlkZWZhdWx0X2J1dHRvbi5jbGljaygpOwoJCQkJ
+cmV0dXJuIGZhbHNlOwoJCQl9CgoJCQlyZXR1cm4gdHJ1ZTsKCQl9KTsKCQoJCXJl
+dHVybjsKCX0KCgl2YXIgaW5wdXRfdGFncyA9IGRvY3VtZW50LmdldEVsZW1lbnRz
+QnlUYWdOYW1lKCdpbnB1dCcpOwoKCWZvciAodmFyIGkgPSAwLCBlbGVtZW50ID0g
+aW5wdXRfdGFnc1swXTsgaSA8IGlucHV0X3RhZ3MubGVuZ3RoIDsgZWxlbWVudCA9
+IGlucHV0X3RhZ3NbKytpXSkKCXsKCQlpZiAoZWxlbWVudC50eXBlID09ICd0ZXh0
+JyB8fCBlbGVtZW50LnR5cGUgPT0gJ3Bhc3N3b3JkJykKCQl7CgkJCS8vIG9ua2V5
+ZG93biBpcyBwb3NzaWJsZSB0b28KCQkJZWxlbWVudC5vbmtleXByZXNzID0gZnVu
+Y3Rpb24gKGV2dCkgeyBzdWJtaXRfZGVmYXVsdF9idXR0b24oKGV2dCB8fCB3aW5k
+b3cuZXZlbnQpLCB0aGlzLCAnZGVmYXVsdC1zdWJtaXQtYWN0aW9uJyk7IH07CgkJ
+fQoJfQp9CgovKioKKiBEZXRlY3QgSlF1ZXJ5IGV4aXN0YW5jZS4gV2UgY3VycmVu
+dGx5IGRvIG5vdCBkZWxpdmVyIGl0LCBidXQgc29tZSBzdHlsZXMgZG8sIHNvIHdo
+eSBub3QgYmVuZWZpdCBmcm9tIGl0LiA7KQoqLwp2YXIganF1ZXJ5X3ByZXNlbnQg
+PSB0eXBlb2YgalF1ZXJ5ID09ICdmdW5jdGlvbic7Cg==
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=print.css
+Content-Type: text/css; name=print.css
+Content-Location: http://ompf2.com/styles/prosilver/theme/print.css
+Content-Transfer-Encoding: 8bit
+
+/* Print Style Sheet
+---------------------------------------- */
+
+
+/* Lots still TODO here! */
+
+/* General markup styles */
+* {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	font: 11pt Verdana, Arial, Helvetica, sans-serif;
+	color:#000000;
+}
+
+a:link		{ color: #000000; text-decoration: none; }
+a:visited	{ color: #000000; text-decoration: none; }
+a:active	{ color: #000000; text-decoration: none; }
+
+img, .noprint, #sub-header, #sub-footer, .navbar, .box1, .divider, .signature { display: none; }
+/* Display smilies (Bug #47265) */
+.content img {
+	display: inline;
+}
+
+/* Container for the main body */
+#wrap {
+	margin: 0 2em;
+}
+
+p { font-size: 85%; }
+.copyright { font-size: 75%; }
+.page-number { float:right; width: auto; text-align: right; font-size: 75%; }
+
+h1, h2, h3, h1 a, h2 a, h3 a {
+	font-family: "Trebuchet MS",georgia,Verdana,Sans-serif;
+	color: #000000;
+	background: none;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+h1 { font-size: 20pt; }
+h2 { font-size: 16pt; margin-top: 1em; }
+h3 { font-size: 14pt; margin-top: 1em; }
+
+.content {
+	font-size: 11pt;
+	line-height: 14pt;
+	margin-bottom: 1em;
+	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	overflow: hidden;
+}
+
+/* CSS2 Print tip from: http://www.alistapart.com/articles/goingtoprint/ */
+.postbody a:link, .postbody a:visited, .postbody a:hover, .postbody a:active {
+	text-decoration: underline;
+	padding: 0.1em 0.2em;
+	margin: -0.1em -0.2em;
+	color: #666;
+	background: none;
+	font-size: 100%;
+}
+
+html>body .postbody a:link:after, html>body .postbody a:visited:after {
+	content: " (" attr(href) ") ";
+	font-size: 90%;
+	text-decoration: none;
+}
+
+hr {
+	height: 1px;
+	background-color: #999999;
+	border-width: 0;
+}
+
+.author {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 75%;
+	margin-bottom: 0.6em;
+}
+
+.date {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	float: right;
+	position: relative;
+	text-align: right;
+	font-size: 75%;
+}
+
+/* Dont want to print url for names or titles in content area */
+.postbody .author a:link, .postbody .author a:visited, 
+html>body .postbody .author a:link:after, 
+html>body .postbody .author a:visited:after,
+.postquote .quote-by a:link, .postquote .quote-by a:visited, 
+html>body .postquote .quote-by a:link:after, 
+html>body .postquote .quote-by a:visited:after,
+html>body .postbody h1 a:link:after, html>body .postbody h2 a:link:after {
+	text-decoration: none;
+	content: "";
+}
+
+/* Poster profile */
+.postprofile { display: none; }
+.grip-show { display:none; }
+
+/* Quote */
+.postquote, blockquote {
+	font-size: 85%;
+	margin: 1em 18% 1em 4%;
+	padding: 0.5em;
+	position: relative;
+	line-height: 1.5em;
+	border: 1px #999999 solid;
+}
+
+.postquote img { display: none; }
+.postquote span { display: block; }
+.postquote span .postquote { font-size: 100%; }
+.quote-by, blockquote cite { 
+	color: black;
+	display : block;
+	font-weight: bold;
+}
+
+/* List */
+ol, ul {
+	margin-left: 15pt
+}
+
+/* Misc page elements */
+div.spacer { clear: both; }
+
+/* Accessibility tweaks: Mozilla.org */
+.skip_link { display: none; }
+
+dl.codebox dt { display: none; }
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/bg_header.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhBQBcAOYAAAJ8uQJ7uAWCwQ2X3AeIyAiLzAmNzg6Y3QSBvwaEwwWEwhGf
+5gyV2QJ7tw2W2gaGxQJ6tgB2sRCe5RCd4wyU2AuR0wqQ0wqQ0gF6tgSAvQN/vA+a
+4AmLzAuS1QF4sweGxhKj6wWBwBGi6Q6Z3wWCwAeIyQJ8uAmNzxCf5g6Z3gqO0A2X
+2wJ6tw6a3xCf5QyU1wWDwgR/vQiJygiKywyT1wiJyWrO/xGh6QeHxwqP0QmO0A2V
+2guR1AmMzQaFxQaFxAF3sxCe5A2Y3BCd5ASAvguT1gN9uhGg5wF5tQ+c4gF4tA+b
+4QN+uxGh6AB3shKi6gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAFAFwAAAf/gDaCghGFhU6IiYqLQI2N
+HpCQSpOUlUiXmJkYm5sQnp4soaENpKQBp6cmqqoAra1GsLGyTLS1thq4uDG7uxm+
+vkTBwQjExCHHxyTKygLNzTDQ0ArT0wnW1j/Z2T7c3A/f3x/i4jjl5QTo6CXr6zXu
+7jLx8TP09AX39xz6+j39/QYAAZ4YOFCHQYMqEibMwZDhhYcPLUiUWKFiRR4YMXbY
+uLGIR480QoZ8QZIkhZMnGahUuaNlSwcwYa6YOXOATZtCcuY8wJNnip8/RwgV2qJo
+0Q1IkS5ZyrRpkqdQo06YOnWIVatBsmaVwJWri69fUYgVu6Bs2SNo06ptwrat2xtw
+D+GKmDv3id27ePOC2Ls3EAA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/png
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/corners_left.png
+Content-Transfer-Encoding: Base64
+
+iVBORw0KGgoAAAANSUhEUgAAAAYAAAAMCAYAAABBV8wuAAAABGdBTUEAANbY1E9Y
+MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABVSURBVHja
+YviPAD+BeDIQ2wMxGwNU8AkQGwAxAwwzQFXqIgvCJCajC8IkbLBJMIItYmD4xYAG
+mBhwAJCEMS6JcKxa8DkX5kFdbBKwIJkADRIGgAADAGtyotIvyqGpAAAAAElFTkSu
+QmCC
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/png
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/corners_right.png
+Content-Transfer-Encoding: Base64
+
+iVBORw0KGgoAAAANSUhEUgAAAAYAAAAMCAYAAABBV8wuAAAABGdBTUEAANbY1E9Y
+MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABbSURBVHja
+Yvr//z8bENsD8WQg/vkfChjQsAEQPwFJMDGgggtA7AnEv9AlQOAyEM/CJgECK3FJ
+nMIlwYZLQheXRDg2CV0gzmTCIrgd2Q4bIJ4AxGeAWBokABBgAE4XMoXm9S+UAAAA
+AElFTkSuQmCC
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/imageset/icon_back_top.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhCwALAMQWAK+3u8bO0q21usLIy/P09brBxczR1K+3vLG5vvn5+sbMz8XN
+0sXM0bC4vebt8dvj5+Xs8KuzuN3g4qy0uf///6mxtu71+QAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAACH5BAEAABYALAAAAAALAAsAAAVJoGU5C1IhjCNaz1S97/SM
+AqzAghPAAzXAgcYrQqAQIq8GsmKgOA1DISDhpCQAlcaiUpB4vYXKAuKCwSYQVvk8
+E0EYh8qBkbaEAAA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/arrow_left.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhBAAGAIABADMzMwAAACH+OjxDT1BZPkNvcHlyaWdodCAyMDA0IFRoZSBw
+aHBCQiBHcm91cCwgQWxsIFJpZ2h0cyBSZXNlcnZlZC4AIfkEAQAAAQAsAAAAAAQA
+BgAAAghMAIaoaedQAQA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/arrow_right.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhBAAGAIABADMzMwAAACH+OjxDT1BZPkNvcHlyaWdodCAyMDA0IFRoZSBw
+aHBCQiBHcm91cCwgQWxsIFJpZ2h0cyBSZXNlcnZlZC4AIfkEAQAAAQAsAAAAAAQA
+BgAAAggEEoaoaedQAQA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/quote.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhDwAMALMPAHBwbj8/P62sqaGgnYiIht7d2FhXVnx8ektLS8XFwWRkYrm4
+tdLRzJWUkTMzM+rp5CH5BAEAAA8ALAAAAAAPAAwAAARG8MlJK12GUaYSFY6jTEng
+IIWUhIj2MGawTEjoPko4SwNLhg4KACiQNICNSQ6oOQAdu2Vo8CA8k48jcAZCToYO
+wkQLsJgpEQA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/imageset/en/button_topic_reply.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhYAAyAOYAAO/c4O7b3/bj5/vx8+zi5MpfeM5jfNaImt+vut2tuOOzvuGx
+vOfAyeW+x/LU2+/m6O3k5rwqTcA3WL83WMA4WMA4WcNEY8VGZcRFZMNFY8ZRbcdS
+bshTb8lVcctges1rg9Buhs5thM9uhdJxiNJ6j9d/lNSGmdaIm9WHmteJnNuNoNmV
+ptiUpNeTo9qWp+CcrNugrt+ksuSquN6tuem4xOK7xe3G0OXIz+vO1erN1OnM0+jL
+0u3Z3urW2+fU2fPp7PLo6/Hn6gBqxgBLjej0+wqO0BCR0R6X1CGZ1CSa1XnB5X3D
+5oDF54nI6IzK6Y/L6ZHM6t3v+OXz+uv2++Ly+fn5+Pj49/f39szJxczIxMfDv+bk
+4uXj4eTi4OLg3uHf3eDe3M3JxsjEwfr5+fj39/////7+/v39/fz8/Pv7+/r6+vn5
++fj4+Pf39/b29vX19fT09PPz8/Ly8vHx8fDw8O/v7+7u7u3t7ezs7Ovr6+rq6unp
+6ejo6I+Pj2RkZP///yH5BAEAAH8ALAAAAABgADIAAAf/gH9VXmFahoeIiYqLjI2O
+j5COYV5Vf1ZiXVVlm5ydnp+goaKjpKWjVV1iVl9cZWdosLGys7S1tre4ubq4Z2Vc
+X1lqr7vExcbHxGdqWVplac/Q0dLT1NXW19jZ2mllhmVq4OHi4+Tl5ufo6errat3N
+a/Dx8vP09fb3+Pn6+2vuZWwAAwocSLCgwYMIEypcyMZfm4cQI0iMQCEGRAUcJIIA
+8PAHCIkccDCYOJFCG5IRQp5EmWLlRBA/VkLMqOChgggYYj5co2bNzp4QH/pzQ7Ro
+hBQ5cpCIEMBNjKM5GHigAMQNBw4MGIigmjRFhKRNJaZIISKCBzdix6ZQgPYo2Qgi
+/9oWvYmBKM2ibNb4WeMm7142Rd34e0O4cAQXhINEiKE4ReE3GES8OZyYgg7CLiI8
+lmhYM+fHkzUT5kAh9OOyLjJzeMzGjx82bVr76cPmsT84uHMfxq04xoIIPHLDOSEB
+jgcJJxYEz51ZuETcDSJsgPNcOPUIuTcUr45bRwQJGSLoEN6atmzaboT7i8O+fYQD
+O3Ys5bEiQnv29eM8ICFB4oYd+NnnHkkZPBAHSgJKdMABIUQQwoECtneARCTcF0cb
+s2GY4RsW+jPHhyCiBMMcCETQA4hzoCABBDV8CAECGWTwIQsRoCgRAggsxcIcEqHg
+IwofohQCBDzWiGIPEp2Iov8bs/UxW3oofugPHVRWGQELVVIJQQQmZGnBBzWYWCWN
+VJJpZQRWWkCHRFlSyWabb2YZZ5VvNNnHY3Fk6U8dfPYZQQt99gkDlzfUUMAEBNRh
+gQYz3ACDBQXw2UIEgUrkpwV1SGTCpibMkCmlgX7KqQk+fBpqHXDY6aRrcATqjx2w
+xhoBDLHWmoAGEn3gA6w+fCDRBCQQAOugtUoUqwUW2IGgCcpGUCusCCbQ7LN2xKFq
+H33EMUet/tzh7bfghivuuOSWa+656M5hIXtzhOsPHvDGK++89NZr77345qvvvnj4
+k8e/AAcs8MAEF2zwwQgnrHAe/ujh8MMQRyzxxBRXbPH/xRhnrEc3wdyxx8cghyzy
+yCSXbPLJKKec8h3LsFKGxyrHLPPMNK/syxeXbDGGKTz37PPPpoyxhRhk/HEFGFhE
+ovTSTDcdCRZgXPHHH1IwkUQRWGet9dZcd+3112CHLTbYSTAhxR9UGNGEFEC37fbb
+o0jRhBFULOHEyzXnrffeJ99RhhNLHDEFHnwUbvjhiCeu+OKMN+7444/jMcURRZSh
+B9+YZ773xlhbrvHnoIcu+sVldL7w6ainrnrCpVc+bxudmOFGvHFwU8Yac8A7Rz/O
+XPiJGbB3kobvngjVCe7Bt4FH7WUojwfsaLzBL7ytvwxuGSRVIAMbd7BBQwcSjSBA
+/3oDjCBRBw7YgGAF2JOEfvskqQB/+AO0/3Ia4NPwBhw0RHDBAHbwVkO4171/uKtz
+z8KeChzggBJEQABskEEEFmgDA1RgAGjoQAdsYIMRXJCBKogAAwXQPhWowHwGKKEJ
+VUADFZpvBPazwxv6d4FX5M8NsGrIEMpgBx3+g1udCxX2XuAGOQwgAjI4ogrYIAc4
+nOECMIzAC9gAhwFUwAFycMMLIlAGOczBfg2RCBgBAgcwZpB9YuSTGsz3gi12AA19
+KsMQdqjDIQihDK7qXJuG2IY4HFEG/ROAHKjEBhVUwAwWZKEAzMAGOrRhi2Wgkv3K
+oL4OTHIT/RAjG85oPyrBwf8BEajABUTohirJ8Y5ytOPt9NS5KCmQgQ4UACRBxAZI
+DqAEFTifA2Izyy+i5H/zE6MLIxBFLoJoDSGMQAlwB6JTpvKOzGxm5zqEEhmoIZAc
+igMyL2gDNZhhADS4QA3XAEn2tI8GNHDgC1RownagZAT1E2N73iAAiQggm+a0oxBU
+qYZ1Vc86Q+SEGt6gRDX0xQxQVB8E3UBOLja0DLgBI/YuYL9whJGLm0gD7MQYjjfY
+D6D6ROUm1KCezoFmiAMtTBokSEELDgChHaCBA2RwAQOgQQ2QJIz9POo/drJwp4Xx
+KQnFeNKQ7nOOZbBN5wIjGCQaNDBp+F74BJAGNQjAfKG0LMEAeCLBMhDFfm5AKEUR
+JD8xBiaYEWihWc9qVCHcMQ1n7VxQ2oCGMqBhrg8RxibQ4JM2rKGuZTADXx9S17vS
+da9tSIMZBPsJWCAWIoDthGPtOtfISnau1WOIZjfL2c4qpHr8CK1oR0tafVSPHahN
+rWpXq47SCQ4N24itbGdL22ugYXJ2cwUydsvb3vKiDE9QQtqgQAS4Gfe4bSMCFIwQ
+hT9EQQlIGJt0p0vd6o4NCUpobiAAADs=
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/icon_print.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhFwASANUwAGSexPHx8aSkpPz8/K6urvv7++vr6+bm5m2jx8nJyZ/C2sfH
+x9jY2Pr6+urq6t/f3/Pz89zc3Ap6vnWpype91+/v736uzunp6e7u7uzs7Ojo6PT0
+9N7e3pycnMLCwqioqNvb2+Tk5P///7CwsNra2t3d3fDw8LHN4ZOTk/39/XFxcdbW
+1sLX6KjH3u3t7f7+/src6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAACH5BAEAADAALAAAAAAXABIAAAbFQJhwSCwajzDWa8lcplhI
+4uklaqZSr1N02HJeUwNsa5t0JcCDdKGQcEGRLDNhsC407oT2u8haeVQogIKBgSMr
+e0MnLhsQEAEmFRgVLi4ZBgYuWkUtLg8PHCURESAkDKYSEi5jm5QuBg6vFxoHtAch
+qkYtKx+Eg4MdK6tSEy4EKivIySsqAi4TmkQsCgjFLgsC1wvVCAqIQ9LUKQHj4yku
+3N7RFC8pAivuAlgU6ZtN9sJRJxYA/P0AFtCisDjRoqDBFifSBQEAOw==
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/icon_fontsize.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhHQAkANU/ANHi7oWy0MDW55/C2nWpyrHN4bnS5Mfa6snb6sXZ6e3z+I64
+1MPY6LjR5H2tzcjb6rvT5abG3cjd6o6404ay0ff6/H6uzvH2+qnI3t7q87XP4+Ls
+9L3U5mSexLbQ46DC24q10s7g7aHE3Njm8K3L37fR5Je91+jw9svd65G61b7U5tvp
+8cHX6Ozz98ve7LLN4sve63epy9zo8avJ37XQ4q/M4cbb6u/1+fD2+b7W5rrS5Zq/
+2b/W58LX6P///8rc6yH5BAEAAD8ALAAAAAAdACQAAAb/wJ9wSCwaj8ikcslsOp/I
+RMZ3YRh7vt5Td1n5WAgi1pdtHmy+iWKkFY475LZSIFM4JJWSm0ygEOJYcoFCBhUw
+JjQ+KAc/BT4EAwYDfwWOZWMFPwkhPiUYIj4bKo0LA1o9AwuVFmQGZBaZECdktD48
+CD0Ggrqof3ymCDk+JDEBDhM+AHJHvY+mPz0APiIfGBEgLTgNS6gUzz8cNwo7Wg8z
+Ej4ujEq5bQgeCyA1D4QpARFWUD0aGvmaDS8grINCsKDBgwgTKiw4aOGYMk2kUPEH
+jQwciEu4eAGz55GfOEvOpFnTxhEkSZSW0LGDRw+pZ6hULSl0KNEiaLqGtFOyqdOn
+TFCjkjSsqEVWLTK3klg6RaZAsGHFjiVbVqQAKx+ufMCKNq3atWzbkDT7JSDcuHLn
+0g28MslZj3fx5tW7R5Gttzb7+g1JAFAgt5wJgwAAOw==
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/icon_home.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhDQAMANUgAPLy8vz8/PDw8Pb29vX19ezs7Pj4+Ojo6O3t7ff39/n5+d7e
+3vPz8+Hh4dTU1Orq6vHx8e/v7/r6+t3d3fT09OXl5fv7+9zc3OTk5O7u7uPj4+np
+6efn51WkzgN9uv///8rc6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAACH5BAEAACAALAAAAAANAAwAAAZPQJBQ2PF0hkii52NMKj/Q
+JrIIPUSPz0/EUbiCqB/AYnIRXJefAaeC0TQAZ48BUXhsDgSPdMkAQAQZTEhLBgkD
+BBSCQ0sBARYSCopKepRSQQA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/icon_faq.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhEAAOAMQfAJK2ztTi7DZ4nIyyx+Ps84SsxrzR42CUtW6duafD2iVslPH2
++ESBo0+IqrfP3FqQsFKKqouu06nF1XCdwLTN3y5ymHekv5m60Z2+01GGva/J3TRy
+shhjjSZorP///8rc6yH5BAEAAB8ALAAAAAAQAA4AAAV84CeKwNQ8UzKun1UdgyMN
+DDOwB0R4fG8IiBHi0Et0OpmAZyG4iBQLHqET8WyIHkfjg4H0dh4KtcfhenvhMflD
+EaA9gQuaUBEd5G/0wSLSKBw9Ex1RHhcHKxcNCIA8AVESDywfBQ0clgIDSwgFkisG
+ChJwAhSdIwkPCgKcIQA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/icon_register.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhEAAOAMQeAKq0vbTCzZq52ImNkDJrprrI1MXV43GSs5San7/P3KSuto+T
+l1Nykd3d3YSGiIKCgm95hJycnKWlpTttoOHh4YqKioWr0nWGmH6AgeLi4nys3C58
+znl5efv7+8rc6wAAACH5BAEAAB4ALAAAAAAQAA4AAAVkoCeOZGmWyQCcZYANBjsW
+HDRtm8AWD0d1wM3JUOFcNMiO0ITgRBrAoCjAGXgAHI7kgNQoRYssAMNhZDLRrydB
+zjoImYMlufQoshwAPK32GLIYHntpdR4IGAEeAjiMOSQBBTIiIQA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/icon_logout.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhEAAOAMQfAMjb6htljo+0zGOWs4Wtx42zyzB0mWiZtx1nkJi5zF2SsaSk
+pESBpKXC04euyNPh6cbY48bZ6XKguW2dupK2yTh4nZG2zYOsxZC0yHShu32nwoWF
+hdzb1oWr0v///8rc6yH5BAEAAB8ALAAAAAAQAA4AAAVY4CeOZGkCXLdwJukE6cYx
+RUtUXsx5Rk1GiIfH09kMIQEA6ZIZEo3DgYCkaDiLzsSBah1ih1oSQXJdOKW/oNP5
+SJY0FaETYiC0XgMKZkBriQACExMWfoUlIQA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/icon_blog.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhDQAOAOYAAAAAAP///5OSk+nn7erq7/Pz9vDw8/z8/vHx8+3t7/T09e/v
+8KGip6itwaOqw6itv5egu62zxc7U5ejp7JmmxdfZ3qmxwqSuw6y1x7W3u77AxOPl
+6fLz9fDx8+rr7efo6p2tyaCswqmzxqi0x7O/0rG8zuvu85qpvrzG0tLf7by/wvL0
+9ujq7Pb3+PX29/T19vP09fHy8+nq6+bn6LjDzN/l6bu+wOHo7AN9ulWkzpDC3O3v
+8Ofq6/j5+fLz8+/w8Orr693e3piZmfb39vb29Pn49Pb18/r38z05OXBtbfbz8/Pz
+8/Dw8MbGxqGhof///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAACH5BAEAAE8ALAAAAAANAA4AAAeUgE81KoM3NoUqT085OTiN
+j46OSDhAOTqWmJdIkwo+Cx1MP6IJQkhPOEsePCwTHxsTQZOnMSUhJxgjFyhOsjgw
+RkpFR0pEQ0hNOKcdJBYiFzQSmyvJODEGTEQ+BwxIGSbUCCAQDRQpSEkeLtQtBRwE
+FQIzMjIF1DsODxEaQQMf6dQJlghUQFDBix7JGuFYyJBhjieBAAA7
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/imageset/icon_contact_www.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhFAAoAMQAADdPkhQpVUFfmy9GblFyq6a20LnD1NLV2l5/sIScvm6HqniT
+tkxccZCoyYSOnN/r+36n2Vdsh2d8l4u47K3Q9J+jp8HCwM3Nyebm49vb2NXU0Lu6
+tuLh3s/Pz7a2tv///yH5BAEAAB8ALAAAAAAUACgAAAX/4NeNZGmSYsZh2NqybpyN
+3FofBrVIVFKoNlqNU6A8jo9BYLCwDIWcHDK5VCo8NeGhYTxQFBHJYOyQaDgjVSHR
+eBAkEoViKUlIHLNOJtNIKBIUEhERAgxhcAxoegYNCIIRChQ6AgMRhgx5GQYJCQsK
+CICSDQqCDAwaIxoWDX2eCQYFDbGlmKkdnZ1yCROsYKanqRoOC8SeCn2+pmbBFnBy
+cGWWvxcaF8HRgrS/FdQl1A6W0r8M3NUj1hfpGxK/AwwSFunW5/LyGxX48fXz+/39
+IyJOoENn4sMHDwgTKlyY8OBCCxr2SOxggeEGDxs2pGsAgYAACKA6XLh4EeMGCx04
+y0qaMCGASwIFRpbMmJLLSiUuAxBo0KFkvA4KIFCAMIESgJwEEBy4gNBChgQIEBQF
+AECAAJcAoio40DTDAgJgIQigqmSAVQQCOCDUYECB1TECJnQcA2AAVQxr24L1iAAC
+UbRW6+L1wPYTWAEEIBRbYHXs4DNR9wpAsIAyAap312Iw7PEsgsuYFaj1oKID2sNJ
+QWPGkAHhHgwJOjfGXLUAa9cqYAemXZt1ayxDMBxAW9eu6BY1EA5x0aKAcxbIk3u4
+AL269epMHTLc3jAEADs=
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/bg_button.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhBAAYAMQAANfX1+Lj49TV1O3u7eXl5Ovs7Ofo6Obn5uHg4e7u7uTk5dTU
+1efo5+jn6OHg4Ojo6OTk5Nzc3dfX1u7u7dXU1Nzc3ODg4Ozs7Obm5uPj49LS0t/f
+3+rq6tra2v///+/v7yH5BAAAAAAALAAAAAAEABgAAAUzoCd6WqktAkVJEgB0cFdV
+UbTdm2MhVpD9CgIEgikeHoyGgcPkFC7QwSQx+Viv2Kx2yw0BADs=
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline
+Content-Type: image/gif
+Content-Location: http://ompf2.com/styles/prosilver/theme/images/icon_textbox_search.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhEAAOANUxAPz8/JiYmK6uromJifHx8by8vJSUlOLe4bm5uePj49jY2PPz
+8/X19ZGRkff396ioqP39/c/Pz+vr67+/v4KCgtnZ2d7e3vn5+Xh4eI2Njerq6vj4
++JqampmZmczMzHp6euzs7LS0tOLi4qurq4+Pj7q6upubm+fn59XV1eXl5dbW1q2t
+raenp83Nzfr6+nd3d////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAACH5BAEAADEALAAAAAAQAA4AAAZswJhwSCwSXYjMi1QAGIWO
+xkMFQ7EMrmdoBCLAvg/Ek2IhOL6EysAIwaQWLphrIfo8By0J48LQeNZGBSYKCScJ
+ChwvTwAGHQURJQEvG4pGABMNLwYvKy8ulU9DLwIHn6FEo6UBp6ICoKwxq0JBADs=
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=style.css
+Content-Type: text/css; charset=UTF-8; name=style.css
+Content-Location: http://ompf2.com/style.php?id=1&lang=en&sid=7cd148ff9613fdaf95a9ffe03b6457d9
+Content-Transfer-Encoding: 8bit
+
+/*  phpBB3 Style Sheet
+    --------------------------------------------------------------
+	Style name:			prosilver (the default phpBB 3.0.x style)
+	Based on style:		
+	Original author:	Tom Beddard ( http://www.subblue.com/ )
+	Modified by:		phpBB Group ( http://www.phpbb.com/ )
+    --------------------------------------------------------------
+*/
+
+/* General Markup Styles
+---------------------------------------- */
+
+* {
+	/* Reset browsers default margin, padding and font sizes */
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 100%;
+	/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-IE browsers */
+	height: 101%;
+}
+
+body {
+	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	color: #828282;
+	background-color: #FFFFFF;
+	/*font-size: 62.5%;			 This sets the default font size to be equivalent to 10px */
+	font-size: 10px;
+	margin: 0;
+	padding: 12px 0;
+}
+
+h1 {
+	/* Forum name */
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	margin-right: 200px;
+	color: #FFFFFF;
+	margin-top: 15px;
+	font-weight: bold;
+	font-size: 2em;
+}
+
+h2 {
+	/* Forum header titles */
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	color: #3f3f3f;
+	font-size: 2em;
+	margin: 0.8em 0 0.2em 0;
+}
+
+h2.solo {
+	margin-bottom: 1em;
+}
+
+h3 {
+	/* Sub-headers (also used as post headers, but defined later) */
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	text-transform: uppercase;
+	border-bottom: 1px solid #CCCCCC;
+	margin-bottom: 3px;
+	padding-bottom: 2px;
+	font-size: 1.05em;
+	color: #989898;
+	margin-top: 20px;
+}
+
+h4 {
+	/* Forum and topic list titles */
+	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, Sans-serif;
+	font-size: 1.3em;
+}
+
+p {
+	line-height: 1.3em;
+	font-size: 1.1em;
+	margin-bottom: 1.5em;
+}
+
+img {
+	border-width: 0;
+}
+
+hr {
+	/* Also see tweaks.css */
+	border: 0 none #FFFFFF;
+	border-top: 1px solid #CCCCCC;
+	height: 1px;
+	margin: 5px 0;
+	display: block;
+	clear: both;
+}
+
+hr.dashed {
+	border-top: 1px dashed #CCCCCC;
+	margin: 10px 0;
+}
+
+hr.divider {
+	display: none;
+}
+
+p.right {
+	text-align: right;
+}
+
+/* Main blocks
+---------------------------------------- */
+#wrap {
+	padding: 0 20px;
+	min-width: 650px;
+}
+
+#simple-wrap {
+	padding: 6px 10px;
+}
+
+#page-body {
+	margin: 4px 0;
+	clear: both;
+}
+
+#page-footer {
+	clear: both;
+}
+
+#page-footer h3 {
+	margin-top: 20px;
+}
+
+#logo {
+	float: left;
+	width: auto;
+	padding: 10px 13px 0 10px;
+}
+
+a#logo:hover {
+	text-decoration: none;
+}
+
+/* Search box
+--------------------------------------------- */
+#search-box {
+	color: #FFFFFF;
+	position: relative;
+	margin-top: 30px;
+	margin-right: 5px;
+	display: block;
+	float: right;
+	text-align: right;
+	white-space: nowrap; /* For Opera */
+}
+
+#search-box #keywords {
+	width: 95px;
+	background-color: #FFF;
+}
+
+#search-box input {
+	border: 1px solid #b0b0b0;
+}
+
+/* .button1 style defined later, just a few tweaks for the search button version */
+#search-box input.button1 {
+	padding: 1px 5px;
+}
+
+#search-box li {
+	text-align: right;
+	margin-top: 4px;
+}
+
+#search-box img {
+	vertical-align: middle;
+	margin-right: 3px;
+}
+
+/* Site description and logo */
+#site-description {
+	float: left;
+	width: 70%;
+}
+
+#site-description h1 {
+	margin-right: 0;
+}
+
+/* Round cornered boxes and backgrounds
+---------------------------------------- */
+.headerbar {
+	background: #ebebeb none repeat-x 0 0;
+	color: #FFFFFF;
+	margin-bottom: 4px;
+	padding: 0 5px;
+}
+
+.navbar {
+	background-color: #ebebeb;
+	padding: 0 10px;
+}
+
+.forabg {
+	background: #b1b1b1 none repeat-x 0 0;
+	margin-bottom: 4px;
+	padding: 0 5px;
+	clear: both;
+}
+
+.forumbg {
+	background: #ebebeb none repeat-x 0 0;
+	margin-bottom: 4px;
+	padding: 0 5px;
+	clear: both;
+}
+
+.panel {
+	margin-bottom: 4px;
+	padding: 0 10px;
+	background-color: #f3f3f3;
+	color: #3f3f3f;
+}
+
+.post {
+	padding: 0 10px;
+	margin-bottom: 4px;
+	background-repeat: no-repeat;
+	background-position: 100% 0;
+}
+
+.post:target .content {
+	color: #000000;
+}
+
+.post:target h3 a {
+	color: #000000;
+}
+
+.bg1	{ background-color: #f7f7f7;}
+.bg2	{ background-color: #f2f2f2; }
+.bg3	{ background-color: #ebebeb; }
+
+.rowbg {
+	margin: 5px 5px 2px 5px;
+}
+
+.ucprowbg {
+	background-color: #e2e2e2;
+}
+
+.fieldsbg {
+	/*border: 1px #DBDEE2 solid;*/
+	background-color: #eaeaea;
+}
+
+span.corners-top, span.corners-bottom, span.corners-top span, span.corners-bottom span {
+	font-size: 1px;
+	line-height: 1px;
+	display: block;
+	height: 5px;
+	background-repeat: no-repeat;
+}
+
+span.corners-top {
+	background-image: none;
+	background-position: 0 0;
+	margin: 0 -5px;
+}
+
+span.corners-top span {
+	background-image: none;
+	background-position: 100% 0;
+}
+
+span.corners-bottom {
+	background-image: none;
+	background-position: 0 100%;
+	margin: 0 -5px;
+	clear: both;
+}
+
+span.corners-bottom span {
+	background-image: none;
+	background-position: 100% 100%;
+}
+
+.headbg span.corners-bottom {
+	margin-bottom: -1px;
+}
+
+.post span.corners-top, .post span.corners-bottom, .panel span.corners-top, .panel span.corners-bottom, .navbar span.corners-top, .navbar span.corners-bottom {
+	margin: 0 -10px;
+}
+
+.rules span.corners-top {
+	margin: 0 -10px 5px -10px;
+}
+
+.rules span.corners-bottom {
+	margin: 5px -10px 0 -10px;
+}
+
+/* Horizontal lists
+----------------------------------------*/
+ul.linklist {
+	display: block;
+	margin: 0;
+}
+
+ul.linklist li {
+	display: block;
+	list-style-type: none;
+	float: left;
+	width: auto;
+	margin-right: 5px;
+	font-size: 1.1em;
+	line-height: 2.2em;
+}
+
+ul.linklist li.rightside, p.rightside {
+	float: right;
+	margin-right: 0;
+	margin-left: 5px;
+	text-align: right;
+}
+
+ul.navlinks {
+	padding-bottom: 1px;
+	margin-bottom: 1px;
+	border-bottom: 1px solid #FFFFFF;
+	font-weight: bold;
+}
+
+ul.leftside {
+	float: left;
+	margin-left: 0;
+	margin-right: 5px;
+	text-align: left;
+}
+
+ul.rightside {
+	float: right;
+	margin-left: 5px;
+	margin-right: -5px;
+	text-align: right;
+}
+
+/* Table styles
+----------------------------------------*/
+table.table1 {
+	/* See tweaks.css */
+}
+
+#ucp-main table.table1 {
+	padding: 2px;
+}
+
+table.table1 thead th {
+	font-weight: normal;
+	text-transform: uppercase;
+	color: #FFFFFF;
+	line-height: 1.3em;
+	font-size: 1em;
+	padding: 0 0 4px 3px;
+}
+
+table.table1 thead th span {
+	padding-left: 7px;
+}
+
+table.table1 tbody tr {
+	border: 1px solid #cfcfcf;
+}
+
+table.table1 tbody tr:hover, table.table1 tbody tr.hover {
+	background-color: #f6f6f6;
+	color: #000;
+}
+
+table.table1 td {
+	color: #6a6a6a;
+	font-size: 1.1em;
+}
+
+table.table1 tbody td {
+	padding: 5px;
+	border-top: 1px solid #FAFAFA;
+}
+
+table.table1 tbody th {
+	padding: 5px;
+	border-bottom: 1px solid #000000;
+	text-align: left;
+	color: #333333;
+	background-color: #FFFFFF;
+}
+
+/* Specific column styles */
+table.table1 .name		{ text-align: left; }
+table.table1 .posts		{ text-align: center !important; width: 7%; }
+table.table1 .joined	{ text-align: left; width: 15%; }
+table.table1 .active	{ text-align: left; width: 15%; }
+table.table1 .mark		{ text-align: center; width: 7%; }
+table.table1 .info		{ text-align: left; width: 30%; }
+table.table1 .info div	{ width: 100%; white-space: normal; overflow: hidden; }
+table.table1 .autocol	{ line-height: 2em; white-space: nowrap; }
+table.table1 thead .autocol { padding-left: 1em; }
+
+table.table1 span.rank-img {
+	float: right;
+	width: auto;
+}
+
+table.info td {
+	padding: 3px;
+}
+
+table.info tbody th {
+	padding: 3px;
+	text-align: right;
+	vertical-align: top;
+	color: #000000;
+	font-weight: normal;
+}
+
+.forumbg table.table1 {
+	margin: 0;
+}
+
+.forumbg-table > .inner {
+	margin: 0 -1px;
+}
+
+.forumbg-table > .inner > span.corners-top {
+	margin: 0 -4px -1px -4px;
+}
+
+.forumbg-table > .inner > span.corners-bottom {
+	margin: -1px -4px 0 -4px;
+}
+
+/* Misc layout styles
+---------------------------------------- */
+/* column[1-2] styles are containers for two column layouts 
+   Also see tweaks.css */
+.column1 {
+	float: left;
+	clear: left;
+	width: 49%;
+}
+
+.column2 {
+	float: right;
+	clear: right;
+	width: 49%;
+}
+
+/* General classes for placing floating blocks */
+.left-box {
+	float: left;
+	width: auto;
+	text-align: left;
+}
+
+.right-box {
+	float: right;
+	width: auto;
+	text-align: right;
+}
+
+dl.details {
+	/*font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;*/
+	font-size: 1.1em;
+}
+
+dl.details dt {
+	float: left;
+	clear: left;
+	width: 30%;
+	text-align: right;
+	color: #000000;
+	display: block;
+}
+
+dl.details dd {
+	margin-left: 0;
+	padding-left: 5px;
+	margin-bottom: 5px;
+	color: #828282;
+	float: left;
+	width: 65%;
+}
+
+/* Pagination
+---------------------------------------- */
+.pagination {
+	height: 1%; /* IE tweak (holly hack) */
+	width: auto;
+	text-align: right;
+	margin-top: 5px;
+	float: right;
+}
+
+.pagination span.page-sep {
+	display: none;
+}
+
+li.pagination {
+	margin-top: 0;
+}
+
+.pagination strong, .pagination b {
+	font-weight: normal;
+}
+
+.pagination span strong {
+	padding: 0 2px;
+	margin: 0 2px;
+	font-weight: normal;
+	color: #FFFFFF;
+	background-color: #bfbfbf;
+	border: 1px solid #bfbfbf;
+	font-size: 0.9em;
+}
+
+.pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
+	font-weight: normal;
+	text-decoration: none;
+	color: #747474;
+	margin: 0 2px;
+	padding: 0 2px;
+	background-color: #eeeeee;
+	border: 1px solid #bababa;
+	font-size: 0.9em;
+	line-height: 1.5em;
+}
+
+.pagination span a:hover {
+	border-color: #d2d2d2;
+	background-color: #d2d2d2;
+	color: #FFF;
+	text-decoration: none;
+}
+
+.pagination img {
+	vertical-align: middle;
+}
+
+/* Pagination in viewforum for multipage topics */
+.row .pagination {
+	display: block;
+	float: right;
+	width: auto;
+	margin-top: 0;
+	padding: 1px 0 1px 15px;
+	font-size: 0.9em;
+	background: none 0 50% no-repeat;
+}
+
+.row .pagination span a, li.pagination span a {
+	background-color: #FFFFFF;
+}
+
+.row .pagination span a:hover, li.pagination span a:hover {
+	background-color: #d2d2d2;
+}
+
+/* Miscellaneous styles
+---------------------------------------- */
+#forum-permissions {
+	float: right;
+	width: auto;
+	padding-left: 5px;
+	margin-left: 5px;
+	margin-top: 10px;
+	text-align: right;
+}
+
+.copyright {
+	padding: 5px;
+	text-align: center;
+	color: #555555;
+}
+
+.small {
+	font-size: 0.9em !important;
+}
+
+.titlespace {
+	margin-bottom: 15px;
+}
+
+.headerspace {
+	margin-top: 20px;
+}
+
+.error {
+	color: #bcbcbc;
+	font-weight: bold;
+	font-size: 1em;
+}
+
+.reported {
+	background-color: #f7f7f7;
+}
+
+li.reported:hover {
+	background-color: #ececec;
+}
+
+div.rules {
+	background-color: #ececec;
+	color: #bcbcbc;
+	padding: 0 10px;
+	margin: 10px 0;
+	font-size: 1.1em;
+}
+
+div.rules ul, div.rules ol {
+	margin-left: 20px;
+}
+
+p.rules {
+	background-color: #ececec;
+	background-image: none;
+	padding: 5px;
+}
+
+p.rules img {
+	vertical-align: middle;
+	padding-top: 5px;
+}
+
+p.rules a {
+	vertical-align: middle;
+	clear: both;
+}
+
+#top {
+	position: absolute;
+	top: -20px;
+}
+
+.clear {
+	display: block;
+	clear: both;
+	font-size: 1px;
+	line-height: 1px;
+	background: transparent;
+}
+/* Link Styles
+---------------------------------------- */
+
+/* Links adjustment to correctly display an order of rtl/ltr mixed content */
+a {
+	direction: ltr;
+	unicode-bidi: embed;
+}
+
+a:link	{ color: #898989; text-decoration: none; }
+a:visited	{ color: #898989; text-decoration: none; }
+a:hover	{ color: #d3d3d3; text-decoration: underline; }
+a:active	{ color: #d2d2d2; text-decoration: none; }
+
+/* Coloured usernames */
+.username-coloured {
+	font-weight: bold;
+	display: inline !important;
+	padding: 0 !important;
+}
+
+/* Links on gradient backgrounds */
+#search-box a:link, .navbg a:link, .forumbg .header a:link, .forabg .header a:link, th a:link {
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+#search-box a:visited, .navbg a:visited, .forumbg .header a:visited, .forabg .header a:visited, th a:visited {
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+#search-box a:hover, .navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+	color: #ffffff;
+	text-decoration: underline;
+}
+
+#search-box a:active, .navbg a:active, .forumbg .header a:active, .forabg .header a:active, th a:active {
+	color: #ffffff;
+	text-decoration: none;
+}
+
+/* Links for forum/topic lists */
+a.forumtitle {
+	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: #898989;
+	text-decoration: none;
+}
+
+/* a.forumtitle:visited { color: #898989; } */
+
+a.forumtitle:hover {
+	color: #bcbcbc;
+	text-decoration: underline;
+}
+
+a.forumtitle:active {
+	color: #898989;
+}
+
+a.topictitle {
+	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: #898989;
+	text-decoration: none;
+}
+
+/* a.topictitle:visited { color: #d2d2d2; } */
+
+a.topictitle:hover {
+	color: #bcbcbc;
+	text-decoration: underline;
+}
+
+a.topictitle:active {
+	color: #898989;
+}
+
+/* Post body links */
+.postlink {
+	text-decoration: none;
+	color: #d2d2d2;
+	border-bottom: 1px solid #d2d2d2;
+	padding-bottom: 0;
+}
+
+/* .postlink:visited { color: #bdbdbd; } */
+
+.postlink:active {
+	color: #d2d2d2;
+}
+
+.postlink:hover {
+	background-color: #f6f6f6;
+	text-decoration: none;
+	color: #404040;
+}
+
+.signature a, .signature a:visited, .signature a:hover, .signature a:active {
+	border: none;
+	text-decoration: underline;
+	background-color: transparent;
+}
+
+/* Profile links */
+.postprofile a:link, .postprofile a:visited, .postprofile dt.author a {
+	font-weight: bold;
+	color: #898989;
+	text-decoration: none;
+}
+
+.postprofile a:hover, .postprofile dt.author a:hover {
+	text-decoration: underline;
+	color: #d3d3d3;
+}
+
+/* CSS spec requires a:link, a:visited, a:hover and a:active rules to be specified in this order. */
+/* See http://www.phpbb.com/bugs/phpbb3/59685 */
+.postprofile a:active {
+	font-weight: bold;
+	color: #898989;
+	text-decoration: none;
+}
+
+
+/* Profile searchresults */	
+.search .postprofile a {
+	color: #898989;
+	text-decoration: none; 
+	font-weight: normal;
+}
+
+.search .postprofile a:hover {
+	color: #d3d3d3;
+	text-decoration: underline; 
+}
+
+/* Back to top of page */
+.back2top {
+	clear: both;
+	height: 11px;
+	text-align: right;
+}
+
+a.top {
+	background: none no-repeat top left;
+	text-decoration: none;
+	width: 11px;
+	height: 11px;
+	display: block;
+	float: right;
+	overflow: hidden;
+	letter-spacing: 1000px;
+	text-indent: 11px;
+}
+
+a.top2 {
+	background: none no-repeat 0 50%;
+	text-decoration: none;
+	padding-left: 15px;
+}
+
+/* Arrow links  */
+a.up		{ background: none no-repeat left center; }
+a.down		{ background: none no-repeat right center; }
+a.left		{ background: none no-repeat 3px 60%; }
+a.right		{ background: none no-repeat 95% 60%; }
+
+a.up, a.up:link, a.up:active, a.up:visited {
+	padding-left: 10px;
+	text-decoration: none;
+	border-bottom-width: 0;
+}
+
+a.up:hover {
+	background-position: left top;
+	background-color: transparent;
+}
+
+a.down, a.down:link, a.down:active, a.down:visited {
+	padding-right: 10px;
+}
+
+a.down:hover {
+	background-position: right bottom;
+	text-decoration: none;
+}
+
+a.left, a.left:active, a.left:visited {
+	padding-left: 12px;
+}
+
+a.left:hover {
+	color: #d2d2d2;
+	text-decoration: none;
+	background-position: 0 60%;
+}
+
+a.right, a.right:active, a.right:visited {
+	padding-right: 12px;
+}
+
+a.right:hover {
+	color: #d2d2d2;
+	text-decoration: none;
+	background-position: 100% 60%;
+}
+
+/* invisible skip link, used for accessibility  */
+.skiplink {
+	position: absolute;
+	left: -999px;
+	width: 990px;
+}
+
+/* Feed icon in forumlist_body.html */
+a.feed-icon-forum {
+	float: right;
+	margin: 3px;
+}
+/* Content Styles
+---------------------------------------- */
+
+ul.topiclist {
+	display: block;
+	list-style-type: none;
+	margin: 0;
+}
+
+ul.forums {
+	background: #f9f9f9 none repeat-x 0 0;
+}
+
+ul.topiclist li {
+	display: block;
+	list-style-type: none;
+	color: #777777;
+	margin: 0;
+}
+
+ul.topiclist dl {
+	position: relative;
+}
+
+ul.topiclist li.row dl {
+	padding: 2px 0;
+}
+
+ul.topiclist dt {
+	display: block;
+	float: left;
+	width: 50%;
+	font-size: 1.1em;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+ul.topiclist dd {
+	display: block;
+	float: left;
+	border-left: 1px solid #FFFFFF;
+	padding: 4px 0;
+}
+
+ul.topiclist dfn {
+	/* Labels for post/view counts */
+	position: absolute;
+	left: -999px;
+	width: 990px;
+}
+
+ul.topiclist li.row dt a.subforum {
+	background-image: none;
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	position: relative;
+	white-space: nowrap;
+	padding: 0 0 0 12px;
+}
+
+.forum-image {
+	float: left;
+	padding-top: 5px;
+	margin-right: 5px;
+}
+
+li.row {
+	border-top: 1px solid #FFFFFF;
+	border-bottom: 1px solid #8f8f8f;
+}
+
+li.row strong {
+	font-weight: normal;
+	color: #000000;
+}
+
+li.row:hover {
+	background-color: #f6f6f6;
+}
+
+li.row:hover dd {
+	border-left-color: #CCCCCC;
+}
+
+li.header dt, li.header dd {
+	line-height: 1em;
+	border-left-width: 0;
+	margin: 2px 0 4px 0;
+	color: #FFFFFF;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	font-size: 1em;
+	font-family: Arial, Helvetica, sans-serif;
+	text-transform: uppercase;
+}
+
+li.header dt {
+	font-weight: bold;
+}
+
+li.header dd {
+	margin-left: 1px;
+}
+
+li.header dl.icon {
+	min-height: 0;
+}
+
+li.header dl.icon dt {
+	/* Tweak for headers alignment when folder icon used */
+	padding-left: 0;
+	padding-right: 50px;
+}
+
+/* Forum list column styles */
+dl.icon {
+	min-height: 35px;
+	background-position: 10px 50%;		/* Position of folder icon */
+	background-repeat: no-repeat;
+}
+
+dl.icon dt {
+	padding-left: 45px;					/* Space for folder icon */
+	background-repeat: no-repeat;
+	background-position: 5px 95%;		/* Position of topic icon */
+}
+
+dd.posts, dd.topics, dd.views {
+	width: 8%;
+	text-align: center;
+	line-height: 2.2em;
+	font-size: 1.2em;
+}
+
+/* List in forum description */
+dl.icon dt ol,
+dl.icon dt ul {
+	list-style-position: inside;
+	margin-left: 1em;
+}
+
+dl.icon dt li {
+	display: list-item;
+	list-style-type: inherit;
+}
+
+dd.lastpost {
+	width: 25%;
+	font-size: 1.1em;
+}
+
+dd.redirect {
+	font-size: 1.1em;
+	line-height: 2.5em;
+}
+
+dd.moderation {
+	font-size: 1.1em;
+}
+
+dd.lastpost span, ul.topiclist dd.searchby span, ul.topiclist dd.info span, ul.topiclist dd.time span, dd.redirect span, dd.moderation span {
+	display: block;
+	padding-left: 5px;
+}
+
+dd.time {
+	width: auto;
+	line-height: 200%;
+	font-size: 1.1em;
+}
+
+dd.extra {
+	width: 12%;
+	line-height: 200%;
+	text-align: center;
+	font-size: 1.1em;
+}
+
+dd.mark {
+	float: right !important;
+	width: 9%;
+	text-align: center;
+	line-height: 200%;
+	font-size: 1.2em;
+}
+
+dd.info {
+	width: 30%;
+}
+
+dd.option {
+	width: 15%;
+	line-height: 200%;
+	text-align: center;
+	font-size: 1.1em;
+}
+
+dd.searchby {
+	width: 47%;
+	font-size: 1.1em;
+	line-height: 1em;
+}
+
+ul.topiclist dd.searchextra {
+	margin-left: 5px;
+	padding: 0.2em 0;
+	font-size: 1.1em;
+	color: #333333;
+	border-left: none;
+	clear: both;
+	width: 98%;
+	overflow: hidden;
+}
+
+/* Container for post/reply buttons and pagination */
+.topic-actions {
+	margin-bottom: 3px;
+	font-size: 1.1em;
+	height: 28px;
+	min-height: 28px;
+}
+div[class].topic-actions {
+	height: auto;
+}
+
+/* Post body styles
+----------------------------------------*/
+.postbody {
+	padding: 0;
+	line-height: 1.48em;
+	color: #333333;
+	width: 76%;
+	float: left;
+	clear: both;
+}
+
+.postbody .ignore {
+	font-size: 1.1em;
+}
+
+.postbody h3.first {
+	/* The first post on the page uses this */
+	font-size: 1.7em;
+}
+
+.postbody h3 {
+	/* Postbody requires a different h3 format - so change it here */
+	font-size: 1.5em;
+	padding: 2px 0 0 0;
+	margin: 0 0 0.3em 0 !important;
+	text-transform: none;
+	border: none;
+	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	line-height: 125%;
+}
+
+.postbody h3 img {
+	/* Also see tweaks.css */
+	vertical-align: bottom;
+}
+
+.postbody .content {
+	font-size: 1.3em;
+}
+
+.search .postbody {
+	width: 68%
+}
+
+/* Topic review panel
+----------------------------------------*/
+#review {
+	margin-top: 2em;
+}
+
+#topicreview {
+	padding-right: 5px;
+	overflow: auto;
+	height: 300px;
+}
+
+#topicreview .postbody {
+	width: auto;
+	float: none;
+	margin: 0;
+	height: auto;
+}
+
+#topicreview .post {
+	height: auto;
+}
+
+#topicreview h2 {
+	border-bottom-width: 0;
+}
+
+.post-ignore .postbody {
+	display: none;
+}
+
+/* MCP Post details
+----------------------------------------*/
+#post_details
+{
+	/* This will only work in IE7+, plus the others */
+	overflow: auto;
+	max-height: 300px;
+}
+
+#expand
+{
+	clear: both;
+}
+
+/* Content container styles
+----------------------------------------*/
+.content {
+	min-height: 3em;
+	overflow: hidden;
+	line-height: 1.4em;
+	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1em;
+	color: #333333;
+	padding-bottom: 1px;
+}
+
+.content h2, .panel h2 {
+	font-weight: normal;
+	color: #989898;
+	border-bottom: 1px solid #CCCCCC;
+	font-size: 1.6em;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+.panel h3 {
+	margin: 0.5em 0;
+}
+
+.panel p {
+	font-size: 1.2em;
+	margin-bottom: 1em;
+	line-height: 1.4em;
+}
+
+.content p {
+	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1.2em;
+	margin-bottom: 1em;
+	line-height: 1.4em;
+}
+
+dl.faq {
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1.1em;
+	margin-top: 1em;
+	margin-bottom: 2em;
+	line-height: 1.4em;
+}
+
+dl.faq dt {
+	font-weight: bold;
+	color: #333333;
+}
+
+.content dl.faq {
+	font-size: 1.2em;
+	margin-bottom: 0.5em;
+}
+
+.content li {
+	list-style-type: inherit;
+}
+
+.content ul, .content ol {
+	margin-bottom: 1em;
+	margin-left: 3em;
+}
+
+.posthilit {
+	background-color: #f3f3f3;
+	color: #BCBCBC;
+	padding: 0 2px 1px 2px;
+}
+
+.announce, .unreadpost {
+	/* Highlight the announcements & unread posts box */
+	border-left-color: #BCBCBC;
+	border-right-color: #BCBCBC;
+}
+
+/* Post author */
+p.author {
+	margin: 0 15em 0.6em 0;
+	padding: 0 0 5px 0;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1em;
+	line-height: 1.2em;
+}
+
+/* Post signature */
+.signature {
+	margin-top: 1.5em;
+	padding-top: 0.2em;
+	font-size: 1.1em;
+	border-top: 1px solid #CCCCCC;
+	clear: left;
+	line-height: 140%;
+	overflow: hidden;
+	width: 100%;
+}
+
+dd .signature {
+	margin: 0;
+	padding: 0;
+	clear: none;
+	border: none;
+}
+
+.signature li {
+	list-style-type: inherit;
+}
+
+.signature ul, .signature ol {
+	margin-bottom: 1em;
+	margin-left: 3em;
+}
+
+/* Post noticies */
+.notice {
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	width: auto;
+	margin-top: 1.5em;
+	padding-top: 0.2em;
+	font-size: 1em;
+	border-top: 1px dashed #CCCCCC;
+	clear: left;
+	line-height: 130%;
+}
+
+/* Jump to post link for now */
+ul.searchresults {
+	list-style: none;
+	text-align: right;
+	clear: both;
+}
+
+/* BB Code styles
+----------------------------------------*/
+/* Quote block */
+blockquote {
+	background: #ebebeb none 6px 8px no-repeat;
+	border: 1px solid #dbdbdb;
+	font-size: 0.95em;
+	margin: 0.5em 1px 0 25px;
+	overflow: hidden;
+	padding: 5px;
+}
+
+blockquote blockquote {
+	/* Nested quotes */
+	background-color: #bababa;
+	font-size: 1em;
+	margin: 0.5em 1px 0 15px;	
+}
+
+blockquote blockquote blockquote {
+	/* Nested quotes */
+	background-color: #e4e4e4;
+}
+
+blockquote cite {
+	/* Username/source of quoter */
+	font-style: normal;
+	font-weight: bold;
+	margin-left: 20px;
+	display: block;
+	font-size: 0.9em;
+}
+
+blockquote cite cite {
+	font-size: 1em;
+}
+
+blockquote.uncited {
+	padding-top: 25px;
+}
+
+/* Code block */
+dl.codebox {
+	padding: 3px;
+	background-color: #FFFFFF;
+	border: 1px solid #d8d8d8;
+	font-size: 1em;
+}
+
+dl.codebox dt {
+	text-transform: uppercase;
+	border-bottom: 1px solid #CCCCCC;
+	margin-bottom: 3px;
+	font-size: 0.8em;
+	font-weight: bold;
+	display: block;
+}
+
+blockquote dl.codebox {
+	margin-left: 0;
+}
+
+dl.codebox code {
+	/* Also see tweaks.css */
+	overflow: auto;
+	display: block;
+	height: auto;
+	max-height: 200px;
+	white-space: normal;
+	padding-top: 5px;
+	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
+	line-height: 1.3em;
+	color: #8b8b8b;
+	margin: 2px 0;
+}
+
+.syntaxbg		{ color: #FFFFFF; }
+.syntaxcomment	{ color: #000000; }
+.syntaxdefault	{ color: #bcbcbc; }
+.syntaxhtml		{ color: #000000; }
+.syntaxkeyword	{ color: #585858; }
+.syntaxstring	{ color: #a7a7a7; }
+
+/* Attachments
+----------------------------------------*/
+.attachbox {
+	float: left;
+	width: auto; 
+	margin: 5px 5px 5px 0;
+	padding: 6px;
+	background-color: #FFFFFF;
+	border: 1px dashed #d8d8d8;
+	clear: left;
+}
+
+.pm-message .attachbox {
+	background-color: #f3f3f3;
+}
+
+.attachbox dt {
+	font-family: Arial, Helvetica, sans-serif;
+	text-transform: uppercase;
+}
+
+.attachbox dd {
+	margin-top: 4px;
+	padding-top: 4px;
+	clear: left;
+	border-top: 1px solid #d8d8d8;
+}
+
+.attachbox dd dd {
+	border: none;
+}
+
+.attachbox p {
+	line-height: 110%;
+	color: #666666;
+	font-weight: normal;
+	clear: left;
+}
+
+.attachbox p.stats
+{
+	line-height: 110%;
+	color: #666666;
+	font-weight: normal;
+	clear: left;
+}
+
+.attach-image {
+	margin: 3px 0;
+	width: 100%;
+	max-height: 350px;
+	overflow: auto;
+}
+
+.attach-image img {
+	border: 1px solid #999999;
+/*	cursor: move; */
+	cursor: default;
+}
+
+/* Inline image thumbnails */
+div.inline-attachment dl.thumbnail, div.inline-attachment dl.file {
+	display: block;
+	margin-bottom: 4px;
+}
+
+div.inline-attachment p {
+	font-size: 100%;
+}
+
+dl.file {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	display: block;
+}
+
+dl.file dt {
+	text-transform: none;
+	margin: 0;
+	padding: 0;
+	font-weight: bold;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+dl.file dd {
+	color: #666666;
+	margin: 0;
+	padding: 0;	
+}
+
+dl.thumbnail img {
+	padding: 3px;
+	border: 1px solid #666666;
+	background-color: #FFF;
+}
+
+dl.thumbnail dd {
+	color: #666666;
+	font-style: italic;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+.attachbox dl.thumbnail dd {
+	font-size: 100%;
+}
+
+dl.thumbnail dt a:hover {
+	background-color: #EEEEEE;
+}
+
+dl.thumbnail dt a:hover img {
+	border: 1px solid #d2d2d2;
+}
+
+/* Post poll styles
+----------------------------------------*/
+fieldset.polls {
+	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+}
+
+fieldset.polls dl {
+	margin-top: 5px;
+	border-top: 1px solid #e2e2e2;
+	padding: 5px 0 0 0;
+	line-height: 120%;
+	color: #666666;
+}
+
+fieldset.polls dl.voted {
+	font-weight: bold;
+	color: #000000;
+}
+
+fieldset.polls dt {
+	text-align: left;
+	float: left;
+	display: block;
+	width: 30%;
+	border-right: none;
+	padding: 0;
+	margin: 0;
+	font-size: 1.1em;
+}
+
+fieldset.polls dd {
+	float: left;
+	width: 10%;
+	border-left: none;
+	padding: 0 5px;
+	margin-left: 0;
+	font-size: 1.1em;
+}
+
+fieldset.polls dd.resultbar {
+	width: 50%;
+}
+
+fieldset.polls dd input {
+	margin: 2px 0;
+}
+
+fieldset.polls dd div {
+	text-align: right;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #FFFFFF;
+	font-weight: bold;
+	padding: 0 2px;
+	overflow: visible;
+	min-width: 2%;
+}
+
+.pollbar1 {
+	background-color: #aaaaaa;
+	border-bottom: 1px solid #747474;
+	border-right: 1px solid #747474;
+}
+
+.pollbar2 {
+	background-color: #bebebe;
+	border-bottom: 1px solid #8c8c8c;
+	border-right: 1px solid #8c8c8c;
+}
+
+.pollbar3 {
+	background-color: #D1D1D1;
+	border-bottom: 1px solid #aaaaaa;
+	border-right: 1px solid #aaaaaa;
+}
+
+.pollbar4 {
+	background-color: #e4e4e4;
+	border-bottom: 1px solid #bebebe;
+	border-right: 1px solid #bebebe;
+}
+
+.pollbar5 {
+	background-color: #f8f8f8;
+	border-bottom: 1px solid #D1D1D1;
+	border-right: 1px solid #D1D1D1;
+}
+
+/* Poster profile block
+----------------------------------------*/
+.postprofile {
+	/* Also see tweaks.css */
+	margin: 5px 0 10px 0;
+	min-height: 80px;
+	color: #666666;
+	border-left: 1px solid #FFFFFF;
+	width: 22%;
+	float: right;
+	display: inline;
+}
+.pm .postprofile {
+	border-left: 1px solid #DDDDDD;
+}
+
+.postprofile dd, .postprofile dt {
+	line-height: 1.2em;
+	margin-left: 8px;
+}
+
+.postprofile strong {
+	font-weight: normal;
+	color: #000000;
+}
+
+.avatar {
+	border: none;
+	margin-bottom: 3px;
+}
+
+.online {
+	background-image: none;
+	background-position: 100% 0;
+	background-repeat: no-repeat;
+}
+
+/* Poster profile used by search*/
+.search .postprofile {
+	width: 30%;
+}
+
+/* pm list in compose message if mass pm is enabled */
+dl.pmlist dt {
+	width: 60% !important;
+}
+
+dl.pmlist dt textarea {
+	width: 95%;
+}
+
+dl.pmlist dd {
+	margin-left: 61% !important;
+	margin-bottom: 2px;
+}
+/* Button Styles
+---------------------------------------- */
+
+/* Rollover buttons
+   Based on: http://wellstyled.com/css-nopreload-rollovers.html
+----------------------------------------*/
+.buttons {
+	float: left;
+	width: auto;
+	height: auto;
+}
+
+/* Rollover state */
+.buttons div {
+	float: left;
+	margin: 0 5px 0 0;
+	background-position: 0 100%;
+}
+
+/* Rolloff state */
+.buttons div a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-position: 0 0;
+	position: relative;
+	overflow: hidden;
+}
+
+/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
+/*.buttons div span		{ display: none; }*/
+/*.buttons div a:hover	{ background-image: none; }*/
+.buttons div span			{ position: absolute; width: 100%; height: 100%; cursor: pointer;}
+.buttons div a:hover span	{ background-position: 0 100%; }
+
+/* Big button images */
+.reply-icon span	{ background: transparent none 0 0 no-repeat; }
+.post-icon span		{ background: transparent none 0 0 no-repeat; }
+.locked-icon span	{ background: transparent none 0 0 no-repeat; }
+.pmreply-icon span	{ background: none 0 0 no-repeat; }
+.newpm-icon span 	{ background: none 0 0 no-repeat; }
+.forwardpm-icon span 	{ background: none 0 0 no-repeat; }
+
+/* Set big button dimensions */
+.buttons div.reply-icon		{ width: 96px; height: 25px; }
+.buttons div.post-icon		{ width: 96px; height: 25px; }
+.buttons div.locked-icon	{ width: 88px; height: 25px; }
+.buttons div.pmreply-icon	{ width: 96px; height: 25px; }
+.buttons div.newpm-icon		{ width: 84px; height: 25px; }
+.buttons div.forwardpm-icon	{ width: 96px; height: 25px; }
+
+/* Sub-header (navigation bar)
+--------------------------------------------- */
+a.print, a.sendemail, a.fontsize {
+	display: block;
+	overflow: hidden;
+	height: 18px;
+	text-indent: -5000px;
+	text-align: left;
+	background-repeat: no-repeat;
+}
+
+a.print {
+	background-image: none;
+	width: 22px;
+}
+
+a.sendemail {
+	background-image: none;
+	width: 22px;
+}
+
+a.fontsize {
+	background-image: none;
+	background-position: 0 -1px;
+	width: 29px;
+}
+
+a.fontsize:hover {
+	background-position: 0 -20px;
+	text-decoration: none;
+}
+
+/* Icon images
+---------------------------------------- */
+.sitehome, .icon-faq, .icon-members, .icon-home, .icon-ucp, .icon-register, .icon-logout,
+.icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search, .icon-blog {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	background-image: none;
+	padding: 1px 0 0 17px;
+}
+
+/* Poster profile icons
+----------------------------------------*/
+ul.profile-icons {
+	padding-top: 10px;
+	list-style: none;
+}
+
+/* Rollover state */
+ul.profile-icons li {
+	float: left;
+	margin: 0 6px 3px 0;
+	background-position: 0 100%;
+}
+
+/* Rolloff state */
+ul.profile-icons li a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-position: 0 0;
+}
+
+/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
+ul.profile-icons li span { display:none; }
+ul.profile-icons li a:hover { background: none; }
+
+/* Positioning of moderator icons */
+.postbody ul.profile-icons {
+	float: right;
+	width: auto;
+	padding: 0;
+}
+
+.postbody ul.profile-icons li {
+	margin: 0 3px;
+}
+
+/* Profile & navigation icons */
+.email-icon, .email-icon a		{ background: none top left no-repeat; }
+.aim-icon, .aim-icon a			{ background: none top left no-repeat; }
+.yahoo-icon, .yahoo-icon a		{ background: none top left no-repeat; }
+.web-icon, .web-icon a			{ background: none top left no-repeat; }
+.msnm-icon, .msnm-icon a			{ background: none top left no-repeat; }
+.icq-icon, .icq-icon a			{ background: none top left no-repeat; }
+.jabber-icon, .jabber-icon a		{ background: none top left no-repeat; }
+.pm-icon, .pm-icon a				{ background: none top left no-repeat; }
+.quote-icon, .quote-icon a		{ background: none top left no-repeat; }
+
+/* Moderator icons */
+.report-icon, .report-icon a		{ background: none top left no-repeat; }
+.warn-icon, .warn-icon a			{ background: none top left no-repeat; }
+.edit-icon, .edit-icon a			{ background: none top left no-repeat; }
+.delete-icon, .delete-icon a		{ background: none top left no-repeat; }
+.info-icon, .info-icon a			{ background: none top left no-repeat; }
+
+/* Set profile icon dimensions */
+ul.profile-icons li.email-icon		{ width: 20px; height: 20px; }
+ul.profile-icons li.aim-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.yahoo-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.web-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.msnm-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.icq-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.jabber-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.pm-icon		{ width: 28px; height: 20px; }
+ul.profile-icons li.quote-icon	{ width: 54px; height: 20px; }
+ul.profile-icons li.report-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.edit-icon	{ width: 42px; height: 20px; }
+ul.profile-icons li.delete-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.info-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.warn-icon	{ width: 20px; height: 20px; }
+
+/* Fix profile icon default margins */
+ul.profile-icons li.edit-icon	{ margin: 0 0 0 3px; }
+ul.profile-icons li.quote-icon	{ margin: 0 0 0 10px; }
+ul.profile-icons li.info-icon, ul.profile-icons li.report-icon	{ margin: 0 3px 0 0; }
+/* Control Panel Styles
+---------------------------------------- */
+
+
+/* Main CP box
+----------------------------------------*/
+#cp-menu {
+	float:left;
+	width: 19%;
+	margin-top: 1em;
+	margin-bottom: 5px;
+}
+
+#cp-main {
+	float: left;
+	width: 81%;
+}
+
+#cp-main .content {
+	padding: 0;
+}
+
+#cp-main h3, #cp-main hr, #cp-menu hr {
+	border-color: #bfbfbf;
+}
+
+#cp-main .panel p {
+	font-size: 1.1em;
+}
+
+#cp-main .panel ol {
+	margin-left: 2em;
+	font-size: 1.1em;
+}
+
+#cp-main .panel li.row {
+	border-bottom: 1px solid #cbcbcb;
+	border-top: 1px solid #F9F9F9;
+}
+
+ul.cplist {
+	margin-bottom: 5px;
+	border-top: 1px solid #cbcbcb;
+}
+
+#cp-main .panel li.header dd, #cp-main .panel li.header dt {
+	color: #000000;
+	margin-bottom: 2px;
+}
+
+#cp-main table.table1 {
+	margin-bottom: 1em;
+}
+
+#cp-main table.table1 thead th {
+	color: #333333;
+	font-weight: bold;
+	border-bottom: 1px solid #333333;
+	padding: 5px;
+}
+
+#cp-main table.table1 tbody th {
+	font-style: italic;
+	background-color: transparent !important;
+	border-bottom: none;
+}
+
+#cp-main .pagination {
+	float: right;
+	width: auto;
+	padding-top: 1px;
+}
+
+#cp-main .postbody p {
+	font-size: 1.1em;
+}
+
+#cp-main .pm-message {
+	border: 1px solid #e2e2e2;
+	margin: 10px 0;
+	background-color: #FFFFFF;
+	width: auto;
+	float: none;
+}
+
+.pm-message h2 {
+	padding-bottom: 5px;
+}
+
+#cp-main .postbody h3, #cp-main .box2 h3 {
+	margin-top: 0;
+}
+
+#cp-main .buttons {
+	margin-left: 0;
+}
+
+#cp-main ul.linklist {
+	margin: 0;
+}
+
+/* MCP Specific tweaks */
+.mcp-main .postbody {
+	width: 100%;
+}
+
+.tabs-container h2 {
+	float: left;
+	margin-bottom: 0px;
+}
+
+.tabs-container #minitabs {
+	float: right;
+	margin-top: 19px;
+}
+
+.tabs-container:after {
+	display: block;
+	clear: both;
+	content: '';
+}
+
+/* CP tabbed menu
+----------------------------------------*/
+#tabs {
+	line-height: normal;
+	margin: 20px 0 -1px 7px;
+	min-width: 570px;
+}
+
+#tabs ul {
+	margin:0;
+	padding: 0;
+	list-style: none;
+}
+
+#tabs li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+#tabs a {
+	float: left;
+	background: none no-repeat 0% -35px;
+	margin: 0 1px 0 0;
+	padding: 0 0 0 5px;
+	text-decoration: none;
+	position: relative;
+	cursor: pointer;
+}
+
+#tabs a span {
+	float: left;
+	display: block;
+	background: none no-repeat 100% -35px;
+	padding: 6px 10px 6px 5px;
+	color: #828282;
+	white-space: nowrap;
+}
+
+#tabs a:hover span {
+	color: #bcbcbc;
+}
+
+#tabs .activetab a {
+	background-position: 0 0;
+	border-bottom: 1px solid #ebebeb;
+}
+
+#tabs .activetab a span {
+	background-position: 100% 0;
+	padding-bottom: 7px;
+	color: #333333;
+}
+
+#tabs a:hover {
+	background-position: 0 -70px;
+}
+
+#tabs a:hover span {
+	background-position:100% -70px;
+}
+
+#tabs .activetab a:hover {
+	background-position: 0 0;
+}
+
+#tabs .activetab a:hover span {
+	color: #000000;
+	background-position: 100% 0;
+}
+
+/* Mini tabbed menu used in MCP
+----------------------------------------*/
+#minitabs {
+	line-height: normal;
+	margin: -20px 7px 0 0;
+}
+
+#minitabs ul {
+	margin:0;
+	padding: 0;
+	list-style: none;
+}
+
+#minitabs li {
+	display: block;
+	float: right;
+	padding: 0 10px 4px 10px;
+	font-size: 1em;
+	font-weight: bold;
+	background-color: #f2f2f2;
+	margin-left: 2px;
+}
+
+#minitabs a {
+}
+
+#minitabs a:hover {
+	text-decoration: none;
+}
+
+#minitabs li.activetab {
+	background-color: #F9F9F9;
+}
+
+#minitabs li.activetab a, #minitabs li.activetab a:hover {
+	color: #333333;
+}
+
+/* UCP navigation menu
+----------------------------------------*/
+/* Container for sub-navigation list */
+#navigation {
+	width: 100%;
+	padding-top: 36px;
+}
+
+#navigation ul {
+	list-style:none;
+}
+
+/* Default list state */
+#navigation li {
+	margin: 1px 0;
+	padding: 0;
+	font-weight: bold;
+	display: inline;
+}
+
+/* Link styles for the sub-section links */
+#navigation a {
+	display: block;
+	padding: 5px;
+	margin: 1px 0;
+	text-decoration: none;
+	font-weight: bold;
+	color: #333;
+	background: #cfcfcf none repeat-y 100% 0;
+}
+
+#navigation a:hover {
+	text-decoration: none;
+	background-color: #c6c6c6;
+	color: #bcbcbc;
+	background-image: none;
+}
+
+#navigation #active-subsection a {
+	display: block;
+	color: #d3d3d3;
+	background-color: #F9F9F9;
+	background-image: none;
+}
+
+#navigation #active-subsection a:hover {
+	color: #d3d3d3;
+}
+
+/* Preferences pane layout
+----------------------------------------*/
+#cp-main h2 {
+	border-bottom: none;
+	padding: 0;
+	margin-left: 10px;
+	color: #333333;
+}
+
+#cp-main .panel {
+	background-color: #F9F9F9;
+}
+
+#cp-main .pm {
+	background-color: #FFFFFF;
+}
+
+#cp-main span.corners-top, #cp-menu span.corners-top {
+	background-image: none;
+}
+
+#cp-main span.corners-top span, #cp-menu span.corners-top span {
+	background-image: none;
+}
+
+#cp-main span.corners-bottom, #cp-menu span.corners-bottom {
+	background-image: none;
+}
+
+#cp-main span.corners-bottom span, #cp-menu span.corners-bottom span {
+	background-image: none;
+}
+
+/* Topicreview */
+#cp-main .panel #topicreview span.corners-top, #cp-menu .panel #topicreview span.corners-top {
+	background-image: none;
+}
+
+#cp-main .panel #topicreview span.corners-top span, #cp-menu .panel #topicreview span.corners-top span {
+	background-image: none;
+}
+
+#cp-main .panel #topicreview span.corners-bottom, #cp-menu .panel #topicreview span.corners-bottom {
+	background-image: none;
+}
+
+#cp-main .panel #topicreview span.corners-bottom span, #cp-menu .panel #topicreview span.corners-bottom span {
+	background-image: none;
+}
+
+/* Friends list */
+.cp-mini {
+	background-color: #f9f9f9;
+	padding: 0 5px;
+	margin: 10px 15px 10px 5px;
+}
+
+.cp-mini span.corners-top, .cp-mini span.corners-bottom {
+	margin: 0 -5px;
+}
+
+dl.mini dt {
+	font-weight: bold;
+	color: #676767;
+}
+
+dl.mini dd {
+	padding-top: 4px;
+}
+
+.friend-online {
+	font-weight: bold;
+}
+
+.friend-offline {
+	font-style: italic;
+}
+
+/* PM Styles
+----------------------------------------*/
+#pm-menu {
+	line-height: 2.5em;
+}
+
+/* PM panel adjustments */
+.reply-all a.left {
+	background-position: 3px 60%;
+}
+
+.reply-all a.left:hover {
+	background-position: 0px 60%;
+}
+
+.reply-all {
+	font-size: 11px;
+	padding-top: 5px;
+}
+
+/* PM Message history */
+.current {
+	color: #999999;
+}
+
+/* Defined rules list for PM options */
+ol.def-rules {
+	padding-left: 0;
+}
+
+ol.def-rules li {
+	line-height: 180%;
+	padding: 1px;
+}
+
+/* PM marking colours */
+.pmlist li.bg1 {
+	padding: 0 3px;
+}
+
+.pmlist li.bg2 {
+	padding: 0 3px;
+}
+
+.pmlist li.pm_message_reported_colour, .pm_message_reported_colour {
+	border-left-color: #bcbcbc;
+	border-right-color: #bcbcbc;
+}
+
+.pmlist li.pm_marked_colour, .pm_marked_colour {
+	padding: 0;
+	border: solid 3px #ffffff;
+	border-width: 0 3px;
+}
+
+.pmlist li.pm_replied_colour, .pm_replied_colour {
+	padding: 0;
+	border: solid 3px #c2c2c2;
+	border-width: 0 3px;
+}
+
+.pmlist li.pm_friend_colour, .pm_friend_colour {
+	padding: 0;
+	border: solid 3px #bdbdbd;
+	border-width: 0 3px;
+}
+
+.pmlist li.pm_foe_colour, .pm_foe_colour {
+	padding: 0;
+	border: solid 3px #000000;
+	border-width: 0 3px;
+}
+
+.pm-legend {
+	border-left-width: 10px;
+	border-left-style: solid;
+	border-right-width: 0;
+	margin-bottom: 3px;
+	padding-left: 3px;
+}
+
+/* Avatar gallery */
+#gallery label {
+	position: relative;
+	float: left;
+	margin: 10px;
+	padding: 5px;
+	width: auto;
+	background: #FFFFFF;
+	border: 1px solid #CCC;
+	text-align: center;
+}
+
+#gallery label:hover {
+	background-color: #EEE;
+}
+/* Form Styles
+---------------------------------------- */
+
+/* General form styles
+----------------------------------------*/
+fieldset {
+	border-width: 0;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1.1em;
+}
+
+input {
+	font-weight: normal;
+	cursor: pointer;
+	vertical-align: middle;
+	padding: 0 3px;
+	font-size: 1em;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+
+select {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-weight: normal;
+	cursor: pointer;
+	vertical-align: middle;
+	border: 1px solid #666666;
+	padding: 1px;
+	background-color: #FAFAFA;
+	font-size: 1em;
+}
+
+option {
+	padding-right: 1em;
+}
+
+option.disabled-option {
+	color: graytext;
+}
+
+textarea {
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	width: 60%;
+	padding: 2px;
+	font-size: 1em;
+	line-height: 1.4em;
+}
+
+label {
+	cursor: default;
+	padding-right: 5px;
+	color: #676767;
+}
+
+label input {
+	vertical-align: middle;
+}
+
+label img {
+	vertical-align: middle;
+}
+
+/* Definition list layout for forms
+---------------------------------------- */
+fieldset dl {
+	padding: 4px 0;
+}
+
+fieldset dt {
+	float: left;	
+	width: 40%;
+	text-align: left;
+	display: block;
+}
+
+fieldset dd {
+	margin-left: 41%;
+	vertical-align: top;
+	margin-bottom: 3px;
+}
+
+/* Specific layout 1 */
+fieldset.fields1 dt {
+	width: 15em;
+	border-right-width: 0;
+}
+
+fieldset.fields1 dd {
+	margin-left: 15em;
+	border-left-width: 0;
+}
+
+fieldset.fields1 {
+	background-color: transparent;
+}
+
+fieldset.fields1 div {
+	margin-bottom: 3px;
+}
+
+/* Set it back to 0px for the reCaptcha divs: PHPBB3-9587 */
+fieldset.fields1 #recaptcha_widget_div div {
+	margin-bottom: 0;
+}
+
+/* Specific layout 2 */
+fieldset.fields2 dt {
+	width: 15em;
+	border-right-width: 0;
+}
+
+fieldset.fields2 dd {
+	margin-left: 16em;
+	border-left-width: 0;
+}
+
+/* Form elements */
+dt label {
+	font-weight: bold;
+	text-align: left;
+}
+
+dd label {
+	white-space: nowrap;
+	color: #333;
+}
+
+dd input, dd textarea {
+	margin-right: 3px;
+}
+
+dd select {
+	width: auto;
+}
+
+dd textarea {
+	width: 85%;
+}
+
+/* Hover effects */
+fieldset dl:hover dt label {
+	color: #000000;
+}
+
+fieldset.fields2 dl:hover dt label {
+	color: inherit;
+}
+
+#timezone {
+	width: 95%;
+}
+
+* html #timezone {
+	width: 50%;
+}
+
+/* Quick-login on index page */
+fieldset.quick-login {
+	margin-top: 5px;
+}
+
+fieldset.quick-login input {
+	width: auto;
+}
+
+fieldset.quick-login input.inputbox {
+	width: 15%;
+	vertical-align: middle;
+	margin-right: 5px;
+	background-color: #f3f3f3;
+}
+
+fieldset.quick-login label {
+	white-space: nowrap;
+	padding-right: 2px;
+}
+
+/* Display options on viewtopic/viewforum pages  */
+fieldset.display-options {
+	text-align: center;
+	margin: 3px 0 5px 0;
+}
+
+fieldset.display-options label {
+	white-space: nowrap;
+	padding-right: 2px;
+}
+
+fieldset.display-options a {
+	margin-top: 3px;
+}
+
+/* Display actions for ucp and mcp pages */
+fieldset.display-actions {
+	text-align: right;
+	line-height: 2em;
+	white-space: nowrap;
+	padding-right: 1em;
+}
+
+fieldset.display-actions label {
+	white-space: nowrap;
+	padding-right: 2px;
+}
+
+fieldset.sort-options {
+	line-height: 2em;
+}
+
+/* MCP forum selection*/
+fieldset.forum-selection {
+	margin: 5px 0 3px 0;
+	float: right;
+}
+
+fieldset.forum-selection2 {
+	margin: 13px 0 3px 0;
+	float: right;
+}
+
+/* Jumpbox */
+fieldset.jumpbox {
+	text-align: right;
+	margin-top: 15px;
+	height: 2.5em;
+}
+
+fieldset.quickmod {
+	width: 50%;
+	float: right;
+	text-align: right;
+	height: 2.5em;
+}
+
+/* Submit button fieldset */
+fieldset.submit-buttons {
+	text-align: center;
+	vertical-align: middle;
+	margin: 5px 0;
+}
+
+fieldset.submit-buttons input {
+	vertical-align: middle;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+/* Posting page styles
+----------------------------------------*/
+
+/* Buttons used in the editor */
+#format-buttons {
+	margin: 15px 0 2px 0;
+}
+
+#format-buttons input, #format-buttons select {
+	vertical-align: middle;
+}
+
+/* Main message box */
+#message-box {
+	width: 80%;
+}
+
+#message-box textarea {
+	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	width: 450px;
+	height: 270px;
+	min-width: 100%;
+	max-width: 100%;
+	font-size: 1.2em;
+	color: #333333;
+}
+
+/* Emoticons panel */
+#smiley-box {
+	width: 18%;
+	float: right;
+}
+
+#smiley-box img {
+	margin: 3px;
+}
+
+/* Input field styles
+---------------------------------------- */
+.inputbox {
+	background-color: #FFFFFF;
+	border: 1px solid #c0c0c0;
+	color: #333333;
+	padding: 2px;
+	cursor: text;
+}
+
+.inputbox:hover {
+	border: 1px solid #eaeaea;
+}
+
+.inputbox:focus {
+	border: 1px solid #eaeaea;
+	color: #4b4b4b;
+}
+
+input.inputbox	{ width: 85%; }
+input.medium	{ width: 50%; }
+input.narrow	{ width: 25%; }
+input.tiny		{ width: 125px; }
+
+textarea.inputbox {
+	width: 85%;
+}
+
+.autowidth {
+	width: auto !important;
+}
+
+/* Form button styles
+---------------------------------------- */
+input.button1, input.button2 {
+	font-size: 1em;
+}
+
+a.button1, input.button1, input.button3, a.button2, input.button2 {
+	width: auto !important;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	color: #000;
+	background: #FAFAFA none repeat-x top left;
+}
+
+a.button1, input.button1 {
+	font-weight: bold;
+	border: 1px solid #666666;
+}
+
+input.button3 {
+	padding: 0;
+	margin: 0;
+	line-height: 5px;
+	height: 12px;
+	background-image: none;
+	font-variant: small-caps;
+}
+
+/* Alternative button */
+a.button2, input.button2, input.button3 {
+	border: 1px solid #666666;
+}
+
+/* <a> button in the style of the form buttons */
+a.button1, a.button1:link, a.button1:visited, a.button1:active, a.button2, a.button2:link, a.button2:visited, a.button2:active {
+	text-decoration: none;
+	color: #000000;
+	padding: 2px 8px;
+	line-height: 250%;
+	vertical-align: text-bottom;
+	background-position: 0 1px;
+}
+
+/* Hover states */
+a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
+	border: 1px solid #BCBCBC;
+	background-position: 0 100%;
+	color: #BCBCBC;
+}
+
+input.disabled {
+	font-weight: normal;
+	color: #666666;
+}
+
+/* Topic and forum Search */
+.search-box {
+	margin-top: 3px;
+	margin-left: 5px;
+	float: left;
+}
+
+.search-box input {
+}
+
+input.search {
+	background-image: none;
+	background-repeat: no-repeat;
+	background-position: left 1px;
+	padding-left: 17px;
+}
+
+.full { width: 95%; }
+.medium { width: 50%;}
+.narrow { width: 25%;}
+.tiny { width: 10%;}
+/* Style Sheet Tweaks
+
+These style definitions are mainly IE specific 
+tweaks required due to its poor CSS support.
+-------------------------------------------------*/
+
+* html table, * html select, * html input { font-size: 100%; }
+* html hr { margin: 0; }
+* html span.corners-top, * html span.corners-bottom { background-image: url("./styles/prosilver/theme/images/corners_left.gif"); }
+* html span.corners-top span, * html span.corners-bottom span { background-image: url("./styles/prosilver/theme/images/corners_right.gif"); }
+
+table.table1 {
+	width: 99%;		/* IE < 6 browsers */
+	/* Tantek hack */
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	width: 100%;
+}
+html>body table.table1 { width: 100%; }	/* Reset 100% for opera */
+
+* html ul.topiclist li { position: relative; }
+* html .postbody h3 img { vertical-align: middle; }
+
+/* Form styles */
+html>body dd label input { vertical-align: text-bottom; }	/* Align checkboxes/radio buttons nicely */
+
+* html input.button1, * html input.button2 {
+	padding-bottom: 0;
+	margin-bottom: 1px;
+}
+
+/* Misc layout styles */
+* html .column1, * html .column2 { width: 45%; }
+
+/* Nice method for clearing floated blocks without having to insert any extra markup (like spacer above)
+   From http://www.positioniseverything.net/easyclearing.html 
+#tabs:after, #minitabs:after, .post:after, .navbar:after, fieldset dl:after, ul.topiclist dl:after, ul.linklist:after, dl.polls:after {
+	content: "."; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}*/
+
+.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
+	height: 1%;
+	overflow: hidden;
+}
+
+/* viewtopic fix */
+* html .post {
+	height: 25%;
+	overflow: hidden;
+}
+
+/* navbar fix */
+* html .clearfix, * html .navbar, ul.linklist {
+	height: 4%;
+	overflow: hidden;
+}
+
+/* Simple fix so forum and topic lists always have a min-height set, even in IE6
+	From http://www.dustindiaz.com/min-height-fast-hack */
+dl.icon {
+	min-height: 35px;
+	height: auto !important;
+	height: 35px;
+}
+
+* html li.row dl.icon dt {
+	height: 35px;
+	overflow: visible;
+}
+
+* html #search-box {
+	width: 25%;
+}
+
+/* Correctly clear floating for details on profile view */
+*:first-child+html dl.details dd {
+	margin-left: 30%;
+	float: none;
+}
+
+* html dl.details dd {
+	margin-left: 30%;
+	float: none;
+}
+
+/* Headerbar height fix for IE7 and below */
+* html #site-description p {
+	margin-bottom: 1.0em;
+}
+
+*:first-child+html #site-description p {
+	margin-bottom: 1.0em;
+}
+
+/* #minitabs fix for IE */
+.tabs-container {
+	zoom: 1;
+}
+
+#minitabs {
+	white-space: nowrap;
+	*min-width: 50%;
+}
+/*  	
+--------------------------------------------------------------
+Colours and backgrounds for common.css
+-------------------------------------------------------------- */
+
+html, body {
+	color: #536482;
+	background-color: #FFFFFF;
+}
+
+h1 {
+	color: #FFFFFF;
+}
+
+h2 {
+	color: #28313F;
+}
+
+h3 {
+	border-bottom-color: #CCCCCC;
+	color: #115098;
+}
+
+hr {
+	border-color: #FFFFFF;
+	border-top-color: #CCCCCC;
+}
+
+hr.dashed {
+	border-top-color: #CCCCCC;
+}
+
+/* Search box
+--------------------------------------------- */
+
+#search-box {
+	color: #FFFFFF;
+}
+
+#search-box #keywords {
+	background-color: #FFF;
+}
+
+#search-box input {
+	border-color: #0075B0;
+}
+
+/* Round cornered boxes and backgrounds
+---------------------------------------- */
+.headerbar {
+	background-color: #12A3EB;
+	background-image: url("./styles/prosilver/theme/images/bg_header.gif");
+	color: #FFFFFF;
+}
+
+.navbar {
+	background-color: #cadceb;
+}
+
+.forabg {
+	background-color: #0076b1;
+	background-image: url("./styles/prosilver/theme/images/bg_list.gif");
+}
+
+.forumbg {
+	background-color: #12A3EB;
+	background-image: url("./styles/prosilver/theme/images/bg_header.gif");
+}
+
+.panel {
+	background-color: #ECF1F3;
+	color: #28313F;
+}
+
+.post:target .content {
+	color: #000000;
+}
+
+.post:target h3 a {
+	color: #000000;
+}
+
+.bg1	{ background-color: #ECF3F7; }
+.bg2	{ background-color: #e1ebf2;  }
+.bg3	{ background-color: #cadceb; }
+
+.ucprowbg {
+	background-color: #DCDEE2;
+}
+
+.fieldsbg {
+	background-color: #E7E8EA;
+}
+
+span.corners-top {
+	background-image: url("./styles/prosilver/theme/images/corners_left.png");
+}
+
+span.corners-top span {
+	background-image: url("./styles/prosilver/theme/images/corners_right.png");
+}
+
+span.corners-bottom {
+	background-image: url("./styles/prosilver/theme/images/corners_left.png");
+}
+
+span.corners-bottom span {
+	background-image: url("./styles/prosilver/theme/images/corners_right.png");
+}
+
+/* Horizontal lists
+----------------------------------------*/
+
+ul.navlinks {
+	border-bottom-color: #FFFFFF;
+}
+
+/* Table styles
+----------------------------------------*/
+table.table1 thead th {
+	color: #FFFFFF;
+}
+
+table.table1 tbody tr {
+	border-color: #BFC1CF;
+}
+
+table.table1 tbody tr:hover, table.table1 tbody tr.hover {
+	background-color: #CFE1F6;
+	color: #000;
+}
+
+table.table1 td {
+	color: #536482;
+}
+
+table.table1 tbody td {
+	border-top-color: #FAFAFA;
+}
+
+table.table1 tbody th {
+	border-bottom-color: #000000;
+	color: #333333;
+	background-color: #FFFFFF;
+}
+
+table.info tbody th {
+	color: #000000;
+}
+
+/* Misc layout styles
+---------------------------------------- */
+dl.details dt {
+	color: #000000;
+}
+
+dl.details dd {
+	color: #536482;
+}
+
+.sep {
+	color: #1198D9;
+}
+
+/* Pagination
+---------------------------------------- */
+
+.pagination span strong {
+	color: #FFFFFF;
+	background-color: #4692BF;
+	border-color: #4692BF;
+}
+
+.pagination span a, .pagination span a:link, .pagination span a:visited {
+	color: #5C758C;
+	background-color: #ECEDEE;
+	border-color: #B4BAC0;
+}
+
+.pagination span a:hover {
+	border-color: #368AD2;
+	background-color: #368AD2;
+	color: #FFF;
+}
+
+.pagination span a:active {
+	color: #5C758C;
+	background-color: #ECEDEE;
+	border-color: #B4BAC0;
+}
+
+/* Pagination in viewforum for multipage topics */
+.row .pagination {
+	background-image: url("./styles/prosilver/theme/images/icon_pages.gif");
+}
+
+.row .pagination span a, li.pagination span a {
+	background-color: #FFFFFF;
+}
+
+.row .pagination span a:hover, li.pagination span a:hover {
+	background-color: #368AD2;
+}
+
+/* Miscellaneous styles
+---------------------------------------- */
+
+.copyright {
+	color: #555555;
+}
+
+.error {
+	color: #BC2A4D;
+}
+
+.reported {
+	background-color: #F7ECEF;
+}
+
+li.reported:hover {
+	background-color: #ECD5D8 !important;
+}
+.sticky, .announce {
+	/* you can add a background for stickies and announcements*/
+}
+
+div.rules {
+	background-color: #ECD5D8;
+	color: #BC2A4D;
+}
+
+p.rules {
+	background-color: #ECD5D8;
+	background-image: none;
+}
+
+/*  	
+--------------------------------------------------------------
+Colours and backgrounds for links.css
+-------------------------------------------------------------- */
+
+a:link	{ color: #105289; }
+a:visited	{ color: #105289; }
+a:hover	{ color: #D31141; }
+a:active	{ color: #368AD2; }
+
+/* Links on gradient backgrounds */
+#search-box a:link, .navbg a:link, .forumbg .header a:link, .forabg .header a:link, th a:link {
+	color: #FFFFFF;
+}
+
+#search-box a:visited, .navbg a:visited, .forumbg .header a:visited, .forabg .header a:visited, th a:visited {
+	color: #FFFFFF;
+}
+
+#search-box a:hover, .navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+	color: #A8D8FF;
+}
+
+#search-box a:active, .navbg a:active, .forumbg .header a:active, .forabg .header a:active, th a:active {
+	color: #C8E6FF;
+}
+
+/* Links for forum/topic lists */
+a.forumtitle {
+	color: #105289;
+}
+
+/* a.forumtitle:visited { color: #105289; } */
+
+a.forumtitle:hover {
+	color: #BC2A4D;
+}
+
+a.forumtitle:active {
+	color: #105289;
+}
+
+a.topictitle {
+	color: #105289;
+}
+
+/* a.topictitle:visited { color: #368AD2; } */
+
+a.topictitle:hover {
+	color: #BC2A4D;
+}
+
+a.topictitle:active {
+	color: #105289;
+}
+
+/* Post body links */
+.postlink {
+	color: #368AD2;
+	border-bottom-color: #368AD2;
+}
+
+.postlink:visited {
+	color: #5D8FBD;
+	border-bottom-color: #5D8FBD;
+}
+
+.postlink:active {
+	color: #368AD2;
+}
+
+.postlink:hover {
+	background-color: #D0E4F6;
+	color: #0D4473;
+}
+
+.signature a, .signature a:visited, .signature a:hover, .signature a:active {
+	background-color: transparent;
+}
+
+/* Profile links */
+.postprofile a:link, .postprofile a:visited, .postprofile dt.author a {
+	color: #105289;
+}
+
+.postprofile a:hover, .postprofile dt.author a:hover {
+	color: #D31141;
+}
+
+.postprofile a:active {
+	color: #105289;
+}
+
+/* Profile searchresults */	
+.search .postprofile a {
+	color: #105289;
+}
+
+.search .postprofile a:hover {
+	color: #D31141;
+}
+
+/* Back to top of page */
+a.top {
+	background-image: url("./styles/prosilver/imageset/icon_back_top.gif");
+}
+
+a.top2 {
+	background-image: url("./styles/prosilver/imageset/icon_back_top.gif");
+}
+
+/* Arrow links  */
+a.up		{ background-image: url("./styles/prosilver/theme/images/arrow_up.gif") }
+a.down		{ background-image: url("./styles/prosilver/theme/images/arrow_down.gif") }
+a.left		{ background-image: url("./styles/prosilver/theme/images/arrow_left.gif") }
+a.right		{ background-image: url("./styles/prosilver/theme/images/arrow_right.gif") }
+
+a.up:hover {
+	background-color: transparent;
+}
+
+a.left:hover {
+	color: #368AD2;
+}
+
+a.right:hover {
+	color: #368AD2;
+}
+
+
+/*  	
+--------------------------------------------------------------
+Colours and backgrounds for content.css
+-------------------------------------------------------------- */
+
+ul.forums {
+	background-color: #eef5f9;
+	background-image: url("./styles/prosilver/theme/images/gradient.gif");
+}
+
+ul.topiclist li {
+	color: #4C5D77;
+}
+
+ul.topiclist dd {
+	border-left-color: #FFFFFF;
+}
+
+.rtl ul.topiclist dd {
+	border-right-color: #fff;
+	border-left-color: transparent;
+}
+
+ul.topiclist li.row dt a.subforum.read {
+	background-image: url("./styles/prosilver/imageset/subforum_read.gif");
+}
+
+ul.topiclist li.row dt a.subforum.unread {
+	background-image: url("./styles/prosilver/imageset/subforum_unread.gif");
+}
+
+li.row {
+	border-top-color:  #FFFFFF;
+	border-bottom-color: #00608F;
+}
+
+li.row strong {
+	color: #000000;
+}
+
+li.row:hover {
+	background-color: #F6F4D0;
+}
+
+li.row:hover dd {
+	border-left-color: #CCCCCC;
+}
+
+.rtl li.row:hover dd {
+	border-right-color: #CCCCCC;
+	border-left-color: transparent;
+}
+
+li.header dt, li.header dd {
+	color: #FFFFFF;
+}
+
+/* Forum list column styles */
+ul.topiclist dd.searchextra {
+	color: #333333;
+}
+
+/* Post body styles
+----------------------------------------*/
+.postbody {
+	color: #333333;
+}
+
+/* Content container styles
+----------------------------------------*/
+.content {
+	color: #333333;
+}
+
+.content h2, .panel h2 {
+	color: #115098;
+	border-bottom-color:  #CCCCCC;
+}
+
+dl.faq dt {
+	color: #333333;
+}
+
+.posthilit {
+	background-color: #F3BFCC;
+	color: #BC2A4D;
+}
+
+/* Post signature */
+.signature {
+	border-top-color: #CCCCCC;
+}
+
+/* Post noticies */
+.notice {
+	border-top-color:  #CCCCCC;
+}
+
+/* BB Code styles
+----------------------------------------*/
+/* Quote block */
+blockquote {
+	background-color: #EBEADD;
+	background-image: url("./styles/prosilver/theme/images/quote.gif");
+	border-color:#DBDBCE;
+}
+
+.rtl blockquote {
+	background-image: url("./styles/prosilver/theme/images/quote_rtl.gif");
+}
+
+blockquote blockquote {
+	/* Nested quotes */
+	background-color:#EFEED9;
+}
+
+blockquote blockquote blockquote {
+	/* Nested quotes */
+	background-color: #EBEADD;
+}
+
+/* Code block */
+dl.codebox {
+	background-color: #FFFFFF;
+	border-color: #C9D2D8;
+}
+
+dl.codebox dt {
+	border-bottom-color:  #CCCCCC;
+}
+
+dl.codebox code {
+	color: #2E8B57;
+}
+
+.syntaxbg		{ color: #FFFFFF; }
+.syntaxcomment	{ color: #FF8000; }
+.syntaxdefault	{ color: #0000BB; }
+.syntaxhtml		{ color: #000000; }
+.syntaxkeyword	{ color: #007700; }
+.syntaxstring	{ color: #DD0000; }
+
+/* Attachments
+----------------------------------------*/
+.attachbox {
+	background-color: #FFFFFF;
+	border-color:  #C9D2D8;
+}
+
+.pm-message .attachbox {
+	background-color: #F2F3F3;
+}
+
+.attachbox dd {
+	border-top-color: #C9D2D8;
+}
+
+.attachbox p {
+	color: #666666;
+}
+
+.attachbox p.stats {
+	color: #666666;
+}
+
+.attach-image img {
+	border-color: #999999;
+}
+
+/* Inline image thumbnails */
+
+dl.file dd {
+	color: #666666;
+}
+
+dl.thumbnail img {
+	border-color: #666666;
+	background-color: #FFFFFF;
+}
+
+dl.thumbnail dd {
+	color: #666666;
+}
+
+dl.thumbnail dt a:hover {
+	background-color: #EEEEEE;
+}
+
+dl.thumbnail dt a:hover img {
+	border-color: #368AD2;
+}
+
+/* Post poll styles
+----------------------------------------*/
+
+fieldset.polls dl {
+	border-top-color: #DCDEE2;
+	color: #666666;
+}
+
+fieldset.polls dl.voted {
+	color: #000000;
+}
+
+fieldset.polls dd div {
+	color: #FFFFFF;
+}
+
+.rtl .pollbar1, .rtl .pollbar2, .rtl .pollbar3, .rtl .pollbar4, .rtl .pollbar5 {
+	border-right-color: transparent;
+}
+
+.pollbar1 {
+	background-color: #AA2346;
+	border-bottom-color: #74162C;
+	border-right-color: #74162C;
+}
+
+.rtl .pollbar1 {
+	border-left-color: #74162C;
+}
+
+.pollbar2 {
+	background-color: #BE1E4A;
+	border-bottom-color: #8C1C38;
+	border-right-color: #8C1C38;
+}
+
+.rtl .pollbar2 {
+	border-left-color: #8C1C38;
+}
+
+.pollbar3 {
+	background-color: #D11A4E;
+	border-bottom-color: #AA2346;
+	border-right-color: #AA2346;
+}
+
+.rtl .pollbar3 {
+	border-left-color: #AA2346;
+}
+
+.pollbar4 {
+	background-color: #E41653;
+	border-bottom-color: #BE1E4A;
+	border-right-color: #BE1E4A;
+}
+
+.rtl .pollbar4 {
+	border-left-color: #BE1E4A;
+}
+
+.pollbar5 {
+	background-color: #F81157;
+	border-bottom-color: #D11A4E;
+	border-right-color: #D11A4E;
+}
+
+.rtl .pollbar5 {
+	border-left-color: #D11A4E;
+}
+
+/* Poster profile block
+----------------------------------------*/
+.postprofile {
+	color: #666666;
+	border-left-color: #FFFFFF;
+}
+
+.rtl .postprofile {
+	border-right-color: #FFFFFF;
+	border-left-color: transparent;
+}
+
+.pm .postprofile {
+	border-left-color: #DDDDDD;
+}
+
+.rtl .pm .postprofile {
+	border-right-color: #DDDDDD;
+	border-left-color: transparent;
+}
+
+.postprofile strong {
+	color: #000000;
+}
+
+.online {
+	background-image: url("./styles/prosilver/imageset/en/icon_user_online.gif");
+}
+
+/*  	
+--------------------------------------------------------------
+Colours and backgrounds for buttons.css
+-------------------------------------------------------------- */
+
+/* Big button images */
+.reply-icon span	{ background-image: url("./styles/prosilver/imageset/en/button_topic_reply.gif"); }
+.post-icon span		{ background-image: url("./styles/prosilver/imageset/en/button_topic_new.gif"); }
+.locked-icon span	{ background-image: url("./styles/prosilver/imageset/en/button_topic_locked.gif"); }
+.pmreply-icon span	{ background-image: url("./styles/prosilver/imageset/en/button_pm_reply.gif") ;}
+.newpm-icon span 	{ background-image: url("./styles/prosilver/imageset/en/button_pm_new.gif") ;}
+.forwardpm-icon span	{ background-image: url("./styles/prosilver/imageset/en/button_pm_forward.gif") ;}
+
+a.print {
+	background-image: url("./styles/prosilver/theme/images/icon_print.gif");
+}
+
+a.sendemail {
+	background-image: url("./styles/prosilver/theme/images/icon_sendemail.gif");
+}
+
+a.fontsize {
+	background-image: url("./styles/prosilver/theme/images/icon_fontsize.gif");
+}
+
+/* Icon images
+---------------------------------------- */
+.sitehome						{ background-image: url("./styles/prosilver/theme/images/icon_home.gif"); }
+.icon-faq						{ background-image: url("./styles/prosilver/theme/images/icon_faq.gif"); }
+.icon-members					{ background-image: url("./styles/prosilver/theme/images/icon_members.gif"); }
+.icon-home						{ background-image: url("./styles/prosilver/theme/images/icon_home.gif"); }
+.icon-ucp						{ background-image: url("./styles/prosilver/theme/images/icon_ucp.gif"); }
+.icon-register					{ background-image: url("./styles/prosilver/theme/images/icon_register.gif"); }
+.icon-logout					{ background-image: url("./styles/prosilver/theme/images/icon_logout.gif"); }
+.icon-bookmark					{ background-image: url("./styles/prosilver/theme/images/icon_bookmark.gif"); }
+.icon-bump						{ background-image: url("./styles/prosilver/theme/images/icon_bump.gif"); }
+.icon-subscribe					{ background-image: url("./styles/prosilver/theme/images/icon_subscribe.gif"); }
+.icon-unsubscribe				{ background-image: url("./styles/prosilver/theme/images/icon_unsubscribe.gif"); }
+.icon-pages						{ background-image: url("./styles/prosilver/theme/images/icon_pages.gif"); }
+.icon-search					{ background-image: url("./styles/prosilver/theme/images/icon_search.gif"); }
+.icon-blog						{ background-image: url("./styles/prosilver/theme/images/icon_blog.gif"); }
+
+/* Profile & navigation icons */
+.email-icon, .email-icon a		{ background-image: url("./styles/prosilver/imageset/icon_contact_email.gif"); }
+.aim-icon, .aim-icon a			{ background-image: url("./styles/prosilver/imageset/icon_contact_aim.gif"); }
+.yahoo-icon, .yahoo-icon a		{ background-image: url("./styles/prosilver/imageset/icon_contact_yahoo.gif"); }
+.web-icon, .web-icon a			{ background-image: url("./styles/prosilver/imageset/icon_contact_www.gif"); }
+.msnm-icon, .msnm-icon a			{ background-image: url("./styles/prosilver/imageset/icon_contact_msnm.gif"); }
+.icq-icon, .icq-icon a			{ background-image: url("./styles/prosilver/imageset/icon_contact_icq.gif"); }
+.jabber-icon, .jabber-icon a		{ background-image: url("./styles/prosilver/imageset/icon_contact_jabber.gif"); }
+.pm-icon, .pm-icon a				{ background-image: url("./styles/prosilver/imageset/en/icon_contact_pm.gif"); }
+.quote-icon, .quote-icon a		{ background-image: url("./styles/prosilver/imageset/en/icon_post_quote.gif"); }
+
+/* Moderator icons */
+.report-icon, .report-icon a		{ background-image: url("./styles/prosilver/imageset/icon_post_report.gif"); }
+.edit-icon, .edit-icon a			{ background-image: url("./styles/prosilver/imageset/en/icon_post_edit.gif"); }
+.delete-icon, .delete-icon a		{ background-image: url("./styles/prosilver/imageset/icon_post_delete.gif"); }
+.info-icon, .info-icon a			{ background-image: url("./styles/prosilver/imageset/icon_post_info.gif"); }
+.warn-icon, .warn-icon a			{ background-image: url("./styles/prosilver/imageset/icon_user_warn.gif"); } /* Need updated warn icon */
+
+/*  	
+--------------------------------------------------------------
+Colours and backgrounds for cp.css
+-------------------------------------------------------------- */
+
+/* Main CP box
+----------------------------------------*/
+
+#cp-main h3, #cp-main hr, #cp-menu hr {
+	border-color: #A4B3BF;
+}
+
+#cp-main .panel li.row {
+	border-bottom-color: #B5C1CB;
+	border-top-color: #F9F9F9;
+}
+
+ul.cplist {
+	border-top-color: #B5C1CB;
+}
+
+#cp-main .panel li.header dd, #cp-main .panel li.header dt {
+	color: #000000;
+}
+
+#cp-main table.table1 thead th {
+	color: #333333;
+	border-bottom-color: #333333;
+}
+
+#cp-main .pm-message {
+	border-color: #DBDEE2;
+	background-color: #FFFFFF;
+}
+
+/* CP tabbed menu
+----------------------------------------*/
+#tabs a {
+	background-image: url("./styles/prosilver/theme/images/bg_tabs1.gif");
+}
+
+#tabs a span {
+	background-image: url("./styles/prosilver/theme/images/bg_tabs2.gif");
+	color: #536482;
+}
+
+#tabs a:hover span {
+	color: #BC2A4D;
+}
+
+#tabs .activetab a {
+	border-bottom-color: #CADCEB;
+}
+
+#tabs .activetab a span {
+	color: #333333;
+}
+
+#tabs .activetab a:hover span {
+	color: #000000;
+}
+
+/* Mini tabbed menu used in MCP
+----------------------------------------*/
+#minitabs li {
+	background-color: #E1EBF2;
+}
+
+#minitabs li.activetab {
+	background-color: #F9F9F9;
+}
+
+#minitabs li.activetab a, #minitabs li.activetab a:hover {
+	color: #333333;
+}
+
+/* UCP navigation menu
+----------------------------------------*/
+
+/* Link styles for the sub-section links */
+#navigation a {
+	color: #333;
+	background-color: #B2C2CF;
+	background-image: url("./styles/prosilver/theme/images/bg_menu.gif");
+}
+
+.rtl #navigation a {
+	background-image: url("./styles/prosilver/theme/images/bg_menu_rtl.gif");
+	background-position: 0 100%;
+}
+
+#navigation a:hover {
+	background-image: none;
+	background-color: #aabac6;
+	color: #BC2A4D;
+}
+
+#navigation #active-subsection a {
+	color: #D31141;
+	background-color: #F9F9F9;
+	background-image: none;
+}
+
+#navigation #active-subsection a:hover {
+	color: #D31141;
+}
+
+/* Preferences pane layout
+----------------------------------------*/
+#cp-main h2 {
+	color: #333333;
+}
+
+#cp-main .panel {
+	background-color: #F9F9F9;
+}
+
+#cp-main .pm {
+	background-color: #FFFFFF;
+}
+
+#cp-main span.corners-top, #cp-menu span.corners-top {
+	background-image: url("./styles/prosilver/theme/images/corners_left2.gif");
+}
+
+#cp-main span.corners-top span, #cp-menu span.corners-top span {
+	background-image: url("./styles/prosilver/theme/images/corners_right2.gif");
+}
+
+#cp-main span.corners-bottom, #cp-menu span.corners-bottom {
+	background-image: url("./styles/prosilver/theme/images/corners_left2.gif");
+}
+
+#cp-main span.corners-bottom span, #cp-menu span.corners-bottom span {
+	background-image: url("./styles/prosilver/theme/images/corners_right2.gif");
+}
+
+/* Topicreview */
+#cp-main .panel #topicreview span.corners-top, #cp-menu .panel #topicreview span.corners-top {
+	background-image: url("./styles/prosilver/theme/images/corners_left.gif");
+}
+
+#cp-main .panel #topicreview span.corners-top span, #cp-menu .panel #topicreview span.corners-top span {
+	background-image: url("./styles/prosilver/theme/images/corners_right.gif");
+}
+
+#cp-main .panel #topicreview span.corners-bottom, #cp-menu .panel #topicreview span.corners-bottom {
+	background-image: url("./styles/prosilver/theme/images/corners_left.gif");
+}
+
+#cp-main .panel #topicreview span.corners-bottom span, #cp-menu .panel #topicreview span.corners-bottom span {
+	background-image: url("./styles/prosilver/theme/images/corners_right.gif");
+}
+
+/* Friends list */
+.cp-mini {
+	background-color: #eef5f9;
+}
+
+dl.mini dt {
+	color: #425067;
+}
+
+/* PM Styles
+----------------------------------------*/
+/* PM Message history */
+.current {
+	color: #000000 !important;
+}
+
+/* PM marking colours */
+.pmlist li.pm_message_reported_colour, .pm_message_reported_colour {
+	border-left-color: #BC2A4D;
+	border-right-color: #BC2A4D;
+}
+
+.pmlist li.pm_marked_colour, .pm_marked_colour {
+	border-color: #FF6600;
+}
+
+.pmlist li.pm_replied_colour, .pm_replied_colour {
+	border-color: #A9B8C2;
+}
+
+.pmlist li.pm_friend_colour, .pm_friend_colour {
+	border-color: #5D8FBD;
+}
+
+.pmlist li.pm_foe_colour, .pm_foe_colour {
+	border-color: #000000;
+}
+
+/* Avatar gallery */
+#gallery label {
+	background-color: #FFFFFF;
+	border-color: #CCC;
+}
+
+#gallery label:hover {
+	background-color: #EEE;
+}
+
+/*  	
+--------------------------------------------------------------
+Colours and backgrounds for forms.css
+-------------------------------------------------------------- */
+
+/* General form styles
+----------------------------------------*/
+select {
+	border-color: #666666;
+	background-color: #FAFAFA;
+	color: #000;
+}
+
+label {
+	color: #425067;
+}
+
+option.disabled-option {
+	color: graytext;
+}
+
+/* Definition list layout for forms
+---------------------------------------- */
+dd label {
+	color: #333;
+}
+
+/* Hover effects */
+fieldset dl:hover dt label {
+	color: #000000;
+}
+
+fieldset.fields2 dl:hover dt label {
+	color: inherit;
+}
+
+/* Quick-login on index page */
+fieldset.quick-login input.inputbox {
+	background-color: #F2F3F3;
+}
+
+/* Posting page styles
+----------------------------------------*/
+
+#message-box textarea {
+	color: #333333;
+}
+
+/* Input field styles
+---------------------------------------- */
+.inputbox {
+	background-color: #FFFFFF; 
+	border-color: #B4BAC0;
+	color: #333333;
+}
+
+.inputbox:hover {
+	border-color: #11A3EA;
+}
+
+.inputbox:focus {
+	border-color: #11A3EA;
+	color: #0F4987;
+}
+
+/* Form button styles
+---------------------------------------- */
+
+a.button1, input.button1, input.button3, a.button2, input.button2 {
+	color: #000;
+	background-color: #FAFAFA;
+	background-image: url("./styles/prosilver/theme/images/bg_button.gif");
+}
+
+a.button1, input.button1 {
+	border-color: #666666;
+}
+
+input.button3 {
+	background-image: none;
+}
+
+/* Alternative button */
+a.button2, input.button2, input.button3 {
+	border-color: #666666;
+}
+
+/* <a> button in the style of the form buttons */
+a.button1, a.button1:link, a.button1:visited, a.button1:active, a.button2, a.button2:link, a.button2:visited, a.button2:active {
+	color: #000000;
+}
+
+/* Hover states */
+a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
+	border-color: #BC2A4D;
+	color: #BC2A4D;
+}
+
+input.search {
+	background-image: url("./styles/prosilver/theme/images/icon_textbox_search.gif");
+}
+
+input.disabled {
+	color: #666666;
+}
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=normal.css
+Content-Type: text/css; name=normal.css
+Content-Location: http://ompf2.com/styles/prosilver/theme/normal.css
+Content-Transfer-Encoding: 8bit
+
+body {
+	font-size: 10px;
+}
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=medium.css
+Content-Type: text/css; name=medium.css
+Content-Location: http://ompf2.com/styles/prosilver/theme/medium.css
+Content-Transfer-Encoding: 8bit
+
+body {
+	font-size: 11px;
+}
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=large.css
+Content-Type: text/css; name=large.css
+Content-Location: http://ompf2.com/styles/prosilver/theme/large.css
+Content-Transfer-Encoding: 8bit
+
+body {
+	font-size: 12px;
+}
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=site_logo.gif
+Content-Type: image/gif; name=site_logo.gif
+Content-Location: http://ompf2.com/styles/prosilver/imageset/site_logo.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhlQA0APcAAP8A/xIPLRkWOBANShkWRRUTWBkWaB0aeCIdRyQeXiIdZCEa
+eiQgRismWTIqXTgxXislZigjeDUsZzQtdjszZjoydE0OE0gSGVgRF0kaJVEcJFEf
+MVolM143OmcVG3cZHWgbIHcbIW4oKWQsOWgzPHUiJnorNHY1PUI4X188SUQ7Z0U7
+d2g3R3Y7SExCa0tCdVVJa1RLdVpQalxSdWVBS2tGVXhBTXdJV3hTXGZVZ2dZd3VP
+YXZXZ3NcdG5genpia3hkeSIdhiciiyokljEriTw0hC0npC8qszEqqTMttzUwpzcx
+vDYuwjgxxzs11D445UQ7hkc9kUA53EM76EQ99ktBh01FlVVLg1ZMmFpTh1NMo1NL
+sl9Wq2Rah2ValWthhmtimXlqhXRqmX5whHxxmW1kpHZqpnlutn1xqH1yuklB+2Ze
+wX5zwYcdIoskKYQtNok0PZkjKp8pMZ4wOaYmLKgpMKU0OrUpLrUsM70wN4Y8RpM6
+RaY6QopCSodIVIVSXZZBS5hKVZVUW4xMZYdYZphYZYdkbYVpd4Nwf5ZiaZVpdJlx
+fKJETaRVX7ZMU6NdaKVia6ZpdKZyfbNjbLRteLVwfMctMscyOdc1O+U3PPE6PsY7
+QtQ3QOk7Qfg9Q/1BR4RtgIlzh4d5mpRrgpd4h5d9kId5pIl6tpB+p5B9sad4hbV5
+hod7wot/0MN5h5mDl4+AoZeHppmIt5+Qq6qAjaiJmaeQnbCCjbOIl7SRnqWNo6OP
+s6iSqKmWtLCPoraWp7acs6+huL6iq7qiuIyAy5eHxpWH2aKPw6mXxaiX1bOfyqiX
+6bmnxbil1r+xxbel6MuBjseIl8eSntOKmsaYp8CfstWYp9afscekrsamt8Wyu9an
+ttSwveSYq+WnucesxMGs08m0ycq21divwde2yNW708m16ee2yMrAzc3A09XCz9jF
+2NzR3tjF6NnG89vQ4ejE1+fS3ebM5OLN9ujV6OrV9/HO5vLU6/Tb9ezh6Ozl8Pvn
+/P38/QAAAAAAAAAAACH5BAEAAAAALAAAAACVADQAAAj+AAEIHEiwoMGDCBMqXMiw
+ocOHECNKXGMMAEWJGDNq3MhR47JnxlqBxEjHjQkTcPYAAsQIUKCXgQQF+jPoj00e
+f3js4MGTRw+fPYIKDeqjR1EfRXX40MFUx4ynT2NIlfqiatUVKypUoCChQYQhHTka
+W9aqFVmMd+jceWPiTco9e1oC8tPHj90beHfc2MG358+hQoEYNdpURw6oM2LMgBED
+xgsYLmK4eOFixQusFVRUkOAgghAjRsJufEa2VUW0llLfaesWLtw+sG34sXHDz96+
+PHsYAnIIFKhRoUqFGh5qjHEgQJYynSFjMWTIlK1WeQEF82YIQ0AbQSI645pnZc/+
+YkxtCVOmTHLawnkLCLYfPbZt/8FBiNChUaNo1fqVLZw6duzEQ88777CTjjPBzAKL
+KGF8sVRUjb0QwwtVXFHFhVBEUUQRExCRRBJIhJhEdxgtU5FZrWRUnnmatGjJG62p
+NNdcdtlEnyGKkHLLL+Tcsw8/QAYpZJD70IMgLGSE0YVTVFF4BRRVRCHlhkQs4QQT
+SxxxRBJMkDiRQGykmBEmLGriiSeaYFIHSnq0R6NtN8xHCI6k5JJNPEPmmWc9zswi
+ihg+JDbhZStAAUURh3KIhBRSOHHlh0x06eWkDJmXSYtnoplJHm+cAIceetgQqg02
+1IAXDj/gWEou2qyTj57+QurzTp+wNMjcCyqoQIFWFUzg6wQQRNDEE1NQ8YQTTUTK
+RBOUNpvQeZee+cknmmIyhwkntDAqqaXWYGpfP/yAyCKkvKILL8AA08svs8TyCoNh
+BCoDZCjU+wBXEkgAAQQJJDCEFE9QIfATxyrrhLMEwarwkGIqdJ6Znkw7rSadZILJ
+aifAB8ggcOaFw049/dDDD8iVHAZySTk1L2QuuKDCCi9rxRkERjgRsMADN6EzEwcj
+LNAz+uhD2jJEF230M8+8E3TQzzD0sLQSU1uxJSWRYMMggxRSSCKFGOJ1qoeEfQgi
+ZJdNtnFhnJwcUl/o0MXbXniBxRUrUPBZElIIrIb+GgI3qnMTPfu8hjtCO2SWOUGv
+sdDTUU+LZicXx3HCH4lUsko0v1CTeTXZfKNNOOGgI7o66ayzDjumr5PO6s44w4wy
+wRzTyzGyyHJKKmZ8sYIRRwxLxd57G4uszoH73ArTEAG9zELmdRJx459QjIkld5xQ
+OS7TWHPN9uOMQw455awDzzrylE8PPfnUQ48+57/TTjvpmANOM80ok8z9yRhzihlW
+HLHsFMDb2xT8RjyfEWQZQVveQ5ZhDuZlwnnPk9jjpneHPURiFdPoRje8wcFzeBAe
+8LCHPO5Rj3vgYx8oTKE+9lGPerzDHe0wh/yQhjSitSINWIiUEwAYwAEOD3D+BiSI
+0t6huIe84zQIIVMnzNQ4T1SMgn2AhCsyuEFvePAcILSHFvFxwhSikB9ebOE8YChD
+c9CQNMZggxaWZbMAUmEKjvpb8Qy4BqU17SFlUQiZHhhBqUGOgoCQIhU5aEUsZtGE
+XEwhGH8UxjG6Q4bPMGPR0rhGnj2hhwQsoEOCxBEE6kOBYSETJpaYKSd2AnKXoF4U
+KwENKlbxgyG0ByK76EUU4kOM7nikGWtoImOsoZJOyNvvpuBDOTLrIEAaCJDK0opk
+agRo+ujOJTDBCT4675SnvMQl8nCHPjyiElMcZAcNqUVZcpGW++BiC3OpSxpOkg1n
+sAKXAEfMN2ZSkwb+CUmQ8igQfmokaO4QjTapeUpTnpITnMgDN/UACUq4opXZ2543
+xmFFEMZSlvfI6C3rMY8xxhCSSGvGMpJRFjaUQZ46lAIxGfXDJQAxIcyclDGU1sCO
+5GGgD8QmJzrBiW2mxZsOhag1hnqNbXjvHOoYHzzKF4/yla8d8liHOaQqDvo1437H
+MAYxWHEGMPQvCVZi1ACl8DeX6iyIB/EkKDWi0Etwwjw7jWtP84AHOkQxqNOYhjSs
+QY1rYMOo5DhHOc5huvGZrh3hK4c4xAGOxirjscg4RjGKwYr9gQEKW0oC4BjlN5cu
+wawP4aRohtiwjOChrW/NBEIRigmf2rWhD23+pTT22ldscIMb3wNfOXbLW8WCIxzg
+YMbrlBFZyVL2FGgogxeqwDuwOgpZTvDsZ3mGEGcCYJllse5GBvdJjuDhtHl4K0JV
+q1q61nWVD51GNPQ6275m47bcCMf35BuOb9jXvswYhjKAgYxd7IJ2tjuFZb1QhO0c
+4bMt/ewS5omQ7GJ3IP7kSNJKi5E6fPemb6Xmaun6U9hCAxrRCHF7qYGN92ZjHN8I
+B4rvO4xhpEtd/t2FLGKRilScwhRmKAMYsrA7EZl1C034rBIW7FKFxJRSy3gHhSts
+4dO6Vbw9vQQe6kAHPTyCEqwEcTRwEY1cSEMYJH7vN7jB4hanqxe98K/+LmKBijaj
+whRoSC4YvHCFCgwhRFv6bJCXMGQlgFVSaCVIK9yBxI3UQQ4XdquG53qHtOghEZNw
+xSpWoYpFLEIRlsYFNaqBDc5l49MtdnEveMELXay5F+BQxi5SUQzkimHOWahzdoyg
+hCEr2M9IAFGkAk2Q76zV0HKoQx1QS01t4uEOVNZDIS6Ii1rcAhe3iPYqIrGITXs6
+1C7mxS9MHQtdlGMYYcgBDF5WhS3Ejc4vqIAQZo2EI/Q5CUo4Qq7ByuuBPLI7hxb2
+aTdBzU1s87vJTsQtcpELaNPi4LdYxS0qEYlcVOPh1XDxL0htanPB4xWg4EUvuqAC
+CQghyFGI9Qv+PJ6dO8fbz0oIkYhGVG+gFTEscoi5hVGb0DwI29E7ygUtFoEIReBI
+EaqwHCUg8YtfVOPFFNfFK17xDV/s4BtAmkUMoLCEKTRBCdNZgQSCMISugyblKg87
+oNGKwCUrhDQKiTkdgu1kbdLVwlROhDBeoYhwoeruOMBBIiAhiEL8AhhFn3jFX8EL
+a+zhBrmgBzp8EIMiELMJSBgCrrY+hHVrRwnbQQKtt8NytLbiiBBBkULqEAeZf9ft
+Nr85H3IRinB57fVfwwENOlCCEuCi6MAodS2W/gpqOAITm+gDIYCgpCI0is9DKIIK
+IBCEdXd9CJj/Ors7b8ApuOPXCzHLHRP+EvM4rH3mdLUDlYXdCESIy9KWxrQiFJGI
+RPyhAx+IA9F9wQtf6GL3S79FHZ58DXq0AxxrIGRGMAREgALMJwTON2tKMGt3th2B
+dm8LlGSFdhCkp3b6BnBqdwc7cAikQArkgn6WRm2RkAh+0AZ0wAi2YH+2gH+l8AqR
+IGx1wAfREAzAIAtccASgQQSVRwEOwHUI+HwLuIDQd2fcEURAw0xImIRlMRaIEzRm
+RxCHFgelRwf6dmhyQAdUCASlUAq0QAqVVmmSEIaSEAmRIAhuQAd2sIK1oHSvUAqk
+UAqFgIV0MAeqsGZogAXP13VCgAINwHV66HUDOIDsFkTLsDALUzj+C1GBUxhsVuh9
+VBgKtVALqkALqgCGYlgJkjAJieAGd2AH+NeGbzgchiAIezAHitCCokAGWfAVehgB
+FJAAB9B8CVhyzzeARegzRpOLuriLTwiFciCFU+h9vyiFWBgKuoALB+eFlSgJqiAJ
+lcBwjeAGeMAHW7iFpDAcvkEKvrAIquALo6YLcHZZC9B8CoAABGAAsZiHgaiOoVFv
+kxKFwOh9bhACbUCMcTAKvuALtXBwldiMQScJlDAJghBsgXCN2AgKvQEEoeALtkBq
+vNAuC/JqVwABBoAA5lgA6eiHtFiL7eiOJEJl8SiFIeAB9AiMg+ALv4CMlLiMQacK
+lFCGcXD+B/YRNkBAMoIhMraQk7YwC7oACwtCBmAwAxLAAAwgAAKAkelYi3n4fB7p
+JXcwjMDYBiQJAiEQB23QBibQC8BQcPxYiZUQdEMHB2gYLjnwAznAAzmQljkgAz+g
+dLowC3CJJBynAg5AlAIQAAOAkUHQfEtZeV7XlA/BBgxRV8DoBm3wAR6QmB/QBiHw
+ASJACtlQDVypCpQWdKtACY8Qk5Lwhm1YjcIhHGPgA8iBNl8wAy7zAA5Ql0Q5AAOA
+jnu5lOvmfLz2DtiXEDbEEE/5i25glYnZmx8QAnogCJDQOZJpcJM2aZUACHQwCcJQ
+dLbwCw0ZnbzwCsmxljIgA04BAyj+4AASwBVc4QANgAAF4Jo+6Jd8CRaBJh4NYQz8
+MIEHkRZSeJWIiQH0iQEgcAJ1MRO/cA7ZQA1cdgvR4Aqu0Ah1MAm4oJMImqClUJ3X
+eZ0qUC8UcC8UMKER6gAKcACxyHXNt6HrBpgN0Z4MAZJWKZX1iQEbsAEjwAItYAOJ
+QAvDIF/bwFfq9Qh2EAiFQAmzRXC5IJ072aNwaQs+KQpjQAZfUKRv0wVegKRZwGMX
+updO+qSBhnbKBCsJ454GcQfxyZgYYAEWcAEZsAEcwAKEwA0/EiTroA3CIAy3oAiE
+YBN/4AeqQHC/kAsTFwy8YKcaNwsPGQvuEqSikIpkEKhi8Gr+OxZrE4Che7kA4ziO
+aGUMUioQIaGEpQWiC0EH8YmYXPqlKJqiN6AIrKIN2YANzfkKh7ADKXCqNPAHpIAL
+OkpqE5d7dmqncNkuChILPmkKomAKZIAGZGAGgwoGhfoCEYChxMqoaOUOvVhdVloQ
+dHCVIRACGKABHDACJJAtLGADK1oDLeAt3MqtP8CBtKCP+diQE+eQo5anD7mTfGqr
+t4qruooGvqpjhRoDFWAA9moAC3AAZPdrClOlDDGiHiAC+RkTWVMIg0AIhTAnPmdp
+pEALrxCJECuu59KQDmmuejqrtAoL7GoKcLarcWYGyfVqXrCkL0CRCmCvx6qeACCp
+EcaYD7VZEFcJAsFZCI8wCZSAZZZznLSwCgenH/pxoM0msWtof6b2lqSmpw/5kDzZ
+LnzarhwbZx+bXGWgXEsaAxRgAOMZRCKRrGnlslz7ASYQEzVrs88ooOCkcKsAbbiw
+tmuro7Wwo7agCypYtEWbtLPQCxcLl3zqZhwLZ3CWBmhwBoGbY1M7slfwAglQAB66
+uIzbuI77uM0SEAAAOw==
+
+------------nPo73OT5icM67NWGuZrZDU
+Content-Disposition: inline; filename=icon_post_target.gif
+Content-Type: image/gif; name=icon_post_target.gif
+Content-Location: http://ompf2.com/styles/prosilver/imageset/icon_post_target.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODlhCwAJALMNAHd3d/////n5+cbGxv7+/u7u7uTk5PPz8/39/fT09PX19cfH
+x+Pj4wAAAAAAAAAAACH+OjxDT1BZPkNvcHlyaWdodCAyMDA0IFRoZSBwaHBCQiBH
+cm91cCwgQWxsIFJpZ2h0cyBSZXNlcnZlZC4AIfkEAQAADQAsAAAAAAsACQAABCmw
+NUCpvDNoi4EWVUcQCEIAnaAKDHoBSnIchisBSaEP9mQMgwWvUwk1IgA7
+
+------------nPo73OT5icM67NWGuZrZDU--
