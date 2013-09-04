@@ -222,12 +222,15 @@ Although the packet ray caster produces visually equivalent results as the Singl
 \subsection{Migration to new host application}
 \label{sec:migration}
 
-removing legacy code, integrating new C++ component framework (CWC, Michael Hava)
+While the main development of Enlight happened using the code base of an existing, RISC internal framework designed for easy OpenGL integration and scene management, Michael Hava, one of the project members, was already working on a newer, leaner main application which would then also be used for the final product. The main design consideration of this new application was to get rid of legacy code (like the OpenGL framework and MFC) and to separate the application into components using a self-written C++ component framework by Michael Hava called CWC. Furthermore, by using the cross-platform GLFW library for window management and user interaction, the application may be run on all major platforms.
 
-port of OpenCL driver
+Although the complete main application was rewritten, the final port of the OpenCL caster suite to this new prototype did only require an adaption of the \lstinline!OpenCLCasterWrapper! class. Of main concern were the \lstinline!RegularGrid! class and the \lstinline!PixelGrid! class, which where both replaced by other structures. Updates to the OpenCL driver now occur separately for each cell and may be executed concurrently by multiple threads. Therefore, thread safety of the \lstinline!OpenCLCasterWrapper!'s methods had to be ensured which was implemented using C++11's new thread library. Furthermore, the concept of configurable driver options was generalized to key value pairs settable by the main application. Examples of the OpenCL caster include floating point precision, currently used caster implementation, work group size, OpenCL platform or device and out of core casting. The final and largest change was also the output format of the casters, which was changed from an image with red, green, blue and depth channel to the hit triangle id and distance as well as the barycentric coordinates of the intersection point on the triangle. The actual color image is then calculated by the main application separating the shading step from the ray casting algorithms.
+
 
 \subsection{Out of core casting}
 \label{sec:out_of_core}
+
+
 
 Motivation, older GPUs, large models
 
