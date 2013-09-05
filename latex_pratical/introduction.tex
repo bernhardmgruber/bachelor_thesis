@@ -2,7 +2,7 @@
 
 \subsection{About RISC Software GmbH}
 
-The RISC Software GmbH is a limited liability company and part of the software park Hagenberg located in Upper Austria. It has been founded in 1992 by Bruno Buchberger as part of RISC, which was founded five years before and stands for Research Institute for Symbolic Computation. While the institute performs basic research between the fields of mathematics and computer science, the RISC Software GmbH dedicates itself to the application of mathematical and computational research. Beside a small set of software products, the RISC Software GmbH's main focus lies on providing customized software solutions using state-of-the-art and even cutting-edge technologies.
+The RISC Software GmbH is a limited liability company and part of the software park Hagenberg located in Upper Austria. It has been founded in 1992 by Bruno Buchberger as part of RISC, which was founded five years before and stands for Research Institute for Symbolic Computation. While the institute conducts basic research in the fields of mathematics and computer science, the RISC Software GmbH dedicates itself to the application of mathematical and computational research. Besides a small set of software products, the RISC Software GmbH's main focus lies on providing customized software solutions using state-of-the-art and even cutting-edge technologies.
 
 The company is divided into four departments (called units) designating its primary competences:
 
@@ -19,25 +19,26 @@ The company operates profit-orientated with a non-profit character as, according
 \subsection{About Regio 13 Enlight}
 \label{sec:about_enlight}
 
-Regio 13 is a political program to sustainably improve the contestability of regional companies, economic growth and employment inside of Upper Austria. The program is co-funded by the European Union with a total budget of 95.5 million euro. The program's duration is from 2007 to 2013. Within this time, companies may apply for financial subventions by the government (Land Oberösterreich) for projects determined worthy of support.
+Regio 13 is a political program to sustainably improve the contestability of regional companies, economic growth and employment inside of Upper Austria. The program is co-funded by the European Union with a total budget of 95.5 million euro. The program's duration is from 2007 to 2013. Within this time, companies may apply for financial subventions by the government (Land Oberösterreich) for projects meeting a defined list of requirements.
 
-The Enlight project is conducted by the Applied Scientific Computing unit of the RISC Software GmbH and funded entirely by the Regio 13 program. The project is based on a ray casting prototype developed by Michael Hava during his three month internship \cite{bakk_michael_hava} in 2011. The project officially started on 2011-07-01 and is scheduled to be finished at the end of 2013.
+The Enlight project is conducted by the Applied Scientific Computing unit of the RISC Software GmbH and funded entirely by the Regio 13 program. The project is based on a ray casting prototype developed by Michael Hava during his three month internship in 2011  \cite{bakk_michael_hava}. The project officially started on 2011-07-01 and is scheduled to be finished at the end of 2013.
 The project proposal from 2011 defines the following goals for Enlight \cite{enlight_proposal} :
 
 \begin{itemize}
 	\item Development and exploration of new algorithms for visualization and modification of very complex and detailed geometries with file sizes of several gigabytes. Therefore, an optimized ray casting method will be used in favor of traditional and wide-spread rasterization, as the latter is inefficient per design for this dimension of geometries.
 	\item The design of a software system architecture capable of using modern many core processors and GPUs as efficient as possible concerning parallel scalability of visualization.
 	\item Development of a prototype and base library for demonstrating the performance potential on the use case of subtractive manufacturing.
+	\pagebreak
 	\item Additionally, the base library should be the foundation for the further development of a general and industrially applicable software library.
 \end{itemize}
 
-Beside the goals from the initial proposal, several derived goals and restrictions have been defined:
+Besides the goals from the initial proposal, several derived goals and restrictions have been defined:
 
 \begin{itemize}
-	\item The visualized model always consists of an initial volume (stock) from which further volumes are subtracted. Every volume must be water-tight and consist only of triangles.
+	\item The visualized model always consists of an initial volume (stock) from which further volumes are subtracted. Every volume must be water-tight\footnote{A water-tight volume (sometimes also called solid) is a volume which is fully enclosed by a surface. In other words, the surface does not contain any leaks. If the volume was filled with water, no water could leave the volume.} and consist only of triangles.
 	\item To allow visualizing frequent geometry changes, such as in subtractive manufacturing, the software should be capable of handling at least ten scene updates (adding ten subtraction volumes) per second. This has a significant impact on the chosen data structure used to represent the scene.
 	\item Furthermore, the internal data structure should be able to handle up to 100,000 subtraction volumes.
-	\item The visualization should be interactive. Interactivity is described in the proposal by referring to an article by David Kasik et al. with at least ten frames per second \cite{interactive_framerate}.
+	\item The visualization should be interactive. Interactivity is described in the proposal by referring to an external article with at least ten frames per second \cite{interactive_framerate}.
 	\item The visualization should be as precise as possible.
 	\item The ray casted image should also contain depth values in order to merge it with OpenGL rendered geometries.
 \end{itemize}
@@ -45,16 +46,21 @@ Beside the goals from the initial proposal, several derived goals and restrictio
 \subsection{Initial situation and goals of the internship}
 \label{sec:goals}
 
-The internship started on 2013-04-04 and lasted until 2013-06-30. As the project had already been running for two years at the time of joining the RISC Software GmbH, the major work of the project has already been done. The created application is console based offering a variety of commands. Several mesh formats (STL, PLY and PTM) have been implemented to allow loading geometry from the file system. The triangles are processed and already organized in a special kind of data structure (discussed in chapter \ref{sec:data_structure}). An additional window is used to show a preview of the loaded meshes using OpenGL (no subtraction of the volumes). Rotating and zooming the preview is also possible using cursor draging and mouse wheel scrolling. Via corresponding commands on the console ray casting can be enabled which opens a second window showing the ray casted result. The underlying ray casting implementation runs on the CPU and does already perform well. A further CUDA implementation was in progress.
+The internship started on 2013-04-04 and lasted until 2013-06-30. As the project has already been running for two years at the time of joining the RISC Software GmbH, the major work of the project has already been done. The created application is console based offering a variety of commands. Several mesh formats (STL, PLY and PTM) have been implemented to allow loading geometry from the file system. The triangles are processed and already organized in a special kind of data structure (discussed in chapter \ref{sec:data_structure}). An additional window is used to show a preview of the loaded meshes using OpenGL (no subtraction of the volumes). Rotating and zooming the preview is also possible using cursor draging and mouse wheel scrolling. Via corresponding commands on the console ray casting can be enabled, which opens a second window showing the ray casted result. The underlying ray casting implementation runs on the CPU and does already perform well. A further CUDA implementation was in progress.
 
-According to the job description on the internship agreement, the primary objective is to implement a ray caster based on the existing code infrastructure and data structures which utilizes modern hardware architectures (multicore CPUs and GPUs) as effectively as possible considering parallelism using OpenCL. Starting from this statement, several smaller subgoals have been defined during the internship:
+According to the job description of the internship agreement, the primary objective is to implement a ray caster based on the existing code infrastructure and data structures which utilizes modern hardware architectures (multicore CPUs and GPUs) as effectively as possible considering parallelism using OpenCL. Starting from this statement, several smaller subgoals have been defined during the internship:
 
 \begin{itemize}
-	\item Implementation of an OpenCL infrastructure which allows running GPU accelerated ray casting algorithms and integrating it into the existing code base (corresponding commands have to be added to the console application).
-	\item Implementation of a ray caster processing single rays independently. Therefore, the provided data structures (geometries, camera settings, etc.) from the application core have to be processed to generate a valid output which can be handed back for successful display.
+	\item Implementation of an OpenCL infrastructure which allows running GPU accelerated ray casting algorithms and integrating it into the existing code base. Thus, corresponding commands have to be added to the console application and connected with the OpenCL infrastructure.
+	
+	\item Implementation of a ray caster processing single rays independently. Therefore, the provided data structures, geometries, camera settings, etc. from the application core have to be processed to generate a valid output which can be handed back for successful display.
+	
 	\item Implementation of a ray caster processing rays grouped together in ray packets. This variant showed significant performance improvements on the CPU. Therefore it should also be evaluated on the GPU.
+	
 	\item Porting the implemented OpenCL infrastructure as well as the ray caster algorithms to a new prototype which will serve as the base of the final product.
+	
 	\item Implement out of core ray casting for geometries larger than the available GPU memory.
+	
 	\item Implement selective anti aliasing of the calculated image (canceled).
 \end{itemize}
 
@@ -63,9 +69,9 @@ According to the job description on the internship agreement, the primary object
 
 After this short introduction to the company and the organizational part of Enlight,  chapter \ref{sec:fundamentals} will continue with technical fundamentals about the knowledge fields Enlight encompasses. After a short overview about ray casting and acceleration structures, a specialized ray casting algorithm will be discussed using object entry and exit counting to determine the visual surface. A final coverage of GPGPU computing with OpenCL finishes this chapter, providing the information required to understand the subsequent algorithmic designs and presented implementations.
 
-In chapter \ref{sec:existing_prototype} a general overview of the existing application infrastructure is given. After the big-picture application design is shown, the used data structure for ray casting is explained in more detail. Furthermore, the algorithm for adding newly loaded subtraction volumes to the data structure is presented, as the chosen strategy has a great impact on the ray casting algorithms which is discussed at last.
+In chapter \ref{sec:existing_prototype} a general overview of the existing application infrastructure is given. After the big-picture design is shown, the used data structure for ray casting is explained in more detail. Furthermore, the algorithm for adding newly loaded subtraction volumes to the data structure is presented, as the chosen strategy has a great impact on the ray casting algorithms, which is discussed at last.
 
 The main chapter \ref{sec:opencl_caster} then presents the implemented OpenCL infrastructure as well as several ray caster implementations. This chapter is organized chronologically showing the progress and evolution of the algorithms during the internship. It starts with the creation of an OpenCL environment and continues with several ray caster implementations and versions of them. The chapter ends with porting the created code to a new prototype and integrating out of core capability.
 
-The final chapter \ref{sec:results} rounds off by showing several benchmark results on different scenes and compares the OpenCL implementation with the preexisting and finished CPU as well as the CUDA ray caster which is still in development. Furthermore, experiences during development are shared and existing problems discussed.
+The final chapter \ref{sec:results} rounds off by showing several benchmark results on different scenes and compares the OpenCL implementation with the preexisting and finished CPU ray caster. Furthermore, experiences during development are shared and existing problems discussed.
  
