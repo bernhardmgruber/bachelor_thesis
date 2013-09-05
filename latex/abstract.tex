@@ -1,3 +1,13 @@
+\section*{Kurzfassung}
+
+Diese Arbeit bietet eine schnelle Einführung in die Programmierung von GPUs mit OpenCL. Nach einem historischen Überblick über die Entwicklung von Grafikkarten, werden die Besonderheiten von GPU und CPU Hardware erläutert. Basierend auf diesem Wissen wird OpenCL als API vorgestellt, das die Programmierung vor allem dieser Hardwaretypen unterstützt. Ein genauere Betrachtung des OpenCL Ausführungs- und Speichermodels, das die Unterstützung heterogener Hardware ermöglicht, wird durch ein einfaches Codebeispiel abgerundet.
+
+Anschließend fährt die Arbeit mit der Implementierung einiger Standardalgorithmen fort, die mittels OpenCL auf die GPU gebracht werden. Die ausgewählten Problemstellungen beginnen mit Matrixmultiplikation und setzen sich über All-Prefix-Sum und Sortieralgorithmen fort. Aufgrund der Parallelität die bereits in der Natur der ersten Problemstellung liegt, wird im betreffenden Kapitel ein besonderer Fokus auf Performanceanalyse und Optimierung gelegt. Die All-Prefix-Sum und Sortieren sind schwieriger in unabhängige Arbeitspakete aufzuteilen. Entsprechende Methoden werden vorgestellt, um mit dieser Art von Problemen umzugehen.
+
+Jede GPU Implementierung wird einer Laufzeitmessung unterzogen und mit entsprechenden CPU Varianten verglichen. Da CPUs und GPUs sehr unterschiedliche Hardwarearchitekturen aufweisen, wurden entsprechende Algorithmen zur Lösung der jeweiligen Problemstellung ausgewählt, die das Potential der zugrunde liegenden Plattform bestmöglich ausnutzen.
+
+\pagebreak
+
 \section*{Abstract}
 
 This thesis provides a quick introduction into programming for GPUs using OpenCL. After a historical overview of how graphic cards have evolved, the peculiarities of GPU and CPU hardware are discussed. Based on this knowledge OpenCL is introduced as an API supporting all kinds of processing hardware. A deep look into OpenCL's execution and memory model, which allows handling heterogeneous hardware, is rounded off by a simple, yet full example code.
