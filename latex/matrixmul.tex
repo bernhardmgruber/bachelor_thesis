@@ -4,7 +4,7 @@
 Multiplying matrices of large sizes is often part of heavy scientific calculations and therefore an important building block in every mathematics library. Unfortunately, with increasing size the computation of the product becomes desperately slow, due to an asymptotic runtime complexity of $\mathcal{O}(n^3)$ for a naive attempt. Therefore, several improvements have been tried to speed up the calculation. Strassen's algorithm for example achieves a runtime complexity of $\mathcal{O}(n^{\log_2 7}) = \mathcal{O}(n^{2.807})$ \cite{strassen} which is faster than the naive version, but still does not compute results within a satisfying time for larger matrixes.
 Nonetheless, modern computing systems can take advantage of one important aspect of the matrix multiplication which is it's embarrassing parallel nature. Each element of the output matrix can be computed completely independent (cf. figure \ref{fig:matrix_mul}). This potential may not only be used by today's CPU's vector extensions like SSE \footnote{Streaming SIMD Extensions, a vector instruction set extension by Intel supporting 128 bit wide registers to process 4 single precision floats in parallel.} or AVX \footnote{Advanced Vector Extensions, Intel's latest vector instruction set extension featuring 256 bit wide registers to process 8 single precision floats in parallel.}. Especially a GPU can make excellent use of the large number of independent pieces of work to perfectly utilize its hundreds or thousands of cores.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.5\linewidth]{matrix_mul}
 \caption{Principle of the matrix multiplication \cite{wiki_matrix_mul}.}
@@ -12,7 +12,7 @@ Nonetheless, modern computing systems can take advantage of one important aspect
 \end{figure}
 
 Beside the implementation and optimization of the matrix multiplication on GPUs, this chapter will also introduce the reader to performance data of GPUs collected by an appropriate profiling tool (AMD's CodeXL will be used). This will allow a better understanding about an algorithm's performance and how bottlenecks can be found and eliminated. \\
-The provided benchmarks were created on a notebook with medium hardware components. Details can be found in the appendix chapter \ref{sec:becnhmark_env}. Furthermore, the host code may use the utility functions \lstinline!roundToMultiple! and \lstinline!roundToPowerOfTwo! for aligning input data to appropriate size. Their respective definitions can be found in appendix chapter \ref{sec:utility_functions}.
+The provided benchmarks were created on a notebook with medium hardware components. Details can be found in the appendix section \ref{sec:becnhmark_env}. Furthermore, the host code may use the utility functions \lstinline!roundToMultiple! and \lstinline!roundToPowerOfTwo! for aligning input data to appropriate size. Their respective definitions can be found in appendix chapter \ref{sec:utility_functions}.
 
 This chapter will take a look at different implementations of the matrix multiplication for both, the CPU and the GPU. For simplicity, square matrices are used and stored as one dimensional arrays in row major order.
 
@@ -32,11 +32,11 @@ The performance of this implementation is conceivably slow as one can see in fig
 Also a multithreaded version of the provided code in listing \ref{lst:matrix_cpu} (e.g. by using OpenMP and place a \lstinline!#pragma omp parallel for! above the outer for loop) does not provide a solution here.
 The optimized Fortan77 BLAS library \cite{blas_lib} achieves a significant better performance when compared with the simple CPU implementation provided here.
 
-\begin{figure}
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{matrix_chart}
 	\caption{Benchmark of several square matrix multiplication implementations.
-	%The chart is based on the benchmark data in appendix chapter \ref{sec:matrix_mul_chart_data}.
+	%The chart is based on the benchmark data in appendix section \ref{sec:matrix_mul_chart_data}.
 	}
 	\label{fig:matrix_chart}
 \end{figure}
@@ -44,7 +44,7 @@ The optimized Fortan77 BLAS library \cite{blas_lib} achieves a significant bette
 \section{Naive GPU implementation}
 \label{sec:matrix_mul_naive}
 
-A working GPU implementation can be directly derived from the simple CPU implementation given in the previous chapter \ref{sec:matrix_cpu_implementation}. As we can see in figure \ref{fig:matrix_mul}, each output element is calculated independently and the calculation of an output element corresponds to the loop body of the second \lstinline!for! loop in the CPU implementation in listing \ref{lst:matrix_cpu}. Therefore, both outer \lstinline!for! loops offer a good starting point for parallelization. 
+A working GPU implementation can be directly derived from the simple CPU implementation given in the previous section \ref{sec:matrix_cpu_implementation}. As we can see in figure \ref{fig:matrix_mul}, each output element is calculated independently and the calculation of an output element corresponds to the loop body of the second \lstinline!for! loop in the CPU implementation in listing \ref{lst:matrix_cpu}. Therefore, both outer \lstinline!for! loops offer a good starting point for parallelization. 
 
 The naive GPU implementation uses the same principle as the initial CPU version. But before we can jump into GPU code, some setup on the host is required which is given in listing \ref{lst:matrix_naive_host}. To simplify the code context and command queue have already been created and are provided as input to the \lstinline!matrixMulCL! function.
 
@@ -75,7 +75,7 @@ Another approach to reduce the total number of memory requests would be to query
 \label{sec:matrix_mul_local}
 Based on the performance analysis of the naive GPU approach, the first and most obvious optimization is to reduce the number of memory requests to global memory. Ideally, each input matrix element should be accessed only once. This scenario cannot be achieved, but the number of memory requests to a single item can be reduced to one inside smaller subregions by subdividing the input matrices into tiles as shown in figure \ref{fig:matrix_mul_local}. Instead of each work item accessing all needed input elements like in the naive version, each work item of a work group (which is equally sized as a tile) copies one element of a tile from each input matrix to local memory. After the two tiles have been copied completely, the work items than access the corresponding elements from the tiles in local memory (avoiding redundant global memory requests), multiply and add the values to the output sum of each work item (element of the output matrix). Then the next two tiles are loaded. The algorithm repeats until all tiles have been processed.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.5\linewidth]{matrix_mul_local}
 \caption{Optimization of the matrix multiplication by subdivision into tiles. The image shows $4 \times 4$ matrices divided into tiles of $2 \times 2$ work items.}
@@ -98,7 +98,7 @@ Listing \ref{lst:matrix_local_kernel} shows the kernel code of the optimized mat
 \lstset{basicstyle=\ttfamily{}}
 
 When compared with the first, naive OpenCL kernel, the optimization using locally cached tiles achieves a nice speedup of 2.63 at a problem size of 4000 as we can see in figure \ref{fig:matrix_chart}.
-% and the detailed benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}.
+% and the detailed benchmark results in appendix section \ref{sec:matrix_mul_chart_data}.
 We can also see further improvements on the performance counters in table \ref{tbl:matrix_perf_counter}. Although the general thread management overhead remains constant (equal number of work items, work groups and therefore wavefronts) and the kernel occupancy still stays at perfect 100\%, we notice a major decrease in general ALU instructions. Moreover and most importantly, fetch instructions to global memory have been reduced to a sixteenth part (due to the used \lstinline!TILE_SIZE! of 16). Despite this reduction, the eventually fetched data from global memory could only be reduced by a factor of 2.4 due to worse cache behavior.
 In addition to fewer memory requests and ALU instructions a third and probably more unnoticed optimization occurred. As \lstinline!TILE_SIZE! is a compile time constant, the compiler is now able to fully unroll and vectorize the inner for loop which results in more independent instructions available to the compiler to generate better filled VLIWs. This can be seen by an almost doubling of the ALU packing counter's value.
 
@@ -106,7 +106,7 @@ In addition to fewer memory requests and ALU instructions a third and probably m
 \section{Optimization using vectorization}
 \label{sec:matrix_mul_vec}
 Instead of using local memory to decrease the number of redundant memory requests, this approach focuses on a better utilization of the memory system by using vector types and multiple fetches and writes per work item. Therefore, one work item does not only fetch one element but a block of elements.
-The access pattern of the algorithm itself works conceptually equal to the local tile version of the previous chapter \ref{sec:matrix_mul_local}. The tiles are now called blocks and each work item fetches two whole blocks itself. No local memory is used, as the fetched blocks are stored in each work item's registers. Each work item then also produces an output block which is written to global memory.
+The access pattern of the algorithm itself works conceptually equal to the local tile version of the previous section \ref{sec:matrix_mul_local}. The tiles are now called blocks and each work item fetches two whole blocks itself. No local memory is used, as the fetched blocks are stored in each work item's registers. Each work item then also produces an output block which is written to global memory.
 
 The host code for this matrix multiplication version is almost identical to the one using tiles cached in local memory in listing \ref{lst:matrix_local_host}. The only differences are shown in listing \ref{lst:matrix_block_host}.
 
@@ -124,13 +124,13 @@ Listing \ref{lst:matrix_block_kernel} shows the kernel code of the optimized mat
 \lstset{basicstyle=\ttfamily{}}
 
 Compared with the naive GPU version we achieve an amazing speedup of 11.95 at a problem size of 4000 when we have a look at the chart in figure \ref{fig:matrix_chart}.
-% and the benchmark results in appendix chapter \ref{sec:matrix_mul_chart_data}.
-The kernel also performs 4.54 times faster than the optimized version using locally cached tiles in chapter \ref{sec:matrix_mul_local}.
+% and the benchmark results in appendix section \ref{sec:matrix_mul_chart_data}.
+The kernel also performs 4.54 times faster than the optimized version using locally cached tiles in section \ref{sec:matrix_mul_local}.
 Also the performance counters in table \ref{tbl:matrix_perf_counter} show interesting changes. Most notable is the change of global work size from $4000 \times 4000$ to $1008 \times 1008$ which accounts mostly for the achieved speedup. Although the kernel now processes 16 elements instead of one, the number if needed instructions per work item only increased by a factor of 1.19 (from 20019 to 23782). Furthermore, the number of total fetch instructions per work item remained the same (a work item now issues four instructions but fetches four times more data per instruction) resulting in equal management work for the fetch unit (which is still busy at 99.4\%) but higher throughput. Additionally, as each work item processes four independent output elements, the amount of independent instructions increased leading to an almost doubling in ALU packing performance. The only major drawback of this version is that the high number of needed registers (VGPRs) limits the amount of wavefronts that can be concurrently executed on a SM. This can be seen at the lower occupancy of only 37.5\%. As a result, memory latency may not be hided well enough. However, this problem is specific to the amount of available registers which is likely to increase as GPGPU computing becomes an important design factor for GPU hardware vendors.
 
 
 \section{Combining both approaches}
-The optimization attempts presented in the last two chapters \ref{sec:matrix_mul_local} and \ref{sec:matrix_mul_vec} focus on two different aspects. The first one tries to reduce the number of redundant global memory requests by subdividing the input matrices into tiles which are read once by each work group and cached in local memory. The second approach tries to improve the general memory system and ALU utilization. The final kernel presented in this chapter will combine both ideas.
+The optimization attempts presented in the last two sections \ref{sec:matrix_mul_local} and \ref{sec:matrix_mul_vec} focus on two different aspects. The first one tries to reduce the number of redundant global memory requests by subdividing the input matrices into tiles which are read once by each work group and cached in local memory. The second approach tries to improve the general memory system and ALU utilization. The final kernel presented in this chapter will combine both ideas.
 As a consequence the matrices will be subdivided in two levels. On the lower level elements will be organized into small blocks which are always loaded completely by a work item. On a higher level, the blocks are then grouped together into tiles which can be cached in local memory and are always retrieved by a whole work group.
 
 The host code for this matrix multiplication version is almost identical to the one using tiles cached in local memory in listing \ref{lst:matrix_local_host}. The only differences are shown in listing \ref{lst:matrix_block_local_host}.
@@ -147,7 +147,7 @@ Listing \ref{lst:matrix_block_local_kernel} shows the kernel code of the optimiz
 \lstinputlisting[language=CL, caption=OpenCL Kernel code calculating a $4 \times 4$ block of elements of the output matrix per work item using float4 vectors. The input matrices are split into tiles of blocks which are cached in local memory. The implementation is based on the matrix multiplication sample from AMD's APP SDK \cite{amd_app_sdk}., label=lst:matrix_block_local_kernel,]{../src/matrix/gpu/thesis/MultBlockLocal.cl}
 \lstset{basicstyle=\ttfamily{}}
 
-Although this approach can be seen as an optimization of the block only version from chapter \ref{sec:matrix_mul_vec} by using locally cached tiles, this kernel performs, probably contrary to expectations, slower than the original block only version (cf. benchmark chart, figure \ref{fig:matrix_chart}). The reason for this at first glance confusing behavior is easily detected when we have a look at the corresponding performance counters in table \ref{tbl:matrix_perf_counter}.
+Although this approach can be seen as an optimization of the block only version from section \ref{sec:matrix_mul_vec} by using locally cached tiles, this kernel performs, probably contrary to expectations, slower than the original block only version (cf. benchmark chart, figure \ref{fig:matrix_chart}). The reason for this at first glance confusing behavior is easily detected when we have a look at the corresponding performance counters in table \ref{tbl:matrix_perf_counter}.
 First of all, the number of work items is equal to the block only approach and therefore also the number of resulting wavefronts the hardware has to process stays the same. The higher amount of index calculations of the kernel becomes notable in the huge increase of processed ALU instructions per work item which is almost twice as much as in the block only variant (44214 vs 23782). However, the use of local memory as a cache works successfully as can be seen at the number of fetches to global memory which has been reduced by a factor of \lstinline!TILE_SIZE! and the total number of fetched KiB which has been decreased to a fourth. So far the counter values indicate rather an increase in performance. The big penalty however comes from the high register and moreover the local memory consumption of the kernel which only allow one work group (= four wavefronts) to run concurrently on a SM (the local memory usage of 32 KiB fills the entire available scratch pad memory). As a result, the kernel can only run 12.5\% of the hardware's supported number of wavefronts concurrently (occupancy). Memory request latency will therefore account for most of the consumed runtime. By reducing the work group size, the local memory consumption can be decreased. This would allow more wavefronts to run concurrently on the cost of more redundant global memory requests. However, this idea has not proven to be beneficial during benchmarks. Nevertheless, as hardware advances more registers and local memory will be available in the future, maybe allowing this kernel to develop its full potential. 
 
 \begin{table}
@@ -228,18 +228,18 @@ Beside the presented kernels, further approaches have been implemented and bench
 
 \begin{description}
 	\item[1D vs 2D problem dimensions] \hfill \\
-	For the naive approach from chapter \ref{sec:matrix_mul_naive}, it does not make a difference of the kernel is run with a 1D or 2D problem dimension. 2D seems more natural for matrices but does not affect performance.
+	For the naive approach from section \ref{sec:matrix_mul_naive}, it does not make a difference of the kernel is run with a 1D or 2D problem dimension. 2D seems more natural for matrices but does not affect performance.
 	\item[Using images and the texture units] \hfill \\
 	Using images instead of buffers as memory objects (without further specialization of access patterns) does not increase performance. Images may benefit from special hardware capabilities (e.g. texture units on a GPU provide different cache mechanisms).
 	\item[Vector types vs arrays] \hfill \\
-	Using vector types over an array (e.g. \lstinline!float4 a;! over \lstinline!float a[4];!) does make huge a difference. The blocked approach from chapter \ref{sec:matrix_mul_vec} has been implemented using arrays instead of vector types. Performance dropped by a factor of four. The reason for this is the size of a GPU's vector registers which is exactly large enough to hold a \lstinline!float4! value. Components of the vector type can only be addressed at compile time (via e.g. \lstinline!.y!). Arrays however can be addressed at runtime and therefore the compiler has to ensure that every array element is addressable. As a result, an array of float values is placed into a consecutive block of registers where each element occupies only the first vector component of each register. This ensures fast array element access but on the cost of quadrupled variable size.
+	Using vector types over an array (e.g. \lstinline!float4 a;! over \lstinline!float a[4];!) does make huge a difference. The blocked approach from section \ref{sec:matrix_mul_vec} has been implemented using arrays instead of vector types. Performance dropped by a factor of four. The reason for this is the size of a GPU's vector registers which is exactly large enough to hold a \lstinline!float4! value. Components of the vector type can only be addressed at compile time (via e.g. \lstinline!.y!). Arrays however can be addressed at runtime and therefore the compiler has to ensure that every array element is addressable. As a result, an array of float values is placed into a consecutive block of registers where each element occupies only the first vector component of each register. This ensures fast array element access but on the cost of quadrupled variable size.
 \end{description}
 
 Furthermore, several libraries exist supporting GPGPU accelerated matrix multiplication.
 
 \begin{description}
    \item[clAmdBlas \cite{cl_amd_blas}] \hfill \\
-   A BLAS (Basic Linear Algebra Subprograms) library provided by AMD achieving very similar results when compared with the blocks kernel of chapter \ref{sec:matrix_mul_vec}. 
+   A BLAS (Basic Linear Algebra Subprograms) library provided by AMD achieving very similar results when compared with the blocks kernel of section \ref{sec:matrix_mul_vec}. 
    \item[cuBlas \cite{cublas}] \hfill \\
    A BLAS (Basic Linear Algebra Subprograms) library provided by NVIDIA shipped with their CUDA Toolkit. It uses CUDA as GPU Computing language and runs on NVIDIA GPUs only.
 \end{description}
