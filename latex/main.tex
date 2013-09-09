@@ -2,6 +2,7 @@
 
 % packages
 %\usepackage{scrhack}
+\usepackage{fancyhdr}
 \usepackage[top=2.54cm, bottom=2.54cm, left=3.54cm, right=2.54cm]{geometry}
 \usepackage{graphicx}
 \usepackage[style=authoryear,backend=bibtex8,urldate=iso8601]{biblatex}
@@ -14,20 +15,40 @@
 \usepackage[iso]{datetime}
 \usepackage{pdfpages}
 \usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage[hang,flushmargin]{footmisc} 
 
 
 % basic latex configuration
 \setlength{\parskip}{\baselineskip}
 \setlength{\parindent}{0pt}
-
-%\renewcommand\thesection{\arabic{section}.} 
-%\renewcommand\thesubsection{\arabic{section}.\arabic{subsection}}
-
 \pagestyle{headings}
+
 
 % biblatex
 \addbibresource{references.bib}
 \let\cite\parencite
+
+% enumitem
+\setlist[description]{leftmargin=0pt, labelindent=0pt} % no indentation of description list texts
+
+
+\newenvironment{numbereddescription}
+{
+	\newcounter{description}
+	\let\olddescriptionlabel\descriptionlabel % save command before redefining it
+	\renewcommand{\descriptionlabel}[1]
+	{
+		\refstepcounter{description}
+		\hspace\labelsep
+		\normalfont\bfseries \thedescription. ##1
+	}
+	\begin{description}[labelindent=-6.5pt]
+}
+{
+	\end{description}
+	\let\descriptionlabel\olddescriptionlabel
+}
 
 % graphics
 \graphicspath{ {./images/} }
@@ -57,7 +78,7 @@
 	showstringspaces=false,
 	breaklines=true,
 	numbers=left,
-	frame=single,
+%	frame=single,
 % backgroundcolor=\color{lightgray}
 }
 
