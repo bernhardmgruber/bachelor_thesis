@@ -1,10 +1,10 @@
-\documentclass[10pt,a4paper,oneside]{scrartcl}
+\documentclass[10pt,a4paper,oneside, numbers=noenddot]{scrreprt}
 
 % packages
-\usepackage{scrhack}
-\usepackage{fullpage}
+%\usepackage{scrhack}
+\usepackage[top=2.54cm, bottom=2.54cm, left=3.54cm, right=2.54cm]{geometry}
 \usepackage{graphicx}
-\usepackage[style=numeric,backend=bibtex8,urldate=iso8601]{biblatex}
+\usepackage[style=authoryear,backend=bibtex8,urldate=iso8601]{biblatex}
 \usepackage{listings}
 \usepackage{courier}
 \usepackage{array}
@@ -15,12 +15,19 @@
 \usepackage{pdfpages}
 \usepackage[utf8]{inputenc}
 
+
 % basic latex configuration
 \setlength{\parskip}{\baselineskip}
 \setlength{\parindent}{0pt}
 
+%\renewcommand\thesection{\arabic{section}.} 
+%\renewcommand\thesubsection{\arabic{section}.\arabic{subsection}}
+
+\pagestyle{headings}
+
 % biblatex
 \addbibresource{references.bib}
+\let\cite\parencite
 
 % graphics
 \graphicspath{ {./images/} }
@@ -92,19 +99,19 @@
 
 \include{conclusion}
 
-\addcontentsline{toc}{section}{List of figures}
+\addcontentsline{toc}{chapter}{List of figures}
 \renewcommand\listfigurename{List of figures}
 \listoffigures
 
 \clearpage
 
-\addcontentsline{toc}{section}{List of listings}
+\addcontentsline{toc}{chapter}{List of listings}
 \renewcommand\lstlistlistingname{List of listings} 
 \lstlistoflistings
 
 \clearpage
 
-\addcontentsline{toc}{section}{References}
+\addcontentsline{toc}{chapter}{References}
 %\appto{\bibsetup}{\emergencystretch=1em}
 \setcounter{biburllcpenalty}{9000}
 \printbibliography[title=References]

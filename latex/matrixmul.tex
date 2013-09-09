@@ -1,4 +1,4 @@
-\section{Matrix multiplication}
+\chapter{Matrix multiplication}
 \label{sec:matrix_mul}
 
 Multiplying matrices of large sizes is often part of heavy scientific calculations and therefore an important building block in every mathematics library. Unfortunately, with increasing size the computation of the product becomes desperately slow, due to an asymptotic runtime complexity of $\mathcal{O}(n^3)$ for a naive attempt. Therefore, several improvements have been tried to speed up the calculation. Strassen's algorithm for example achieves a runtime complexity of $\mathcal{O}(n^{\log_2 7}) = \mathcal{O}(n^{2.807})$ \cite{strassen} which is faster than the naive version, but still does not compute results within a satisfying time for larger matrixes.
@@ -16,7 +16,7 @@ The provided benchmarks were created on a notebook with medium hardware componen
 
 This chapter will take a look at different implementations of the matrix multiplication for both, the CPU and the GPU. For simplicity, square matrices are used and stored as one dimensional arrays in row major order.
 
-\subsection{CPU Implementation}
+\section{CPU Implementation}
 \label{sec:matrix_cpu_implementation}
 
 Although lots of optimized algorithms and implementations exist, we will first have a look at a simple and naive implementation as the one given in listing \ref{lst:matrix_cpu}.
@@ -41,7 +41,7 @@ The optimized Fortan77 BLAS library \cite{blas_lib} achieves a significant bette
 	\label{fig:matrix_chart}
 \end{figure}
 
-\subsection{Naive GPU implementation}
+\section{Naive GPU implementation}
 \label{sec:matrix_mul_naive}
 
 A working GPU implementation can be directly derived from the simple CPU implementation given in the previous chapter \ref{sec:matrix_cpu_implementation}. As we can see in figure \ref{fig:matrix_mul}, each output element is calculated independently and the calculation of an output element corresponds to the loop body of the second \lstinline!for! loop in the CPU implementation in listing \ref{lst:matrix_cpu}. Therefore, both outer \lstinline!for! loops offer a good starting point for parallelization. 
@@ -71,7 +71,7 @@ When run on the GPU, the performance of this naive OpenCL implementation is alre
 However, when we have a look at the measured performance counters of the naive approach in table \ref{tbl:matrix_perf_counter} we notice a few things. Despite the perfect 100\% occupancy of the kernel (as a result of no local memory usage and low vector register footprint), the algorithm performs a relatively high number of fetch instructions (cf. the ALU fetch ratio of 2.5). This can also be seen at the time the fetch unit was busy, which was 99.9\%. This means the algorithm is highly memory bound. Furthermore, elements of the input matrices are accessed multiple times (edge length of output matrix times). Though this explains the nice cache behavior of 57.5\% hits, here is definitely room for improvement.
 Another approach to reduce the total number of memory requests would be to query larger elements per work item. This would lead to fewer but larger memory requests which might be handled more efficiently by the memory system. Furthermore, fewer work items would be required.
 
-\subsection{Optimization using local memory}
+\section{Optimization using local memory}
 \label{sec:matrix_mul_local}
 Based on the performance analysis of the naive GPU approach, the first and most obvious optimization is to reduce the number of memory requests to global memory. Ideally, each input matrix element should be accessed only once. This scenario cannot be achieved, but the number of memory requests to a single item can be reduced to one inside smaller subregions by subdividing the input matrices into tiles as shown in figure \ref{fig:matrix_mul_local}. Instead of each work item accessing all needed input elements like in the naive version, each work item of a work group (which is equally sized as a tile) copies one element of a tile from each input matrix to local memory. After the two tiles have been copied completely, the work items than access the corresponding elements from the tiles in local memory (avoiding redundant global memory requests), multiply and add the values to the output sum of each work item (element of the output matrix). Then the next two tiles are loaded. The algorithm repeats until all tiles have been processed.
 
@@ -103,7 +103,7 @@ We can also see further improvements on the performance counters in table \ref{t
 In addition to fewer memory requests and ALU instructions a third and probably more unnoticed optimization occurred. As \lstinline!TILE_SIZE! is a compile time constant, the compiler is now able to fully unroll and vectorize the inner for loop which results in more independent instructions available to the compiler to generate better filled VLIWs. This can be seen by an almost doubling of the ALU packing counter's value.
 
 
-\subsection{Optimization using vectorization}
+\section{Optimization using vectorization}
 \label{sec:matrix_mul_vec}
 Instead of using local memory to decrease the number of redundant memory requests, this approach focuses on a better utilization of the memory system by using vector types and multiple fetches and writes per work item. Therefore, one work item does not only fetch one element but a block of elements.
 The access pattern of the algorithm itself works conceptually equal to the local tile version of the previous chapter \ref{sec:matrix_mul_local}. The tiles are now called blocks and each work item fetches two whole blocks itself. No local memory is used, as the fetched blocks are stored in each work item's registers. Each work item then also produces an output block which is written to global memory.
@@ -129,7 +129,7 @@ The kernel also performs 4.54 times faster than the optimized version using loca
 Also the performance counters in table \ref{tbl:matrix_perf_counter} show interesting changes. Most notable is the change of global work size from $4000 \times 4000$ to $1008 \times 1008$ which accounts mostly for the achieved speedup. Although the kernel now processes 16 elements instead of one, the number if needed instructions per work item only increased by a factor of 1.19 (from 20019 to 23782). Furthermore, the number of total fetch instructions per work item remained the same (a work item now issues four instructions but fetches four times more data per instruction) resulting in equal management work for the fetch unit (which is still busy at 99.4\%) but higher throughput. Additionally, as each work item processes four independent output elements, the amount of independent instructions increased leading to an almost doubling in ALU packing performance. The only major drawback of this version is that the high number of needed registers (VGPRs) limits the amount of wavefronts that can be concurrently executed on a SM. This can be seen at the lower occupancy of only 37.5\%. As a result, memory latency may not be hided well enough. However, this problem is specific to the amount of available registers which is likely to increase as GPGPU computing becomes an important design factor for GPU hardware vendors.
 
 
-\subsection{Combining both approaches}
+\section{Combining both approaches}
 The optimization attempts presented in the last two chapters \ref{sec:matrix_mul_local} and \ref{sec:matrix_mul_vec} focus on two different aspects. The first one tries to reduce the number of redundant global memory requests by subdividing the input matrices into tiles which are read once by each work group and cached in local memory. The second approach tries to improve the general memory system and ALU utilization. The final kernel presented in this chapter will combine both ideas.
 As a consequence the matrices will be subdivided in two levels. On the lower level elements will be organized into small blocks which are always loaded completely by a work item. On a higher level, the blocks are then grouped together into tiles which can be cached in local memory and are always retrieved by a whole work group.
 
@@ -223,7 +223,7 @@ First of all, the number of work items is equal to the block only approach and t
 	\label{tbl:matrix_perf_counter}
 \end{table}
 
-\subsection{Further implementations}
+\section{Further implementations}
 Beside the presented kernels, further approaches have been implemented and benchmarked which have not been covered. However, some experiences may help future developers.
 
 \begin{description}
@@ -244,5 +244,5 @@ Furthermore, several libraries exist supporting GPGPU accelerated matrix multipl
    A BLAS (Basic Linear Algebra Subprograms) library provided by NVIDIA shipped with their CUDA Toolkit. It uses CUDA as GPU Computing language and runs on NVIDIA GPUs only.
 \end{description}
 
-\subsection{Summary and conclusion}
+\section{Summary and conclusion}
 Multiplying matrices is an important part of many scientific applications and should therefore focus on performance. Although several extremely tuned CPU libraries have established themselves, there are still very few GPU accelerated routines available. We have seen that the matrix multiplication is embarrassingly easy to implement for the GPU as the parallelism is already part of the problem's nature. However, there is still as much room for improvements on a GPU as there is on the CPU's side. By the help of profiling information (performance counters) bottlenecks of the presented implementations could be detected and tackled. We have seen the importance of avoiding redundant global memory requests by using local memory as a programmer controlled cache. Furthermore, independent instructions are beneficial to allow for better ALU utilization by instruction level parallelism. Additionally, vector types and larger memory fetches and processed elements per work item reduce the general thread management overhead and may achieve a better utilization of the global memory subsystem. Finally, a fast GPU accelerated matrix multiplication could be implemented beating the already optimized BLAS library (CPU) by factor of 36 (43.49 vs 1.21 seconds)! This result definitely shows the potential of modern GPU hardware.

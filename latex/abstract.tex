@@ -1,6 +1,6 @@
-\section*{Kurzfassung}
+\chapter*{Kurzfassung}
 
-Diese Arbeit bietet eine schnelle Einführung in die Programmierung von GPUs mit OpenCL. Nach einem historischen Überblick über die Entwicklung von Grafikkarten, werden die Besonderheiten von GPU und CPU Hardware erläutert. Basierend auf diesem Wissen wird OpenCL als API vorgestellt, das die Programmierung vor allem dieser Hardwaretypen unterstützt. Ein genauere Betrachtung des OpenCL Ausführungs- und Speichermodels, das die Unterstützung heterogener Hardware ermöglicht, wird durch ein einfaches Codebeispiel abgerundet.
+Diese Arbeit bietet eine Einführung in die Programmierung von GPUs mit OpenCL. Nach einem historischen Überblick über die Entwicklung von Grafikkarten, werden die Besonderheiten von GPU und CPU Hardware erläutert. Basierend auf diesem Wissen wird OpenCL als API vorgestellt, das die Programmierung vor allem dieser Hardwaretypen unterstützt. Ein genauere Betrachtung des OpenCL Ausführungs- und Speichermodels, das die Unterstützung heterogener Hardware ermöglicht, wird durch ein einfaches Codebeispiel abgerundet.
 
 Anschließend fährt die Arbeit mit der Implementierung einiger Standardalgorithmen fort, die mittels OpenCL auf die GPU gebracht werden. Die ausgewählten Problemstellungen beginnen mit Matrixmultiplikation und setzen sich über All-Prefix-Sum und Sortieralgorithmen fort. Aufgrund der Parallelität die bereits in der Natur der ersten Problemstellung liegt, wird im betreffenden Kapitel ein besonderer Fokus auf Performanceanalyse und Optimierung gelegt. Die All-Prefix-Sum und Sortieren sind schwieriger in unabhängige Arbeitspakete aufzuteilen. Entsprechende Methoden werden vorgestellt, um mit dieser Art von Problemen umzugehen.
 
@@ -8,10 +8,10 @@ Jede GPU Implementierung wird einer Laufzeitmessung unterzogen und mit entsprech
 
 \pagebreak
 
-\section*{Abstract}
+\chapter*{Abstract}
 
-This thesis provides a quick introduction into programming for GPUs using OpenCL. After a historical overview of how graphic cards have evolved, the peculiarities of GPU and CPU hardware are discussed. Based on this knowledge OpenCL is introduced as an API supporting all kinds of processing hardware. A deep look into OpenCL's execution and memory model, which allows handling heterogeneous hardware, is rounded off by a simple, yet full example code.
+This thesis provides a introduction into programming for GPUs using OpenCL. After a historical overview of how graphic cards have evolved, the peculiarities of GPU and CPU hardware are discussed. Based on this knowledge, OpenCL is introduced as an API supporting all kinds of processing hardware. A deeper look into OpenCL's execution and memory model, which allows handling heterogeneous hardware, is rounded off by a simple, yet full example code.
 
-The thesis then continues with several implementations of standard algorithms for the GPU. The chosen problems start with matrix multiplication and go along with the all-prefix sum and sorting. As the first problem already offers parallelism naturally, performance analysis and optimization is focused during the first implementation chapter. The all-prefix sum and sorting are both problems being more difficult to be split into independent pieces of work. Techniques will be discussed to tackle such kind of problems.
+The thesis then continues with several implementations of standard algorithms for the GPU. The chosen problems start with matrix multiplication and go along with the all-prefix sum and sorting. As the first problem already offers parallelism naturally, performance analysis and optimization is focused during the first implementation chapter. The all-prefix sum and sorting are both problems being more difficult to split into independent pieces of work. Techniques will be discussed to tackle such kind of problems.
 
-Each GPU implementation is benchmarked and compared with one or more traditional CPU approaches. As GPUs and CPUs feature different hardware architectures, appropriate algorithms and optimizations have been chosen to solve the problems by exploiting the underlying platform at best.
+Each GPU implementation is benchmarked and compared with one or more traditional CPU approaches. As GPUs and CPUs have different hardware architectures, appropriate algorithms and optimizations have been chosen to solve the problems by exploiting the underlying platform at best.

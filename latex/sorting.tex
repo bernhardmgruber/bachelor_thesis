@@ -1,4 +1,4 @@
-\section{Sorting}
+\chapter{Sorting}
 \label{sec:sorting}
 
 One of the most fundamental operations in computer science is sorting a sequence of elements. And as old as the problem is as numerous are the algorithms to solve it. These sorting algorithms differ in various aspects such as best, average and worst runtime or memory complexity, stability, the number of comparisons and swaps and whether the algorithm is a comparison sort or not.
@@ -11,9 +11,9 @@ However, despite their limitation on the sort key, integer sorting algorithms al
 Considering parallelizability and an eventual GPU implementation, sorting lies between matrix multiplication and prefix sum offering some degree of parallelism depending on the chosen algorithm. The following chapter will focus on the implementation of two widely chosen algorithms for GPU sorting. These are the comparison based bitonic sorting network and the integer sorting algorithm radix sort. To reduce code complexity (especially of the latter), the input array consists of unsigned 32 bit integers.
 
 
-\subsection{CPU Implementations}
+\section{CPU Implementations}
 
-\subsubsection{C/C++ standard library routines}
+\subsection{C/C++ standard library routines}
 
 As the later GPU implementations should be compared with well implemented and wide-spread CPU ones, the first step is to measure the performance of the standard library's routines.
 Listing \ref{lst:sort_cpu_qsort} shows a typical usage of the \lstinline!qsort! function provided by the stdlib header from C.
@@ -32,7 +32,7 @@ Listing \ref{lst:sort_cpu_sort} shows a typical call to the \lstinline!std::sort
 As the $<$ operator is defined for unsigned integer types no custom compare function has to be provided and no additional overhead is created for comparing elements.
 The difference in the benchmark chart in figure \ref{fig:sort_chart} is evident. It takes \lstinline!qsort! 14.746 seconds to sort a sequence of $2^{26}$ elements while \lstinline!std::sort! only requires 9.039 seconds.
 
-\subsubsection{Radix sort}
+\subsection{Radix sort}
 \label{sec:sorting_radix_cpu}
 
 In contrast to the comparison based \lstinline!qsort! and \lstinline!std::sort!, radix sort operates on the binary representation of the input elements in several passes. The input values are therefore seen as numbers of a numeral system of a chosen base (= radix). In each pass, a digit at the same position (starting with the least significant) is selected from all input elements. These input elements are then split into buckets according to the value of the current pass' digit. Elements with the same digit value retain their order.
@@ -59,9 +59,9 @@ Both axis are of logarithmic scale. Integer sorting algorithms (radix sort) are 
 \label{fig:sort_chart}
 \end{figure}
 
-\subsection{GPU Implementations}
+\section{GPU Implementations}
 
-\subsubsection{Bitonic Sort}
+\subsection{Bitonic Sort}
 
 Many regular sorting algorithms do not fit into a GPU's massively parallel programming model by offering insufficient parallelism, requiring non-array data structures or begin based on recursion. However, a small subgroup of sorting approaches exists that fits the requirements of parallel hardware perfectly: sorting networks. A sorting network is a network of wires (one for each input) and comparators along these wires. Comparators connect two wires, compare their values and might swap them.
 Finding optimal sorting networks for a given number of inputs is difficult and still subject to research. However, in 1968 Ken Batcher presented (beside others) an approach to create sorting networks achieving reasonable results \cite{sort_bitonic}. His idea is based on efficiently merging a bitonic sequence into a sorted sequence, hence the name bitonic sorter. A bitonic sequence is a sequence of elements which consists of two equally long subsequences, where one is sorted ascending and the other descending. As two arbitrary elements form a bitonic sequence, they can be merged into a sorted sequence. As two sequences sorted in opposite order also form a bitonic sequence they can again be merged into a sorted sequence. This allows us to create sorting networks for any power of two sized inputs. Figure \ref{fig:bitonic_sort} shows a bitonic sorting network for 16 input elements. The created networks consist of $\mathcal{O}(n  log^2 n)$ comparators. As $\frac{n}{2}$ comparators can be executed in parallel (cf. figure \ref{fig:bitonic_sort}), the runtime complexity of a bitonic sorter would be $\mathcal{O}(log^2 n)$ on a computer with at least $\frac{n}{2}$ processing elements.
@@ -100,7 +100,7 @@ Looking at the performance data in figure \ref{fig:sort_chart} we can see that t
 When profiling the code the first problem that can be noticed are the number of enqueued kernels, which is 1053 for an input of $2^{26}$ elements. Furthermore, the large number of work items are quite lightweight. The latter is not a problem as such but it is important to notice that here is still space for optimization. Fortunately, both issues can be solved by combining several separate kernel invocations into a larger, heavier kernel. This is also known as kernel fusion and topic of the next chapter.
 
 
-\subsubsection{Bitonic Sort using kernel fusion}
+\subsection{Bitonic Sort using kernel fusion}
 
 The basic concept of kernel fusion is to reduce the amount of redundant global memory loads and stores to the same locations between two or more separate kernel invocations.
 Using the example of the bitonic sorting network for 16 inputs in figure \ref{fig:bitonic_sort}, kernel fusion could be used to combine the kernel invocations for the second and third column of red boxes. Considering only the upper blue box, work item zero and one would load the values of wire zero to three. After the first red box all four values would be stored back to global memory. On the next kernel invocation, work item zero and one would again load the same values for the following two red boxes of the same column. By combining the two separate kernel invocations into one, the redundant global memory store and load between the two kernels could be avoided.
@@ -129,7 +129,7 @@ The implementation can still be improved by taking advantage of local memory. Er
 Another idea would be to place the loaded values from the wires into local memory as local memory is accessible on a 4-byte boundary (1-byte with OpenCL extension cl\_khr\_byte\_addressable\_store). Arrays in registers can only by accessed by index at full register boundaries (16 byte) forcing the compiler to allocate more register space than the initial array requires. By placing arrays in local memory the register usage of work items could be cut down allowing higher occupancy on the cost of slower memory access. With a work group size of 256 (used in all benchmarks and the maximum of the used GPU), a level 32 kernel would already consume the full 32 KiB of local memory on the used GPU. However, when placing the array in registers, a level 32 kernel would already spill registers into global memory which is incredibly slow. Therefore a level 32 kernel might be beneficial when using local memory. Nevertheless, this approach has not been tested with the bitonic sorter. This idea is reconsidered when discussing radix sort in chapter \ref{sec:sorting_radix_local}.
 
 
-\subsubsection{Radix Sort}
+\subsection{Radix Sort}
 \label{sec:sorting_radix}
 
 We have already discussed radix sort in the CPU implementation chapter \ref{sec:sorting_radix_cpu}. Implementing radix sort for the GPU comes down again to three steps which are executed in passes. The first step is to create a histogram for the radix of the current pass. Secondly, the histogram has to be scanned and finally, the input values are permuted according to the scanned histogram.  \\
@@ -161,7 +161,7 @@ Considering performance (cf. figure \ref{fig:sort_chart}), the radix sort GPU im
 When profiling the kernel one can see that most of the time is spent executing and waiting for global memory requests. If we have a look at the kernel code in listing \ref{lst:sort_radix_kernel} again, we can see that the \lstinline!Histogram! kernel performs \lstinline!BLOCK_SIZE! read operations of four byte (size of uint). Furthermore adjacent work items access global memory with a stride of \lstinline!BLOCK_SIZE! times four byte. As a result each four byte value from each work item is loaded using a full memory transaction. However, on NVIDIA GPUs memory transactions always load a full memory segment of 64 or 128 words (32-bit values) \cite[p.13]{nvidia_opencl_best_practices}. Global memory access should therefore be coalesced, meaning that adjacent work items should access adjacent elements in global memory. In this case, all work items can be serviced in as few memory transactions as possible. However, this is not possible in our radix sort implementation unless the \lstinline!BLOCK_SIZE! is reduced to one. Nevertheless, another way of increasing memory bandwidth utilization is to request fewer but larger pieces of memory. This approach also improves performance on AMD GPUs and will be covered in chapter \ref{sec:sorting_radix_local_vec}.
 A further but more subtle issue can be seen in the disassembly of both kernels. The local (not \lstinline!__local!!) array \lstinline!uint hist[BUCKETS];! is placed in a work item's registers. However, a register's size is four words (equal to an \lstinline!uint4!). To allow indexing the array (runtime indexing into registers is not possible), the array has to be either placed strided into registers (each array element occupies only the first component of each vector register) or the compiler has to generate appropriate code to transform an index into the corresponding register address and vector component. An unorthodox but working solution is to put the array into shared memory which can be addressed at a 4-byte boundary (1-byte with OpenCL extension cl\_khr\_byte\_addressable\_store). This idea will be covered in the following chapter.
 
-\subsubsection{Radix Sort using local memory}
+\subsection{Radix Sort using local memory}
 \label{sec:sorting_radix_local}
 
 Instead of placing each work item's histogram in it's own registers, local memory is used to store the array. Thus, wasted register space and instruction overhead necessary to access an array placed in registers is avoided. However, accessing local memory is usually slower and accesses might suffer from bank conflicts. This implementation will take the radix sort of the previous chapter \ref{sec:sorting_radix} and move the histogram from registers to local memory.
@@ -182,7 +182,7 @@ Instead of declaring \lstinline!hist! as local variable inside the kernel, it is
 
 Benchmarking the changed code shows a subtle but noticeable difference in performance. The initial 1.884 seconds of the original implementation from chapter \ref{sec:sorting_radix} could be reduced to 1.565 seconds, simply adjusting the code to fit better to the GPUs hardware features. Although this code has executed faster in the benchmarks, newer GPUs might already provide scalar registers having no troubles storing an array of scalar data types.
 
-\subsubsection{Radix Sort using local memory and vector loads}
+\subsection{Radix Sort using local memory and vector loads}
 \label{sec:sorting_radix_local_vec}
 
 A further optimization of the presented radix sort implementation is to replace the many small global memory reads in both radix sort kernels by fewer but larger fetches. This can be achieved by declaring the pointers to the input buffers in both kernels to be of a vector type. Therefore the number of iterations of the fetching loops (and therefore the number of fetches) is reduced by a factor of the width of the used vector type. Disadvantages of using vector types may be increased register consumption and increased source code length (vector components cannot be iterated over).
@@ -198,7 +198,7 @@ When we look at the benchmark chart in figure \ref{fig:sort_chart} we can see th
 However, despite the optimizations, the GPU radix sort implementation runs still slower than the original CPU code. Reasons are the slow global memory write accesses in both radix sort kernels and the relatively small \lstinline!RADIX! of four compared to 16 in the CPU variant which leads to eight passes on the GPU compared to only two on the CPU.
 
 
-\subsection{Further implementations}
+\section{Further implementations}
 Beside the presented kernels a further approach has been implemented and benchmarked which has not been covered. However some experiences may help future developers.
 
 \begin{description}
@@ -221,6 +221,6 @@ Furthermore, several libraries exist supporting GPGPU accelerated sorting routin
 %	Finally, radix and bitonic sort are also part of NVIDIA's OpenCL example codes which can be downloaded from their website.
 \end{description}
 
-\subsection{Summary and conclusion}
+\section{Summary and conclusion}
 Sorting an array of elements is one of the most used routines of a programmer. Numerous algorithms and libraries (also standard libraries) exist targeting the CPU and providing highly optimized and ready-to-use sorting routines. However, the availability of GPU accelerated routines is still limited and mainly consists of some experimental libraries. In this chapter we have seen how to implement both, a comparison based and an integer based sorting algorithm using OpenCL. Contrary to traditional concepts, sorting networks where introduced offering a higher amount of parallelism on the cost of runtime complexity. The bitonic sorter has been discussed as example of how a sorting network can be constructed and operated for a given input size. Kernel fusion has been presented as a further way of optimizing algorithms consisting of multiple OpenCL kernels or kernel invocations. Radix sort has been introduced as example of a fast integer based sorting routine. Beside noticing the bad handling of arrays in registers, the final radix sort implementation once again showed the importance of global memory utilization.
 In conclusion, a fast comparison based sorting routine could be presented beating C++'s \lstinline!std::sort! with a speedup of 2.37 (9.039 vs. 3.808 seconds on $2^{26}$ elements). Unfortunately, radix sorting is still faster on the CPU with the OpenCL implementation being more than twice as slow as the simple C++ variant.
