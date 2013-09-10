@@ -1,11 +1,11 @@
 #define BLOCK_SIZE 4
 
-__kernel void MultBlock(__global float4* a, __global float4* b, __global float4* c, uint n) {
+__kernel void BlocksGPU(__global float4* a, __global float4* b, __global float4* c, uint n) {
 	uint col = get_global_id(0);
 	uint row = get_global_id(1);
-	uint n4 = n / BLOCK_SIZE;
+	uint n4  = n / BLOCK_SIZE;
 
-	if(row >= n4 || col >= n4)
+	if (row >= n4 || col >= n4)
 		return;
 
 	float4 sum0 = (float4)(0.0f);
@@ -13,7 +13,7 @@ __kernel void MultBlock(__global float4* a, __global float4* b, __global float4*
 	float4 sum2 = (float4)(0.0f);
 	float4 sum3 = (float4)(0.0f);
 
-	for(uint i = 0; i < n4; i++) {
+	for (uint i = 0; i < n4; i++) {
 		float4 blA0 = a[(row * BLOCK_SIZE + 0) * n4 + i];
 		float4 blA1 = a[(row * BLOCK_SIZE + 1) * n4 + i];
 		float4 blA2 = a[(row * BLOCK_SIZE + 2) * n4 + i];
@@ -39,7 +39,7 @@ __kernel void MultBlock(__global float4* a, __global float4* b, __global float4*
 		sum3.y += blA3.x * blB0.y + blA3.y * blB1.y + blA3.z * blB2.y + blA3.w * blB3.y;
 		sum3.z += blA3.x * blB0.z + blA3.y * blB1.z + blA3.z * blB2.z + blA3.w * blB3.z;
 		sum3.w += blA3.x * blB0.w + blA3.y * blB1.w + blA3.z * blB2.w + blA3.w * blB3.w;
-	}
+	} // for
 
 	uint posC = (row * BLOCK_SIZE) * n4 + col;
 
@@ -47,4 +47,4 @@ __kernel void MultBlock(__global float4* a, __global float4* b, __global float4*
 	c[posC + 1 * n4] = sum1;
 	c[posC + 2 * n4] = sum2;
 	c[posC + 3 * n4] = sum3;
-}
+} // BlocksGPU

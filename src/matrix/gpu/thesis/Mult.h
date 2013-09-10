@@ -30,7 +30,7 @@ namespace gpu
             void init() override
             {
                 Program* program = context->createProgram("gpu/thesis/Mult.cl");
-                kernel = program->createKernel("Mult");
+                kernel = program->createKernel("NaiveGPU");
                 delete program;
             }
 

@@ -16,18 +16,18 @@ int roundToMultiple(int x, int multiple)
 		return (x / multiple + 1) * multiple;
 }
 
-void matrixMul(float* a, float* b, float* c, size_t n) {
-	for(size_t row = 0; row < n; row++) {
-		for(size_t col = 0; col < n; col++) {
+void naiveCPU(float* a, float* b, float* c, size_t n) {
+	for (size_t row = 0; row < n; row++) {
+		for (size_t col = 0; col < n; col++) {
 			c[row * n + col] = 0;
-			for(size_t i = 0; i < n; i++)
+			for (size_t i = 0; i < n; i++)
 				c[row * n + col] += a[row * n + i] * b[i * n + col];
-		}
-	}
-}
+		} // for
+	} // for
+} // naiveCPU
 
-void matrixMulCL(float* a, float* b, float* c, cl_uint n, cl_context context, cl_command_queue queue,
-		cl_kernel kernel, size_t workGroupSize) {
+void naiveGPU(float* a, float* b, float* c, cl_uint n,
+		cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize) {
 	size_t bufferSize = n * n * sizeof(float);
 
 	cl_mem aBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY, bufferSize, nullptr, nullptr);
@@ -51,12 +51,12 @@ void matrixMulCL(float* a, float* b, float* c, cl_uint n, cl_context context, cl
 	clReleaseMemObject(aBuffer);
 	clReleaseMemObject(bBuffer);
 	clReleaseMemObject(cBuffer);
-}
+} // naiveGPU
 
 #define TILE_SIZE 16
 
-void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context context, cl_command_queue queue,
-		cl_kernel kernel) {
+void tilesGPU(float* a, float* b, float* c, cl_uint n,
+		cl_context context, cl_command_queue queue, cl_kernel kernel) {
 	cl_uint adjustedSize = roundToMultiple(n, TILE_SIZE);
 	size_t bufferSize = adjustedSize * adjustedSize * sizeof(float);
 	cl_mem aBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY, bufferSize, nullptr, nullptr);
@@ -64,10 +64,10 @@ void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context contex
 	cl_mem cBuffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY, bufferSize, nullptr, nullptr);
 
 	size_t bufferOffset[] = {0, 0, 0};
-	size_t hostOffset[] = {0, 0, 0};
-	size_t sizes[] = {n * sizeof(float), n, 1};
+	size_t hostOffset[]   = {0, 0, 0};
+	size_t sizes[]        = {n * sizeof(float), n, 1};
 
-	if(adjustedSize != n) {
+	if (adjustedSize != n) {
 		float zero = 0.0f;
 		clEnqueueFillBuffer(queue, aBuffer, &zero, sizeof(float), 0, bufferSize, 0, nullptr, nullptr);
 		clEnqueueFillBuffer(queue, bBuffer, &zero, sizeof(float), 0, bufferSize, 0, nullptr, nullptr);
@@ -78,7 +78,7 @@ void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context contex
 	} else {
 		clEnqueueWriteBuffer(queue, aBuffer, false, 0, bufferSize, a, 0, nullptr, nullptr);
 		clEnqueueWriteBuffer(queue, bBuffer, false, 0, bufferSize, b, 0, nullptr, nullptr);
-	}
+	} // if
 
 	clSetKernelArg(kernel, 0, sizeof(cl_mem), &aBuffer);
 	clSetKernelArg(kernel, 1, sizeof(cl_mem), &bBuffer);
@@ -88,7 +88,7 @@ void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context contex
 	size_t localWS[] = { TILE_SIZE, TILE_SIZE };
 	clEnqueueNDRangeKernel(queue, kernel, 2, nullptr, globalWS, localWS, 0, nullptr, nullptr);
 
-	if(adjustedSize != n)
+	if (adjustedSize != n)
 		clEnqueueReadBufferRect(queue, cBuffer, true, bufferOffset, hostOffset, sizes,
 				adjustedSize * sizeof(float), 0, n * sizeof(float), 0, c, 0, nullptr, nullptr);
 	else
@@ -97,7 +97,7 @@ void matrixMulCLLocal(float* a, float* b, float* c, cl_uint n, cl_context contex
 	clReleaseMemObject(aBuffer);
 	clReleaseMemObject(bBuffer);
 	clReleaseMemObject(cBuffer);
-}
+} // tilesGPU
 
 #define BLOCK_SIZE 4
 
@@ -228,10 +228,10 @@ int main(int argc, char* argv[])
 	clBuildProgram(program4, 1, &device, "", nullptr, nullptr);
 
 	// create the kernel
-	cl_kernel kernel1 = clCreateKernel(program1, "Mult", nullptr);
-	cl_kernel kernel2 = clCreateKernel(program2, "MultLocal", nullptr);
-	cl_kernel kernel3 = clCreateKernel(program3, "MultBlock", nullptr);
-	cl_kernel kernel4 = clCreateKernel(program4, "MultBlockLocal", nullptr);
+	cl_kernel kernel1 = clCreateKernel(program1, "NaiveGPU", nullptr);
+	cl_kernel kernel2 = clCreateKernel(program2, "TilesGPU", nullptr);
+	cl_kernel kernel3 = clCreateKernel(program3, "BlocksGPU", nullptr);
+	cl_kernel kernel4 = clCreateKernel(program4, "BlocksAndTilesGPU", nullptr);
 
 	// MATRIX MUL
 	int n = 1000;
@@ -252,15 +252,15 @@ int main(int argc, char* argv[])
 		return rand() % 100;
 	});
 
-	matrixMul(a, b, c0, n);
+	naiveCPU(a, b, c0, n);
 
-	matrixMulCL(a, b, c1, n, context, queue, kernel1, 16); // 2D
+	naiveGPU(a, b, c1, n, context, queue, kernel1, 16); // 2D
 	if(!memcmp_float(c0, c1, n * n))
 		cerr << "validation of kernel 1 failed" << endl;
 	else
 		cout << "kernel 1 ok" << endl;
 
-	matrixMulCLLocal(a, b, c2, n, context, queue, kernel2); // 2D
+	tilesGPU(a, b, c2, n, context, queue, kernel2); // 2D
 	if(!memcmp_float(c0, c2, n * n))
 		cerr << "validation of kernel 2 failed" << endl;
 	else

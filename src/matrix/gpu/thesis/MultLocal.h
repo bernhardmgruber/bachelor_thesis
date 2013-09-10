@@ -42,7 +42,7 @@ namespace gpu
             void init() override
             {
                 Program* program = context->createProgram("gpu/thesis/MultLocal.cl");
-                kernel = program->createKernel("MultLocal");
+                kernel = program->createKernel("TilesGPU");
                 delete program;
             }
 

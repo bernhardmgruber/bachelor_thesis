@@ -1,26 +1,26 @@
 #define TILE_SIZE 16
 #define BLOCK_SIZE 4
 
-__kernel void MultBlockLocal(__global float4* a, __global float4* b, __global float4* c, uint n) {
-	uint col = get_global_id(0);
-	uint row = get_global_id(1);
-	uint localX = get_local_id(0);
-	uint localY = get_local_id(1);
-	uint n4 = n / BLOCK_SIZE;
+__kernel void BlocksAndTilesGPU(__global float4* a, __global float4* b, __global float4* c, uint n) {
+	uint col     = get_global_id(0);
+	uint row     = get_global_id(1);
+	uint localX  = get_local_id(0);
+	uint localY  = get_local_id(1);
+	uint n4      = n / BLOCK_SIZE;
 
-	uint posA = (row * BLOCK_SIZE) * n4 + localX;
-	uint posB = (localY * BLOCK_SIZE) * n4 + col;
-	uint stepA = TILE_SIZE;
-	uint stepB = TILE_SIZE * BLOCK_SIZE * n4;
-	uint endA = posA + n4;
+	uint posA    = (row * BLOCK_SIZE) * n4 + localX;
+	uint posB    = (localY * BLOCK_SIZE) * n4 + col;
+	uint stepA   = TILE_SIZE;
+	uint stepB   = TILE_SIZE * BLOCK_SIZE * n4;
+	uint endA    = posA + n4;
 	uint tilePos = localX + (localY * BLOCK_SIZE) * TILE_SIZE;
 
-	float4 sum0 = (float4)(0.0f);
-	float4 sum1 = (float4)(0.0f);
-	float4 sum2 = (float4)(0.0f);
-	float4 sum3 = (float4)(0.0f);
+	float4 sum0  = (float4)(0.0f);
+	float4 sum1  = (float4)(0.0f);
+	float4 sum2  = (float4)(0.0f);
+	float4 sum3  = (float4)(0.0f);
 
-	while(posA < endA) {
+	while (posA < endA) {
 		__local float4 aTile[TILE_SIZE * TILE_SIZE * BLOCK_SIZE];
 		__local float4 bTile[TILE_SIZE * TILE_SIZE * BLOCK_SIZE];
 
@@ -35,7 +35,7 @@ __kernel void MultBlockLocal(__global float4* a, __global float4* b, __global fl
 
 		barrier(CLK_LOCAL_MEM_FENCE);
 
-		for(uint k = 0; k < TILE_SIZE; k++) {
+		for (uint k = 0; k < TILE_SIZE; k++) {
 			float4 blA0 = aTile[k + (localY * BLOCK_SIZE + 0) * TILE_SIZE];
 			float4 blA1 = aTile[k + (localY * BLOCK_SIZE + 1) * TILE_SIZE];
 			float4 blA2 = aTile[k + (localY * BLOCK_SIZE + 2) * TILE_SIZE];
@@ -61,16 +61,16 @@ __kernel void MultBlockLocal(__global float4* a, __global float4* b, __global fl
 			sum3.y += blA3.x * blB0.y + blA3.y * blB1.y + blA3.z * blB2.y + blA3.w * blB3.y;
 			sum3.z += blA3.x * blB0.z + blA3.y * blB1.z + blA3.z * blB2.z + blA3.w * blB3.z;
 			sum3.w += blA3.x * blB0.w + blA3.y * blB1.w + blA3.z * blB2.w + blA3.w * blB3.w;
-		}
+		} // for
 		barrier(CLK_LOCAL_MEM_FENCE);
 
 		posA += stepA;
 		posB += stepB;
-	}
+	} // while
 
 	uint posC = (row * BLOCK_SIZE) * n4 + col;
 	c[posC + 0 * n4] = sum0;
 	c[posC + 1 * n4] = sum1;
 	c[posC + 2 * n4] = sum2;
 	c[posC + 3 * n4] = sum3;
-}
+} // BlocksAndTilesGPU
