@@ -3,7 +3,7 @@ __kernel void UpSweep(__global int* buffer, uint offset) {
 	uint id = (get_global_id(0) + 1) * stride - 1;
 
 	buffer[id] += buffer[id - offset];
-}
+} // UpSweep
 
 __kernel void DownSweep(__global int* buffer, uint offset) {
 	uint stride = offset << 1;
@@ -12,4 +12,4 @@ __kernel void DownSweep(__global int* buffer, uint offset) {
 	int val = buffer[id];
 	buffer[id] += buffer[id - offset];
 	buffer[id - offset] = val;
-}
+} // DownSweep

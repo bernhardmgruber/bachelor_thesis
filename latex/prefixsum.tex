@@ -1,68 +1,67 @@
 \chapter{Prefix sum}
 \label{sec:prefix_sum}
 
-The all-prefix-sums operation (also referred to as prefix sum or simply scan) is a simple calculation which is most often found as part of larger and more complex routines. It serves as fundamental building block for implementing well-known algorithms such as radix sort (covered in section \ref{sec:sorting_radix}), stream compacting, minimum spanning tree and many more (cf. Blelloch's papers on prefix sum \cite{scan_blelloch_examples} \cite{scan_blelloch} and the GPU Gems 3 book chapter 39.1 \cite{gpu_gems_3_chapter_39}).
+The all-prefix-sums operation (also referred to as prefix sum or simply scan) is a simple calculation which is most often found as part of larger and more complex routines. It serves as fundamental building block for implementing well-known algorithms such as radix sort (covered in section \ref{sec:sorting_radix}), stream compacting, minimum spanning tree and many more (cf. Blelloch's papers on prefix sum \cite{scan_blelloch_examples} \cite{scan_blelloch} and the GPU Gems 3 book section 39.1 \cite{gpu_gems_3_chapter_39}).
 
-The all-prefix-sums operation uses a binary, associative operator $\oplus$ with identity element $I$ to transforms an input array of $n$ elements
-
+The all-prefix-sums operation uses a binary, associative operator $\oplus$ with identity element $I$ to transform an input array of $n$ elements
 \begin{equation*}
 [a_0, a_1, \dots, a_{n-1}]
 \end{equation*}
-
 into an output array of $n$ elements where
 
-a) each output element is the sum of all elements preceding the corresponding input element. This is known as an exclusive scan. \cite{gpu_gems_3_chapter_39}
+\begin{enumerate}[label=\alph*)]
+	\item 
+	each output element is the sum of all elements preceding the corresponding input element. This is known as an exclusive scan. \cite{gpu_gems_3_chapter_39}
+	\begin{equation*}
+	[I, a_0, (a_0 \oplus a_1), \dots, (a_0 \oplus a_1 \oplus \dots \oplus a_{n-2})]
+	\end{equation*}
+	
+	\item
+	each  output element is the sum of all elements preceding the corresponding input element and the input element itself. This is known as an inclusive scan. \cite{gpu_gems_3_chapter_39}
+	\begin{equation*}
+	[a_0, (a_0 \oplus a_1), \dots, (a_0 \oplus a_1 \oplus \dots \oplus a_{n-1})]
+	\end{equation*}
+\end{enumerate}
 
-\begin{equation*}
-[I, a_0, (a_0 \oplus a_1), \dots, (a_0 \oplus a_1 \oplus \dots \oplus a_{n-2})]
-\end{equation*}
-
-b) each  output element is the sum of all elements preceding the corresponding input element and the input element itself. This is known as an inclusive scan. \cite{gpu_gems_3_chapter_39}
-
-\begin{equation*}
-[a_0, (a_0 \oplus a_1), \dots, (a_0 \oplus a_1 \oplus \dots \oplus a_{n-1})]
-\end{equation*}
-
-Contrary to the matrix multiplication of the previous chapter \ref{sec:matrix_mul}, the all-prefix-sums operation does not offer similarly trivial parallelism. Scanning an array is naturally sequential with a complexity of $\mathcal{O}(n)$. Although each output element could be calculated independently to gain parallelism, a lot of redundant work would be necessary raising the overall complexity to $\mathcal{O}(n^2)$ with the last element still taking $\mathcal{O}(n)$ time to calculate.
-The following chapter will focus on efficient and parallel implementations of an exclusive scan (except otherwise noted) using addition as operator on an input array of signed 32 bit integers. This chapter is orientated towards the excellent Parallel Prefix Sum article from GPU Gems 3 \cite{gpu_gems_3_chapter_39}.
+Contrary to the matrix multiplication of chapter \ref{sec:matrix_mul}, the all-prefix-sums operation does not offer similarly trivial parallelism. Scanning an array is naturally sequential with a complexity of $\mathcal{O}(n)$. Although each output element could be calculated independently to gain parallelism, a lot of redundant work would be necessary raising the overall complexity to $\mathcal{O}(n^2)$ with the last element still taking $\mathcal{O}(n)$ time to calculate.
+This chapter will focus on efficient and parallel implementations of exclusive scan (except otherwise noted) using addition as operator on an input array of signed 32 bit integers. This chapter is orientated towards the Parallel Prefix Sum article from GPU Gems 3 \cite{gpu_gems_3_chapter_39}.
 
 
 \section{CPU Implementation}
 \label{sec:scan_cpu}
 
-Implementing a sequential, single threaded scan for the CPU is simple. The first output element is initialized to zero. We than loop over the remaining output elements and set each one to the value of its predecessor plus the corresponding input element. Listing \ref{lst:scan_cpu} shows an example of a scan implementation.
+Implementing a sequential, single threaded scan for the CPU is simple. The first output element is initialized to zero. We than loop over the remaining output elements and set each one to the value of its predecessor plus the corresponding input element. Listing \ref{lst:scan_cpu} presents an example of a scan implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=A simple C++ implementation of an exclusive scan for the CPU., label=lst:scan_cpu, firstline=34, lastline=38]{code/scan/main.cpp}
+\lstinputlisting[language=CPP, caption=A simple C++ implementation of an exclusive scan for the CPU., label=lst:scan_cpu, firstline=34, lastline=38]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
-This code performs exactly $n - 1$ additions which is the minimum number of additions required to produce an exclusive scan of an array with $n$ elements. Concerning the following parallel scan implementations later in this chapter we would like them to be work-efficient. This means that the parallel implementation should have the same work complexity of $\mathcal{O}(n)$ as the sequential one.
+This code performs exactly $n - 1$ additions which is the minimum number of additions required to produce an exclusive scan of an array with $n$ elements. Concerning the following parallel scan implementations later in this chapter, we would like them to be work-efficient. This means that the parallel implementation should have the same work complexity of $\mathcal{O}(n)$ as the sequential one.
 
 \begin{quote}
 A parallel computation is work-efficient if it does asymptotically no more work (add operations, in this case) than the sequential version \cite{gpu_gems_3_chapter_39}.
 \end{quote}
 
-The benchmark of this algorithm in figure \ref{fig:scan_chart} confirms the linearity of scan. Furthermore, we can also see that scanning is a quite fast operation (when e.g. being compared to the matrix multiplication of the previous chapter \ref{sec:matrix_mul}). The CPU implementation manages to scan $2^{26}$ elements (256 MiB of data) in 225 ms.
+The benchmark of this algorithm in figure \ref{fig:scan_chart} confirms the linearity of scan. Furthermore, we can also see that scanning is a quite fast operation (when, e.g., being compared to the matrix multiplication of chapter \ref{sec:matrix_mul}). The CPU implementation manages to scan $2^{26}$ elements (256 MiB of data) in 225 ms.
 
-\begin{figure}[h]
+\begin{figure}[!p]
 \centering
-\includegraphics[width=\textwidth]{scan_chart}
-\caption{Benchmark of several prefix sum implementations.
+\includegraphics[width=0.9\textheight, angle=90]{scan_chart}
+\caption{Benchmark of several prefix sum implementations, where
 %The chart is based on the benchmark data in appendix section \ref{sec:scan_chart_data}.
-Note that both axis are of logarithmic scale.}
+both axes are of logarithmic scale.}
 \label{fig:scan_chart}
 \end{figure}
 
 \section{Naive GPU implementation}
 \label{sec:scan_naive}
 
-The first GPU implementation is base on the article Data Parallel Algorithms written by Daniel Hillis and Guy Steele in 1986 \cite{scan_naive}. Their approach to compute an inclusive (!) scan is shown in figure \ref{fig:scan_naive}. The algorithm uses several passes to compute the final output array in place. In each pass the value of a predecessor is added to an element. The offset from each element to its predecessor is determined by the pass index and is $2^{d - 1}$ where d is the number of the pass starting with 1.
+The first GPU implementation is base on the article Data Parallel Algorithms \cite{scan_naive}. The discussed approach is to compute an inclusive (!) scan is shown in figure \ref{fig:scan_naive}. The algorithm uses several passes to compute the final output array in place. In each pass the value of a predecessor is added to an element. The offset from each element to its predecessor is determined by the pass index and is $2^{d - 1}$ where d is the number of the pass starting with 1.
 
-\vspace{0.5cm}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{scan_naive}
-\caption{A naive approach for a parallel scan \cite{scan_naive}. (figure from GPU Gems 3 \cite{gpu_gems_3_chapter_39})}
+\caption{A naive approach for a parallel scan. \cite{gpu_gems_3_chapter_39}}
 \label{fig:scan_naive}
 \end{figure}
 
@@ -70,7 +69,7 @@ By now the algorithm assumes that in each pass all input elements are read befor
 Listing \ref{lst:scan_naive_host} shows an example host code implementing this approach.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the naive scan algorithm., label=lst:scan_naive_host, firstline=40, lastline=64]{code/scan/main.cpp}
+\lstinputlisting[language=CPP, caption=Host code for the naive scan algorithm., label=lst:scan_naive_host, firstline=40, lastline=64]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 At first, two buffers with the size of the input are created. Both of them have to be read- and writable as they are read from and written to alternatingly when executing the passes. The source buffer is filled with the input data. Although this algorithm is independent from the chosen work group size, we have to round the number of enqueued work items (one for each input element) up to be a multiple of the work group size, which will be the size of the enqueued ND range. After this short setup the passes are executed. Each pass corresponds to a power of two (loop variable \lstinline!offset!, cf. figure \ref{fig:scan_naive}) which corresponds to the offset of an element to the predecessor that should be added to it. This offset is raised to the next power of two each pass until it is larger than the problem size. The kernel is executed once for each pass, given the source and destination buffer, the offset and the original problem size as arguments. At the end of a pass the source and destination buffers are swapped (only the handles, not the actual contents). After the last pass has been executed, the result is read from the source buffer (the last pass wrote to the destination buffer which was swapped with the source buffer at the end of the loop).
@@ -96,7 +95,7 @@ In 1990 Blelloch presented a more efficient version of the all-prefix-sums opera
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{scan_work_efficient_up_sweep}
-\caption{The up-sweep phase of a work efficient parallel scan \cite{scan_blelloch}.  (figure from GPU Gems 3 \cite{gpu_gems_3_chapter_39})}
+\caption{The up-sweep phase of a work efficient parallel scan \cite{gpu_gems_3_chapter_39}}
 \label{fig:scan_work_efficient_up_sweep}
 \end{figure}
 
@@ -105,16 +104,16 @@ The first phase is called the reduce or up-sweep phase and is illustrated in fig
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\linewidth]{scan_work_efficient_down_sweep}
-\caption{The down-sweep phase of a work efficient parallel scan \cite{scan_blelloch}.  (figure from GPU Gems 3 \cite{gpu_gems_3_chapter_39})}
+\caption{The down-sweep phase of a work efficient parallel scan \cite{gpu_gems_3_chapter_39}}
 \label{fig:scan_work_efficient_down_sweep}
 \end{figure}
 
 The second phase sets the value of the root node to zero to prepare for the third phase, the down-sweep phase, which is illustrated in figure \ref{fig:scan_work_efficient_down_sweep}. The down-sweep phase again consists of several passes starting at the root node and repeating along all levels of the tree until the leaves. In each pass the values of the left child nodes are read and temporarily stored. The left child nodes are than replaced by the value of their parent nodes. The previous, temporarily stored values of the left child nodes are then added to the parent nodes' values and written to the right child node. As the parent nodes are not needed anymore after the sum for the right child has been calculated, the tree can again be traversed downwards in-place.
-Overall, for an input array of $n$ elements, this algorithm performs $n - 1$ adds during the up-sweep phase and the same amount of adds during the down-sweep phase \footnote{A perfect binary tree with $n$ leaves has a total of $2n - 1$ nodes. As only the non-leaf nodes perform additions, the number of leaf nodes can be subtracted resulting in $2n - 1 - n = n - 1$ nodes which perform an addition.}. Although almost twice as much work is performed when compared with the sequential CPU implementation, this algorithm can still be considered work-efficient according to the definition given in section \ref{sec:scan_cpu}.
+Overall, for an input array of $n$ elements, this algorithm performs $n - 1$ adds during the up-sweep phase and the same amount of adds during the down-sweep phase\footnote{A perfect binary tree with $n$ leaves has a total of $2n - 1$ nodes. As only the non-leaf nodes perform additions, the number of leaf nodes can be subtracted resulting in $2n - 1 - n = n - 1$ nodes which perform an addition.}. Although almost twice as much work is performed when compared with the sequential CPU implementation, this algorithm can still be considered work-efficient according to the definition given in section \ref{sec:scan_cpu}.
 Listing \ref{lst:scan_work_efficient_host} shows the host code implementing the work-efficient tree based approach after Blelloch \cite{scan_blelloch}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the work-efficient scan algorithm., label=lst:scan_work_efficient_host, firstline=66, lastline=101]{code/scan/main.cpp}
+\lstinputlisting[language=CPP, caption=Host code for the work-efficient scan algorithm., label=lst:scan_work_efficient_host, firstline=66, lastline=103]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 Contrary to the previous algorithms, this implementation will use two kernels, one for the up-sweep and one for the down-sweep phase. 
@@ -152,17 +151,18 @@ Although this algorithm is not tied to a specific work group size it performs be
 Listing \ref{lst:scan_recursive_host} shows the host code of this recursive scan algorithm.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm., label=lst:scan_recursive_host, firstline=103, lastline=136]{code/scan/main.cpp}
+\lstinputlisting[language=CPP, caption=Host code for the recursive scan algorithm., label=lst:scan_recursive_host, firstline=105, lastline=140]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
-This implementation again uses two kernels, one for scanning the blocks in local memory and one for applying the offsets from the scanned temporary buffer to the original one. The host code consists of two parts, the setup code and the actual recursion. The setup is performed in \lstinline!scanCLRecursive! which starts by rounding the input data size up to be a multiple of twice the size of a work group, because each work item processes two values. Then a buffer is created and the input data written to it. This buffer is then passed to the recursive scan procedure \lstinline!scanCLRecursive_r!. The recursion starts by computing the size of the temporary buffer \lstinline!sums! that will hold the values of the root nodes (the sums over each block). As each thread processes two input elements and each work group computes one sum over a block, this temporary buffer's size is the problem size divided by two times the work group size. The result is then rounded up to be a multiple of this value, so it can be recursively scanned again with this algorithm. After the size has been determined, the \lstinline!sums! buffer can be created. No initialization or memory transfer is required as the buffer is entirely accessed by the kernels. Afterwards, the block scan kernel can be set up. It takes the original input buffer as well as the buffer for the sums as arguments. Furthermore local memory is allocated to cache the block calculated by each work group. As each work item reads two input elements, the global work size is half the number of input elements. After the kernel has been enqueued, we have to check whether the input data for this recursion consisted of more than one block. If this is the case we scan the temporary buffer (containing more than 1 value) by recursively calling \lstinline!scanCLRecursive_r! on this buffer. After scanning the temporary \lstinline!sums! buffer has completed, the sums can be applied to the original buffer. Therefore another kernel is enqueued given both buffers as arguments. The global and local work size are equal to the previous kernel on the same recursion level.
+This implementation again uses two kernels, one for scanning the blocks in local memory and one for applying the offsets from the scanned temporary buffer to the original one. The host code consists of two parts, the setup code and the actual recursion. The setup is performed in \lstinline!recursiveGPU! which starts by rounding the input data size up to be a multiple of twice the size of a work group, because each work item processes two values. Then a buffer is created and the input data written to it. This buffer is then passed to the recursive scan procedure \lstinline!recursiveGPU_r!. The recursion starts by computing the size of the temporary buffer \lstinline!sums! that will hold the values of the root nodes (the sums over each block). As each thread processes two input elements and each work group computes one sum over a block, this temporary buffer's size is the problem size divided by two times the work group size. The result is then rounded up to be a multiple of this value, so it can be recursively scanned again with this algorithm. After the size has been determined, the \lstinline!sums! buffer can be created. No initialization or memory transfer is required as the buffer is entirely accessed by the kernels. Afterwards, the block scan kernel can be set up. It takes the original input buffer as well as the buffer for the sums as arguments. Furthermore local memory is allocated to cache the block calculated by each work group. As each work item reads two input elements, the global work size is half the number of input elements. After the kernel has been enqueued, we have to check whether the input data for this recursion consisted of more than one block. If this is the case we scan the temporary buffer (containing more than 1 value) by recursively calling \lstinline!recursiveGPU_r! on this buffer. After scanning the temporary \lstinline!sums! buffer has completed, the sums can be applied to the original buffer. Therefore another kernel is enqueued given both buffers as arguments. The global and local work size are equal to the previous kernel on the same recursion level.
 Listing \ref{lst:scan_recursive_kernel} shows the kernel code for the recursive scan implementation.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm., label=lst:scan_recursive_kernel, firstline=1, lastline=55]{../src/scan/gpu/thesis/RecursiveScan.cl}
 \lstset{basicstyle=\ttfamily{}}
 
-The \lstinline!ScanBlocks! kernel starts with querying some values from OpenCL. Beside the global and local id, also the size \lstinline!n! of the block of the current work group is determined. Each thread than loads two values of the block into local memory. The following code then implements the tree based scan approach by Blelloch which has already been discussed in the previous section \ref{sec:scan_work_efficient}. The three phases (up-sweep, set-last-zero and down-sweep) are executed across all threads of the work group on the block in local memory. The only difference is, that the computed value of the root node after the up-sweep phase is moved to the \lstinline!sums! buffer at the index of the current work group. After the block has been scanned completely, it is copied back from local to global memory. \\
+The \lstinline!ScanBlocks! kernel starts with querying some values from OpenCL. Beside the global and local id, also the size \lstinline!n! of the block of the current work group is determined. Each thread than loads two values of the block into local memory. The following code then implements the tree based scan approach by Blelloch which has already been discussed in the previous section \ref{sec:scan_work_efficient}. The three phases (up-sweep, set-last-zero and down-sweep) are executed across all threads of the work group on the block in local memory. The only difference is, that the computed value of the root node after the up-sweep phase is moved to the \lstinline!sums! buffer at the index of the current work group. After the block has been scanned completely, it is copied back from local to global memory.
+
 The \lstinline!AddSums! kernel is executed with the same global and local sizes as specified to the \lstinline!ScanBlocks! kernel on the same recursion level. The \lstinline!sums! buffer now contains a scan of the sums of all blocks scanned in this recursion. Therefore, the position where the \lstinline!ScanBlocks! kernel wrote the root node's value, now contains the sum of all elements (of all blocks) preceding the block of the current work group. This value is retrieved and added to all values of the current block finishing the scan.
 
 Concerning the performance benchmark in figure \ref{fig:scan_chart}, this implementation scales better with the problem size although it is not faster than the global work-efficient scan of the previous section (606 vs. 604 ms on $2^{26} elements$). Furthermore, the recursive implementations' kernels are enqueued far less often than the one's of the work-efficient implementation. This can be explained by the reduction factor in each algorithm. The work efficient implementation reduces the number of work items by a factor of two each iteration while the recursive algorithm reduces by the work group size (which was 256 for the benchmarks) times two. In return, a lot more work is done inside the recursive algorithm's kernels. Also the number of additions required to compute the final result increased as extra adds a needed to apply the sums from the temporary buffer to the input buffer.
@@ -176,7 +176,7 @@ With this modification, each work group does not only load a block of two times 
 Listing \ref{lst:scan_recursive_vector_host} shows the differences of the host code of the this vector type implementation compared with the previous one.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++, caption=Host code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_host, firstline=139, lastline=149]{code/scan/main.cpp}
+\lstinputlisting[language=CPP, caption=Host code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_host, firstline=143, lastline=152]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 The first and most important step is to define the width of the vectors used. OpenCL supports vector types with the lengths of 2, 4, 8 or 16. The larger this \lstinline!VECTOR_WIDTH! is chosen, the larger is the reduction of the input buffer in each recursion. However, as a side effect the consumed registers per work item increase leading to a lower occupancy of the kernel. The ideal vector width may be hardware specific and is subject to corresponding benchmarks. This implementation will use a \lstinline!VECTOR_WIDTH! of 8.
@@ -184,7 +184,7 @@ The remaining changes to the host code are straight forward. As the blocks get b
 Although the changes to the host code are quite small, the kernel needs a few more extensions as shown in listing \ref{lst:scan_recursive_vector_kernel}.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types with a width of eight., label=lst:scan_recursive_vector_kernel, firstline=153, lastline=230]{code/scan/main.cpp}
+\lstinputlisting[language=CL, caption=OpenCL Kernel code for the recursive scan algorithm using vector types with a width of eight., label=lst:scan_recursive_vector_kernel, firstline=156, lastline=234]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 First of all, several macros are defined for the \lstinline!ScanBlocksVec! kernel to avoid redundant code for the up-sweep and down-sweep implementation on the vector types. The kernel begins, after querying topological informations, by copying two \lstinline!int8! vectors into registers. The up-sweep phase is completely executed on the work item's registers on both vectors resulting in a lot of independent instructions. After the up-sweep phase, the last vector elements hold the sum over both vectors which is then copied into the shared memory block. After the last elements are reset to zero, the down-sweep phase continues, finalizing the scan on the two vectors stored in registers. The remaining part of the kernel is equal to the one of the previous implementation in listing \ref{lst:scan_recursive_kernel} which calculates the scan of the block in shared memory and copies the block's sum into the \lstinline!sums! buffer. A final small addition is to offset the vectors by the sum of all previous vectors of preceding work items in this block. Notice that the value loaded from local memory is added to each vector element. Finally the vectors are written back to global memory. \\
@@ -227,4 +227,4 @@ Furthermore, several libraries exist supporting GPGPU accelerated scans.
 \end{description}
 
 \section{Summary and conclusion}
-In this chapter we have seen how a sequential algorithm like the all-prefix-sum can be parallelized for GPUs. A tree based approach using several passes delivered good results. Also the idea of solving the problem in smaller sub groups which are than merged into the global result proofed to be successful. Both concepts are common patterns when trying to port sequential CPU code to a GPU. However, we did also learn that using a GPU does not always result in a performance boost, despite their enormous power. So does the final scan only perform three times faster than the CPU implementation excluding memory transfer. If the time for copying the data to and from the GPU's main memory is included, we would be better off staying with the CPU. This is a problem for many fast algorithms operating on larger chunks of memory. Nevertheless, a fast GPU implementation of such primitives can still be needed in cases where the input and output data is already present or consumed on the GPU. This is the case when input data is produced on the GPU (e.g. scanning image data from a rendering process) or present as input for other purposes (other algorithms, data for rendering). Also the output may be directly used by the GPU (e.g using scan as part of a filtering routine generating a list of objects to render). Even if a GPU algorithm would be slower in run time than a CPU version it might still outperform the CPU variant including memory transfer to and from the systems main memory.
+In this chapter we have seen how a sequential algorithm like the all-prefix-sum can be parallelized for GPUs. A tree based approach using several passes delivered good results. Also the idea of solving the problem in smaller sub groups which are than merged into the global result proofed to be successful. Both concepts are common patterns when trying to port sequential CPU code to a GPU. However, we did also learn that using a GPU does not always result in a performance boost, despite their enormous power. So does the final scan only perform three times faster than the CPU implementation excluding memory transfer. If the time for copying the data to and from the GPU's main memory is included, we would be better off staying with the CPU. This is a problem for many fast algorithms operating on larger chunks of memory. Nevertheless, a fast GPU implementation of such primitives can still be needed in cases where the input and output data is already present or consumed on the GPU. This is the case when input data is produced on the GPU (e.g., scanning image data from a rendering process) or present as input for other purposes (other algorithms, data for rendering). Also the output may be directly used by the GPU (e.g using scan as part of a filtering routine generating a list of objects to render). Even if a GPU algorithm would be slower in run time than a CPU version it might still outperform the CPU variant including memory transfer to and from the systems main memory.

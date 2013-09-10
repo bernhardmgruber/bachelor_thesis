@@ -50,7 +50,7 @@ namespace gpu
                 stringstream ss;
                 Program* program = context->createProgram("gpu/thesis/RecursiveVecScan.cl");
                 kernel = program->createKernel(AVOID_BANK_CONFLICTS ? "ScanBlocksVecOptim" : "ScanBlocksVec");
-                addKernel = program->createKernel("AddSums");
+                addKernel = program->createKernel("AddSumsVec");
                 delete program;
             }
 

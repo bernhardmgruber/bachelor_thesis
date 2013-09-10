@@ -220,7 +220,7 @@ OpenCL defines four types of memory which are shown in figure \ref{fig:memory_mo
 The following piece of code in listing \ref{lst:opencl_example} shows a minimal OpenCL application with a kernel that calculates the sum of two input vectors. To keep the code simple, no error handling is performed, only the error code is retrieved. The codes in the subsequent implementation chapters will completely go without error handling or error code retrieval.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=C++,caption=A minimalistic working OpenCL application which calculates the sum vector of two input vectors.,label=lst:opencl_example]{code/sample/main.cpp}
+\lstinputlisting[language=CPP,caption=A minimalistic working OpenCL application which calculates the sum vector of two input vectors.,label=lst:opencl_example]{code/sample/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 The first step in every OpenCL program is to choose a platform. As platforms correspond to the available OpenCL implementations on the system, multiple platforms can be available. The example code in listing \ref{lst:opencl_example} only queries the first available OpenCL platform by calling \lstinline!clGetPlatformIDs! with 1 and a pointer to a variable able to hold one platform id as arguments. The third parameter could be used to retrieve the number of actually available platforms.
