@@ -9,11 +9,11 @@ Listing \ref{lst:utility} shows the definition of often used utility functions.
 \lstinputlisting[language=C++, caption=Utility functions used in host codes throughout the thesis, label=lst:utility]{code/utility.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
+
 \chapter{Benchmark environment}
 \label{sec:becnhmark_env}
 
-
-All benchmarks have been created using the following hardware configuration:
+All benchmarks have been created using the following software and hardware configuration:
 
 \begin{itemize}
 	\item Windows 7 x64
@@ -32,10 +32,11 @@ All benchmarks have been created using the following hardware configuration:
 
 \section*{OpenCL device info of GPU}
 
-The following information has been retrieved by calling \lstinline!clGetDeviceInfo! with all defined constants in OpenCL 1.2. For a complete list and further explanation please visit the corresponding API documentation at Khronos' web site.
+The following information has been retrieved by calling \lstinline!clGetDeviceInfo! with all defined constants in OpenCL 1.2. For a complete list and further explanation visit the corresponding API documentation at Khronos' Website.
 
 \begin{longtable}{p{0.58\textwidth} p{0.36\textwidth}}
 \textbf{Flag} & \textbf{Value} \\
+\hline \\ [-1.5ex]
 CL\_DEVICE\_ADDRESS\_BITS & 32 \\
 CL\_DEVICE\_AVAILABLE & 1 \\
 CL\_DEVICE\_BUILT\_IN\_KERNELS &  \\
