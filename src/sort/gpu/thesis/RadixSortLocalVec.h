@@ -38,8 +38,8 @@ namespace gpu
             void init() override
             {
                 Program* program = context->createProgram("gpu/thesis/RadixSortLocalVec.cl");
-                histogramKernel = program->createKernel("Histogram");
-                permuteKernel = program->createKernel("Permute");
+                histogramKernel = program->createKernel("HistogramBlock");
+                permuteKernel = program->createKernel("PermuteBlock");
                 scanKernel = program->createKernel("ScanBlocksVec");
                 addKernel = program->createKernel("AddSums");
                 delete program;

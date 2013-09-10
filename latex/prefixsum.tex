@@ -176,7 +176,7 @@ With this modification, each work group does not only load a block of two times 
 Listing \ref{lst:scan_recursive_vector_host} shows the differences of the host code of the this vector type implementation compared with the previous one.
 
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
-\lstinputlisting[language=CPP, caption=Host code for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_host, firstline=143, lastline=152]{code/scan/main.cpp}
+\lstinputlisting[language=CPP, caption=Differences to the host code shown in listing \ref{lst:scan_recursive_kernel} for the recursive scan algorithm using vector types., label=lst:scan_recursive_vector_host, firstline=143, lastline=152]{code/scan/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
 The first and most important step is to define the width of the vectors used. OpenCL supports vector types with the lengths of 2, 4, 8 or 16. The larger this \lstinline!VECTOR_WIDTH! is chosen, the larger is the reduction of the input buffer in each recursion. However, as a side effect the consumed registers per work item increase leading to a lower occupancy of the kernel. The ideal vector width may be hardware specific and is subject to corresponding benchmarks. This implementation will use a \lstinline!VECTOR_WIDTH! of 8.

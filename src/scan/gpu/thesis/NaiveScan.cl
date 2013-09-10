@@ -1,4 +1,4 @@
-__kernel void NaiveGPU(__global int* src, __global int* dst, uint offset, uint n) {
+__kernel void ScanNaive(__global int* src, __global int* dst, uint offset, uint n) {
 	size_t id = get_global_id(0);
 
 	if (id >= n)
@@ -8,4 +8,4 @@ __kernel void NaiveGPU(__global int* src, __global int* dst, uint offset, uint n
 		dst[id] = src[id] + src[id - offset];
 	else if (id >= (offset >> 1))
 		dst[id] = src[id];
-} // NaiveGPU
+} // ScanNaive

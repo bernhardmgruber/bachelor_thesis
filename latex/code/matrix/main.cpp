@@ -16,7 +16,7 @@ int roundToMultiple(int x, int multiple)
 		return (x / multiple + 1) * multiple;
 }
 
-void naiveCPU(float* a, float* b, float* c, size_t n) {
+void multNaiveCPU(float* a, float* b, float* c, size_t n) {
 	for (size_t row = 0; row < n; row++) {
 		for (size_t col = 0; col < n; col++) {
 			c[row * n + col] = 0;
@@ -24,9 +24,9 @@ void naiveCPU(float* a, float* b, float* c, size_t n) {
 				c[row * n + col] += a[row * n + i] * b[i * n + col];
 		} // for
 	} // for
-} // naiveCPU
+} // multNaiveCPU
 
-void naiveGPU(float* a, float* b, float* c, cl_uint n,
+void multNaiveGPU(float* a, float* b, float* c, cl_uint n,
 		cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize) {
 	size_t bufferSize = n * n * sizeof(float);
 
@@ -51,11 +51,11 @@ void naiveGPU(float* a, float* b, float* c, cl_uint n,
 	clReleaseMemObject(aBuffer);
 	clReleaseMemObject(bBuffer);
 	clReleaseMemObject(cBuffer);
-} // naiveGPU
+} // multNaiveGPU
 
 #define TILE_SIZE 16
 
-void tilesGPU(float* a, float* b, float* c, cl_uint n,
+void multTilesGPU(float* a, float* b, float* c, cl_uint n,
 		cl_context context, cl_command_queue queue, cl_kernel kernel) {
 	cl_uint adjustedSize = roundToMultiple(n, TILE_SIZE);
 	size_t bufferSize = adjustedSize * adjustedSize * sizeof(float);
@@ -97,7 +97,7 @@ void tilesGPU(float* a, float* b, float* c, cl_uint n,
 	clReleaseMemObject(aBuffer);
 	clReleaseMemObject(bBuffer);
 	clReleaseMemObject(cBuffer);
-} // tilesGPU
+} // multTilesGPU
 
 #define BLOCK_SIZE 4
 
@@ -228,10 +228,10 @@ int main(int argc, char* argv[])
 	clBuildProgram(program4, 1, &device, "", nullptr, nullptr);
 
 	// create the kernel
-	cl_kernel kernel1 = clCreateKernel(program1, "NaiveGPU", nullptr);
-	cl_kernel kernel2 = clCreateKernel(program2, "TilesGPU", nullptr);
-	cl_kernel kernel3 = clCreateKernel(program3, "BlocksGPU", nullptr);
-	cl_kernel kernel4 = clCreateKernel(program4, "BlocksAndTilesGPU", nullptr);
+	cl_kernel kernel1 = clCreateKernel(program1, "MultNaive", nullptr);
+	cl_kernel kernel2 = clCreateKernel(program2, "MultTiles", nullptr);
+	cl_kernel kernel3 = clCreateKernel(program3, "MultBlocks", nullptr);
+	cl_kernel kernel4 = clCreateKernel(program4, "MultBlocksAndTiles", nullptr);
 
 	// MATRIX MUL
 	int n = 1000;
@@ -252,15 +252,15 @@ int main(int argc, char* argv[])
 		return rand() % 100;
 	});
 
-	naiveCPU(a, b, c0, n);
+	multNaiveCPU(a, b, c0, n);
 
-	naiveGPU(a, b, c1, n, context, queue, kernel1, 16); // 2D
+	multNaiveGPU(a, b, c1, n, context, queue, kernel1, 16); // 2D
 	if(!memcmp_float(c0, c1, n * n))
 		cerr << "validation of kernel 1 failed" << endl;
 	else
 		cout << "kernel 1 ok" << endl;
 
-	tilesGPU(a, b, c2, n, context, queue, kernel2); // 2D
+	multTilesGPU(a, b, c2, n, context, queue, kernel2); // 2D
 	if(!memcmp_float(c0, c2, n * n))
 		cerr << "validation of kernel 2 failed" << endl;
 	else

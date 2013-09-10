@@ -1,11 +1,11 @@
 #define CONCAT(a, b) a ## b
-#define CONCAT_EXPANDED(a, b) CONCAT(a, b)
+#define CONCAT_EXP(a, b) CONCAT(a, b)
 
 #define UPSWEEP_STEP(left, right) right += left
 
 #define UPSWEEP_STEPS(left, right) \
-	UPSWEEP_STEP(CONCAT_EXPANDED(val1.s, left), CONCAT_EXPANDED(val1.s, right)); \
-	UPSWEEP_STEP(CONCAT_EXPANDED(val2.s, left), CONCAT_EXPANDED(val2.s, right))
+	UPSWEEP_STEP(CONCAT_EXP(val1.s, left), CONCAT_EXP(val1.s, right)); \
+	UPSWEEP_STEP(CONCAT_EXP(val2.s, left), CONCAT_EXP(val2.s, right))
 
 #define DOWNSWEEP_STEP_TMP(left, right, tmp) \
 	int tmp = left;                            \
@@ -13,11 +13,11 @@
 	right += tmp
 
 #define DOWNSWEEP_STEP(left, right) \
-	DOWNSWEEP_STEP_TMP(left, right, CONCAT_EXPANDED(tmp, __COUNTER__))
+	DOWNSWEEP_STEP_TMP(left, right, CONCAT_EXP(tmp, __COUNTER__))
 
 #define DOWNSWEEP_STEPS(left, right) \
-	DOWNSWEEP_STEP(CONCAT_EXPANDED(val1.s, left), CONCAT_EXPANDED(val1.s, right)); \
-	DOWNSWEEP_STEP(CONCAT_EXPANDED(val2.s, left), CONCAT_EXPANDED(val2.s, right))
+	DOWNSWEEP_STEP(CONCAT_EXP(val1.s, left), CONCAT_EXP(val1.s, right)); \
+	DOWNSWEEP_STEP(CONCAT_EXP(val2.s, left), CONCAT_EXP(val2.s, right))
 
 __kernel void ScanBlocksVec(__global int8* buffer, __global int* sums, __local int* shared) {
 	uint globalId = get_global_id(0);

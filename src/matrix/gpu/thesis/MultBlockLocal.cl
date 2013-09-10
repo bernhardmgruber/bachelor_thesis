@@ -1,7 +1,7 @@
 #define TILE_SIZE 16
 #define BLOCK_SIZE 4
 
-__kernel void BlocksAndTilesGPU(__global float4* a, __global float4* b, __global float4* c, uint n) {
+__kernel void MultBlocksAndTiles(__global float4* a, __global float4* b, __global float4* c, uint n) {
 	uint col     = get_global_id(0);
 	uint row     = get_global_id(1);
 	uint localX  = get_local_id(0);
@@ -73,4 +73,4 @@ __kernel void BlocksAndTilesGPU(__global float4* a, __global float4* b, __global
 	c[posC + 1 * n4] = sum1;
 	c[posC + 2 * n4] = sum2;
 	c[posC + 3 * n4] = sum3;
-} // BlocksAndTilesGPU
+} // MultBlocksAndTiles

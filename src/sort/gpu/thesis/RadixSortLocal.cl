@@ -3,7 +3,7 @@
 #define RADIX_MASK (BUCKETS - 1)
 #define BLOCK_SIZE 32
 
-__kernel void Histogram(__global uint* data, __global uint* histograms, uint bits, __local uint* hist)
+__kernel void HistogramLocal(__global uint* data, __global uint* histograms, uint bits, __local uint* hist)
 {
     size_t globalId = get_global_id(0);
     size_t localId = get_local_id(0);
@@ -24,7 +24,7 @@ __kernel void Histogram(__global uint* data, __global uint* histograms, uint bit
         histograms[get_global_size(0) * i + globalId] = hist[i];
 }
 
-__kernel void Permute(__global uint* src, __global uint* dst, __global uint* scannedHistograms, uint bits, __local uint* hist)
+__kernel void PermuteLocal(__global uint* src, __global uint* dst, __global uint* scannedHistograms, uint bits, __local uint* hist)
 {
     size_t globalId = get_global_id(0);
     size_t localId = get_local_id(0);

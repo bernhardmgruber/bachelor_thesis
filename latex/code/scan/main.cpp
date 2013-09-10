@@ -37,7 +37,7 @@ void scanCPU(int* data, int* result, size_t n) {
 		result[i] = result[i - 1] + data[i - 1];
 } // scanCPU
 
-void naiveGPU(int* data, int* result, cl_uint n,
+void scanNaiveGPU(int* data, int* result, cl_uint n,
 		cl_context context, cl_command_queue queue, cl_kernel kernel, size_t workGroupSize) {
 	size_t bufferSize = n * sizeof(int);
 	cl_mem src = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferSize, nullptr, nullptr);
@@ -61,9 +61,9 @@ void naiveGPU(int* data, int* result, cl_uint n,
 
 	clReleaseMemObject(src);
 	clReleaseMemObject(dst);
-} // naiveGPU
+} // scanNaiveGPU
 
-void workEfficientGPU(int* data, int* result, cl_uint n,
+void scanWorkEfficientGPU(int* data, int* result, cl_uint n,
 		cl_context context, cl_command_queue queue, cl_kernel upSweep, cl_kernel downSweep,
 		size_t workGroupSize) {
 	size_t adjustedSize = roundToPowerOfTwo(n);
@@ -100,9 +100,9 @@ void workEfficientGPU(int* data, int* result, cl_uint n,
 	clEnqueueReadBuffer(queue, buffer, true, 0, n * sizeof(int), result, 0, nullptr, nullptr);
 
 	clReleaseMemObject(buffer);
-} // workEfficientGPU
+} // scanWorkEfficientGPU
 
-void recursiveGPU_r(cl_mem values, cl_uint n,
+void scanRecursiveGPU_r(cl_mem values, cl_uint n,
 		cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums,
 		size_t workGroupSize) {
 	size_t sumCount = roundToMultiple(n / (workGroupSize * 2), workGroupSize * 2);
@@ -116,7 +116,7 @@ void recursiveGPU_r(cl_mem values, cl_uint n,
 	clEnqueueNDRangeKernel(queue, scanBlocks, 1, nullptr, globalWS, localWS, 0, nullptr, nullptr);
 
 	if (n > workGroupSize * 2) {
-		recursiveGPU_r(sums, sumCount, context, queue, scanBlocks, addSums, workGroupSize);
+		scanRecursiveGPU_r(sums, sumCount, context, queue, scanBlocks, addSums, workGroupSize);
 
 		clSetKernelArg(addSums, 0, sizeof(cl_mem), &values);
 		clSetKernelArg(addSums, 1, sizeof(cl_mem), &sums);
@@ -124,20 +124,20 @@ void recursiveGPU_r(cl_mem values, cl_uint n,
 	} // if
 
 	clReleaseMemObject(sums);
-} // recursiveGPU_r
+} // scanRecursiveGPU_r
 
-void recursiveGPU(int* data, int* result, cl_uint n,
+void scanRecursiveGPU(int* data, int* result, cl_uint n,
 		cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums,
 		size_t workGroupSize) {
 	size_t adjustedSize = roundToMultiple(n, workGroupSize * 2);
 	cl_mem buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, adjustedSize * sizeof(int), nullptr, nullptr);
 
 	clEnqueueWriteBuffer(queue, buffer, false, 0, n * sizeof(int), data, 0, nullptr, nullptr);
-	recursiveGPU_r(buffer, adjustedSize, context, queue, scanBlocks, addSums, workGroupSize);
+	scanRecursiveGPU_r(buffer, adjustedSize, context, queue, scanBlocks, addSums, workGroupSize);
 	clEnqueueReadBuffer(queue, buffer, true, 0, n * sizeof(int), result, 0, nullptr, nullptr);
 
 	clReleaseMemObject(buffer);
-} // recursiveGPU
+} // scanRecursiveGPU
 
 #if 0
 #define VECTOR_WIDTH 8
@@ -153,8 +153,8 @@ void recursiveGPU(int* data, int* result, cl_uint n,
 #endif // 0
 
 #if 0
-#define CONCAT(a, b) a ## b // concat token a and b
-#define CONCAT_EXPANDED(a, b) CONCAT(a, b) // concat token a and b AFTER expansion
+#define CONCAT(a, b) a ## b           // concat token a and b
+#define CONCAT_EXP(a, b) CONCAT(a, b) // concat token a and b AFTER expansion
 
 #define UPSWEEP_STEP(left, right) right += left
 
@@ -236,7 +236,7 @@ __kernel void AddSumsVec(__global int8* buffer, __global int* sums) {
 
 #define VECTOR_WIDTH 8
 
-void recursiveVecGPU_r(cl_mem values, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
+void scanRecursiveVecGPU_r(cl_mem values, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
 {
 	size_t sumBufferSize = roundToMultiple(n / (workGroupSize * 2 * VECTOR_WIDTH), workGroupSize * 2 * VECTOR_WIDTH);
 
@@ -253,7 +253,7 @@ void recursiveVecGPU_r(cl_mem values, cl_uint n, cl_context context, cl_command_
 
 	if(n > workGroupSize * 2 * VECTOR_WIDTH)
 	{
-		recursiveVecGPU_r(sums, sumBufferSize, context, queue, scanBlocks, addSums, workGroupSize);
+		scanRecursiveVecGPU_r(sums, sumBufferSize, context, queue, scanBlocks, addSums, workGroupSize);
 
 		clSetKernelArg(addSums, 0, sizeof(cl_mem), &values);
 		clSetKernelArg(addSums, 1, sizeof(cl_mem), &sums);
@@ -262,9 +262,9 @@ void recursiveVecGPU_r(cl_mem values, cl_uint n, cl_context context, cl_command_
 	}
 
 	clReleaseMemObject(sums);
-}
+} // scanRecursiveVecGPU_r
 
-void recursiveVecGPU(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
+void scanRecursiveVecGPU(int* data, int* result, cl_uint n, cl_context context, cl_command_queue queue, cl_kernel scanBlocks, cl_kernel addSums, size_t workGroupSize)
 {
 	size_t bufferSize = roundToMultiple(n, workGroupSize * 2 * VECTOR_WIDTH);
 
@@ -272,12 +272,12 @@ void recursiveVecGPU(int* data, int* result, cl_uint n, cl_context context, cl_c
 
 	clEnqueueWriteBuffer(queue, buffer, false, 0, n * sizeof(int), data, 0, nullptr, nullptr);
 
-	recursiveVecGPU_r(buffer, bufferSize, context, queue, scanBlocks, addSums, workGroupSize);
+	scanRecursiveVecGPU_r(buffer, bufferSize, context, queue, scanBlocks, addSums, workGroupSize);
 
 	clEnqueueReadBuffer(queue, buffer, true, 0, n * sizeof(int), result, 0, nullptr, nullptr);
 
 	clReleaseMemObject(buffer);
-}
+} // scanRecursiveVecGPU
 
 string readFile(string fileName)
 {
@@ -331,7 +331,7 @@ int main(int argc, char* argv[])
 	clBuildProgram(program4, 1, &device, "", nullptr, nullptr);
 
 	// create the kernel
-	cl_kernel kernel1 = clCreateKernel(program1, "NaiveGPU", nullptr);
+	cl_kernel kernel1 = clCreateKernel(program1, "ScanNaive", nullptr);
 	cl_kernel kernel2_up = clCreateKernel(program2, "UpSweep", nullptr);
 	cl_kernel kernel2_down = clCreateKernel(program2, "DownSweep", nullptr);
 	cl_kernel kernel3_scan = clCreateKernel(program3, "ScanBlocks", nullptr);
@@ -355,25 +355,25 @@ int main(int argc, char* argv[])
 
 	scanCPU(input, result0, n);
 
-	naiveGPU(input, result1, n, context, queue, kernel1, 256);
+	scanNaiveGPU(input, result1, n, context, queue, kernel1, 256);
 	if(memcmp(result0 + 1, result1, (n - 1) * sizeof(int))) // inclusive scan
 		cerr << "validation of kernel 1 failed" << endl;
 	else
 		cout << "kernel 1 ok" << endl;
 
-	workEfficientGPU(input, result2, n, context, queue, kernel2_up, kernel2_down, 256);
+	scanWorkEfficientGPU(input, result2, n, context, queue, kernel2_up, kernel2_down, 256);
 	if(memcmp(result0, result2, n * sizeof(int)))
 		cerr << "validation of kernel 2 failed" << endl;
 	else
 		cout << "kernel 2 ok" << endl;
 
-	recursiveGPU(input, result3, n, context, queue, kernel3_scan, kernel3_sums, 256);
+	scanRecursiveGPU(input, result3, n, context, queue, kernel3_scan, kernel3_sums, 256);
 	if(memcmp(result0, result3, n * sizeof(int)))
 		cerr << "validation of kernel 3 failed" << endl;
 	else
 		cout << "kernel 3 ok" << endl;
 
-	recursiveVecGPU(input, result4, n, context, queue, kernel4_scan, kernel4_sums, 256);
+	scanRecursiveVecGPU(input, result4, n, context, queue, kernel4_scan, kernel4_sums, 256);
 	if(memcmp(result0, result4, n * sizeof(int)))
 		cerr << "validation of kernel 4 failed" << endl;
 	else

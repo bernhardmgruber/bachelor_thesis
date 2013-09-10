@@ -37,7 +37,7 @@ namespace gpu
             void init() override
             {
                 Program* program = context->createProgram("gpu/thesis/MultBlockLocal.cl");
-                kernel = program->createKernel("BlocksAndTilesGPU");
+                kernel = program->createKernel("MultBlocksAndTiles");
                 delete program;
             }
 

@@ -1,6 +1,6 @@
 #define TILE_SIZE 16
 
-__kernel void TilesGPU(__global float* a, __global float* b, __global float* c, uint n) {
+__kernel void MultTiles(__global float* a, __global float* b, __global float* c, uint n) {
 	uint col     = get_global_id(0);
 	uint row     = get_global_id(1);
 	uint localX  = get_local_id(0);
@@ -32,4 +32,4 @@ __kernel void TilesGPU(__global float* a, __global float* b, __global float* c, 
 	} // while
 
 	c[row * n + col] = sum;
-} // TilesGPU
+} // MultTiles

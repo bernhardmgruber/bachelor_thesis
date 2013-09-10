@@ -7,31 +7,31 @@ __kernel void Histogram(__global uint* data, __global uint* histograms, uint bit
 	size_t globalId = get_global_id(0);
 
 	uint hist[BUCKETS] = {0};
-	for(int i = 0; i < BLOCK_SIZE; ++i) {
+	for (int i = 0; i < BLOCK_SIZE; ++i) {
 		uint value = data[globalId * BLOCK_SIZE + i];
 		uint pos = (value >> bits) & RADIX_MASK;
 		hist[pos]++;
-	}
+	} // for
 
-	for(int i = 0; i < BUCKETS; ++i)
+	for (int i = 0; i < BUCKETS; ++i)
 		histograms[get_global_size(0) * i + globalId] = hist[i];
-}
+} // Histogram
 
 __kernel void Permute(__global uint* src, __global uint* dst, __global uint* scannedHistograms,
 		uint bits) {
 	size_t globalId = get_global_id(0);
 
 	uint hist[BUCKETS];
-	for(int i = 0; i < BUCKETS; ++i)
+	for (int i = 0; i < BUCKETS; ++i)
 		hist[i] = scannedHistograms[get_global_size(0) * i + globalId];
 
-	for(int i = 0; i < BLOCK_SIZE; ++i) {
+	for (int i = 0; i < BLOCK_SIZE; ++i) {
 		uint value = src[globalId * BLOCK_SIZE + i];
 		uint pos = (value >> bits) & RADIX_MASK;
 		uint index = hist[pos]++;
 		dst[index] = value;
-	}
-}
+	} // for
+} // Permute
 
 #define CONCAT(a, b) a ## b
 #define CONCAT_EXPANDED(a, b) CONCAT(a, b)
