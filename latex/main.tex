@@ -2,7 +2,6 @@
 
 % packages
 \usepackage{scrhack}
-\usepackage{fancyhdr}
 \usepackage[top=2.54cm, bottom=2.54cm, left=3.54cm, right=2.54cm]{geometry}
 \usepackage{graphicx}
 \usepackage[style=authoryear,backend=bibtex8,urldate=iso8601]{biblatex}
@@ -16,8 +15,8 @@
 \usepackage{pdfpages}
 \usepackage[utf8]{inputenc}
 \usepackage{enumitem}
-\usepackage[hang,flushmargin]{footmisc} 
-\usepackage{afterpage}
+\usepackage[hang,flushmargin]{footmisc}
+\usepackage{chngcntr}
 
 
 % basic latex configuration
@@ -54,7 +53,7 @@
 % graphics
 \graphicspath{ {./images/} }
 
-% language listings
+% listings
 \lstdefinelanguage{CL}[ANSI]{C}
 {
 	morekeywords={__kernel,kernel,__local,local,__global,global,__constant,constant,__private,private},
@@ -76,6 +75,7 @@
 
 \lstset
 {
+	numberbychapter=false,
 	tabsize=2,
 	captionpos=b,
 	basicstyle=\ttfamily{},
@@ -90,6 +90,10 @@
 %	frame=single,
 % backgroundcolor=\color{lightgray}
 }
+
+% counter
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
 
 \title{GPGPU Computing with OpenCL}
 \subtitle{Comparing GPU accelerated standard algorithms with traditonal CPU implementations}

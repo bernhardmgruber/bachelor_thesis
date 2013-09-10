@@ -1,10 +1,10 @@
-\section{Existing prototype}
+\chapter{Existing prototype}
 \label{sec:existing_prototype}
 
 At the beginning of the internship the existing code base, shortly described in Chapter \ref{sec:goals}, was analyzed in order to understand how the ray casting application has been organized and implemented. The application is written in C++ using Microsoft Visual Studio 2010 and 2012 in 64 bit mode. Besides the provided compilers from Microsoft, also Intel's C++ compiler is used during development to benefit from stronger optimization. The code heavily uses C++11 features and AVX SIMD instructions, thus limiting the application to rather up-to-date compilers supporting C++11 and newer hardware. AVX is supported since Intel's Sandy Bridge and AMD's Bulldozer series. Furthermore, OpenMP is used as a technology for high level parallelization, OpenGL for visualization and the Microsoft Foundation Class (MFC), a C++ wrapper of the Win32 API, for window management and user interaction.
 Considering the implemented algorithms, single ray casting of scenes composed of subtraction volumes as shown in chapter \ref{sec:boolean_raycasting} using the 3D DDA algorithm discussed in Chapter \ref{sec:regular_grids} has been used in the beginning. However, the initial approach has later been replaced by a highly optimized and parallel packet ray caster using the slice traversing algorithm presented in Chapter \ref{sec:packet_casting}. The single ray variant can still be found in the code but is not used anymore.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.49\textwidth]{cylinder_head_stock_gl}
 \includegraphics[width=0.49\textwidth]{cylinder_head_stock_cast_cpu}
@@ -12,15 +12,15 @@ Considering the implemented algorithms, single ray casting of scenes composed of
 \includegraphics[width=0.49\textwidth]{cylinder_head_sub_cast_cpu}
 \includegraphics[width=0.49\textwidth]{cylinder_head_gl}
 \includegraphics[width=0.49\textwidth]{cylinder_head_cast_cpu}
-\caption{Screenshots of the existing prototype. The images on the left show the OpenGL visualizations of the loaded meshes. The images on the right show the ray casting result using the existing CPU packet ray caster. The first row only shows the loaded stock volume. The second row shows the stock volume and one subtraction volume. The OpenGL visualization also shows the grid. Note that the grid only has to cover the stock volume. The third row shows several subtraction volumes cut out of the stock forming a cylinder head.}
+\caption[Screenshots of the existing prototype.]{Screenshots of the existing prototype. The images on the left show the OpenGL visualizations of the loaded meshes. The images on the right show the ray casting result using the existing CPU packet ray caster. The first row only shows the loaded stock volume. The second row shows the stock volume and one subtraction volume. The OpenGL visualization also shows the grid. Note that the grid only has to cover the stock volume. The third row shows several subtraction volumes cut out of the stock forming a cylinder head.}
 \label{fig:cylinder_head}
 \end{figure}
 
-\subsection{Structure}
+\section{Structure}
 
 Figure \ref{fig:enlight_class_diagram} shows a simplified class diagram of the most important classes used in the existing ray casting implementation. Most of them have been dealt with when extending the existing infrastructure by the new OpenCL ray caster.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{enlight_class_diagram}
 \caption{Simplified class diagram of the most important classes involved in ray casting at the beginning of the internship.}
@@ -29,7 +29,7 @@ Figure \ref{fig:enlight_class_diagram} shows a simplified class diagram of the m
 
 The central class containing most of the application logic is \lstinline!DebugView!. It inherits \lstinline!CWnd! from the MFC and is the main window of the application containing the OpenGL visualization. Besides all graphical user interactions, like zooming and rotating, using the cursor, also the console commands are parsed and processed by this class. It further contains an instance of \lstinline!Camera! which is updated according to user interaction. Also the regular grid holding all loaded meshes is stored by \lstinline!DebugView!. Finally, a ray caster wrapper class is also available (\lstinline!RayCasterWrapper!), which delegates calls to the actual ray casting implementation. When the application has been started, meshes can be loaded from the file system via corresponding console commands. The loaded meshes are processed by the classification algorithm and merged into the grid, cf. Chapter \ref{sec:classification}. Ray casting can be triggered either by issuing a command on the console or changing a camera property via GUI input (zoom, rotation). In both cases, \lstinline!DebugView! eventually invokes \lstinline!castWithRayPackets()! from the ray casting implementation wrapper and passes a reference to the grid and current camera settings. The wrapper delegates this call to the corresponding method in \lstinline!RayCaster! where the actual ray casting code is executed. Initially, several camera values are retrieved and a \lstinline!RayPacketFactory! is created. This factory relies on the older \lstinline!RayFactory! used for the initial single ray casting algorithm. Furthermore, an instance of \lstinline!PixelGrid! is created which will be later used to store the ray casting results and will be returned to the calling \lstinline!DebugView! class, where it is used to render the casted image. After this setup, the requested output image area, sized according to the width and height of the camera, is divided into a grid of square packets and iterated over by two nested for loops. The square size is adjustable and currently set to eight. The outer loop iterates over the rows of the packets and is executed in parallel using an OpenMP directive. Within the inner loop, \lstinline!RayPacket!s are created using the corresponding factory. Each packet is traversed through the grid using an instance of \lstinline!RegularGridSliceTraverser!. After the slice traverser has been initialized with the packet, which determines traversal axis and grid entry point, a while loop retrieves cells from the slice traverser using its \lstinline!next! method until \lstinline!end! returns true. On every slice end, the traversal may be early aborted if all rays of the packet have already hit. For each cell the slice traverser returns, the ray packet has to be intersected with the referenced triangles of this cell. This is done using an instance of \lstinline!RayPacketIntersectionProcessor!. This process consumes most of the required CPU time. Therefore the \lstinline!intersect! routine and all subroutines are highly optimized and highly consist of AVX vector intrinsics. The intersection test for the packet is performed in parallel using SIMD after all triangles of the cell have been culled against the frustum defined by the corner rays of the packet. Details are discussed later in Chapter \ref{sec:adapted_ray_casting}. For each intersection, the normal vector of the hit surface and the distance from the eye point are retrieved. The normal vector together with the initial ray direction of every ray of the packet is used by the \lstinline!SimpleFragmentPacketShader! to calculate a color value for the ray. Currently, the scalar product of both vectors is used to measure a gray scale value, achieve simple shading. The distance of the intersection point to the eye point (camera position), from which the ray originated, is later translated into the normal distance of the intersection point to the image plane which corresponds to the depth value which would have been generated by OpenGL if the scene has been rendered traditionally. After all ray packets have been processed, the final \lstinline!PixelGrid! instance containing the color and depth values is returned back to \lstinline!DebugView! for display.
 
-\subsection{Ray casting data structure}
+\section{Ray casting data structure}
 \label{sec:data_structure}
 
 The data structure maintaining the geometry and accelerating the ray casting algorithm is implemented by several classes. To start with, the \lstinline!RegularGrid! class is a simple container for cells. It also stores some meta information such as the grids bounding box, the number of cells in each dimension and the size of a cell. The cells are stored in a continuous array. Therefore, 3-dimensional cell coordinates have to be mapped to the linear memory region.
@@ -38,16 +38,16 @@ The cells themselves are simple bounding boxes containing references (pointers) 
 
 A \lstinline!Facet! itself consists of its three vertices, a normal vector as well as the \lstinline!structure! pointer. The latter references the mesh (subtraction volume) this facet belongs to. The importance of this value is elaborated later when discussing the details of the intersection routine in Chapter \ref{sec:adapted_ray_casting}.
 
-\subsection{Classification}
+\section{Classification}
 \label{sec:classification}
 
 Every time a mesh is added to the grid, the triangles of the mesh have to be mapped to the cells of the grid. When the mapping is complete, the cells are classified into one of three categories. Cells which are occupied by triangles of the mesh surface are surface cells. Cells inside the mesh are inside cells and contain no triangles. Cells outside the mesh are outside cells and contain no triangles too. For the ray casting algorithm, only surface cells are relevant. The left sketch in Figure \ref{fig:classification} illustrates the classification of a mesh.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.4\textwidth]{classification}
 \includegraphics[width=0.4\textwidth]{classification_sub}
-\caption{Principle of classifying cells of a grid according to the added mesh. Only surface cells are relevant for ray casting. The sketch on the left side shows the classified stock volume. On the right side the classification result, after a subtraction volume has been added, is shown.}
+\caption[Principle of classifying cells of a grid according to the added mesh.]{Principle of classifying cells of a grid according to the added mesh. Only surface cells are relevant for ray casting. The sketch on the left side shows the classified stock volume. On the right side the classification result, after a subtraction volume has been added, is shown.}
 \label{fig:classification}
 \end{figure}
 
@@ -79,7 +79,7 @@ As we can see, cells which where surface cells before and contained triangles ha
 However, this kind of reduction has a significant consequence on the ray casting algorithm. As subtraction volumes are divided into grid cells and some of them discarded, the volumes are no longer water-tight. This is a problem for entry/exit counting ray casting algorithms such as the one discussed in chapter \ref{sec:boolean_raycasting}. Therefore, an adapted version of this algorithm has to be developed, capable of handling open volumes. Chapter \ref{sec:adapted_ray_casting} discusses a method of getting around this problem.
 
 
-\subsection{Improved counting algorithm}
+\section{Improved counting algorithm}
 \label{sec:adapted_ray_casting}
 
 The entry and exit counting ray casting algorithm for boolean subtraction volumes discussed in Chapter \ref{sec:boolean_raycasting} maintains a counter value for each ray along the full traversal of the grid cells. However, by using the classification technique introduced in Chapter \ref{sec:classification} to eliminate irrelevant triangles, it is no longer possible to keep states between multiple cells, as some of them might not contain relevant triangles for intersection but might be important for state changes. For example, an entry into a subtraction volume inside an outside cell. Consequently, all required states of the ray can only and must be determined upon entry of a surface cell.
@@ -88,9 +88,9 @@ This problem mainly concerns the counter of each ray used to count the volume en
 
 Determining the number of subtraction volumes the entry point lies inside of, which is called inside counter, can be done by creating secondary rays. These rays are casted from the cell entry point of the initial ray, which is called primary ray for distinction, to a reference point on one triangle of each subtraction volume. The secondary ray must not hit other triangles of the same volume between the entry point and the triangle reference point. The used reference points on the triangles have to be inside the cell's bounding box and should not lie on a edge of the triangle, as numerical instability increases at the edges. A good candidate for such points is the centroid of the triangle clipped against the cell's bounding box. The angle between the secondary ray and the surface normal of the chosen triangle determines if the entry point is inside the volume the triangle belongs to. If the primary ray already hits a subtraction volume, no secondary ray is necessary for this volume and the primary rays direction and the surface normal of the hit triangle can be used instead. Figure \ref{fig:inside_counter} shows the determination of the inside counter on an example cell.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{inside_counter}
-\caption{Determination of the inside counter upon cell entry. The primary ray hits the structures sub 0 and sub 2. Both surface normals enclose an angle with the ray's direction smaller than 90$^\circ$. Therefore, the ray's entry point lies inside of sub 0 and sub 2. As the primary ray does not hit sub 1, a secondary ray is sent to a reference point on a triangle of sub 1. As the surface normal and the ray's direction enclose an angle larger than 90$^\circ$, the cell entry point lies outside of sub 1. Therefore, the inside counter of the ray is initialized with minus two.}
+\caption[Determination of the inside counter upon cell entry.]{Determination of the inside counter upon cell entry. The primary ray hits the structures sub 0 and sub 2. Both surface normals enclose an angle with the ray's direction smaller than 90$^\circ$. Therefore, the ray's entry point lies inside of sub 0 and sub 2. As the primary ray does not hit sub 1, a secondary ray is sent to a reference point on a triangle of sub 1. As the surface normal and the ray's direction enclose an angle larger than 90$^\circ$, the cell entry point lies outside of sub 1. Therefore, the inside counter of the ray is initialized with minus two.}
 \label{fig:inside_counter}
 \end{figure}

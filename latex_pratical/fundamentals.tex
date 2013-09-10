@@ -1,11 +1,11 @@
-\section{Fundamentals}
+\chapter{Fundamentals}
 \label{sec:fundamentals}
 
-\subsection{Raycasting}
+\section{Raycasting}
 
 Ray casting is primarily an imaging technique and was first described by Scott Roth in 1982 as an effective method of rendering Constructive Solid Geometry (CSG) objects. Although ray casting may be used for different purposes in various dimensions, we will focus on generating a two dimensional image from a three dimensional scene. The basic principle therefore is shown in Figure \ref{fig:raycasting}. 
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{raycasting}
 \caption{Principle of ray casting.}
@@ -19,14 +19,14 @@ Ray casting is different from the wide-spread rasterization used for most 3D app
 Apart from a lot of technical differences, both methods also differ in their complexity. Mark Kilgard describes the asymptotic complexity of rasterization with $\mathcal{O}(b * m)$, whereas an accelerated ray tracing implementation using a favorable data structure achieves $\mathcal{O}(log b * p)$, where $b$ is the number of objects in the scene, $m$ is the average number of pixels per object and $p$ is the number of pixels in the scene \cite[p.48]{ray_casting_presentation}. The Enlight proposal additionally points out, that the size of computer screens increased far slower over the past decades than the size of computer memory, computational power and the size of industrial Computer-aided design (CAD) and Computer-aided manufacturing (CAM) models \cite{enlight_proposal}. Therefore, ray casting might be beneficial when used to render large scenes composed of huge amounts of triangles.
 
 
-\subsection{Regular grids}
+\section{Regular grids}
 \label{sec:regular_grids}
 
 Regular grids are a type of data structures frequently used in ray casting/tracing to accelerate the traversal of rays through the scenes. Alternative approaches are often tree based such as kd trees, octrees, binary space partitioning (BSP) or bounding volume hierarchy (BVH). Each of these techniques has its own strengths and weaknesses depending on the scene and application. However, especially kd trees and grids (and multilevel grids) have been primarily focused in recent work about interactive ray casting/tracing \cite[ch.1]{packet_caster}. While kd trees usually perform amazingly well on static scenes, dynamic or animated objects still present a challenge as the used data structure has to be rebuilt after every scene change, which can take up to several seconds for larger sets of geometries \cite[ch.1]{packet_caster}. Regular grids are simpler structures for partitioning space and accelerating ray casting. They can be created quicker than a (balanced) tree, thus allowing more frequent scene changes. Nevertheless, kd trees may be up to a magnitude faster when it comes to the actual ray traversal \cite[ch.1]{packet_caster}. As Enlight focuses on visualizing dynamic scenes (for subtractive manufacturing) allowing at least ten subtraction volumes to be added to the scene per second, regular grids appear promising for being used in this case.
 
 Building a regular grid data structure is simple. Initially, a bounding box is created around the scene. This box is then divided into equally sized cubes, which may force the bounding box to be enlarged a bit to fit a whole number of cubes in each dimension. These cubes are called cells. For each triangle of the scene all spanned cells are calculated and the cells store a reference to that triangle.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.4\textwidth]{cell_traverser}
 \caption{Traversing the cells of the grid using a DDA variant until an intersection has been found.}
@@ -36,39 +36,37 @@ Building a regular grid data structure is simple. Initially, a bounding box is c
 During ray casting, the rays have to traverse the cells of the grid in order to find potential geometry they might intersect with, cf. Figure \ref{fig:cell_traverser}. A fast algorithm for traversing regular grids using a single ray is given by John Amanatides and Andrew Woo \cite{3DDDA}. Their algorithm is a slight modification of the digital differential analyzer (DDA) which is used for the rasterization of lines. As finding the pixels, which are essentially squares inside a regular 2D grid, covered by a line is actually the same problem as finding the voxels hit by a ray, this adapted 3D DDA algorithm can be used for efficient traversal of regular grids. Furthermore, as the algorithm's start point can be determined and the voxels (grid cells) are traversed incrementally, no depth sorting has to be performed across the hit cells and the traversal can be stopped on the first found intersection. Inside each cell, all triangles have to be intersected and the intersections have to be sorted by depth in order to find the correct hit and visible surface.
 
 
-\subsection{Boolean raycasting}
+\section{Boolean raycasting}
 \label{sec:boolean_raycasting}
 
 Enlight focuses on subtractive manufacturing. Therefore, the scene is composed of an initial stock volume from which further volumes are subtracted, cf. goals in chapter \ref{sec:about_enlight}. This scenario can be typically found in CSG modeling, where complex models are build from boolean combinations of simpler models. CSG models can be efficiently rendered using ray casting, by using a tree with the volumes as leaves and the boolean operations applied to them as nodes. The rays are then traversed through the scenes and have to resolve the tree on every volume entry or exit. Enlight only supports a subset of CSG by only allowing boolean subtraction from the initial stock volume. However, by inverting the stock volume via inversion of the surface normals and defining the world space as being filled instead of being empty, the problem can be even more simplified as the scene now only consists of subtraction volumes.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{boolean_casting}
-\caption{Ray traversing through a scene containing one stock and two subtraction volumes. By inverting the stock, which is shown in the left figure, into a subtraction volume, as shown in the figure on the right, the counting algorithm is simplified. The inversion is accomplished by inverting the normal vectors of the stock's surface. The ray starts inside the inverted stock volume with a counter value of minus one, is decremented on every volume entry and incremented on ever volume exit. The entries are shown as yellow dots and the exits as blue dots in the right figure. If the counter reaches the value zero, the surface has been found.}
+\caption[Boolean ray casting]{Ray traversing through a scene containing one stock and two subtraction volumes. By inverting the stock, which is shown in the left figure, into a subtraction volume, as shown in the figure on the right, the counting algorithm is simplified. The inversion is accomplished by inverting the normal vectors of the stock's surface. The ray starts inside the inverted stock volume with a counter value of minus one, is decremented on every volume entry and incremented on ever volume exit. The entries are shown as yellow dots and the exits as blue dots in the right figure. If the counter reaches the value zero, the surface has been found.}
 \label{fig:boolean_casting} 
 \end{figure}
 
 The algorithm for ray casting a scene composed of subtraction volumes is illustrated in Figure \ref{fig:boolean_casting}. Every ray starts outside the initial scene and maintains a counter which determines the number of subtraction volumes the ray is inside of/has entered. As outside of the original scene is inside the inverted stock, this value is initialized with minus one, corresponding to "inside one volume". The ray is then traversed through the scene. On every intersection where the ray enters a volume, the counter is further decremented, as the ray is now inside even more volumes. On every exit, the counter is incremented, as the ray is now inside one less volume, and checked if it has become zero. A counter value of zero on a volume exit corresponds to an intersection with the surface of the resulting model.
 
-\subsection{Packet casting}
+\section{Packet casting}
 \label{sec:packet_casting}
 
 A common technique for accelerating ray casting and tracing is to accumulate squares of adjacent rays into ray packets and traversing the whole packets through the scene instead of individual rays. This technique has several advantages. Most importantly, a part of the parallelism between individual rays, which can be processed completely independent, is moved down into the traversing and intersection algorithms. As adjacent rays are likely to traverse through the same parts of the acceleration structure, the same cells of a grid in the case of Enlight, and hit the same triangles, the corresponding routines can be executed in a data parallel fashion on multiple rays. Modern CPUs and GPUs benefit from these scenarios and offer corresponding SIMD instructions (CPU) or an appropriate hardware architecture (GPU). Furthermore, coherent traversal and intersection improves caching behavior via temporal locality\footnote{Temporal locality refers to accessing the same location in memory frequently within a short time.}. Additionally, also traversal overhead is reduced by the number of rays inside a packet. However, traversing packets through acceleration data structures such as grids is more difficult and cannot be done using the 3D DDA algorithm presented in Chapter \ref{sec:regular_grids}. Fortunately, an efficient solution is presented in the paper "Ray Tracing Animated Scenes using Coherent Grid Traversal" \cite{packet_caster}. The algorithm is illustrated in Figure \ref{fig:slice_traverser}.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.4\textwidth]{slice_traverser}
-\caption{A ray packet traversing a regular grid slice by slice. The blue region is the axis aligned part of a slice (column) which is actually occupied by the packet and is determined by the corner rays of the packet. The yellow region is the blue region extended to full cell boundaries. Furthermore, the packet is always fully traversed until all rays have hit, although no intersections have to be calculated for rays which have already hit.}
+\caption[A ray packet traversing a regular grid slice by slice.]{A ray packet traversing a regular grid slice by slice. The blue region is the axis aligned part of a slice (column) which is actually occupied by the packet and is determined by the corner rays of the packet. The yellow region is the blue region extended to full cell boundaries. Furthermore, the packet is always fully traversed until all rays have hit, although no intersections have to be calculated for rays which have already hit.}
 \label{fig:slice_traverser} 
 \end{figure}
 
 As the ray packet may now spans multiple cells it cannot traverse the grid cell by cell anymore. The next bigger aggregation of cells is a slice of the grid. To iterate the slices of a grid in a favorable order, the main/primary traversal axis is determined by finding the largest component of the direction vector of one of the innermost rays of the packet. The two other axes are called secondary axes. For each slice of the grid along this main traversal axis, starting at the side of the grid where the packet enters, the four corner rays are intersected with the front and back plane of the slice. The maximum and minimum values of the intersection points along the secondary axes describe the axis aligned region of the slice which is hit by the packet. This region is shown blue in Figure \ref{fig:slice_traverser} and further extended to full cell boundaries shown in yellow. Then, all objects of the cells of this extended region have to be intersected with all rays of the packet. This routine can be easily vectorized by accumulating several rays into SIMD registers and processing the intersection tests using vector instructions like SSE or AVX. Rays which have already hit a triangle may be masked out. A further optimization to this algorithm is to cull all triangles of the selected cell region of the slice against the frustum spanned by the corner rays.
 
 
-\subsection{OpenCL}
+\section{OpenCL}
 OpenCL is an open and free standard for parallel, general purpose programming targeting mainly CPUs and GPUs. This chapter will provide a quick introduction into using OpenCL for executing programs on the GPU. For detailed information, please have a look at the OpenCL chapter in the first part of this thesis - GPGPU Computing with OpenCL.
-
-\pagebreak
 
 OpenCL is specified by the Khronos Group \cite{opencl_spec}. Implementations of OpenCL however have to be provided by hardware vendors such as NVIDIA, AMD or Intel. These vendors provide (Software Development Kits (SDKs)) containing C header files and static libraries which can be used to write applications using OpenCL.
 
@@ -77,10 +75,10 @@ To execute an OpenCL program on the device, the source code of the program, writ
 
 Although OpenCL is not tied to a hardware architecture, it does fit GPUs very well. A modern GPU typically consists of several hundreds or even thousands of cores able to process work in parallel. These cores are usually part of larger hardware compounds called streaming multiprocessors (SM). Each of these SMs has a small local memory which is shared between all cores of the SM and a large amount of registers which are allocated by the cores for executing kernels. The cores themselves do not have separate registers. Outside the SMs is the memory system connecting to the off-chip video memory on the graphics card, which can be accessed by all cores. 
 
-\begin{figure} 
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.6\linewidth]{NDRange}
-\caption{The two-dimensional NDRange consisting of $GSx * GSy$ work groups. Each work group consists of $LSx * LSy$ work items. A work item has two indexes in each dimension, the local index (relative to the work group) and a global index (relative to the NDRange), as well as the indexes of the group it is part of. The local work sizes are LSx and LSy whereas the global work sizes are $GSx * LSx$ and $GSy * LSy$.}
+\caption[A two-dimensional NDRange.]{A two-dimensional NDRange consisting of $GSx * GSy$ work groups. Each work group consists of $LSx * LSy$ work items. A work item has two indexes in each dimension, the local index (relative to the work group) and a global index (relative to the NDRange), as well as the indexes of the group it is part of. The local work sizes are LSx and LSy whereas the global work sizes are $GSx * LSx$ and $GSy * LSy$.}
 \label{fig:NDRange}
 \end{figure}
 
