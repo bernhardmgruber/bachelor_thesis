@@ -40,6 +40,58 @@ So, when should OpenCL be used? Apart from having the right kind of algorithm to
 Finally, we have to see how long GPGPU computing will be done in this fashion. With the increasing power of on-chip GPUs on modern Intel processors, using GPUs for smaller tasks might become more attractive as no memory transfers will be required. AMD is also working intensively on a new generation of processing devices called Accelerated Processing Units (APU). By using a so-called heterogeneous system architecture (HSA), GPU and CPU are combined tightly on a single chip. The GPU will have direct access to the system's main memory with cache coherence to the CPU using the same address space as the CPU (theoretically allowing pointers to be passed). Furthermore, the GPU will allow multitasking via context switches between running tasks. As a result, long-running calculations will no longer freeze the display.
 However, in another corner of the high performance hardware sector, Intel is heavily working on their new Many Integrated Core (MIC) architecture. The Intel Xeon Phi (previously named Knights Corner) is a co-processor card with up to 61 individual Intel processors and up to 16 GiB dedicated on-card memory. From an OpenCL programmers perspective, the Xeon Phi is equally programmed as a GPU. But the card is composed of modified x86 processors and can therefore also execute conventional software written in traditional languages. As a result, language integration is also easy. In fact, Intel's compiler already offers appropriate \lstinline!#pragma!s to offload parts of a C++ program to the co-processor card in a similar fashion as OpenMP. In addition, almost all drawbacks of GPUs vanish as all threads (four cores on each processor) can be fully synchronized, memory can be allocated dynamically on demand and all existing language features including libraries can be used. However, a Xeon Phi is still financially out of reach for consumers and still more expensive than decent GPUs with prices among several thousand dollars. But as time passes by, they may become affordable. Intel already announced that the next generation of the Xeon Phi (codename Knights Landing) will be capable of being used as the systems main processor. So maybe in ten years we find ourselves with a hundred main processors in our notebooks capable of handling even computationally expensive software with ease. Who needs GPU computing then?
 
-\section{Experiences}
+\section{Personal experiences}
 
-I began writing this thesis 
+\subsection{Progress}
+
+I began working on this thesis on 2012-07-23 by creating the code base for the sort project. Since then, 415 days have passed (today is the 2013-09-11). 436 commits have been made during this long period of time. The individual commit dates clearly mirror certain situations in my life at the time they were made. Figure \ref{fig:loc} presents how the lines of code have evolved over time, figure \ref{fig:commits} presents the commits made in this time.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{loc}
+\caption{Lines of code of all files in the repository over time. Chart generated using StatSVN.}
+\label{fig:loc}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{commits}
+\caption{My commits over time. Chart generated using StatSVN.}
+\label{fig:commits}
+\end{figure}
+
+During the first days I worked intensively on setting up a comprehensive testing environment which should allow easy integration of new algorithms. At the beginning of my internship during the summer holidays in 2012, the commit dates started to occur in the morning (I tried to work two hours on this thesis before going to work), some at lunch time when I had come up with something during my work, but most of them in the late night. I soon realized an impact on my well-being from all the day and night programming and stopped working on my thesis several weeks later (cf. mid to late August in figure \ref{fig:commits}). However, my motivation for the internship also dropped and I had a bad conscience from showing no progress on my thesis. I quit my internship three weeks earlier to enjoy the remaining summer holidays and concentrate on the thesis. Fortunately, I could collect and integrate a lot of algorithms in this time from the beginning of September into the first weeks of university until the mid of October (cf. figure \ref{fig:commits}). Although I found less time from October to November due to studies, I could finish most of the code base and collected several benchmark data. My supervisor, FH-Prof. DI Dr. Heinz Dobler, and I were confident that I should be able to easily finish the thesis until February 2013, the first official data for handing in.
+
+However, I made the mistake of accepting two tutorials (Programming and Project Engineering). Together with the increasing work load of my studies (mostly the large software projects by FH-Prof. DI Johann Heinzelreiter), I found almost no time to start writing. The two groups of commits around the 2012-11-20 and 2013-01-09 in figure \ref{fig:commits} were for the two presentations about the thesis in the bachelor seminar course. Apart from them, development was halted until the end of march, which is can be clearly seen in the advancement of the lines of codes in figure \ref{fig:loc}. After the end of the sixth semester at the end of March, I found again time to continue with my writing. I started to work on the introduction and OpenCL chapter.
+
+I began my mandatory internship, which is part of the Software Engineering course, at the 2013-04-04. From the time of my commits during April in figure \ref{fig:commits} one can see that I was again writing on my thesis after work, sometimes until the morning hours. I found myself in the same situation as during my first internship during the summer, except there was no option to prematurely quit the internship. I was even working with the same technologies during work and at home. I lost most of my motivation and interest after a month and stopped working on my thesis after finishing the OpenCL chapter, which I sent to my supervisor. I also fought with bad health conditions, both physical and psychical.
+
+I had the chance to learn a lot during my internship. However, as I was working with the same technologies as I use in my thesis, I came up with more and more design mistakes and ideas for improving my algorithms. During the last month of my internship, I felt the need to refactor most of the code produced during September and October 2012. This was the time where most of the final algorithms and sophisticated charts were created. By further tweaking the algorithms, I gathered a lot of in-depth knowledge about my implementations (which have mostly found their way into the matrix multiplication chapters). A finished my internship by the end of June, fortunately with amazing results and satisfied colleagues.
+
+During the remaining time until the final deadline for the second bachelor exam (which is at the mid of September), I was working hard to write the implementation chapters. One of the big problems was the huge amount of information I had gathered around my implementations (mostly performance aspects). I was proud of all the peculiarities I found out about my GPU and how it behaves when processing my algorithms. However, time was of essence and I had to carefully decide on the algorithms and analyses to include. E.g., only the matrix multiplication contains a detailed view on performance counters. There was simply no time to include this kind of information in the other implementation chapters (although I would have loved to). Beside a week in France (the small gap around the end of July in figure \ref{fig:commits}) I used every day of my summer holidays for writing on my thesis. I finished the "Release Candidate" on 2013-08-25.
+
+The remaining two weeks until the deadline, I was fully occupied with the creating of the second part of my thesis, which I surprisingly managed to finish during this time, producing an acceptable result. (Funny observation: During this time I also managed to change my sleep-wake cycle to more normal conditions, which can be seen at the commit times in figure \ref{fig:commits}). The last few days I was working on applying the feedback to my "Release Candidate".
+
+
+\subsection{Positive and negative aspects}
+
+Below is a list stating several positive (\ding{51}) and negative (\ding{55}) aspects encountered during the creation of this thesis:
+
+\begin{itemize}
+	 \item[\ding{51}] I started early with the implementation of my thesis at the beginning of my summer holidays in 2012.
+	 \item[\ding{55}] I have selected to many subtopics/problems I wanted to cover in my thesis. It would probably have been a better idea to concentrate only on one problem (like matrix multiplication) and rename the thesis accordingly.
+	
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
