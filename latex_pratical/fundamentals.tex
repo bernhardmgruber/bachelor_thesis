@@ -3,7 +3,7 @@
 
 \section{Raycasting}
 
-Ray casting is primarily an imaging technique and was first described by Scott Roth in 1982 as an effective method of rendering Constructive Solid Geometry (CSG) objects. Although ray casting may be used for different purposes in various dimensions, we will focus on generating a two dimensional image from a three dimensional scene. The basic principle therefore is shown in Figure \ref{fig:raycasting}. 
+Ray casting is primarily an imaging technique and was first described by Scott Roth in 1982 as an effective method of rendering Constructive Solid Geometry (CSG) objects. Although ray casting may be used for different purposes, we will focus on generating a two dimensional image from a three dimensional scene. The basic principle therefore is shown in Figure \ref{fig:raycasting}. 
 
 \begin{figure}[h]
 \centering
@@ -77,7 +77,7 @@ Although OpenCL is not tied to a hardware architecture, it does fit GPUs very we
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.6\linewidth]{NDRange}
+\includegraphics[width=0.7\linewidth]{NDRange}
 \caption[A two-dimensional NDRange.]{A two-dimensional NDRange consisting of $GSx * GSy$ work groups. Each work group consists of $LSx * LSy$ work items. A work item has two indexes in each dimension, the local index (relative to the work group) and a global index (relative to the NDRange), as well as the indexes of the group it is part of. The local work sizes are LSx and LSy whereas the global work sizes are $GSx * LSx$ and $GSy * LSy$.}
 \label{fig:NDRange}
 \end{figure}

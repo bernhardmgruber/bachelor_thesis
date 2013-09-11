@@ -21,7 +21,7 @@ The algorithms developed during the internship were finally tested on a few larg
 	\centering
 	\begin{tabular}{|l | r r r r r r r|}
 		\hline
-		Scene & Volumes & Unique tri & Cell tri & Grid dim & Outside & Surface & Inside \\
+		Scene & Vol. & Unique tri & Cell tri & Grid dim & Outside & Surface & Inside \\
 		\hline
 		Cylinder head & 21 & 28000 & 63604 & 40 40 18 & 13392 & 8744 & 6664 \\
 		Menger sponge 5 & 14044 & 168528 & 9582636 & 100 100 100 & 498480 & 501520 & 0 \\
@@ -85,6 +85,8 @@ Each scene is loaded and then ray casted ten times by each chosen ray casting im
 \end{table}
 
 The first thing one can notice on the benchmark results is that the single precision variant of the final SinglePrimaryBooleanCell caster is faster in all scenarios than the CPU implementation and produces visually equivalent results than the slower CPU variant which runs in double precision. Furthermore, the cylinder head and the level five Menger sponge can both be casted interactively with 39 and 24 frames per second (FPS). The multi impeller is more calculation intensive only achieving around 8 FPS. Nonetheless, these results are very delighting as they prove that scenes of this complexity can still be ray casted in reasonable time. The SingleBooleanCell caster is surprisingly a little bit faster on larger scenes. However, this small advance is compensated by more erroneous pixels. The packet ray caster is far behind all other ray casting approaches which mostly due to the high amount of synchronization points inside the kernel. Furthermore, switching from single to double precision causes a serious performance loss in all tested kernels. Although a run time decrease by a factor of two to three has been expected, as the Kepler architecture has only a third of double precision units than normal cores, the performance drop was even worse on larger scenes. Nevertheless, single precision has proven to deliver good and stable results in most cases.
+
+\pagebreak
 
 Apart from the casting times, one should also notice the time required for an update of the OpenCL buffers. Although the memory transfer times seem reasonable, the time required for the complete update is enormous. The most time consuming operations during the update is the flattening process and the calculation of the clipped centroids. The latter could be avoided, if the centroids were precalculated when the triangles are added to the grid.
 

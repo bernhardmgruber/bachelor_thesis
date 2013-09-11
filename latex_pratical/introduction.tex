@@ -26,9 +26,11 @@ The project proposal from 2011 defines the following goals for Enlight \cite{enl
 
 \begin{itemize}
 	\item Development and exploration of new algorithms for visualization and modification of very complex and detailed geometries with file sizes of several gigabytes. Therefore, an optimized ray casting method will be used in favor of traditional and wide-spread rasterization, as the latter is inefficient per design for this dimension of geometries.
+
 	\item The design of a software system architecture capable of using modern many core processors and GPUs as efficient as possible concerning parallel scalability of visualization.
+	
 	\item Development of a prototype and base library for demonstrating the performance potential on the use case of subtractive manufacturing.
-	\pagebreak
+	
 	\item Additionally, the base library should be the foundation for the further development of a general and industrially applicable software library.
 \end{itemize}
 
@@ -53,9 +55,9 @@ According to the job description of the internship agreement, the primary object
 \begin{itemize}
 	\item Implementation of an OpenCL infrastructure which allows running GPU accelerated ray casting algorithms and integrating it into the existing code base. Thus, corresponding commands have to be added to the console application and connected with the OpenCL infrastructure.
 	
-	\item Implementation of a ray caster processing single rays independently. Therefore, the provided data structures, geometries, camera settings, etc. from the application core have to be processed to generate a valid output which can be handed back for successful display.
-	
 	\pagebreak
+	
+	\item Implementation of a ray caster processing single rays independently. Therefore, the provided data structures, geometries, camera settings, etc. from the application core have to be processed to generate a valid output which can be handed back for successful display.
 	
 	\item Implementation of a ray caster processing rays grouped together in ray packets. This variant showed significant performance improvements on the CPU. Therefore it should also be evaluated on the GPU.
 	

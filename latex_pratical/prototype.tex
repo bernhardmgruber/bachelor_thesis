@@ -4,7 +4,9 @@
 At the beginning of the internship the existing code base, shortly described in Chapter \ref{sec:goals}, was analyzed in order to understand how the ray casting application has been organized and implemented. The application is written in C++ using Microsoft Visual Studio 2010 and 2012 in 64 bit mode. Besides the provided compilers from Microsoft, also Intel's C++ compiler is used during development to benefit from stronger optimization. The code heavily uses C++11 features and AVX SIMD instructions, thus limiting the application to rather up-to-date compilers supporting C++11 and newer hardware. AVX is supported since Intel's Sandy Bridge and AMD's Bulldozer series. Furthermore, OpenMP is used as a technology for high level parallelization, OpenGL for visualization and the Microsoft Foundation Class (MFC), a C++ wrapper of the Win32 API, for window management and user interaction.
 Considering the implemented algorithms, single ray casting of scenes composed of subtraction volumes as shown in chapter \ref{sec:boolean_raycasting} using the 3D DDA algorithm discussed in Chapter \ref{sec:regular_grids} has been used in the beginning. However, the initial approach has later been replaced by a highly optimized and parallel packet ray caster using the slice traversing algorithm presented in Chapter \ref{sec:packet_casting}. The single ray variant can still be found in the code but is not used anymore.
 
-\begin{figure}[h]
+Figure \ref{fig:cylinder_head} shows screenshots of the existing prototype at the beginning of the internship.
+
+\begin{figure}
 \centering
 \includegraphics[width=0.49\textwidth]{cylinder_head_stock_gl}
 \includegraphics[width=0.49\textwidth]{cylinder_head_stock_cast_cpu}
@@ -34,6 +36,8 @@ The central class containing most of the application logic is \lstinline!DebugVi
 
 The data structure maintaining the geometry and accelerating the ray casting algorithm is implemented by several classes. To start with, the \lstinline!RegularGrid! class is a simple container for cells. It also stores some meta information such as the grids bounding box, the number of cells in each dimension and the size of a cell. The cells are stored in a continuous array. Therefore, 3-dimensional cell coordinates have to be mapped to the linear memory region.
 
+\pagebreak
+
 The cells themselves are simple bounding boxes containing references (pointers) to the triangles (facets) contained within the cells. Although the bounding box is implicitly given by the cell's coordinates inside the grid and the grid's bounding box, the box is kept precalculated as it is often needed by the ray casting algorithm. 
 
 A \lstinline!Facet! itself consists of its three vertices, a normal vector as well as the \lstinline!structure! pointer. The latter references the mesh (subtraction volume) this facet belongs to. The importance of this value is elaborated later when discussing the details of the intersection routine in Chapter \ref{sec:adapted_ray_casting}.
@@ -51,7 +55,7 @@ Every time a mesh is added to the grid, the triangles of the mesh have to be map
 \label{fig:classification}
 \end{figure}
 
-When a new mesh is added to the grid, the mesh is again classified and merged into the existing cell classification. Limiting the modifiability of the scene by only allowing the addition of further subtraction volumes simplifies the rules for merging a new mesh into the grid as shown in Table \ref{tbl:classification_rules}.
+When a new mesh is added to the grid, the mesh is again classified and merged into the existing cell classification. Limiting the modifiability of the scene by only allowing the addition of subtraction volumes simplifies the rules for merging a new mesh into the grid as shown in Table \ref{tbl:classification_rules}.
 
 \begin{table}[h]
 \centering
