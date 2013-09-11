@@ -25,6 +25,10 @@
 \setlength{\parindent}{0pt}
 \pagestyle{headings}
 
+% remove spacing between chapters in all list of *
+\addtocontents{lof}{\protect\renewcommand*\protect\addvspace[1]{}}
+\addtocontents{lot}{\protect\renewcommand*\protect\addvspace[1]{}}
+\addtocontents{lol}{\protect\renewcommand*\protect\addvspace[1]{}}
 
 % biblatex
 \addbibresource{references.bib}

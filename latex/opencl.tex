@@ -22,8 +22,6 @@ With the upcoming specification of WebCL (currently available as a working draft
 
 OpenCL is not only an API. As it allows programs to run on hardware that may have certain restrictions or offer different features than a classical CPU, traditional languages like C++, Java or C\# can not be used to write those programs. Therefore, the OpenCL standard includes the specification of a separate language that is used to write small programs that are executed on a hardware device. These programs are called kernels and are written in the OpenCL C language, which is a restricted version of C99 with extensions for vectorization and handling OpenCL's abstract memory model.
 
-\pagebreak
-
 To allow OpenCL to support many different hardware platforms it consists of the following components:
 
 \begin{description}
@@ -160,7 +158,7 @@ To closer adapt to GPU hardware architectures, the NDRange can be equally divide
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.6\linewidth]{NDRange}
+\includegraphics[width=0.7\linewidth]{NDRange}
 \caption{The two-dimensional NDRange consisting of $GSx * GSy$ work groups. Each work group consists of $LSx * LSy$ work items. A work item has two indices in each dimension, the local index (relative to the work group) and a global index (relative to the NDRange), as well as the indices of the group it is part of. The local work sizes are LSx and LSy whereas the global work sizes are $GSx * LSx$ and $GSy * LSy$.}
 \label{fig:NDRange}
 \end{figure}
@@ -204,6 +202,8 @@ OpenCL defines four types of memory which are shown in figure \ref{fig:memory_mo
 	\item[Global memory] \hfill \\
 	Global memory is the largest of all memory regions and visible to all compute units on a device. This memory region is used whenever data is copied to or from a device. Buffers and images are allocated in this memory. All pointer variables pointing into global memory have to be prefixed with the \lstinline!__global! attribute inside a kernel. \cite[p.29]{opencl_book}
 	
+	\pagebreak
+	
 	\item[Constant memory] \hfill \\
 	Constant memory is typically implemented as part of the global memory and is used to store read only data which is needed by all work items. All pointer variables pointing into constant memory have to be prefixed with the \lstinline!__constant! attribute inside a kernel. \cite[p.30]{opencl_book} Newer types of hardware may provide special caches for this kind of memory (cf. the read-only data cache in NVIDIA's Kepler architecture in figure \ref{fig:kepler_arch}).
 	
@@ -223,7 +223,7 @@ The following piece of code in listing \ref{lst:opencl_example} shows a minimal 
 \lstinputlisting[language=CPP,caption=A minimalistic working OpenCL application which calculates the sum vector of two input vectors.,label=lst:opencl_example]{code/sample/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
 
-The first step in every OpenCL program is to choose a platform. As platforms correspond to the available OpenCL implementations on the system, multiple platforms can be available. The example code in listing \ref{lst:opencl_example} only queries the first available OpenCL platform by calling \lstinline!clGetPlatformIDs! with 1 and a pointer to a variable able to hold one platform id as arguments. The third parameter could be used to retrieve the number of actually available platforms.
+The first step in every OpenCL program is to choose a platform. As platforms correspond to the available OpenCL implementations on the system, multiple platforms can be available. The example code in listing \ref{lst:opencl_example} queries the first available OpenCL platform by calling \lstinline!clGetPlatformIDs! with 1 and a pointer to a variable able to hold one platform id as arguments. The third parameter could be used to retrieve the number of actually available platforms.
 
 After a platform has been chosen, we can continue by choosing a device for this platform which works analogously as selecting a platform. In addition to specifying the platform to query devices for, OpenCL also allows us to define the type(s) of devices we would like to get. In this case, we would like to have the first available GPU on the first available platform by specifying \lstinline!CL_DEVICE_TYPE_GPU! when calling \lstinline!clGetDeviceIDs!\footnote{Calling \lstinline!clGetDeviceIDs! with a device type as argument may return no devices. The Intel OpenCL platform for example only supports CPUs and therefore does not provide a GPU device. Appropriate error handling is necessary in real world applications.}. To be able to allocate OpenCL resources and enqueue operations on a device, we now have to create a context and a command queue using \lstinline!clCreateContext! and \lstinline!clCreateCommandQueue!. Further arguments to both API functions allow specifying further properties which can be looked up in the corresponding documentation.
 

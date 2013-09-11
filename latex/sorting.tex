@@ -10,10 +10,20 @@ However, despite their limitation on the sort key, integer sorting algorithms al
 
 Considering parallelizability and an eventual GPU implementation, sorting lies between matrix multiplication and prefix sum offering some degree of parallelism depending on the chosen algorithm. This chapter will focus on the implementation of two widely chosen algorithms for GPU sorting. These are the comparison based bitonic sorting network and the integer sorting algorithm radix sort. To reduce code complexity (especially of the latter), the input array consists of unsigned 32 bit integers.
 
+\begin{figure}[!p]
+\centering
+\includegraphics[width=0.9\textheight, angle=90]{sort_chart}
+\caption{Benchmark of several sort implementations.
+%The chart is based on the benchmark data in appendix section \ref{sec:sort_chart_data}.
+Both axis are of logarithmic scale. Integer sorting algorithms (radix sort) are drawn in dashed lines.}
+\label{fig:sort_chart}
+\end{figure}
 
 \section{CPU Implementations}
 
 Before stepping into the details of the two chosen GPU algorithms, bitonic and radix sort, a set of CPU sorting algorithms is discussed. Their resulting run times are used as a reference and compared with the GPU implementations in the benchmarks.
+
+\pagebreak
 
 \subsection{C/C++ standard library routines}
 
@@ -41,6 +51,8 @@ In contrast to the comparison based \lstinline!qsort! and \lstinline!std::sort!,
 
 If the radix is two, in each pass a bit (digit) of each input element (number represented in the binary system) is selected (starting with the least significant bit). The input elements are then split into two sequences (buckets) according to the selected bit. This is done by creating a histogram holding the number of elements having the same bit value for each bit combination (0 or 1). After the histogram has been created, it is exclusively scanned. The scanned histogram now holds the start index for each bucket. The input elements are permuted and moved into their corresponding buckets according to the selected bit. Elements with an equal bit are written into the same bucket in the same order as they appeared in the pass' input (each pass is stable). An auxiliary array is usually needed for this permutation step. This procedure is repeated for every bit of the input elements. 
 
+\pagebreak
+
 By only selecting one bit in each pass, 32 passes are required to sort the input sequence (elements are 32 bit unsigned integers). In each pass the input array is iterated over two times and the histogram has to be scanned once. This accumulates to 64 iterations over the input sequence and 32 scans of a two element histogram making radix sort a linear algorithm but with a quite significant constant factor. This factor can be reduced by selecting several bits of each input element at once in each pass (increasing the radix to a larger power of two). As a result, the number of passes decreases linearly with the number of selected bits (which is called radix and gives the algorithm its name). As a trade-off, the size of the histogram increases by a power of two.
 The CPU radix sort implementation used in the benchmarks is provided in listing \ref{lst:sort_cpu_radix}.
 
@@ -51,15 +63,6 @@ The CPU radix sort implementation used in the benchmarks is provided in listing 
 The implementation uses a relatively high radix of 16 (\lstinline!RADIX!) which allows radix sort to finish in two passes. As a consequence, the histogram consists of $2^{16}$ elements (\lstinline!BUCKETS!) occupying 256 KiB of memory but has to be scanned only two times.
 
 The performance difference of radix sort to the previously presented comparison based algorithm is significant as seen in figure \ref{fig:sort_chart}. Although the high radix of 16 causes a large overhead on small input sizes (as the full $2^{16}$ element histogram has to be scanned independently of the input size), radix sort shows its strength on larger inputs. It catches up to \lstinline!std::sort! at approximately 10,000 elements and then outperforms the library routine largely sorting $2^{26}$ elements in 0.884 seconds (compared to 9.039 seconds of \lstinline!std::sort!).
-
-\begin{figure}[!p]
-\centering
-\includegraphics[width=0.9\textheight, angle=90]{sort_chart}
-\caption{Benchmark of several sort implementations.
-%The chart is based on the benchmark data in appendix section \ref{sec:sort_chart_data}.
-Both axis are of logarithmic scale. Integer sorting algorithms (radix sort) are drawn in dashed lines.}
-\label{fig:sort_chart}
-\end{figure}
 
 \section{GPU Implementations}
 
@@ -98,6 +101,8 @@ In each iteration of the inner loop a kernel is enqueued. Arguments are the inne
 After all passes have been executed, the sorted values can be read back from device memory.
 Listing \ref{lst:sort_bitonic_kernel} shows the corresponding kernel code for the described bitonic sorter implementation.
 
+\pagebreak
+
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption=OpenCL Kernel code for one iteration of a bitonic sort. The implementation is based on an article about experiences with OpenCL and sorting by Eric Bainville \cite{sort_bealto}. , label=lst:sort_bitonic_kernel,]{../src/sort/gpu/thesis/BitonicSort.cl}
 \lstset{basicstyle=\ttfamily{}}
@@ -125,11 +130,13 @@ The outer and inner loop enqueuing the kernels stay the same. However, if the in
 After the appropriate kernel has been chosen it is enqueued with the same parameters as an unfused kernel. Only the number of enqueued work items decreases as each work item now processes more values.
 The corresponding kernel code is based on the previous section in listing \ref{lst:sort_bitonic_kernel}. As several very similar kernels have to be created, the preprocessor is used to reduce redundant code.
 
+\pagebreak
+
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CL, caption={OpenCL code of several (fused) kernels performing 1, 2, 3 or 4 iterations (2, 4, 8 or 16 inputs per work item) of a bitonic sort. \cite{sort_bealto}.} , label=lst:sort_bitonic_fusion_kernel,]{../src/sort/gpu/thesis/BitonicSortFusion.cl}
 \lstset{basicstyle=\ttfamily{}}
 
-The kernel code starts with the \lstinline!order! procedure which orders two values (at index \lstinline!a! and \lstinline!b!) of an array \lstinline!x! either ascending or descending depending on the value of \lstinline!asc!. The \lstinline!BITONIC_SORT_FUSION! macro than declares the actual kernel plus a merge procedure. Arguments to the macro are the number of input wires the expanded kernel should process (\lstinline!lvl!) as well as the logarithm of base two for this value (\lstinline!logLvl!). Finally also the half of the \lstinline!lvl! argument has to be specified. This value cannot be calculated as it is used in token pasting and macro expansion.
+The kernel code starts with the \lstinline!order! procedure which orders two values (at index \lstinline!a! and \lstinline!b!) of a given array \lstinline!x! either ascending or descending depending on the value of \lstinline!asc!. The following \lstinline!BITONIC_SORT_FUSION! macro declares the actual kernel plus a merge procedure. Arguments to the macro are the number of input wires the expanded kernel should process (\lstinline!lvl!) as well as the logarithm of base two for this value (\lstinline!logLvl!). Finally also the half of the \lstinline!lvl! argument has to be specified. This value cannot be calculated as it is used in token pasting and macro expansion.
 
 The macro begins by declaring a merge procedure for the current number of input wires. Arguments are a pointer to the array holding the values of the input wires (\lstinline!x!) and a boolean determining the sort order (\lstinline!asc!). For the half number of input wires, comparison have to be made (cf. a larger red box in figure \ref{fig:bitonic_sort}). Then both halves of the input array are merged using two invocations of the merge procedure of the next lower level (half the current input wires). This is the actual fused part of the kernel which now processes the next two smaller red boxes sharing the same inputs as the initial red box. Although the merge procedure is recursive, it cannot be implemented as such due to OpenCL not allowing recursive function calls. The reason for this is that OpenCL programs do not have a runtime stack for storing local (not \lstinline!__local!!) variables. They have to be stored in registers and therefore the maximum amount of necessary register space needed by the program has to be determinable at compile time (and will be fully allocated when the kernel is executed). The final \lstinline!merge2! procedure will not have to call any recursive merges any more. Therefore the macro \lstinline!merge1! is declared empty (recursion anchor).
 
@@ -158,6 +165,8 @@ Listing \ref{lst:sort_radix_host} shows the host code for an OpenCL radix sort i
 \lstset{basicstyle=\ttfamily{}\scriptsize{}}
 \lstinputlisting[language=CPP, caption=Host code for a radix sort implementation. \cite{amd_app_sdk}., label=lst:sort_radix_host, firstline=204, lastline=259]{code/sort/main.cpp}
 \lstset{basicstyle=\ttfamily{}}
+
+\pagebreak
 
 At the top of the source code several macros define constants. The first three should already be known from the previous CPU implementation in section \ref{sec:sorting_radix_cpu}. A major difference is the relatively small radix used with the GPU implementation. This is justified by the huge amount of memory required to store a histogram of $2^{RADIX}$ buckets for each work item. New is the \lstinline!BLOCK_SIZE! constant which defines how many elements each work item processes. Its value of 32 has been determined by benchmarks and may be specific to the used GPU. The \lstinline!VECTOR_WIDTH! macro defines the width of the vector types used in the scan kernel (cf. vector scan implementation in chapter \ref{sec:scan_vector}). 
 The host code stars by creating two buffers with the size of the input rounded up to be a multiple of the work group size times the \lstinline!BLOCK_SIZE!. One will be used to hold the input values at the beginning of each pass (source) and the other one will be used by the permute step to write the output values to (destination). The source buffer is initialized with the unsorted input sequence from host memory. Any free space after the written sequence is filled up with the largest representable value of the input elements' data type.
